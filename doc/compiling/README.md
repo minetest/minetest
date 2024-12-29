@@ -1,4 +1,4 @@
-# Compiling Minetest
+# Compiling Luanti
 
 - [Compiling on GNU/Linux](linux.md)
 - [Compiling on Windows](windows.md)
@@ -9,8 +9,8 @@
 
 General options and their default values:
 
-    BUILD_CLIENT=TRUE          - Build Minetest client
-    BUILD_SERVER=FALSE         - Build Minetest server
+    BUILD_CLIENT=TRUE          - Build Luanti client
+    BUILD_SERVER=FALSE         - Build Luanti server
     BUILD_UNITTESTS=TRUE       - Build unittest sources
     BUILD_BENCHMARKS=FALSE     - Build benchmark sources
     BUILD_DOCUMENTATION=TRUE   - Build doxygen documentation
@@ -30,6 +30,7 @@ General options and their default values:
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
     ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
+    ENABLE_OPENSSL=ON          - Build with OpenSSL; Speeds up SHA1 and SHA2 hashing
     ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game sounds
     ENABLE_LTO=<varies>        - Build with IPO/LTO optimizations (smaller and more efficient than regular build)
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
@@ -38,11 +39,11 @@ General options and their default values:
     ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     ENABLE_UPDATE_CHECKER=TRUE - Whether to enable update checks by default
-    INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
+    INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Luanti
     USE_GPROF=FALSE            - Enable profiling using GProf
     BUILD_WITH_TRACY=FALSE     - Fetch and build with the Tracy profiler client
     FETCH_TRACY_GIT_TAG=master - Git tag for fetching Tracy client. Match with your server (gui) version
-    VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+    VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Luanti 5.10.0-foobar)
 
 Library specific options:
 
@@ -61,7 +62,14 @@ Library specific options:
     GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains libintl.h
     GETTEXT_LIBRARY                 - Optional/platform-dependent with gettext; path to libintl.so/libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
+    GMP_INCLUDE_DIR                 - Directory that contains gmp.h
+    GMP_LIBRARY                     - Path to libgmp.a/libgmp.so/libgmp.lib
     ICONV_LIBRARY                   - Optional/platform-dependent; path to libiconv.so/libiconv.dylib
+    JPEG_DLL                        - Only on Windows; path to libjpeg.dll
+    JPEG_INCLUDE_DIR                - Directory that contains jpeg.h
+    JPEG_LIBRARY                    - Path to libjpeg.a/libjpeg.so/libjpeg.lib
+    JSON_INCLUDE_DIR                - Directory that contains json/allocator.h
+    JSON_LIBRARY                    - Path to libjson.a/libjson.so/libjson.lib
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
@@ -79,6 +87,12 @@ Library specific options:
     OPENAL_DLL                      - Only if building with sound on Windows; path to OpenAL32.dll
     OPENAL_INCLUDE_DIR              - Only if building with sound; directory where al.h is located
     OPENAL_LIBRARY                  - Only if building with sound; path to libopenal.a/libopenal.so/OpenAL32.lib
+    PNG_DLL                         - Only on Windows; path to libpng.dll
+    PNG_INCLUDE_DIR                 - Directory that contains png.h
+    PNG_LIBRARY                     - Path to libpng.a/libpng.so/libpng.lib
+    PROMETHEUS_PULL_LIBRARY         - Only if building with prometheus; path to prometheus-cpp-pull
+    PROMETHEUS_CORE_LIBRARY         - Only if building with prometheus; path to prometheus-cpp-core
+    PROMETHEUS_CPP_INCLUDE_DIR      - Only if building with prometheus; directory where prometheus/counter.h is located
     SQLITE3_INCLUDE_DIR             - Directory that contains sqlite3.h
     SQLITE3_LIBRARY                 - Path to libsqlite3.a/libsqlite3.so/sqlite3.lib
     VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a

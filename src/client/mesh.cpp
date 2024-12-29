@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "mesh.h"
 #include "S3DVertex.h"
@@ -120,8 +105,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 	if (mesh == NULL)
 		return;
 
-	aabb3f bbox;
-	bbox.reset(0, 0, 0);
+	aabb3f bbox{{0.0f, 0.0f, 0.0f}};
 
 	u32 mc = mesh->getMeshBufferCount();
 	for (u32 j = 0; j < mc; j++) {
@@ -149,8 +133,7 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	if (mesh == NULL)
 		return;
 
-	aabb3f bbox;
-	bbox.reset(0, 0, 0);
+	aabb3f bbox{{0.0f, 0.0f, 0.0f}};
 
 	u32 mc = mesh->getMeshBufferCount();
 	for (u32 j = 0; j < mc; j++) {
@@ -264,10 +247,14 @@ static void rotateMesh(scene::IMesh *mesh, float degrees)
 	float c = std::cos(degrees);
 	float s = std::sin(degrees);
 	auto rotator = [c, s] (video::S3DVertex *vertex) {
-		float u = vertex->Pos.*U;
-		float v = vertex->Pos.*V;
-		vertex->Pos.*U = c * u - s * v;
-		vertex->Pos.*V = s * u + c * v;
+		auto rotate_vec = [c, s] (v3f &vec) {
+			float u = vec.*U;
+			float v = vec.*V;
+			vec.*U = c * u - s * v;
+			vec.*V = s * u + c * v;
+		};
+		rotate_vec(vertex->Pos);
+		rotate_vec(vertex->Normal);
 	};
 	applyToMesh(mesh, rotator);
 }
@@ -287,9 +274,9 @@ void rotateMeshYZby(scene::IMesh *mesh, f64 degrees)
 	rotateMesh<&v3f::Y, &v3f::Z>(mesh, degrees);
 }
 
-void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
+void rotateMeshBy6dFacedir(scene::IMesh *mesh, u8 facedir)
 {
-	int axisdir = facedir >> 2;
+	u8 axisdir = facedir >> 2;
 	facedir &= 0x03;
 	switch (facedir) {
 		case 1: rotateMeshXZby(mesh, -90); break;
@@ -307,8 +294,7 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 
 void recalculateBoundingBox(scene::IMesh *src_mesh)
 {
-	aabb3f bbox;
-	bbox.reset(0,0,0);
+	aabb3f bbox{{0.0f, 0.0f, 0.0f}};
 	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
 		buf->recalculateBoundingBox();

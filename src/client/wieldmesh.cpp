@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "wieldmesh.h"
 #include "settings.h"
@@ -29,6 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "client/meshgen/collector.h"
 #include "client/tile.h"
+#include "client/texturesource.h"
 #include "log.h"
 #include "util/numeric.h"
 #include <map>
@@ -198,7 +184,6 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
 {
-	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 	m_bilinear_filter = g_settings->getBool("bilinear_filter");
 	m_trilinear_filter = g_settings->getBool("trilinear_filter");
@@ -210,8 +195,7 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	else
 		g_extrusion_mesh_cache->grab();
 
-	// Disable bounding box culling for this scene node
-	// since we won't calculate the bounding box.
+	// This class doesn't render anything, so disable culling.
 	setAutomaticCulling(scene::EAC_OFF);
 
 	// Create the child scene node
@@ -247,7 +231,7 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
-	postProcessNodeMesh(copy, f, false, true, &m_material_type, &m_colors, true);
+	postProcessNodeMesh(copy, f, false, &m_material_type, &m_colors, true);
 	changeToMesh(copy);
 	copy->drop();
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
@@ -311,11 +295,10 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
-	MeshMakeData mesh_make_data(client->ndef(), 1, false);
+	MeshMakeData mesh_make_data(client->ndef(), 1);
 	MeshCollector collector(v3f(0.0f * BS), v3f());
 	mesh_make_data.setSmoothLighting(false);
-	MapblockMeshGenerator gen(&mesh_make_data, &collector,
-		client->getSceneManager()->getMeshManipulator());
+	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 
 	if (n.getParam2()) {
 		// keep it
@@ -368,10 +351,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 	scene::SMesh *mesh = nullptr;
 
-	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
-		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
-	}
+	u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+	m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 
 	// Color-related
 	m_colors.clear();
@@ -514,10 +495,7 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 
 		if (m_colors[j].needColorize(buffercolor)) {
 			buf->setDirty(scene::EBT_VERTEX);
-			if (m_enable_shaders)
-				setMeshBufferColor(buf, buffercolor);
-			else
-				colorizeMeshBuffer(buf, &buffercolor);
+			setMeshBufferColor(buf, buffercolor);
 		}
 	}
 }
@@ -527,13 +505,11 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 	if (!m_meshnode)
 		return;
 
-	if (m_enable_shaders) {
+	{
 		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.ColorParam = color;
 		}
-	} else {
-		setColor(color);
 	}
 }
 
@@ -552,12 +528,7 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 		dummymesh->drop();  // m_meshnode grabbed it
 	} else {
 		m_meshnode->setMesh(mesh);
-		// without shaders recolored often for lighting
-		// otherwise only once
-		if (m_enable_shaders)
-			mesh->setHardwareMappingHint(scene::EHM_STATIC);
-		else
-			mesh->setHardwareMappingHint(scene::EHM_DYNAMIC);
+		mesh->setHardwareMappingHint(scene::EHM_STATIC);
 	}
 
 	m_meshnode->setVisible(true);
@@ -610,7 +581,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			} else
 				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 			// add overlays
-			postProcessNodeMesh(mesh, f, false, false, nullptr,
+			postProcessNodeMesh(mesh, f, false, nullptr,
 				&result->buffer_colors, true);
 			if (f.drawtype == NDT_ALLFACES)
 				scaleMesh(mesh, v3f(f.visual_scale));
@@ -718,7 +689,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 }
 
 void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
-	bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
+	bool set_material, const video::E_MATERIAL_TYPE *mattype,
 	std::vector<ItemPartColor> *colors, bool apply_scale)
 {
 	const u32 mc = mesh->getMeshBufferCount();

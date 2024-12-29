@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2015-2018 paramat
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+// Copyright (C) 2015-2018 paramat
 
 #include "mg_decoration.h"
 #include "mg_schematic.h"
@@ -361,7 +346,7 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 		pr->range(deco_param2, deco_param2_max) : deco_param2;
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
 
 	if (ceiling) {

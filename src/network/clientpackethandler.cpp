@@ -1,24 +1,11 @@
-/*
-Minetest
-Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #include "client/client.h"
 
+#include "exceptions.h"
+#include "irr_v2d.h"
 #include "util/base64.h"
 #include "client/camera.h"
 #include "client/mesh_generator_thread.h"
@@ -41,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
-#include "util/sha1.h"
+#include "util/hashing.h"
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
@@ -76,7 +63,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	u8 serialization_ver;
+	u8 serialization_ver; // negotiated value
 	u16 proto_ver;
 	u16 unused_compression_mode;
 	u32 auth_mechs;
@@ -93,9 +80,9 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< ", proto_ver=" << proto_ver
 			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
-	if (!ser_ver_supported(serialization_ver)) {
+	if (!ser_ver_supported_read(serialization_ver)) {
 		infostream << "Client: TOCLIENT_HELLO: Server sent "
-				<< "unsupported ser_fmt_ver"<< std::endl;
+				<< "unsupported ser_fmt_ver=" << (int)serialization_ver << std::endl;
 		return;
 	}
 
@@ -1021,6 +1008,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
+	if (p.time < 0)
+		throw SerializationError("particle spawner time < 0");
 
 	bool missing_end_values = false;
 	if (m_proto_ver >= 42) {
@@ -1516,10 +1505,16 @@ void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	*pkt >> player->local_animations[0];
-	*pkt >> player->local_animations[1];
-	*pkt >> player->local_animations[2];
-	*pkt >> player->local_animations[3];
+	for (int i = 0; i < 4; ++i) {
+		if (getProtoVersion() >= 46) {
+			*pkt >> player->local_animations[i];
+		} else {
+			v2s32 local_animation;
+			*pkt >> local_animation;
+			player->local_animations[i] = v2f::from(local_animation);
+		}
+	}
+
 	*pkt >> player->local_animation_speed;
 
 	player->last_animation = LocalPlayerAnimation::NO_ANIM;
@@ -1650,12 +1645,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	if (!filedata.empty()) {
 		// LEGACY CODEPATH
 		// Compute and check checksum of data
-		std::string computed_hash;
-		{
-			SHA1 ctx;
-			ctx.addBytes(filedata);
-			computed_hash = ctx.getDigest();
-		}
+		std::string computed_hash = hashing::sha1(filedata);
 		if (raw_hash != computed_hash) {
 			verbosestream << "Hash of file data mismatches, ignoring." << std::endl;
 			return;
@@ -1819,4 +1809,9 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 		*pkt >> lighting.volumetric_light_strength;
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.shadow_tint;
+	if (pkt->getRemainingBytes() >= 12) {
+		*pkt >> lighting.bloom_intensity
+				>> lighting.bloom_strength_factor
+				>> lighting.bloom_radius;
+	}
 }

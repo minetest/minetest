@@ -31,53 +31,6 @@ static int SDLDeviceInstances = 0;
 
 namespace irr
 {
-namespace video
-{
-#ifdef _IRR_COMPILE_WITH_OPENGL_
-IVideoDriver *createOpenGLDriver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
-#else
-static IVideoDriver *createOpenGLDriver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager)
-{
-	os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
-	return nullptr;
-}
-#endif
-
-#ifdef ENABLE_OPENGL3
-IVideoDriver *createOpenGL3Driver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
-#else
-static IVideoDriver *createOpenGL3Driver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager)
-{
-	os::Printer::log("No OpenGL 3 support compiled in.", ELL_ERROR);
-	return nullptr;
-}
-#endif
-
-#ifdef _IRR_COMPILE_WITH_OGLES2_
-IVideoDriver *createOGLES2Driver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
-#else
-static IVideoDriver *createOGLES2Driver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager)
-{
-	os::Printer::log("No OpenGL ES 2 support compiled in.", ELL_ERROR);
-	return nullptr;
-}
-#endif
-
-#ifdef _IRR_COMPILE_WITH_WEBGL1_
-IVideoDriver *createWebGL1Driver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
-#else
-static IVideoDriver *createWebGL1Driver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager)
-{
-	os::Printer::log("No WebGL 1 support compiled in.", ELL_ERROR);
-	return nullptr;
-}
-#endif
-} // end namespace video
-
-} // end namespace irr
-
-namespace irr
-{
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 EM_BOOL CIrrDeviceSDL::MouseUpDownCallback(int eventType, const EmscriptenMouseEvent *event, void *userData)
 {
@@ -300,10 +253,6 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		Resizable(param.WindowResizable == 1 ? true : false), CurrentTouchCount(0),
 		IsInBackground(false)
 {
-#ifdef _DEBUG
-	setDebugName("CIrrDeviceSDL");
-#endif
-
 	if (++SDLDeviceInstances == 1) {
 #ifdef __ANDROID__
 		// Blocking on pause causes problems with multiplayer.
@@ -341,7 +290,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 
 #if defined(SDL_HINT_APP_NAME)
-		SDL_SetHint(SDL_HINT_APP_NAME, "Minetest");
+		SDL_SetHint(SDL_HINT_APP_NAME, "Luanti");
 #endif
 
 		// Set IME hints
@@ -713,7 +662,7 @@ bool CIrrDeviceSDL::run()
 
 	while (!Close && wrap_PollEvent(&SDL_event)) {
 		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
-		memset(&irrevent, 0, sizeof(irrevent));
+		irrevent = {};
 
 		switch (SDL_event.type) {
 		case SDL_MOUSEMOTION: {
@@ -721,12 +670,19 @@ bool CIrrDeviceSDL::run()
 
 			irrevent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 			irrevent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-			MouseX = irrevent.MouseInput.X =
-				static_cast<s32>(SDL_event.motion.x * ScaleX);
-			MouseY = irrevent.MouseInput.Y =
-				static_cast<s32>(SDL_event.motion.y * ScaleY);
+
 			MouseXRel = static_cast<s32>(SDL_event.motion.xrel * ScaleX);
 			MouseYRel = static_cast<s32>(SDL_event.motion.yrel * ScaleY);
+			if (!SDL_GetRelativeMouseMode()) {
+				MouseX = static_cast<s32>(SDL_event.motion.x * ScaleX);
+				MouseY = static_cast<s32>(SDL_event.motion.y * ScaleY);
+			} else {
+				MouseX += MouseXRel;
+				MouseY += MouseYRel;
+			}
+			irrevent.MouseInput.X = MouseX;
+			irrevent.MouseInput.Y = MouseY;
+
 			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 			irrevent.MouseInput.Shift = (keymod & KMOD_SHIFT) != 0;
 			irrevent.MouseInput.Control = (keymod & KMOD_CTRL) != 0;
@@ -1284,6 +1240,12 @@ bool CIrrDeviceSDL::setFullscreen(bool fullscreen)
 bool CIrrDeviceSDL::isWindowVisible() const
 {
 	return !IsInBackground;
+}
+
+//! Checks if the Irrlicht device supports touch events.
+bool CIrrDeviceSDL::supportsTouchEvents() const
+{
+	return true;
 }
 
 //! returns if window is active. if not, nothing need to be drawn

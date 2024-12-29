@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include <algorithm>
 #include <stack>
@@ -541,14 +526,14 @@ void ServerEnvironment::init()
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	if (auth_backend_name == "files") {
 		warningstream << "/!\\ You are using old auth file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	m_player_database = openPlayerDatabase(player_backend_name, world_path, conf);
@@ -682,13 +667,13 @@ void ServerEnvironment::savePlayer(RemotePlayer *player)
 	}
 }
 
-PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
-	session_t peer_id, bool is_singleplayer)
+std::unique_ptr<PlayerSAO> ServerEnvironment::loadPlayer(RemotePlayer *player, session_t peer_id)
 {
-	auto playersao = std::make_unique<PlayerSAO>(this, player, peer_id, is_singleplayer);
+	auto playersao = std::make_unique<PlayerSAO>(this, player, peer_id, m_server->isSingleplayer());
 	// Create player if it doesn't exist
 	if (!m_player_database->loadPlayer(player, playersao.get())) {
-		*new_player = true;
+		playersao->setNewPlayer();
+
 		// Set player position
 		infostream << "Server: Finding spawn place for player \""
 			<< player->getName() << "\"" << std::endl;
@@ -707,20 +692,10 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 		}
 	}
 
-	// Add player to environment
-	addPlayer(player);
-
-	/* Clean up old HUD elements from previous sessions */
-	player->clearHud();
-
-	/* Add object to environment */
-	PlayerSAO *ret = playersao.get();
-	addActiveObject(std::move(playersao));
-
 	// Update active blocks quickly for a bit so objects in those blocks appear on the client
 	m_fast_active_block_divider = 10;
 
-	return ret;
+	return playersao;
 }
 
 void ServerEnvironment::saveMeta()
@@ -1420,21 +1395,6 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	/*
-		Handle players
-	*/
-	{
-		ScopeProfiler sp(g_profiler, "ServerEnv: move players", SPT_AVG);
-		for (RemotePlayer *player : m_players) {
-			// Ignore disconnected players
-			if (player->getPeerId() == PEER_ID_INEXISTENT)
-				continue;
-
-			// Move
-			player->move(dtime, this, 100 * BS);
-		}
-	}
-
-	/*
 		Manage active block list
 	*/
 	if (m_active_blocks_mgmt_interval.step(dtime, m_cache_active_block_mgmt_interval / m_fast_active_block_divider)) {
@@ -1887,7 +1847,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 	auto process = [&] (ServerActiveObject *obj) -> bool {
 		if (obj->isGone())
 			return false;
-		aabb3f selection_box;
+		aabb3f selection_box{{0.0f, 0.0f, 0.0f}};
 		if (!obj->getSelectionBox(&selection_box))
 			return false;
 

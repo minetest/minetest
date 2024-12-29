@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "settings.h"
 #include "porting.h"
@@ -25,6 +10,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
+#include "server.h"
 
 
 /*
@@ -92,20 +78,33 @@ void set_default_settings()
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");
 	settings->setDefault("bind_address", "");
-	settings->setDefault("serverlist_url", "servers.minetest.net");
+	settings->setDefault("serverlist_url", "https://servers.luanti.org");
 
 	// Client
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
+#if defined(__unix__) && !defined(__APPLE__) && !defined (__ANDROID__)
+	// On Linux+X11 (not Linux+Wayland or Linux+XWayland), I've encountered a bug
+	// where fake mouse events were generated from touch events if in relative
+	// mouse mode, resulting in the touchscreen controls being instantly disabled
+	// again and thus making them unusable.
+	// => We can't switch based on the last input method used.
+	// => Fall back to hardware detection.
 	settings->setDefault("touch_controls", bool_to_cstr(has_touch));
+#else
+	settings->setDefault("touch_controls", "auto");
+#endif
+	// Since GUI scaling shouldn't suddenly change during a session, we use
+	// hardware detection for "touch_gui" instead of switching based on the last
+	// input method used.
 	settings->setDefault("touch_gui", bool_to_cstr(has_touch));
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("sound_volume_unfocused", "0.3");
 	settings->setDefault("mute_sound", "false");
 	settings->setDefault("sound_extensions_blacklist", "");
-	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("mesh_generation_threads", "0");
+	settings->setDefault("mesh_buffer_min_vertices", "100");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
@@ -300,11 +299,11 @@ void set_default_settings()
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
 	settings->setDefault("show_block_bounds_radius_near", "4");
+	settings->setDefault("transparency_sorting_group_by_buffers", "true");
 	settings->setDefault("transparency_sorting_distance", "16");
 
 	settings->setDefault("enable_minimap", "true");
@@ -313,6 +312,7 @@ void set_default_settings()
 
 	// Effects
 	settings->setDefault("enable_post_processing", "true");
+	settings->setDefault("post_processing_texture_bits", "16");
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
@@ -332,9 +332,6 @@ void set_default_settings()
 	settings->setDefault("antialiasing", "none");
 	settings->setDefault("enable_bloom", "false");
 	settings->setDefault("enable_bloom_debug", "false");
-	settings->setDefault("bloom_strength_factor", "1.0");
-	settings->setDefault("bloom_intensity", "0.05");
-	settings->setDefault("bloom_radius", "1");
 	settings->setDefault("enable_volumetric_lighting", "false");
 	settings->setDefault("enable_water_reflections", "false");
 	settings->setDefault("enable_translucent_foliage", "false");
@@ -401,7 +398,7 @@ void set_default_settings()
 	settings->setDefault("chat_font_size", "0"); // Default "font_size"
 
 	// ContentDB
-	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_url", "https://content.luanti.org");
 	settings->setDefault("contentdb_enable_updates_indicator", "true");
 	settings->setDefault("contentdb_max_concurrent_downloads", "3");
 
@@ -449,7 +446,9 @@ void set_default_settings()
 	settings->setDefault("enable_pvp", "true");
 	settings->setDefault("enable_mod_channels", "false");
 	settings->setDefault("disallow_empty_password", "false");
-	settings->setDefault("disable_anticheat", "false");
+	settings->setDefault("anticheat_flags", flagdesc_anticheat,
+		AC_DIGGING | AC_INTERACTION | AC_MOVEMENT);
+	settings->setDefault("anticheat_movement_tolerance", "1.0");
 	settings->setDefault("enable_rollback_recording", "false");
 	settings->setDefault("deprecated_lua_api_handling", "log");
 
@@ -547,6 +546,7 @@ void set_default_settings()
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 #endif
 
+	settings->setDefault("touch_layout", "");
 	settings->setDefault("touchscreen_sensitivity", "0.2");
 	settings->setDefault("touchscreen_threshold", "20");
 	settings->setDefault("touch_long_tap_delay", "400");
@@ -570,8 +570,12 @@ void set_default_settings()
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("viewing_range", "50");
 	settings->setDefault("leaves_style", "simple");
+	// Note: OpenGL ES 2.0 is not guaranteed to provide depth textures,
+	// which we would need for PP.
 	settings->setDefault("enable_post_processing", "false");
+	// still set these two settings in case someone wants to enable it
 	settings->setDefault("debanding", "false");
+	settings->setDefault("post_processing_texture_bits", "8");
 	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size

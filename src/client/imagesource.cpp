@@ -1,34 +1,19 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "imagesource.h"
 
 #include <IFileSystem.h>
-#include "settings.h"
-#include "mesh.h"
-#include "util/strfnd.h"
-#include "renderingengine.h"
-#include "util/base64.h"
-#include "irrlicht_changes/printing.h"
 #include "imagefilters.h"
+#include "mesh.h"
+#include "renderingengine.h"
+#include "settings.h"
 #include "texturepaths.h"
+#include "irrlicht_changes/printing.h"
+#include "util/base64.h"
 #include "util/numeric.h"
+#include "util/strfnd.h"
 
 
 ////////////////////////////////
@@ -581,7 +566,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
 
 			if (colorize) {
-				f32 lum = dst->getPixel(x, y).getLuminance() / 255.0f;
+				f32 lum = dst->getPixel(x, y).getBrightness() / 255.0f;
 
 				if (norm_l < 0) {
 					lum *= norm_l + 1.0f;
@@ -1447,6 +1432,8 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 			video::IImage *img = generateImage(filename, source_image_names);
 			if (img) {
+				upscaleImagesToMatchLargest(baseimg, img);
+
 				apply_mask(img, baseimg, v2s32(0, 0), v2s32(0, 0),
 						img->getDimension());
 				img->drop();
@@ -1524,10 +1511,18 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 			CHECK_BASEIMG();
 
-			// Apply the "clean transparent" filter, if needed
+			/* Apply the "clean transparent" filter, if necessary
+			 * This is needed since filtering will sample parts of the image
+			 * that are transparent and PNG optimizers often discard the color
+			 * information in those parts. */
 			if (m_setting_mipmap || m_setting_bilinear_filter ||
-				m_setting_trilinear_filter || m_setting_anisotropic_filter)
-				imageCleanTransparent(baseimg, 127);
+				m_setting_trilinear_filter || m_setting_anisotropic_filter) {
+				/* Note: in theory we should pass either 0 or 127 depending on
+				 * if the texture is used with an ALPHA or ALPHA_REF material,
+				 * however we don't have this information here.
+				 * It doesn't matter in practice. */
+				imageCleanTransparent(baseimg, 0);
+			}
 
 			/* Upscale textures to user's requested minimum size.  This is a trick to make
 			 * filters look as good on low-res textures as on high-res ones, by making
@@ -1830,6 +1825,12 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 #undef CHECK_DIM
 
+ImageSource::ImageSource() :
+		m_setting_mipmap{g_settings->getBool("mip_map")},
+		m_setting_trilinear_filter{g_settings->getBool("trilinear_filter")},
+		m_setting_bilinear_filter{g_settings->getBool("bilinear_filter")},
+		m_setting_anisotropic_filter{g_settings->getBool("anisotropic_filter")}
+{}
 
 video::IImage* ImageSource::generateImage(std::string_view name,
 		std::set<std::string> &source_image_names)

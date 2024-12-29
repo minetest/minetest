@@ -1,23 +1,8 @@
-/*
-Minetest
-Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>,
-Copyright (C) 2012-2018 RealBadAngel, Maciej Kasatkin
-Copyright (C) 2015-2018 paramat
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>,
+// Copyright (C) 2012-2018 RealBadAngel, Maciej Kasatkin
+// Copyright (C) 2015-2018 paramat
 
 #include <stack>
 #include "treegen.h"
@@ -38,8 +23,7 @@ void TreeDef::resolveNodeNames()
 	getIdFromNrBacklog(&leavesnode.param0, "", CONTENT_IGNORE);
 	if (leaves2_chance)
 		getIdFromNrBacklog(&leaves2node.param0, "", CONTENT_IGNORE);
-	if (fruit_chance)
-		getIdFromNrBacklog(&fruitnode.param0, "", CONTENT_IGNORE);
+	getIdFromNrBacklog(&fruitnode.param0, "", CONTENT_IGNORE);
 }
 
 /*
@@ -93,7 +77,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 
 	VoxelArea leaves_a(v3s16(-2, -1, -2), v3s16(2, 2, 2));
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for (s32 i = 0; i < leaves_a.getVolume(); i++)
+	for (u32 i = 0; i < leaves_d.getSize(); i++)
 		leaves_d[i] = 0;
 
 	// Force leaves at near the end of the trunk
@@ -713,9 +697,8 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-3, -2, -3), v3s16(3, 2, 3));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for (s32 i = 0; i < leaves_a.getVolume(); i++)
+	for (u32 i = 0; i < leaves_d.getSize(); i++)
 		leaves_d[i] = 0;
 
 	// Force leaves at near the end of the trunk
@@ -804,7 +787,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 
 	VoxelArea leaves_a(v3s16(-3, -6, -3), v3s16(3, 3, 3));
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for (s32 i = 0; i < leaves_a.getVolume(); i++)
+	for (u32 i = 0; i < leaves_d.getSize(); i++)
 		leaves_d[i] = 0;
 
 	// Upper branches
@@ -889,6 +872,17 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 			i++;
 		}
 	}
+}
+
+std::string error_to_string(error e)
+{
+	switch (e) {
+		case SUCCESS:
+			return "success";
+		case UNBALANCED_BRACKETS:
+			return "closing ']' has no matching opening bracket";
+	}
+	return "unknown error";
 }
 
 }; // namespace treegen

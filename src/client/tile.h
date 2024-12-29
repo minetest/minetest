@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -35,6 +20,7 @@ enum MaterialType{
 	TILE_MATERIAL_WAVING_LIQUID_BASIC,
 	TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT,
 	TILE_MATERIAL_WAVING_LIQUID_OPAQUE,
+	// Note: PLAIN isn't a material actually used by tiles, rather just entities.
 	TILE_MATERIAL_PLAIN,
 	TILE_MATERIAL_PLAIN_ALPHA
 };
@@ -93,15 +79,17 @@ struct TileLayer
 		return !(*this == other);
 	}
 
-	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const;
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const;
 
+	/// @return is this layer semi-transparent?
 	bool isTransparent() const
 	{
+		// see also: the mapping in ShaderSource::generateShader()
 		switch (material_type) {
 		case TILE_MATERIAL_ALPHA:
+		case TILE_MATERIAL_PLAIN_ALPHA:
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 			return true;

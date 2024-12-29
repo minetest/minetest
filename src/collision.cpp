@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "collision.h"
 #include <cmath>
@@ -23,7 +8,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "nodedef.h"
 #include "gamedef.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/clientenvironment.h"
 #include "client/localplayer.h"
 #endif
@@ -35,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef __FAST_MATH__
 #warning "-ffast-math is known to cause bugs in collision code, do not use!"
 #endif
+
+bool g_collision_problems_encountered = false;
 
 namespace {
 
@@ -275,7 +262,7 @@ static void add_object_boxes(Environment *env,
 {
 	auto process_object = [&cinfo] (ActiveObject *object) {
 		if (object && object->collideWithObjects()) {
-			aabb3f box;
+			aabb3f box{{0.0f, 0.0f, 0.0f}};
 			if (object->getCollisionBox(&box))
 				cinfo.emplace_back(object, 0, box);
 		}
@@ -285,7 +272,7 @@ static void add_object_boxes(Environment *env,
 	const f32 distance = speed_f.getLength() * dtime +
 		box_0.getExtent().getLength() + 1.5f * BS;
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
 	if (c_env) {
 		std::vector<DistanceSortedActiveObject> clientobjects;
@@ -336,7 +323,7 @@ static void add_object_boxes(Environment *env,
 #define PROFILER_NAME(text) (dynamic_cast<ServerEnvironment*>(env) ? ("Server: " text) : ("Client: " text))
 
 collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
-		f32 pos_max_d, const aabb3f &box_0,
+		const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f *pos_f, v3f *speed_f,
 		v3f accel_f, ActiveObject *self,
@@ -357,6 +344,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			warningstream << "collisionMoveSimple: maximum step interval exceeded,"
 					" lost movement details!"<<std::endl;
 		}
+		g_collision_problems_encountered = true;
 		dtime = DTIME_LIMIT;
 	} else {
 		time_notification_done = false;
@@ -430,7 +418,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		// Avoid infinite loop
 		loopcount++;
 		if (loopcount >= 100) {
-			warningstream << "collisionMoveSimple: Loop count exceeded, aborting to avoid infiniite loop" << std::endl;
+			warningstream << "collisionMoveSimple: Loop count exceeded, aborting to avoid infinite loop" << std::endl;
+			g_collision_problems_encountered = true;
 			break;
 		}
 
@@ -520,7 +509,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			info.object = nearest_info.obj;
 			info.new_pos = *pos_f;
 			info.old_speed = *speed_f;
-			info.plane = nearest_collided;
 
 			// Set the speed component that caused the collision to zero
 			if (step_up) {

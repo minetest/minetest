@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2013 Kahrl <kahrl@gmx.net>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2013 Kahrl <kahrl@gmx.net>
 
 #include <fstream>
 #include <iterator>
@@ -286,7 +271,7 @@ public:
 		The id 0 points to a null shader. Its material is EMT_SOLID.
 	*/
 	u32 getShaderIdDirect(const std::string &name,
-		MaterialType material_type, NodeDrawType drawtype) override;
+		MaterialType material_type, NodeDrawType drawtype);
 
 	/*
 		If shader specified by the name pointed by the id doesn't
@@ -296,9 +281,17 @@ public:
 		and not found in cache, the call is queued to the main thread
 		for processing.
 	*/
-
 	u32 getShader(const std::string &name,
 		MaterialType material_type, NodeDrawType drawtype) override;
+
+	u32 getShaderRaw(const std::string &name, bool blendAlpha) override
+	{
+		// TODO: the shader system should be refactored to be much more generic.
+		// Just let callers pass arbitrary constants, this would also deal with
+		// runtime changes cleanly.
+		return getShader(name, blendAlpha ? TILE_MATERIAL_ALPHA : TILE_MATERIAL_BASIC,
+			NodeDrawType_END);
+	}
 
 	ShaderInfo getShaderInfo(u32 id) override;
 
@@ -369,8 +362,8 @@ ShaderSource::~ShaderSource()
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
 	// Delete materials
-	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
-		getGPUProgrammingServices();
+	auto *gpu = RenderingEngine::get_video_driver()->getGPUProgrammingServices();
+	assert(gpu);
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		if (!i.name.empty())
 			gpu->deleteShaderMaterial(i.material);
@@ -500,8 +493,8 @@ void ShaderSource::rebuildShaders()
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
 	// Delete materials
-	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
-		getGPUProgrammingServices();
+	auto *gpu = RenderingEngine::get_video_driver()->getGPUProgrammingServices();
+	assert(gpu);
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		if (!i.name.empty()) {
 			gpu->deleteShaderMaterial(i.material);
@@ -548,20 +541,19 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	}
 	shaderinfo.material = shaderinfo.base_material;
 
-	bool enable_shaders = g_settings->getBool("enable_shaders");
-	if (!enable_shaders)
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	// The null driver doesn't support shaders (duh), but we can pretend it does.
+	if (driver->getDriverType() == video::EDT_NULL)
 		return shaderinfo;
 
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
+	auto *gpu = driver->getGPUProgrammingServices();
 	if (!driver->queryFeature(video::EVDF_ARB_GLSL) || !gpu) {
-		throw ShaderException(gettext("Shaders are enabled but GLSL is not "
-			"supported by the driver."));
+		throw ShaderException(gettext("GLSL is not supported by the driver"));
 	}
 
 	// Create shaders header
 	bool fully_programmable = driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3;
-	std::stringstream shaders_header;
+	std::ostringstream shaders_header;
 	shaders_header
 		<< std::noboolalpha
 		<< std::showpoint // for GLSL ES
@@ -588,10 +580,14 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			attribute mediump vec4 inVertexTangent;
 			attribute mediump vec4 inVertexBinormal;
 		)";
+		// Our vertex color has components reversed compared to what OpenGL
+		// normally expects, so we need to take that into account.
+		vertex_header += "#define inVertexColor (inVertexColor.bgra)\n";
 		fragment_header = R"(
 			precision mediump float;
 		)";
 	} else {
+		/* legacy OpenGL driver */
 		shaders_header << R"(
 			#version 120
 			#define lowp
@@ -619,11 +615,17 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		#define textureFlags texture2
 	)";
 
+	/* Define constants for node and object shaders */
+	const bool node_shader = drawtype != NodeDrawType_END;
+	if (node_shader) {
+
 	bool use_discard = fully_programmable;
-	// For renderers that should use discard instead of GL_ALPHA_TEST
-	const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
-	if (strstr(renderer, "GC7000"))
-		use_discard = true;
+	if (!use_discard) {
+		// workaround for a certain OpenGL implementation lacking GL_ALPHA_TEST
+		const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
+		if (strstr(renderer, "GC7000"))
+			use_discard = true;
+	}
 	if (use_discard) {
 		if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
 			shaders_header << "#define USE_DISCARD 1\n";
@@ -676,9 +678,25 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define WATER_WAVE_LENGTH " << g_settings->getFloat("water_wave_length") << "\n";
 		shaders_header << "#define WATER_WAVE_SPEED " << g_settings->getFloat("water_wave_speed") << "\n";
 	}
+	switch (material_type) {
+		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
+		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			shaders_header << "#define MATERIAL_WAVING_LIQUID 1\n";
+			break;
+		default:
+			shaders_header << "#define MATERIAL_WAVING_LIQUID 0\n";
+			break;
+	}
 
 	shaders_header << "#define ENABLE_WAVING_LEAVES " << g_settings->getBool("enable_waving_leaves") << "\n";
 	shaders_header << "#define ENABLE_WAVING_PLANTS " << g_settings->getBool("enable_waving_plants") << "\n";
+
+	}
+
+	/* Other constants */
+
 	shaders_header << "#define ENABLE_TONE_MAPPING " << g_settings->getBool("tone_mapping") << "\n";
 
 	if (g_settings->getBool("enable_dynamic_shadows")) {
@@ -729,19 +747,18 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define VOLUMETRIC_LIGHT 1\n";
 	}
 
-	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
-
 	std::string common_header = shaders_header.str();
+	const char *final_header = "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string vertex_shader = m_sourcecache.getOrLoad(name, "opengl_vertex.glsl");
 	std::string fragment_shader = m_sourcecache.getOrLoad(name, "opengl_fragment.glsl");
 	std::string geometry_shader = m_sourcecache.getOrLoad(name, "opengl_geometry.glsl");
 
-	vertex_shader = common_header + vertex_header + vertex_shader;
-	fragment_shader = common_header + fragment_header + fragment_shader;
+	vertex_shader = common_header + vertex_header + final_header + vertex_shader;
+	fragment_shader = common_header + fragment_header + final_header + fragment_shader;
 	const char *geometry_shader_ptr = nullptr; // optional
 	if (!geometry_shader.empty()) {
-		geometry_shader = common_header + geometry_header + geometry_shader;
+		geometry_shader = common_header + geometry_header + final_header + geometry_shader;
 		geometry_shader_ptr = geometry_shader.c_str();
 	}
 

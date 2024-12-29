@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "player.h"
 
@@ -31,7 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <tuple>
 
 
-bool is_valid_player_name(std::string_view name) {
+bool is_valid_player_name(std::string_view name)
+{
 	return !name.empty() && name.size() <= PLAYERNAME_SIZE && string_allowed(name, PLAYERNAME_ALLOWED_CHARS);
 }
 
@@ -173,7 +159,41 @@ u16 Player::getMaxHotbarItemcount()
 	return mainlist ? std::min(mainlist->getSize(), (u32) hud_hotbar_itemcount) : 0;
 }
 
-#ifndef SERVER
+void PlayerControl::setMovementFromKeys()
+{
+	bool a_up = direction_keys & (1 << 0),
+		a_down = direction_keys & (1 << 1),
+		a_left = direction_keys & (1 << 2),
+		a_right = direction_keys & (1 << 3);
+
+	if (a_up || a_down || a_left || a_right)  {
+		// if contradictory keys pressed, stay still
+		if (a_up && a_down && a_left && a_right)
+			movement_speed = 0.0f;
+		else if (a_up && a_down && !a_left && !a_right)
+			movement_speed = 0.0f;
+		else if (!a_up && !a_down && a_left && a_right)
+			movement_speed = 0.0f;
+		else
+			// If there is a keyboard event, assume maximum speed
+			movement_speed = 1.0f;
+	}
+
+	// Check keyboard for input
+	float x = 0, y = 0;
+	if (a_up)
+		y += 1;
+	if (a_down)
+		y -= 1;
+	if (a_left)
+		x -= 1;
+	if (a_right)
+		x += 1;
+
+	if (x != 0 || y != 0)
+		// If there is a keyboard event, it takes priority
+		movement_direction = std::atan2(x, y);
+}
 
 u32 PlayerControl::getKeysPressed() const
 {
@@ -218,7 +238,6 @@ u32 PlayerControl::getKeysPressed() const
 	return keypress_bits;
 }
 
-#endif
 
 void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 {
@@ -229,6 +248,11 @@ void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 	dig   = keypress_bits & (1 << 7);
 	place = keypress_bits & (1 << 8);
 	zoom  = keypress_bits & (1 << 9);
+}
+
+v2f PlayerControl::getMovement() const
+{
+	return v2f(std::sin(movement_direction), std::cos(movement_direction)) * movement_speed;
 }
 
 static auto tie(const PlayerPhysicsOverride &o)

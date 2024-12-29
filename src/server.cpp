@@ -1,26 +1,12 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "server.h"
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include "irr_v2d.h"
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
@@ -35,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock.h"
 #include "server/serveractiveobject.h"
+#include "serialization.h" // SER_FMT_VER_INVALID
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
@@ -57,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "defaultsettings.h"
 #include "server/mods.h"
 #include "util/base64.h"
-#include "util/sha1.h"
+#include "util/hashing.h"
 #include "util/hex.h"
 #include "database/database.h"
 #include "chatmessage.h"
@@ -86,6 +73,15 @@ public:
 		BaseException(s)
 	{}
 };
+
+ModIPCStore::~ModIPCStore()
+{
+	// we don't have to do this, it's pure debugging aid
+	if (!std::unique_lock(mutex, std::try_to_lock).owns_lock()) {
+		errorstream << FUNCTION_NAME << ": lock is still in use!" << std::endl;
+		assert(0);
+	}
+}
 
 class ServerThread : public Thread
 {
@@ -139,7 +135,8 @@ void *ServerThread::run()
 
 		try {
 			// see explanation inside
-			if (dtime > step_settings.steplen)
+			// (+1 ms, because we don't sleep more fine-grained)
+			if (dtime > step_settings.steplen + 0.001f)
 				m_server->yieldToOtherThreads(dtime);
 
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
@@ -395,6 +392,10 @@ Server::~Server()
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
 
+		// Delete classes that depend on the environment
+		m_inventory_mgr.reset();
+		m_script.reset();
+
 		// Note that this also deletes and saves the map.
 		delete m_env;
 		m_env = nullptr;
@@ -410,6 +411,9 @@ Server::~Server()
 			fs::DeleteSingleFileOrEmptyDirectory(it.second.path);
 		}
 	}
+
+	// emerge may depend on definition managers, so destroy first
+	m_emerge.reset();
 
 	// Delete the rest in the reverse order of creation
 	delete m_game_settings;
@@ -586,12 +590,11 @@ void Server::start()
 
 	// ASCII art for the win!
 	const char *art[] = {
-		"         __.               __.                 __.  ",
-		"  _____ |__| ____   _____ /  |_  _____  _____ /  |_ ",
-		" /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\",
-		"|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  ",
-		"|__|_|  /  |___|  /\\______>  |  \\______>_____/|  |  ",
-		"      \\/ \\/     \\/         \\/                  \\/   "
+		R"( _                   _   _ )",
+		R"(| |_   _  __ _ _ __ | |_(_))",
+		R"(| | | | |/ _` | '_ \| __| |)",
+		R"(| | |_| | (_| | | | | |_| |)",
+		R"(|_|\__,_|\__,_|_| |_|\__|_|)",
 	};
 
 	if (!m_admin_chat) {
@@ -1088,15 +1091,15 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	m_shutdown_state.tick(dtime, this);
 }
 
-void Server::Receive(float timeout)
+void Server::Receive(float min_time)
 {
 	ZoneScoped;
 	auto framemarker = FrameMarker("Server::Receive()-frame").started();
 
 	const u64 t0 = porting::getTimeUs();
-	const float timeout_us = timeout * 1e6f;
+	const float min_time_us = min_time * 1e6f;
 	auto remaining_time_us = [&]() -> float {
-		return std::max(0.0f, timeout_us - (porting::getTimeUs() - t0));
+		return std::max(0.0f, min_time_us - (porting::getTimeUs() - t0));
 	};
 
 	NetworkPacket pkt;
@@ -1105,15 +1108,17 @@ void Server::Receive(float timeout)
 		pkt.clear();
 		peer_id = 0;
 		try {
-			if (!m_con->ReceiveTimeoutMs(&pkt,
-					(u32)remaining_time_us() / 1000)) {
+			// Round up since the target step length is the minimum step length,
+			// we only have millisecond precision and we don't want to busy-wait
+			// by calling ReceiveTimeoutMs(.., 0) repeatedly.
+			const u32 cur_timeout_ms = std::ceil(remaining_time_us() / 1000.0f);
+
+			if (!m_con->ReceiveTimeoutMs(&pkt, cur_timeout_ms)) {
 				// No incoming data.
-				// Already break if there's 1ms left, as ReceiveTimeoutMs is too coarse
-				// and a faster server-step is better than busy waiting.
-				if (remaining_time_us() < 1000.0f)
-					break;
-				else
+				if (remaining_time_us() > 0.0f)
 					continue;
+				else
+					break;
 			}
 
 			peer_id = pkt.getPeerId();
@@ -1184,24 +1189,25 @@ void Server::yieldToOtherThreads(float dtime)
 	g_profiler->avg("Server::yieldTo...() progress [#]", qs_initial - qs);
 }
 
-PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
+PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
-	PlayerSAO *playersao = NULL;
+	std::unique_ptr<PlayerSAO> sao;
 	{
 		ClientInterface::AutoLock clientlock(m_clients);
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client) {
 			playername = client->getName();
-			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
+			sao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
 		}
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername.c_str(), true);
+	RemotePlayer *player = sao ? sao->getPlayer() : nullptr;
 
 	// If failed, cancel
-	if (!playersao || !player) {
-		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
+	if (!player) {
+		RemotePlayer *joined = m_env->getPlayer(playername.c_str());
+		if (joined && joined->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to another client)" << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
@@ -1212,6 +1218,19 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		}
 		return nullptr;
 	}
+
+	// Add player to environment
+	m_env->addPlayer(player);
+
+	/* Clean up old HUD elements from previous sessions */
+	player->clearHud();
+
+	/* Add object to environment */
+	PlayerSAO *playersao = sao.get();
+	m_env->addActiveObject(std::move(sao));
+
+	if (playersao->isNewPlayer())
+		m_script->on_newplayer(playersao);
 
 	/*
 		Send complete position information
@@ -1933,6 +1952,8 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 			<< lighting.exposure.center_weight_power;
 
 	pkt << lighting.volumetric_light_strength << lighting.shadow_tint;
+	pkt << lighting.bloom_intensity << lighting.bloom_strength_factor <<
+			lighting.bloom_radius;
 
 	Send(&pkt);
 }
@@ -1999,14 +2020,21 @@ void Server::SendPlayerFov(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
+void Server::SendLocalPlayerAnimations(session_t peer_id, v2f animation_frames[4],
 		f32 animation_speed)
 {
 	NetworkPacket pkt(TOCLIENT_LOCAL_PLAYER_ANIMATIONS, 0,
 		peer_id);
 
-	pkt << animation_frames[0] << animation_frames[1] << animation_frames[2]
-			<< animation_frames[3] << animation_speed;
+	for (int i = 0; i < 4; ++i) {
+		if (m_clients.getProtocolVersion(peer_id) >= 46) {
+			pkt << animation_frames[i];
+		} else {
+			pkt << v2s32::from(animation_frames[i]);
+		}
+	}
+
+	pkt  << animation_speed;
 
 	Send(&pkt);
 }
@@ -2529,11 +2557,11 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 	// If name is not in a supported format, ignore it
 	const char *supported_ext[] = {
-		".png", ".jpg", ".bmp", ".tga",
+		".png", ".jpg", ".tga",
 		".ogg",
-		".x", ".b3d", ".obj", ".gltf",
-		// Custom translation file format
-		".tr",
+		".x", ".b3d", ".obj", ".gltf", ".glb",
+		// Translation file formats
+		".tr", ".po", ".mo",
 		NULL
 	};
 	if (removeStringEnd(filename, supported_ext).empty()) {
@@ -2555,21 +2583,11 @@ bool Server::addMediaFile(const std::string &filename,
 		return false;
 	}
 
-	const char *deprecated_ext[] = { ".bmp", nullptr };
-	if (!removeStringEnd(filename, deprecated_ext).empty())
-	{
-		warningstream << "Media file \"" << filename << "\" is using a"
-			" deprecated format and will stop working in the future." << std::endl;
-	}
-
-	SHA1 sha1;
-	sha1.addBytes(filedata);
-
-	std::string digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest);
-	std::string sha1_hex = hex_encode(digest);
+	std::string sha1 = hashing::sha1(filedata);
+	std::string sha1_base64 = base64_encode(sha1);
+	std::string sha1_hex = hex_encode(sha1);
 	if (digest_to)
-		*digest_to = digest;
+		*digest_to = sha1;
 
 	// Put in list
 	m_media[filename] = MediaInfo(filepath, sha1_base64);
@@ -2616,14 +2634,20 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
-	std::string lang_suffix = ".";
-	lang_suffix.append(lang_code).append(".tr");
+	std::string translation_formats[3] = { ".tr", ".po", ".mo" };
+	std::string lang_suffixes[3];
+	for (size_t i = 0; i < 3; i++) {
+		lang_suffixes[i].append(".").append(lang_code).append(translation_formats[i]);
+  }
 
-	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
+  auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
-		if (str_ends_with(name, ".tr") && !str_ends_with(name, lang_suffix))
-			return false;
+		for (size_t j = 0; j < 3; j++) {
+			if (str_ends_with(name, translation_formats[j]) && !str_ends_with(name, lang_suffixes[j])) {
+				return false;
+			}
+		}
 		return true;
 	};
 
@@ -3050,6 +3074,8 @@ std::wstring Server::handleChat(const std::string &name,
 	if (g_settings->getBool("strip_color_codes"))
 		wmessage = unescape_enriched(wmessage);
 
+	wmessage = trim(wmessage);
+
 	if (player) {
 		switch (player->canSendChatMessage()) {
 		case RPLAYER_CHATRESULT_FLOODING: {
@@ -3076,13 +3102,12 @@ std::wstring Server::handleChat(const std::string &name,
 				L"It was refused. Send a shorter message";
 	}
 
-	auto message = trim(wide_to_utf8(wmessage));
+	auto message = wide_to_utf8(wmessage);
 	if (message.empty())
 		return L"";
 
-	if (message.find_first_of("\n\r") != std::wstring::npos) {
+	if (message.find_first_of("\r\n") != std::string::npos)
 		return L"Newlines are not permitted in chat messages";
-	}
 
 	// Run script hook, exit if script ate the chat message
 	if (m_script->on_chat_message(name, message))
@@ -3104,8 +3129,7 @@ std::wstring Server::handleChat(const std::string &name,
 #ifdef __ANDROID__
 		line += L"<" + utf8_to_wide(name) + L"> " + wmessage;
 #else
-		line += utf8_to_wide(m_script->formatChatMessage(name,
-				wide_to_utf8(wmessage)));
+		line += utf8_to_wide(m_script->formatChatMessage(name, message));
 #endif
 	}
 
@@ -3240,9 +3264,7 @@ void Server::reportPrivsModified(const std::string &name)
 		PlayerSAO *sao = player->getPlayerSAO();
 		if(!sao)
 			return;
-		sao->updatePrivileges(
-				getPlayerEffectivePrivs(name),
-				isSingleplayer());
+		sao->updatePrivileges(getPlayerEffectivePrivs(name));
 	}
 }
 
@@ -3436,7 +3458,7 @@ Address Server::getPeerAddress(session_t peer_id)
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,
-		v2s32 animation_frames[4], f32 frame_speed)
+		v2f animation_frames[4], f32 frame_speed)
 {
 	sanity_check(player);
 	player->setLocalAnimations(animation_frames, frame_speed);
@@ -3871,9 +3893,14 @@ void Server::addShutdownError(const ModError &e)
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
-	v3f nodeposf;
-	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposf))
-		return nodeposf * BS;
+
+    std::optional<v3f> staticSpawnPoint;
+	if (g_settings->getV3FNoEx("static_spawnpoint", staticSpawnPoint) && staticSpawnPoint.has_value())
+    {
+       return *staticSpawnPoint * BS;
+    }
+
+    v3f nodeposf;
 
 	bool is_good = false;
 	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
@@ -3971,7 +3998,8 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 	m_shutdown_state.trigger(delay, msg, reconnect);
 }
 
-PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)
+std::unique_ptr<PlayerSAO> Server::emergePlayer(const char *name, session_t peer_id,
+	u16 proto_version)
 {
 	/*
 		Try to get an existing player
@@ -4014,19 +4042,12 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 		player = new RemotePlayer(name, idef());
 	}
 
-	bool newplayer = false;
-
 	// Load player
-	PlayerSAO *playersao = m_env->loadPlayer(player, &newplayer, peer_id, isSingleplayer());
+	auto playersao = m_env->loadPlayer(player, peer_id);
 
 	// Complete init with server parts
 	playersao->finalize(player, getPlayerEffectivePrivs(player->getName()));
 	player->protocol_version = proto_version;
-
-	/* Run scripts */
-	if (newplayer) {
-		m_script->on_newplayer(playersao);
-	}
 
 	return playersao;
 }
@@ -4162,12 +4183,11 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	// [] will create an entry
 	auto *translations = &server_translations[lang_code];
 
-	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, suffix)) {
+		if (Translations::getFileLanguage(i.first) == lang_code) {
 			std::string data;
 			if (fs::ReadFile(i.second.path, data, true)) {
-				translations->loadTranslation(data);
+				translations->loadTranslation(i.first, data);
 			}
 		}
 	}
@@ -4201,7 +4221,7 @@ ModStorageDatabase *Server::openModStorageDatabase(const std::string &world_path
 		warningstream << "/!\\ You are using the old mod storage files backend. "
 			<< "This backend is deprecated and may be removed in a future release /!\\"
 			<< std::endl << "Switching to SQLite3 is advised, "
-			<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+			<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 
 	return openModStorageDatabase(backend, world_path, world_mt);
 }
@@ -4306,12 +4326,10 @@ u16 Server::getProtocolVersionMin()
 		min_proto = LATEST_PROTOCOL_VERSION;
 	return rangelim(min_proto,
 		SERVER_PROTOCOL_VERSION_MIN,
-		SERVER_PROTOCOL_VERSION_MAX);
+		LATEST_PROTOCOL_VERSION);
 }
 
 u16 Server::getProtocolVersionMax()
 {
-	return g_settings->getBool("strict_protocol_version_checking")
-		? LATEST_PROTOCOL_VERSION
-		: SERVER_PROTOCOL_VERSION_MAX;
+	return LATEST_PROTOCOL_VERSION;
 }

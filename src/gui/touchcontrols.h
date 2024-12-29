@@ -1,30 +1,12 @@
-/*
-Copyright (C) 2014 sapier
-Copyright (C) 2024 grorp, Gregor Parzefall
-		<gregor.parzefall@posteo.de>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2014 sapier
+// Copyright (C) 2024 grorp, Gregor Parzefall
 
 #pragma once
 
-#include "IGUIStaticText.h"
 #include "irrlichttypes.h"
-#include <IEventReceiver.h>
-#include <IGUIImage.h>
-#include <IGUIEnvironment.h>
+#include "IEventReceiver.h"
 
 #include <memory>
 #include <optional>
@@ -32,38 +14,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 #include "itemdef.h"
-#include "client/game.h"
+#include "touchscreenlayout.h"
+#include "util/basic_macros.h"
 
 namespace irr
 {
 	class IrrlichtDevice;
+	namespace gui
+	{
+		class IGUIEnvironment;
+		class IGUIImage;
+		class IGUIStaticText;
+	}
+	namespace video
+	{
+		class IVideoDriver;
+	}
 }
+class ISimpleTextureSource;
 
-using namespace irr;
 using namespace irr::core;
 using namespace irr::gui;
-
-
-// We cannot use irr_ptr for Irrlicht GUI elements we own.
-// Option 1: Pass IGUIElement* returned by IGUIEnvironment::add* into irr_ptr
-//           constructor.
-//           -> We steal the reference owned by IGUIEnvironment and drop it later,
-//           causing the IGUIElement to be deleted while IGUIEnvironment still
-//           references it.
-// Option 2: Pass IGUIElement* returned by IGUIEnvironment::add* into irr_ptr::grab.
-//           -> We add another reference and drop it later, but since IGUIEnvironment
-//           still references the IGUIElement, it is never deleted.
-// To make IGUIEnvironment drop its reference to the IGUIElement, we have to call
-// IGUIElement::remove, so that's what we'll do.
-template <typename T>
-std::shared_ptr<T> grab_gui_element(T *element)
-{
-	static_assert(std::is_base_of_v<IGUIElement, T>,
-			"grab_gui_element only works for IGUIElement");
-	return std::shared_ptr<T>(element, [](T *e) {
-		e->remove();
-	});
-}
 
 
 enum class TapState
@@ -71,36 +42,6 @@ enum class TapState
 	None,
 	ShortTap,
 	LongTap,
-};
-
-enum touch_gui_button_id
-{
-	jump_id = 0,
-	sneak_id,
-	zoom_id,
-	aux1_id,
-	overflow_id,
-
-	// usually in the "settings bar"
-	fly_id,
-	noclip_id,
-	fast_id,
-	debug_id,
-	camera_id,
-	range_id,
-	minimap_id,
-	toggle_chat_id,
-
-	// usually in the "rare controls bar"
-	chat_id,
-	inventory_id,
-	drop_id,
-	exit_id,
-
-	// the joystick
-	joystick_off_id,
-	joystick_bg_id,
-	joystick_center_id,
 };
 
 
@@ -136,6 +77,8 @@ class TouchControls
 {
 public:
 	TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc);
+	~TouchControls();
+	DISABLE_CLASS_COPY(TouchControls);
 
 	void translateEvent(const SEvent &event);
 	void applyContextControls(const TouchInteractionMode &mode);
@@ -163,8 +106,8 @@ public:
 	 */
 	line3d<f32> getShootline() { return m_shootline; }
 
-	float getMovementDirection() { return m_joystick_direction; }
-	float getMovementSpeed() { return m_joystick_speed; }
+	float getJoystickDirection() { return m_joystick_direction; }
+	float getJoystickSpeed() { return m_joystick_speed; }
 
 	void step(float dtime);
 	inline void setUseCrosshair(bool use_crosshair) { m_draw_crosshair = use_crosshair; }
@@ -179,6 +122,9 @@ public:
 
 	bool isStatusTextOverriden() { return m_overflow_open; }
 	IGUIStaticText *getStatusText() { return m_status_text.get(); }
+
+	ButtonLayout getLayout() { return m_layout; }
+	void applyLayout(const ButtonLayout &layout);
 
 private:
 	IrrlichtDevice *m_device = nullptr;
@@ -245,13 +191,14 @@ private:
 	void releaseAll();
 
 	// initialize a button
+	bool mayAddButton(touch_gui_button_id id);
 	void addButton(std::vector<button_info> &buttons,
 			touch_gui_button_id id, const std::string &image,
-			const recti &rect, bool visible=true);
+			const recti &rect, bool visible);
 	void addToggleButton(std::vector<button_info> &buttons,
 			touch_gui_button_id id,
 			const std::string &image_1, const std::string &image_2,
-			const recti &rect, bool visible=true);
+			const recti &rect, bool visible);
 
 	IGUIImage *makeButtonDirect(touch_gui_button_id id,
 			const recti &rect, bool visible);
@@ -280,6 +227,8 @@ private:
 
 	bool m_place_pressed = false;
 	u64 m_place_pressed_until = 0;
+
+	ButtonLayout m_layout;
 };
 
 extern TouchControls *g_touchcontrols;
