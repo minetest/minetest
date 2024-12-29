@@ -1910,11 +1910,11 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 	pkt << lighting.saturation;
 
 	pkt << lighting.exposure.luminance_min
-		<< lighting.exposure.luminance_max
-		<< lighting.exposure.exposure_correction
-		<< lighting.exposure.speed_dark_bright
-		<< lighting.exposure.speed_bright_dark
-		<< lighting.exposure.center_weight_power;
+			<< lighting.exposure.luminance_max
+			<< lighting.exposure.exposure_correction
+			<< lighting.exposure.speed_dark_bright
+			<< lighting.exposure.speed_bright_dark
+			<< lighting.exposure.center_weight_power;
 
 	pkt << lighting.volumetric_light_strength << lighting.shadow_tint;
 	pkt << lighting.bloom_intensity << lighting.bloom_strength_factor <<
