@@ -36,7 +36,7 @@ private:
 	 * @return bool value of requested variable
 	 */
 	static int getBoolData(lua_State *L, const std::string &name ,bool& valid);
-  
+
 	/**
 	 * Checks if a path may be modified. Paths in the temp directory or the user
 	 * games, mods, textures, or worlds directories may be modified.
