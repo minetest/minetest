@@ -3200,7 +3200,7 @@ PointedThing Game::updatePointedThing(
 		hud->pointing_at_object = true;
 
 		runData.selected_object = client->getEnv().getActiveObject(result.object_id);
-		aabb3f selection_box;
+		aabb3f selection_box{{0.0f, 0.0f, 0.0f}};
 		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&
 				runData.selected_object->getSelectionBox(&selection_box)) {
 			v3f pos = runData.selected_object->getPosition();

@@ -137,7 +137,7 @@ public:
 	//! Moves the mesh into static position.
 	void resetAnimation();
 
-	virtual void updateBoundingBox();
+	void updateBoundingBox();
 
 	//! Recovers the joints from the mesh
 	void recoverJointsFromMesh(std::vector<IBoneSceneNode *> &jointChildSceneNodes);
@@ -370,7 +370,7 @@ protected:
 	// doesn't allow taking a reference to individual elements.
 	std::vector<std::vector<char>> Vertices_Moved;
 
-	core::aabbox3d<f32> BoundingBox;
+	core::aabbox3d<f32> BoundingBox{{0, 0, 0}};
 
 	f32 EndFrame;
 	f32 FramesPerSecond;
