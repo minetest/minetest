@@ -164,13 +164,6 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData, false);
 	GL.LoadAllProcedures(ContextManager);
-	if (EnableErrorTest && GL.IsExtensionPresent("GL_KHR_debug")) {
-		GL.Enable(GL_DEBUG_OUTPUT);
-		GL.DebugMessageCallback(debugCb, this);
-	} else if (EnableErrorTest) {
-		os::Printer::log("GL debug extension not available");
-	}
-	initQuadsIndices();
 
 	TEST_GL_ERROR(this);
 }
@@ -247,6 +240,20 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	initVersion();
 	initFeatures();
 	printTextureFormats();
+
+	if (EnableErrorTest) {
+		if (KHRDebugSupported) {
+			GL.Enable(GL_DEBUG_OUTPUT);
+			GL.DebugMessageCallback(debugCb, this);
+		} else {
+			os::Printer::log("GL debug extension not available");
+		}
+	} else {
+		// don't do debug things if they are not wanted (even if supported)
+		KHRDebugSupported = false;
+	}
+
+	initQuadsIndices();
 
 	// reset cache handler
 	delete CacheHandler;
@@ -1615,7 +1622,7 @@ s32 COpenGL3DriverBase::addHighLevelShaderMaterial(
 	s32 nr = -1;
 	COpenGL3MaterialRenderer *r = new COpenGL3MaterialRenderer(
 			this, nr, vertexShaderProgram,
-			pixelShaderProgram,
+			pixelShaderProgram, shaderName,
 			callback, baseMaterial, userData);
 
 	r->drop();
