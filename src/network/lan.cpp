@@ -249,8 +249,7 @@ void *lan_adv::run()
 		bool strict_checking = g_settings->getBool("strict_protocol_version_checking");
 		server["proto_min"] =
 				strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MIN;
-		server["proto_max"] =
-				strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MAX;
+		server["proto_max"] = LATEST_PROTOCOL_VERSION;
 		server["url"] = g_settings->get("server_url");
 		server["creative"] = g_settings->getBool("creative_mode");
 		server["damage"] = g_settings->getBool("enable_damage");
