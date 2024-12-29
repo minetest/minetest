@@ -1520,34 +1520,24 @@ IGPUProgrammingServices *CNullDriver::getGPUProgrammingServices()
 //! Adds a new material renderer to the VideoDriver, based on a high level shading language.
 s32 CNullDriver::addHighLevelShaderMaterial(
 		const c8 *vertexShaderProgram,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		const c8 *pixelShaderProgram,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		const c8 *geometryShaderProgram,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack *callback,
 		E_MATERIAL_TYPE baseMaterial,
 		s32 userData)
 {
-	os::Printer::log("High level shader materials not available (yet) in this driver, sorry");
+	os::Printer::log("Shader materials not available in this driver", ELL_ERROR);
 	return -1;
 }
 
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		const io::path &vertexShaderProgramFileName,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		const io::path &pixelShaderProgramFileName,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		const io::path &geometryShaderProgramFileName,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack *callback,
@@ -1583,9 +1573,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 	}
 
 	s32 result = addHighLevelShaderMaterialFromFiles(
-			vsfile, vertexShaderEntryPointName, vsCompileTarget,
-			psfile, pixelShaderEntryPointName, psCompileTarget,
-			gsfile, geometryShaderEntryPointName, gsCompileTarget,
+			vsfile, psfile, gsfile, shaderName,
 			inType, outType, verticesOut,
 			callback, baseMaterial, userData);
 
@@ -1603,14 +1591,9 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		io::IReadFile *vertexShaderProgram,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		io::IReadFile *pixelShaderProgram,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		io::IReadFile *geometryShaderProgram,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack *callback,
@@ -1656,9 +1639,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 	}
 
 	s32 result = this->addHighLevelShaderMaterial(
-			vs, vertexShaderEntryPointName, vsCompileTarget,
-			ps, pixelShaderEntryPointName, psCompileTarget,
-			gs, geometryShaderEntryPointName, gsCompileTarget,
+			vs, ps, gs, shaderName,
 			inType, outType, verticesOut,
 			callback, baseMaterial, userData);
 
