@@ -32,7 +32,15 @@ TouchControls *g_touchcontrols;
 
 void TouchControls::emitKeyboardEvent(const KeyPress &key, bool pressed)
 {
-	m_receiver->OnEvent(key.toKeyEvent(pressed));
+	SEvent e{};
+	e.EventType              = EET_KEY_INPUT_EVENT;
+	e.KeyInput.Key           = key.getKeycode();
+	e.KeyInput.Control       = false;
+	e.KeyInput.Shift         = false;
+	e.KeyInput.Char          = key.getKeychar();
+	e.KeyInput.SystemKeyCode = key.getScancode();
+	e.KeyInput.PressedDown   = pressed;
+	m_receiver->OnEvent(e);
 }
 
 void TouchControls::loadButtonTexture(IGUIImage *gui_button, const std::string &path)
