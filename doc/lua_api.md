@@ -357,7 +357,6 @@ It is recommended that this only be used by game mods. The names are self-explan
 * `mono.ttf`
 * `mono_bold.ttf`
 * `mono_bold_italic.ttf`
-* `fallback.ttf` <!-- TODO is this a good idea? -->
 
 Naming conventions
 ------------------
