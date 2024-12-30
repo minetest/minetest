@@ -265,7 +265,7 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on Luanti calling the
 registered callbacks.
 
-### `textures`, `sounds`, `media`, `models`, `locale`
+### `textures`, `sounds`, `media`, `models`, `locale`, `fonts`
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
@@ -278,6 +278,7 @@ Accepted formats are:
     images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
+    fonts: .ttf (since version 5.?, see notes below) <!-- TODO before merge -->
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -341,6 +342,22 @@ The backwards compatibility guarantee does not extend to ignoring unsupported fe
 For example, if your model used an emissive material,
 you should expect that a future version of Luanti may respect this,
 and thus cause your model to render differently there.
+
+#### Custom fonts
+
+You can supply custom fonts in TrueType Font (TTF) format.
+In the future, having multiple custom fonts and the ability to switch between them is planned,
+but for now this feature is limited to the ability to override Luanti's default fonts via mods.
+It is recommended that this only be used by game mods. The names are self-explanatory:
+
+* `regular.ttf`
+* `bold.ttf`
+* `italic.ttf`
+* `bold_italic.ttf`
+* `mono.ttf`
+* `mono_bold.ttf`
+* `mono_bold_italic.ttf`
+* `fallback.ttf` <!-- TODO is this a good idea? -->
 
 Naming conventions
 ------------------

@@ -9,6 +9,7 @@
 #include <IFileSystem.h>
 #include <json/json.h>
 #include "client.h"
+#include "client/fontengine.h"
 #include "network/clientopcodes.h"
 #include "network/connection.h"
 #include "network/networkpacket.h"
@@ -361,6 +362,9 @@ Client::~Client()
 	for (auto &csp : m_sounds_client_to_server)
 		m_sound->freeId(csp.first);
 	m_sounds_client_to_server.clear();
+
+	// Go back to our mainmenu fonts
+	g_fontengine->clearMediaFonts();
 }
 
 void Client::connect(const Address &address, const std::string &address_name,
@@ -831,6 +835,13 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		TRACESTREAM(<< "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl);
 		g_client_translations->loadTranslation(filename, data);
+		return true;
+	}
+
+	const char *font_ext[] = {".ttf", NULL};
+	name = removeStringEnd(filename, font_ext);
+	if (!name.empty()) {
+		g_fontengine->setMediaFont(name, data);
 		return true;
 	}
 
