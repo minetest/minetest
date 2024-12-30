@@ -5,10 +5,6 @@
 #include "fontengine.h"
 #include <cmath>
 #include "client/renderingengine.h"
-#include "config.h"
-#include "porting.h"
-#include "filesys.h"
-#include "gettext.h"
 #include "settings.h"
 #include "irrlicht_changes/CGUITTFont.h"
 #include "util/numeric.h" // rangelim
@@ -35,7 +31,6 @@ static const char *settings[] = {
 	"dpi_change_notifier", "display_density_factor", "gui_scaling",
 };
 
-/******************************************************************************/
 FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 	m_env(env)
 {
@@ -53,7 +48,6 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 		g_settings->registerChangedCallback(name, font_setting_changed, this);
 }
 
-/******************************************************************************/
 FontEngine::~FontEngine()
 {
 	g_settings->deregisterAllChangedCallbacks(this);
@@ -61,7 +55,6 @@ FontEngine::~FontEngine()
 	cleanCache();
 }
 
-/******************************************************************************/
 void FontEngine::cleanCache()
 {
 	RecursiveMutexAutoLock l(m_font_mutex);
@@ -76,7 +69,6 @@ void FontEngine::cleanCache()
 	}
 }
 
-/******************************************************************************/
 irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 {
 	return getFont(spec, false);
@@ -118,7 +110,6 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec, bool may_fail)
 	return font;
 }
 
-/******************************************************************************/
 unsigned int FontEngine::getTextHeight(const FontSpec &spec)
 {
 	gui::IGUIFont *font = getFont(spec);
@@ -126,7 +117,6 @@ unsigned int FontEngine::getTextHeight(const FontSpec &spec)
 	return font->getDimension(L"Some unimportant example String").Height;
 }
 
-/******************************************************************************/
 unsigned int FontEngine::getTextWidth(const std::wstring &text, const FontSpec &spec)
 {
 	gui::IGUIFont *font = getFont(spec);
@@ -143,7 +133,6 @@ unsigned int FontEngine::getLineHeight(const FontSpec &spec)
 			+ font->getKerning(L'S').Y;
 }
 
-/******************************************************************************/
 unsigned int FontEngine::getDefaultFontSize()
 {
 	return m_default_size[m_currentMode];
@@ -157,7 +146,6 @@ unsigned int FontEngine::getFontSize(FontMode mode)
 	return m_default_size[mode];
 }
 
-/******************************************************************************/
 void FontEngine::readSettings()
 {
 	m_default_size[FM_Standard]  = rangelim(g_settings->getU16("font_size"), 5, 72);
@@ -172,7 +160,6 @@ void FontEngine::readSettings()
 	updateSkin();
 }
 
-/******************************************************************************/
 void FontEngine::updateSkin()
 {
 	gui::IGUIFont *font = getFont();
@@ -181,7 +168,6 @@ void FontEngine::updateSkin()
 	m_env->getSkin()->setFont(font);
 }
 
-/******************************************************************************/
 void FontEngine::updateFontCache()
 {
 	/* the only font to be initialized is default one,
@@ -189,7 +175,6 @@ void FontEngine::updateFontCache()
 	getFont(FONT_SIZE_UNSPECIFIED, FM_Unspecified);
 }
 
-/******************************************************************************/
 gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 {
 	assert(spec.mode != FM_Unspecified);
