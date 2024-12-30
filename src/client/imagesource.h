@@ -45,9 +45,6 @@ struct ImageSource {
 	// Insert a source image into the cache without touching the filesystem.
 	void insertSourceImage(const std::string &name, video::IImage *img, bool prefer_local);
 
-	// TODO should probably be moved elsewhere
-	static video::SColor getImageAverageColor(const video::IImage &image);
-
 private:
 
 	// Generate image based on a string like "stone.png" or "[crack:1:0".

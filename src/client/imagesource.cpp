@@ -925,48 +925,6 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 	}
 }
 
-namespace {
-	// For more colorspace transformations, see for example
-	// https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
-
-	inline float linear_to_srgb_component(float v)
-	{
-		if (v > 0.0031308f)
-			return 1.055f * powf(v, 1.0f / 2.4f) - 0.055f;
-		return 12.92f * v;
-	}
-	inline float srgb_to_linear_component(float v)
-	{
-		if (v > 0.04045f)
-			return powf((v + 0.055f) / 1.055f, 2.4f);
-		return v / 12.92f;
-	}
-
-	v3f srgb_to_linear(const video::SColor col_srgb)
-	{
-		v3f col(col_srgb.getRed(), col_srgb.getGreen(), col_srgb.getBlue());
-		col /= 255.0f;
-		col.X = srgb_to_linear_component(col.X);
-		col.Y = srgb_to_linear_component(col.Y);
-		col.Z = srgb_to_linear_component(col.Z);
-		return col;
-	}
-
-	video::SColor linear_to_srgb(const v3f col_linear)
-	{
-		v3f col;
-		col.X = linear_to_srgb_component(col_linear.X);
-		col.Y = linear_to_srgb_component(col_linear.Y);
-		col.Z = linear_to_srgb_component(col_linear.Z);
-		col *= 255.0f;
-		col.X = core::clamp<float>(col.X, 0.0f, 255.0f);
-		col.Y = core::clamp<float>(col.Y, 0.0f, 255.0f);
-		col.Z = core::clamp<float>(col.Z, 0.0f, 255.0f);
-		return video::SColor(0xff, myround(col.X), myround(col.Y),
-			myround(col.Z));
-	}
-}
-
 
 ///////////////////////////
 // ImageSource Functions //
@@ -1945,32 +1903,7 @@ video::IImage* ImageSource::generateImage(std::string_view name,
 	return baseimg;
 }
 
-video::SColor ImageSource::getImageAverageColor(const video::IImage &image)
+void ImageSource::insertSourceImage(const std::string &name, video::IImage *img, bool prefer_local)
 {
-	video::SColor c(0, 0, 0, 0);
-	u32 total = 0;
-	v3f col_acc(0, 0, 0);
-	core::dimension2d<u32> dim = image.getDimension();
-	u16 step = 1;
-	if (dim.Width > 16)
-		step = dim.Width / 16;
-	for (u16 x = 0; x < dim.Width; x += step) {
-		for (u16 y = 0; y < dim.Width; y += step) {
-			c = image.getPixel(x,y);
-			if (c.getAlpha() > 0) {
-				total++;
-				col_acc += srgb_to_linear(c);
-			}
-		}
-	}
-	if (total > 0) {
-		col_acc /= total;
-		c = linear_to_srgb(col_acc);
-	}
-	c.setAlpha(255);
-	return c;
-}
-
-void ImageSource::insertSourceImage(const std::string &name, video::IImage *img, bool prefer_local) {
 	m_sourcecache.insert(name, img, prefer_local);
 }
