@@ -33,6 +33,7 @@
 #pragma once
 
 #include <map>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -44,11 +45,42 @@
 #include "util/enriched_string.h"
 #include "util/basic_macros.h"
 
+// TODO these should be in the C++ when the struct is properly split into C++ & header
+#include <optional>
+#include "irr_ptr.h"
+#include "log.h"
+#include "filesys.h"
+
 namespace irr
 {
 namespace gui
 {
-	struct SGUITTFace;
+	// Manages the FT_Face cache.
+	struct SGUITTFace : public irr::IReferenceCounted
+	{
+	private:
+
+		static std::map<io::path, SGUITTFace*> faces;
+		static std::optional<FT_Library> freetype_library;
+
+		static std::optional<FT_Library> getFreeTypeLibrary();
+
+	public:
+
+		SGUITTFace(std::string &&buffer);
+
+		~SGUITTFace();
+
+		FT_Face face;
+		/// Must not be deallocated until we are done with the face!
+		std::string face_buffer;
+
+		static SGUITTFace* createFace(std::string &&buffer);
+
+		static SGUITTFace* loadFace(const io::path &filename);
+
+		static void dropFilename(const io::path &filename);
+	};
 	class CGUITTFont;
 
 	//! Structure representing a single TrueType glyph.
@@ -220,7 +252,9 @@ namespace gui
 			//! \param antialias set the use_monochrome (opposite to antialias) flag
 			//! \param transparency set the use_transparency flag
 			//! \return Returns a pointer to a CGUITTFont.  Will return 0 if the font failed to load.
-			static CGUITTFont* createTTFont(IGUIEnvironment *env, const io::path& filename, const u32 size, const bool antialias = true, const bool transparency = true, const u32 shadow = 0, const u32 shadow_alpha = 255);
+			static CGUITTFont* createTTFont(IGUIEnvironment *env,
+				const io::path& filename, u32 size, bool antialias = true,
+				bool transparency = true, u32 shadow = 0, u32 shadow_alpha = 255);
 
 			//! Destructor
 			virtual ~CGUITTFont();
@@ -329,11 +363,6 @@ namespace gui
 			core::dimension2du max_page_texture_size;
 
 		private:
-			// Manages the FreeType library.
-			static FT_Library c_library;
-			static std::map<io::path, SGUITTFace*> c_faces;
-			static bool c_libraryLoaded;
-
 			// Helper functions for the same-named public member functions above
 			// (Since std::u32string is nicer to work with than wchar_t *)
 			core::dimension2d<u32> getDimension(const std::u32string& text) const;
