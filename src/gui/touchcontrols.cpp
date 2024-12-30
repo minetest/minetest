@@ -29,52 +29,47 @@
 
 TouchControls *g_touchcontrols;
 
-static void load_button_texture(IGUIImage *gui_button, const std::string &path,
-		const recti &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
+void TouchControls::emitKeyboardEvent(EKEY_CODE keycode, bool pressed)
 {
-	video::ITexture *texture = guiScalingImageButton(driver,
-			tsrc->getTexture(path), button_rect.getWidth(),
-			button_rect.getHeight());
+	SEvent e{};
+	e.EventType            = EET_KEY_INPUT_EVENT;
+	e.KeyInput.Key         = keycode;
+	e.KeyInput.Control     = false;
+	e.KeyInput.Shift       = false;
+	e.KeyInput.Char        = 0;
+	e.KeyInput.PressedDown = pressed;
+	m_receiver->OnEvent(e);
+}
+
+void TouchControls::loadButtonTexture(IGUIImage *gui_button, const std::string &path)
+{
+	auto rect = gui_button->getRelativePosition();
+	video::ITexture *texture = guiScalingImageButton(m_device->getVideoDriver(),
+			m_texturesource->getTexture(path), rect.getWidth(), rect.getHeight());
 	gui_button->setImage(texture);
 	gui_button->setScaleImage(true);
 }
 
-void button_info::emitAction(bool action, video::IVideoDriver *driver,
-		IEventReceiver *receiver, ISimpleTextureSource *tsrc)
+void TouchControls::buttonEmitAction(button_info &btn, bool action)
 {
-	if (keycode == KEY_UNKNOWN)
+	if (btn.keycode == KEY_UNKNOWN)
 		return;
 
-	SEvent translated{};
-	translated.EventType        = EET_KEY_INPUT_EVENT;
-	translated.KeyInput.Key     = keycode;
-	translated.KeyInput.Control = false;
-	translated.KeyInput.Shift   = false;
-	translated.KeyInput.Char    = 0;
+	emitKeyboardEvent(btn.keycode, action);
 
 	if (action) {
-		translated.KeyInput.PressedDown = true;
-		receiver->OnEvent(translated);
+		if (btn.toggleable == button_info::FIRST_TEXTURE) {
+			btn.toggleable = button_info::SECOND_TEXTURE;
+			loadButtonTexture(btn.gui_button.get(), btn.toggle_textures[1]);
 
-		if (toggleable == button_info::FIRST_TEXTURE) {
-			toggleable = button_info::SECOND_TEXTURE;
-			load_button_texture(gui_button.get(), toggle_textures[1],
-					gui_button->getRelativePosition(),
-					tsrc, driver);
-		} else if (toggleable == button_info::SECOND_TEXTURE) {
-			toggleable = button_info::FIRST_TEXTURE;
-			load_button_texture(gui_button.get(), toggle_textures[0],
-					gui_button->getRelativePosition(),
-					tsrc, driver);
+		} else if (btn.toggleable == button_info::SECOND_TEXTURE) {
+			btn.toggleable = button_info::FIRST_TEXTURE;
+			loadButtonTexture(btn.gui_button.get(), btn.toggle_textures[0]);
 		}
-	} else {
-		translated.KeyInput.PressedDown = false;
-		receiver->OnEvent(translated);
 	}
 }
 
-static bool buttons_handlePress(std::vector<button_info> &buttons, size_t pointer_id, IGUIElement *element,
-		video::IVideoDriver *driver, IEventReceiver *receiver, ISimpleTextureSource *tsrc)
+bool TouchControls::buttonsHandlePress(std::vector<button_info> &buttons, size_t pointer_id, IGUIElement *element)
 {
 	if (!element)
 		return false;
@@ -87,7 +82,7 @@ static bool buttons_handlePress(std::vector<button_info> &buttons, size_t pointe
 			if (btn.pointer_ids.size() > 1)
 				return true;
 
-			btn.emitAction(true, driver, receiver, tsrc);
+			buttonEmitAction(btn, true);
 			btn.repeat_counter = -BUTTON_REPEAT_DELAY;
 			return true;
 		}
@@ -97,8 +92,7 @@ static bool buttons_handlePress(std::vector<button_info> &buttons, size_t pointe
 }
 
 
-static bool buttons_handleRelease(std::vector<button_info> &buttons, size_t pointer_id,
-		video::IVideoDriver *driver, IEventReceiver *receiver, ISimpleTextureSource *tsrc)
+bool TouchControls::buttonsHandleRelease(std::vector<button_info> &buttons, size_t pointer_id)
 {
 	for (button_info &btn : buttons) {
 		auto it = std::find(btn.pointer_ids.begin(), btn.pointer_ids.end(), pointer_id);
@@ -108,7 +102,7 @@ static bool buttons_handleRelease(std::vector<button_info> &buttons, size_t poin
 			if (!btn.pointer_ids.empty())
 				return true;
 
-			btn.emitAction(false, driver, receiver, tsrc);
+			buttonEmitAction(btn, false);
 			return true;
 		}
 	}
@@ -116,8 +110,7 @@ static bool buttons_handleRelease(std::vector<button_info> &buttons, size_t poin
 	return false;
 }
 
-static bool buttons_step(std::vector<button_info> &buttons, float dtime,
-		video::IVideoDriver *driver, IEventReceiver *receiver, ISimpleTextureSource *tsrc)
+bool TouchControls::buttonsStep(std::vector<button_info> &buttons, float dtime)
 {
 	bool has_pointers = false;
 
@@ -130,8 +123,8 @@ static bool buttons_step(std::vector<button_info> &buttons, float dtime,
 		if (btn.repeat_counter < BUTTON_REPEAT_INTERVAL)
 			continue;
 
-		btn.emitAction(false, driver, receiver, tsrc);
-		btn.emitAction(true, driver, receiver, tsrc);
+		buttonEmitAction(btn, false);
+		buttonEmitAction(btn, true);
 		btn.repeat_counter = 0.0f;
 	}
 
@@ -340,8 +333,7 @@ void TouchControls::addButton(std::vector<button_info> &buttons, touch_gui_butto
 {
 	IGUIImage *btn_gui_button = m_guienv->addImage(rect, nullptr, id);
 	btn_gui_button->setVisible(visible);
-	load_button_texture(btn_gui_button, image, rect,
-			m_texturesource, m_device->getVideoDriver());
+	loadButtonTexture(btn_gui_button, image);
 
 	button_info &btn = buttons.emplace_back();
 	btn.keycode = id_to_keycode(id);
@@ -363,8 +355,7 @@ IGUIImage *TouchControls::makeButtonDirect(touch_gui_button_id id,
 {
 	IGUIImage *btn_gui_button = m_guienv->addImage(rect, nullptr, id);
 	btn_gui_button->setVisible(visible);
-	load_button_texture(btn_gui_button, button_image_names[id], rect,
-			m_texturesource, m_device->getVideoDriver());
+	loadButtonTexture(btn_gui_button, button_image_names[id]);
 
 	return btn_gui_button;
 }
@@ -399,11 +390,9 @@ void TouchControls::handleReleaseEvent(size_t pointer_id)
 	m_pointer_pos.erase(pointer_id);
 
 	// handle buttons
-	if (buttons_handleRelease(m_buttons, pointer_id, m_device->getVideoDriver(),
-			m_receiver, m_texturesource))
+	if (buttonsHandleRelease(m_buttons, pointer_id))
 		return;
-	if (buttons_handleRelease(m_overflow_buttons, pointer_id, m_device->getVideoDriver(),
-			m_receiver, m_texturesource))
+	if (buttonsHandleRelease(m_overflow_buttons, pointer_id))
 		return;
 
 	if (m_has_move_id && pointer_id == m_move_id) {
@@ -481,8 +470,7 @@ void TouchControls::translateEvent(const SEvent &event)
 				}
 			}
 
-			if (buttons_handlePress(m_overflow_buttons, pointer_id, element,
-					m_device->getVideoDriver(), m_receiver, m_texturesource))
+			if (buttonsHandlePress(m_overflow_buttons, pointer_id, element))
 				return;
 
 			toggleOverflowMenu();
@@ -494,8 +482,7 @@ void TouchControls::translateEvent(const SEvent &event)
 		}
 
 		// handle buttons
-		if (buttons_handlePress(m_buttons, pointer_id, element,
-				m_device->getVideoDriver(), m_receiver, m_texturesource))
+		if (buttonsHandlePress(m_buttons, pointer_id, element))
 			return;
 
 		// handle hotbar
@@ -614,16 +601,10 @@ void TouchControls::translateEvent(const SEvent &event)
 void TouchControls::applyJoystickStatus()
 {
 	if (m_joystick_triggers_aux1) {
-		SEvent translated{};
-		translated.EventType            = EET_KEY_INPUT_EVENT;
-		translated.KeyInput.Key         = id_to_keycode(aux1_id);
-		translated.KeyInput.PressedDown = false;
-		m_receiver->OnEvent(translated);
-
-		if (m_joystick_status_aux1) {
-			translated.KeyInput.PressedDown = true;
-			m_receiver->OnEvent(translated);
-		}
+		auto key = id_to_keycode(aux1_id);
+		emitKeyboardEvent(key, false);
+		if (m_joystick_status_aux1)
+			emitKeyboardEvent(key, true);
 	}
 }
 
@@ -639,8 +620,8 @@ void TouchControls::step(float dtime)
 	}
 
 	// simulate keyboard repeats
-	buttons_step(m_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);
-	buttons_step(m_overflow_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);
+	buttonsStep(m_buttons, dtime);
+	buttonsStep(m_overflow_buttons, dtime);
 
 	// joystick
 	applyJoystickStatus();
