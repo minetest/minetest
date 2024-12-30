@@ -51,6 +51,7 @@ namespace gui
 
 std::map<io::path, SGUITTFace*> SGUITTFace::faces;
 std::optional<FT_Library> SGUITTFace::freetype_library;
+std::size_t SGUITTFace::n_faces;
 
 std::optional<FT_Library> SGUITTFace::getFreeTypeLibrary()
 {
@@ -64,11 +65,19 @@ std::optional<FT_Library> SGUITTFace::getFreeTypeLibrary()
 SGUITTFace::SGUITTFace(std::string &&buffer) : face_buffer(std::move(buffer))
 {
 	memset((void*)&face, 0, sizeof(FT_Face));
+	n_faces++;
 }
 
 SGUITTFace::~SGUITTFace()
 {
 	FT_Done_Face(face);
+	n_faces--;
+	// If there are no more faces referenced by FreeType, clean up.
+	if (n_faces == 0) {
+		assert(freetype_library);
+		FT_Done_FreeType(*freetype_library);
+		freetype_library = std::nullopt;
+	}
 }
 
 SGUITTFace* SGUITTFace::createFace(std::string &&buffer)
@@ -105,22 +114,17 @@ SGUITTFace* SGUITTFace::loadFace(const io::path &filename)
 	return face;
 }
 
-void SGUITTFace::dropFilename(const io::path &filename)
+void SGUITTFace::dropFilename()
 {
-	auto it = faces.find(filename);
+	if (!filename.has_value()) return;
+
+	auto it = faces.find(*filename);
 	if (it == faces.end()) return;
 
 	SGUITTFace* f = it->second;
 	// Drop our face.  If this was the last face, the destructor will clean up.
 	if (f->drop())
-		faces.erase(filename);
-
-	// If there are no more faces referenced by FreeType, clean up.
-	if (faces.empty()) {
-		assert(freetype_library);
-		FT_Done_FreeType(*freetype_library);
-		freetype_library = std::nullopt;
-	}
+		faces.erase(*filename);
 }
 
 video::IImage* SGUITTGlyph::createGlyphImage(const FT_Bitmap& bits, video::IVideoDriver* driver) const
@@ -260,11 +264,11 @@ void SGUITTGlyph::unload()
 // TODO constructor which takes bogus filename and data
 
 CGUITTFont* CGUITTFont::createTTFont(IGUIEnvironment *env,
-		const io::path& filename, u32 size, bool antialias,
+		SGUITTFace *face, u32 size, bool antialias,
 		bool transparency, u32 shadow, u32 shadow_alpha)
 {
 	CGUITTFont* font = new CGUITTFont(env);
-	bool ret = font->load(filename, size, antialias, transparency);
+	bool ret = font->load(face, size, antialias, transparency);
 	if (!ret)
 	{
 		font->drop();
@@ -297,29 +301,19 @@ shadow_offset(0), shadow_alpha(0), fallback(0)
 	setInvisibleCharacters(L" ");
 }
 
-bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antialias, const bool transparency)
+bool CGUITTFont::load(SGUITTFace *face, const u32 size, const bool antialias, const bool transparency)
 {
 	// Some sanity checks.
 	if (!Driver) return false;
 	if (size == 0) return false;
-	if (filename.empty()) return false;
+	if (!face) return false;
 
 	this->size = size;
-	this->filename = filename;
 
 	// Update the font loading flags when the font is first loaded.
 	this->use_monochrome = !antialias;
 	this->use_transparency = transparency;
 	update_load_flags();
-
-	infostream << "CGUITTFont: Creating new font: " << filename.c_str() << " "
-		<< size << "pt " << (antialias ? "+antialias " : "-antialias ")
-		<< (transparency ? "+transparency" : "-transparency") << std::endl;
-
-	// Grab the face.
-	auto *face = SGUITTFace::loadFace(filename);
-	if (!face)
-		return false;
 
 	// Store our face.
 	tt_face = face->face;
@@ -349,9 +343,6 @@ CGUITTFont::~CGUITTFont()
 	// Delete the glyphs and glyph pages.
 	reset_images();
 	Glyphs.clear();
-
-	// We aren't using this face anymore.
-	SGUITTFace::dropFilename(filename);
 
 	// Drop our driver now.
 	if (Driver)
