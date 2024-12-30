@@ -38,14 +38,6 @@ public:
 		return 0;
 	}
 
-	irr::SEvent toKeyEvent(bool pressedDown = false) const
-	{
-		irr::SEvent event;
-		event.EventType = EET_KEY_INPUT_EVENT;
-		event.KeyInput = {getKeychar(), getKeycode(), getScancode(), pressedDown, false, false};
-		return event;
-	}
-
 	bool operator==(const KeyPress &o) const
 	{
 #if USE_SDL2
