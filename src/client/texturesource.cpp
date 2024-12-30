@@ -515,13 +515,14 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 	video::ITexture *texture = getTexture(name);
 	if (!texture)
 		return {0, 0, 0, 0};
+	// Note: this downloads the texture back from the GPU, which is pointless
 	video::IImage *image = driver->createImage(texture,
 		core::position2d<s32>(0, 0),
 		texture->getOriginalSize());
 	if (!image)
 		return {0, 0, 0, 0};
 
-	video::SColor c = ImageSource::getImageAverageColor(*image);
+	video::SColor c = imageAverageColor(image);
 	image->drop();
 
 	return c;
