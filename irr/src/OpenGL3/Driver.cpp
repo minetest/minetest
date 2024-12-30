@@ -69,6 +69,7 @@ void COpenGL3Driver::initFeatures()
 	TextureFormats[ECF_D24S8] = {GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8};
 
 	AnisotropicFilterSupported = isVersionAtLeast(4, 6) || queryExtension("GL_ARB_texture_filter_anisotropic") || queryExtension("GL_EXT_texture_filter_anisotropic");
+	LODBiasSupported = true;
 	BlendMinMaxSupported = true;
 	TextureMultisampleSupported = true;
 
