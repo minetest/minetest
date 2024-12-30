@@ -25,6 +25,7 @@
 #include <SViewFrustum.h>
 #include <IGUIFont.h>
 #include <IVideoDriver.h>
+#include "font_enriched_string_composite.h"
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
@@ -632,7 +633,6 @@ void Camera::drawNametags()
 	core::matrix4 trans = m_cameranode->getProjectionMatrix();
 	trans *= m_cameranode->getViewMatrix();
 
-	gui::IGUIFont *font = g_fontengine->getFont();
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	v2u32 screensize = driver->getScreenSize();
 
@@ -643,10 +643,10 @@ void Camera::drawNametags()
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {
-			std::wstring nametag_colorless =
-				unescape_translate(utf8_to_wide(nametag->text));
-			core::dimension2d<u32> textsize = font->getDimension(
-				nametag_colorless.c_str());
+			FontEnrichedStringComposite fesc(translate_string(utf8_to_wide(nametag->text)).c_str(),
+				nametag->textcolor);
+
+			core::dimension2d<u32> textsize = fesc.getDimension();
 			f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
 				core::reciprocal(transformed_pos[3]);
 			v2s32 screen_pos;
@@ -661,10 +661,7 @@ void Camera::drawNametags()
 				core::rect<s32> bg_size(-2, 0, textsize.Width + 2, textsize.Height);
 				driver->draw2DRectangle(bgcolor, bg_size + screen_pos);
 			}
-
-			font->draw(
-				translate_string(utf8_to_wide(nametag->text)).c_str(),
-				size + screen_pos, nametag->textcolor);
+			fesc.draw(size + screen_pos);
 		}
 	}
 }
