@@ -9,8 +9,7 @@
 #include <unordered_map>
 #include <string>
 #include "irrlichttypes_extrabloated.h"
-
-using namespace irr;
+#include "StyleSpec.h"
 
 class ISimpleTextureSource;
 class Client;
@@ -84,8 +83,8 @@ public:
 
 		gui::IGUIFont *font;
 
-		irr::video::SColor color;
-		irr::video::SColor hovercolor;
+		video::SColor color;
+		video::SColor hovercolor;
 		bool underline;
 
 		s32 baseline = 0;
@@ -115,7 +114,10 @@ public:
 	s32 margin = 3;
 	ValignType valign = VALIGN_TOP;
 	BackgroundType background_type = BACKGROUND_NONE;
-	irr::video::SColor background_color;
+	video::SColor background_color;
+	video::ITexture *background_image = nullptr;
+	core::rect<s32> background_middle;
+	bool border = false;
 
 	Tag m_root_tag;
 
@@ -162,6 +164,8 @@ public:
 	inline s32 getHeight() { return m_height; };
 	void draw(const core::rect<s32> &clip_rect,
 			const core::position2d<s32> &dest_offset);
+	void drawBackgroundImage(video::IVideoDriver *driver, const core::rect<s32> &clip_rect);
+	void modifyText(const StyleSpec &style);
 	ParsedText::Element *getElementAt(core::position2d<s32> pos);
 	ParsedText::Tag *m_hovertag;
 
@@ -196,9 +200,12 @@ public:
 	//! draws the element and its children
 	virtual void draw();
 
-	core::dimension2du getTextDimension();
+	//! Returns the height of the text in pixels when it is drawn.
+	s32 getTextHeight() { return m_drawer.getHeight(); }
 
 	bool OnEvent(const SEvent &event);
+
+	void setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &styles);
 
 protected:
 	// GUI members
@@ -213,4 +220,6 @@ protected:
 
 	ParsedText::Element *getElementAt(s32 X, s32 Y);
 	void checkHover(s32 X, s32 Y);
+
+	bool m_drawer_ready = false;
 };
