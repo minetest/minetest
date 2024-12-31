@@ -841,12 +841,12 @@ static u32 transformBuffersToDrawOrder(
 		driver->removeHardwareBuffer(buf->getIndexBuffer());
 	}
 
+	// TODO: explain and document
 	std::string kkk;
 	std::sort(to_merge.begin(), to_merge.end(), [] (const auto &l, const auto &r) {
-		return l.second < r.second;
+		return static_cast<void*>(l.second) < static_cast<void*>(r.second);
 	});
 	for (auto &it : to_merge) {
-		// TODO?: big assumptions here
 		kkk.append(reinterpret_cast<const char*>(&it.second), sizeof(it.second));
 	}
 
@@ -1090,6 +1090,55 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
 	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
+}
+
+void ClientMap::invalidateMapBlockMesh(MapBlockMesh *mesh)
+{
+	ScopeProfiler sp(g_profiler, "CM::invalidateMapBlockMesh", SPT_ADD, PRECISION_MICRO);
+
+	// find all buffers
+	MeshBufListMaps tmp;
+	tmp.addFromBlock(v3s16(), mesh, getSceneManager()->getVideoDriver());
+
+	std::vector<void*> to_delete;
+	void *maxp = 0;
+	for (auto &it : tmp.maps) {
+		for (auto &it2 : it) {
+			for (auto &it3 : it2.second) {
+				void *const p = it3.second;
+				to_delete.push_back(p);
+				maxp = std::max(maxp, p);
+			}
+		}
+	}
+
+	g_profiler->add("CM::invalidateMapBlockMesh to_delete", to_delete.size());
+
+	if (to_delete.empty())
+		return;
+
+	// remove matching cache elements
+	u32 deleted = 0;
+	for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
+		const std::string &key = it->first;
+		assert(key.size() % sizeof(void*) == 0);
+		for (size_t off = 0; off < key.size(); off += sizeof(void*)) {
+			void *v;
+			memcpy(&v, &key[off], sizeof(void*));
+			if (v > maxp) // early exit
+				break;
+			if (CONTAINS(to_delete, v)) {
+				it = m_dynamic_buffers.erase(it);
+				deleted++;
+				goto continue_outer;
+			}
+		}
+		it++;
+		continue_outer:
+		continue;
+	}
+
+	g_profiler->add("CM::invalidateMapBlockMesh deleted", deleted);
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
