@@ -980,13 +980,6 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 			if (part_of_name.empty())
 				return true;
 
-			// Do not create normalmap dummies
-			if (str_ends_with(part_of_name, "_normal.png")) {
-				warningstream << "generateImagePart(): Could not load normal map \""
-					<< part_of_name << "\"" << std::endl;
-				return true;
-			}
-
 			errorstream << "generateImagePart(): Could not load image \""
 				<< part_of_name << "\" while building texture; "
 				"Creating a dummy image" << std::endl;
