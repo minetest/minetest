@@ -142,7 +142,7 @@ void GUIInventoryList::draw()
 		bool show_tooltip = !item.empty() && hovering && !selected_item;
 
 		if (RenderingEngine::getLastPointerType() == PointerType::Touch) {
-			// Touchscreen users cannot hover above an item without selecting it.
+			// Touchscreen users cannot over above an item without selecting it.
 			// To allow touchscreen users to see item tooltips, we also show the
 			// tooltip if the item is selected and the finger is still on the
 			// source slot.
