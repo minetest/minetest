@@ -31,8 +31,7 @@ void SourceImageCache::insert(const std::string &name, video::IImage *img, bool 
 {
 	assert(img); // Pre-condition
 	// Remove old image
-	std::map<std::string, video::IImage*>::iterator n;
-	n = m_images.find(name);
+	auto n = m_images.find(name);
 	if (n != m_images.end()){
 		if (n->second)
 			n->second->drop();
@@ -63,8 +62,7 @@ void SourceImageCache::insert(const std::string &name, video::IImage *img, bool 
 
 video::IImage* SourceImageCache::get(const std::string &name)
 {
-	std::map<std::string, video::IImage*>::iterator n;
-	n = m_images.find(name);
+	auto n = m_images.find(name);
 	if (n != m_images.end())
 		return n->second;
 	return nullptr;
@@ -73,8 +71,7 @@ video::IImage* SourceImageCache::get(const std::string &name)
 // Primarily fetches from cache, secondarily tries to read from filesystem
 video::IImage* SourceImageCache::getOrLoad(const std::string &name)
 {
-	std::map<std::string, video::IImage*>::iterator n;
-	n = m_images.find(name);
+	auto n = m_images.find(name);
 	if (n != m_images.end()){
 		n->second->grab(); // Grab for caller
 		return n->second;
@@ -166,13 +163,13 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 		video::IVideoDriver *driver, u8 tiles = 1);
 
 // Brighten image
-void brighten(video::IImage *image);
+static void brighten(video::IImage *image);
 // Parse a transform name
-u32 parseImageTransform(std::string_view s);
+static u32 parseImageTransform(std::string_view s);
 // Apply transform to image dimension
-core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim);
+static core::dimension2du imageTransformDimension(u32 transform, core::dimension2du dim);
 // Apply transform to image data
-void imageTransform(u32 transform, video::IImage *src, video::IImage *dst);
+static void imageTransform(u32 transform, video::IImage *src, video::IImage *dst);
 
 inline static void applyShadeFactor(video::SColor &color, u32 factor)
 {
@@ -289,7 +286,7 @@ static video::IImage *createInventoryCubeImage(
 	return result;
 }
 
-static std::string unescape_string(const std::string &str, const char esc = '\\')
+static std::string unescape_string(std::string_view str, const char esc = '\\')
 {
 	std::string out;
 	size_t pos = 0, cpos;
@@ -300,7 +297,8 @@ static std::string unescape_string(const std::string &str, const char esc = '\\'
 			out += str.substr(pos);
 			break;
 		}
-		out += str.substr(pos, cpos - pos) + str[cpos + 1];
+		out += str.substr(pos, cpos - pos);
+		out += str[cpos + 1];
 		pos = cpos + 2;
 	}
 	return out;
@@ -312,7 +310,7 @@ static std::string unescape_string(const std::string &str, const char esc = '\\'
 	Ensure no other references to these images are being held, as one may
 	get dropped and switched with a new image.
 */
-void upscaleImagesToMatchLargest(video::IImage *& img1,
+static void upscaleImagesToMatchLargest(video::IImage *& img1,
 	video::IImage *& img2)
 {
 	core::dimension2d<u32> dim1 = img1->getDimension();
@@ -340,7 +338,7 @@ void upscaleImagesToMatchLargest(video::IImage *& img1,
 	}
 }
 
-void blitBaseImage(video::IImage* &src, video::IImage* &dst)
+static void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 {
 	//infostream<<"Blitting "<<part_of_name<<" on base"<<std::endl;
 	upscaleImagesToMatchLargest(dst, src);
@@ -411,9 +409,10 @@ void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 	dst_col.set(dst_a, dst.r, dst.g, dst.b);
 }
 
-}  // namespace
+}  // namespace (anonymous)
+
 template<bool overlay>
-void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
+static void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
 	v2u32 size)
 {
 	if (dst->getColorFormat() != video::ECF_A8R8G8B8)
@@ -427,13 +426,12 @@ void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
 		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 		video::IImage *src_converted = driver->createImage(video::ECF_A8R8G8B8,
 			src_dim);
-		if (!src_converted)
-			throw BaseException("blit_with_alpha() failed to convert the "
-				"source image to ECF_A8R8G8B8.");
+		sanity_check(src_converted != nullptr);
 		src->copyTo(src_converted);
 		src = src_converted;
 		drop_src = true;
 	}
+
 	video::SColor *pixels_src =
 		reinterpret_cast<video::SColor *>(src->getData());
 	video::SColor *pixels_dst =
@@ -453,6 +451,7 @@ void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
 			blit_pixel<overlay>(pixels_src[i_src++], pixels_dst[i_dst++]);
 		}
 	}
+
 	if (drop_src)
 		src->drop();
 }
@@ -726,7 +725,7 @@ static void apply_mask(video::IImage *mask, video::IImage *dst,
 	}
 }
 
-video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
+static video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
 		core::dimension2d<u32> size, u8 tiles, video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> strip_size = crack->getDimension();
@@ -804,7 +803,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 	crack_scaled->drop();
 }
 
-void brighten(video::IImage *image)
+static void brighten(video::IImage *image)
 {
 	if (image == NULL)
 		return;
@@ -822,7 +821,7 @@ void brighten(video::IImage *image)
 	}
 }
 
-u32 parseImageTransform(std::string_view s)
+static u32 parseImageTransform(std::string_view s)
 {
 	int total_transform = 0;
 
@@ -872,15 +871,15 @@ u32 parseImageTransform(std::string_view s)
 	return total_transform;
 }
 
-core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim)
+static core::dimension2du imageTransformDimension(u32 transform, core::dimension2du dim)
 {
 	if (transform % 2 == 0)
 		return dim;
 
-	return core::dimension2d<u32>(dim.Height, dim.Width);
+	return core::dimension2du(dim.Height, dim.Width);
 }
 
-void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
+static void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 {
 	if (src == NULL || dst == NULL)
 		return;
@@ -975,6 +974,7 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 		std::string part_s(part_of_name);
 		source_image_names.insert(part_s);
 		video::IImage *image = m_sourcecache.getOrLoad(part_s);
+
 		if (!image) {
 			// Do not create the dummy texture
 			if (part_of_name.empty())
@@ -998,16 +998,15 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 					myrand()%256,myrand()%256));
 		}
 
-		// If base image is NULL, load as base.
-		if (baseimg == NULL)
+		// load as base or blit
+		if (!baseimg)
 		{
 			/*
 				Copy it this way to get an alpha channel.
 				Otherwise images with alpha cannot be blitted on
 				images that don't have alpha in the original file.
 			*/
-			core::dimension2d<u32> dim = image->getDimension();
-			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+			baseimg = driver->createImage(video::ECF_A8R8G8B8, image->getDimension());
 			image->copyTo(baseimg);
 		}
 		// Else blit on base.
@@ -1663,14 +1662,17 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 				return false;
 			}
 
+			// blit or use as base
 			if (baseimg) {
 				blitBaseImage(pngimg, baseimg);
-			} else {
-				core::dimension2d<u32> dim = pngimg->getDimension();
-				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				pngimg->drop();
+			} else if (pngimg->getColorFormat() != video::ECF_A8R8G8B8) {
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, pngimg->getDimension());
 				pngimg->copyTo(baseimg);
+				pngimg->drop();
+			} else {
+				baseimg = pngimg;
 			}
-			pngimg->drop();
 		}
 		/*
 			[hsl:hue:saturation:lightness
