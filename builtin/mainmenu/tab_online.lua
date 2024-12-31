@@ -301,27 +301,41 @@ local function parse_search_input(input)
 	return query
 end
 
--- Returns false if filter doesn't match (special prefixes like "mod:", "game:", "player:")
--- otherwise returns true, name_matches, description_matches
-local function matches_query(server, query)
-	-- Check if mods found
-	local mods_lower = {}
-	for j, mod in ipairs(server.mods or {}) do
-		mods_lower[j] = mod:lower()
+-- Prepares the server to be used for searching
+local function uncapitalize_server(server)
+	local function table_lower(t)
+		local r = {}
+		for i, s in ipairs(t or {}) do
+			r[i] = s:lower()
+		end
+		return r
 	end
+
+	return {
+		name = (server.name or ""):lower(),
+		description = (server.description or ""):lower(),
+		gameid = (server.gameid or ""):lower(),
+		mods = table_lower(server.mods),
+		clients_list = table_lower(server.clients_list),
+	}
+end
+
+-- Returns false if the query does not match
+-- otherwise returns a number to adjust the sorting priority
+local function matches_query(server, query)
+	-- Search is not case sensitive
+	server = uncapitalize_server(server)
+
+	-- Check if mods found
 	for _, mod in ipairs(query.mods) do
-		if table.indexof(mods_lower, mod) < 0 then
+		if table.indexof(server.mods, mod) < 0 then
 			return false
 		end
 	end
 
 	-- Check if players found
-	local clients_list_lower = {}
-	for j, player in ipairs(server.clients_list or {}) do
-		clients_list_lower[j] = player:lower()
-	end
 	for _, player in ipairs(query.players) do
-		if table.indexof(clients_list_lower, player) < 0 then
+		if table.indexof(server.clients_list, player) < 0 then
 			return false
 		end
 	end
@@ -331,17 +345,15 @@ local function matches_query(server, query)
 		return false
 	end
 
-	local name_matches, description_matches = true, true
-
 	-- Check if keyword found
+	local name_matches = true
+	local description_matches = true
 	for _, keyword in ipairs(query.keywords) do
-		name_matches = name_matches and not not
-				(server.name or ""):lower():find(keyword, 1, true)
-		description_matches = description_matches and not not
-				(server.description or ""):lower():find(keyword, 1, true)
+		name_matches = name_matches and server.name:find(keyword, 1, true)
+		description_matches = description_matches and server.description:find(keyword, 1, true)
 	end
 
-	return true, name_matches, description_matches
+	return name_matches and 50 or description_matches and 0
 end
 
 local function search_server_list(input)
@@ -361,11 +373,9 @@ local function search_server_list(input)
 	-- Search the serverlist
 	local search_result = {}
 	for i, server in ipairs(serverlistmgr.servers) do
-		local filter_matches, name_matches, description_matches = matches_query(server, query)
-
-		if filter_matches and (name_matches or description_matches) then
-			server.points = #serverlistmgr.servers - i
-					+ (name_matches and 50 or 0)
+		local match = matches_query(server, query)
+		if match then
+			server.points = #serverlistmgr.servers - i + match
 			table.insert(search_result, server)
 		end
 	end
