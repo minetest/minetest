@@ -103,6 +103,8 @@ public:
 
 	void renderPostFx(CameraMode cam_mode);
 
+	void invalidateMapBlockMesh(MapBlockMesh *mesh);
+
 	// For debug printing
 	void PrintInfo(std::ostream &out) override;
 
