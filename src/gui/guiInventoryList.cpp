@@ -146,7 +146,8 @@ void GUIInventoryList::draw()
 			// To allow touchscreen users to see item tooltips, we also show the
 			// tooltip if the item is selected and the finger is still on the
 			// source slot.
-			// The selected amount may be 0 in rare cases during so-called "left-dragging".
+			// The selected amount may be 0 in rare cases during "left-dragging"
+			// (used to distribute items evenly).
 			// In this case, the user doesn't see an item being dragged,
 			// so we don't show the tooltip.
 			// Note: `m_fs_menu->getSelectedAmount() != 0` below refers to the
