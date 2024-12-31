@@ -39,10 +39,11 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying lowp vec4 varColor;
 #ifdef GL_ES
+varying lowp vec4 varColor;
 varying mediump vec2 varTexCoord;
 #else
+centroid varying lowp vec4 varColor;
 centroid varying vec2 varTexCoord;
 #endif
 varying highp vec3 eyeVec;
