@@ -142,15 +142,15 @@ void GUIInventoryList::draw()
 		bool show_tooltip = !item.empty() && hovering && !selected_item;
 
 		if (RenderingEngine::getLastPointerType() == PointerType::Touch) {
-			// Touchscreen users cannot over above an item without selecting it.
+			// Touchscreen users cannot hover over an item without selecting it.
 			// To allow touchscreen users to see item tooltips, we also show the
 			// tooltip if the item is selected and the finger is still on the
 			// source slot.
 			// The selected amount may be 0 in rare cases during so-called "left-dragging".
 			// In this case, the user doesn't see an item being dragged,
 			// so we don't show the tooltip.
-			// Note: `m_fs_menu->getSelectedAmount() != 0` refers to the part of
-			// the selected item the user is dragging.
+			// Note: `m_fs_menu->getSelectedAmount() != 0` below refers to the
+			// part of the selected item the user is dragging.
 			// `!item.empty()` would refer to the part of the selected item
 			// remaining in the source slot.
 			show_tooltip |= hovering && selected && m_fs_menu->getSelectedAmount() != 0;
