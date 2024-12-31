@@ -85,8 +85,8 @@ void GUIInventoryList::draw()
 		v2s32 p((i % m_geom.X) * m_slot_spacing.X,
 				(i / m_geom.X) * m_slot_spacing.Y);
 		core::rect<s32> rect = imgrect + base_pos + p;
-		ItemStack item = ilist->getItem(item_i);
-		ItemStack orig_item = item;
+		const ItemStack &orig_item = ilist->getItem(item_i);
+		ItemStack item = orig_item;
 
 		bool selected = selected_item
 			&& m_invmgr->getInventory(selected_item->inventoryloc) == inv
