@@ -266,16 +266,18 @@ end
 --------------------------------------------------------------------------------
 
 local function parse_search_input(input)
-	-- Return nil if nothing to search for
 	if not input:find("%S") then
-		return nil
+		return -- Return nil if nothing to search for
 	end
+
+	-- Search is not case sensitive
+	input = input:lower()
 
 	local query = {keywords = {}, mods = {}, players = {}}
 
 	-- Process quotation enclosed parts
-	input = input:gsub("([^ ]?)\"([^\"]*)\"([^ ]?)", function(before, match, after)
-		if #before == 0 and #after == 0 then -- Also have be separated by spaces
+	input = input:gsub('(%S?)"([^"]*)"(%S?)', function(before, match, after)
+		if before == "" and after == "" then -- Also have be separated by spaces
 			table.insert(query.keywords, match)
 			return " "
 		end
@@ -290,13 +292,56 @@ local function parse_search_input(input)
 		local player = word:match("^player:(.*)")
 		table.insert(query.players, player)
 		local game = word:match("^game:(.*)")
-		query.game = game
+		query.game = query.game or game
 		if not (mod or player or game) then
-			table.insert(query.keywords, word:lower())
+			table.insert(query.keywords, word)
 		end
 	end
 
 	return query
+end
+
+-- Returns false if filter doesn't match (special prefixes like "mod:", "game:", "player:")
+-- otherwise returns true, name_matches, description_matches
+local function matches_query(server, query)
+	-- Check if mods found
+	local mods_lower = {}
+	for j, mod in ipairs(server.mods or {}) do
+		mods_lower[j] = mod:lower()
+	end
+	for _, mod in ipairs(query.mods) do
+		if table.indexof(mods_lower, mod) < 0 then
+			return false
+		end
+	end
+
+	-- Check if players found
+	local clients_list_lower = {}
+	for j, player in ipairs(server.clients_list or {}) do
+		clients_list_lower[j] = player:lower()
+	end
+	for _, player in ipairs(query.players) do
+		if table.indexof(clients_list_lower, player) < 0 then
+			return false
+		end
+	end
+
+	-- Check if game matches
+	if query.game and query.game ~= server.gameid then
+		return false
+	end
+
+	local name_matches, description_matches = true, true
+
+	-- Check if keyword found
+	for _, keyword in ipairs(query.keywords) do
+		name_matches = name_matches and not not
+				(server.name or ""):lower():find(keyword, 1, true)
+		description_matches = description_matches and not not
+				(server.description or ""):lower():find(keyword, 1, true)
+	end
+
+	return true, name_matches, description_matches
 end
 
 local function search_server_list(input)
@@ -306,7 +351,7 @@ local function search_server_list(input)
 	end
 
 	-- setup the search query
-	local query = parse_search_input(input:lower())
+	local query = parse_search_input(input)
 	if not query then
 		return
 	end
@@ -316,44 +361,7 @@ local function search_server_list(input)
 	-- Search the serverlist
 	local search_result = {}
 	for i, server in ipairs(serverlistmgr.servers) do
-		local name_matches, description_matches, filter_matches = true, true, true
-
-		-- Check if keyword found
-		for _, keyword in ipairs(query.keywords) do
-			name_matches = name_matches and not not
-					(server.name or ""):lower():find(keyword, 1, true)
-			description_matches = description_matches and not not
-					(server.description or ""):lower():find(keyword, 1, true)
-		end
-
-		-- Check if mods found
-		local mods_lower = {}
-		for j, mod in ipairs(server.mods or {}) do
-			mods_lower[j] = mod:lower()
-		end
-		for _, mod in ipairs(query.mods) do
-			if table.indexof(mods_lower, mod) < 0 then
-				filter_matches = false
-				break
-			end
-		end
-
-		-- Check if players found
-		local clients_list_lower = {}
-		for j, player in ipairs(server.clients_list or {}) do
-			clients_list_lower[j] = player:lower()
-		end
-		for _, player in ipairs(query.players) do
-			if table.indexof(clients_list_lower, player) < 0 then
-				filter_matches = false
-				break
-			end
-		end
-
-		-- Check if game matches
-		if query.game and query.game ~= server.gameid then
-			filter_matches = false
-		end
+		local filter_matches, name_matches, description_matches = matches_query(server, query)
 
 		if filter_matches and (name_matches or description_matches) then
 			server.points = #serverlistmgr.servers - i
