@@ -28,13 +28,13 @@ enum FontMode : u8 {
 };
 
 struct FontSpec {
-	FontSpec(unsigned int font_size, FontMode mode, bool bold, bool italic) :
+	constexpr FontSpec(unsigned int font_size, FontMode mode, bool bold, bool italic) :
 		size(font_size),
 		mode(mode),
 		bold(bold),
 		italic(italic) {}
 
-	u16 getHash() const
+	constexpr u16 getHash() const
 	{
 		return (mode << 2) | (static_cast<u8>(bold) << 1) | static_cast<u8>(italic);
 	}
