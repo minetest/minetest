@@ -174,7 +174,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	delete[] old_flags;
 }
 
-void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
+void VoxelManipulator::copyFrom(const MapNode *src, const VoxelArea& src_area,
 		v3s16 from_pos, v3s16 to_pos, const v3s16 &size)
 {
 	/* The reason for this optimised code is that we're a member function

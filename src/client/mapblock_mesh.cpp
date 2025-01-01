@@ -43,7 +43,7 @@ void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
 	m_vmanip.addArea(voxel_area);
 }
 
-void MeshMakeData::fillBlockData(const v3s16 &bp, MapNode *data)
+void MeshMakeData::fillBlockData(const v3s16 &bp, const MapNode *data)
 {
 	v3s16 data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
 	VoxelArea data_area(v3s16(0,0,0), data_size - v3s16(1,1,1));

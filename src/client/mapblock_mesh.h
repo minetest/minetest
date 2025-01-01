@@ -42,7 +42,7 @@ struct MeshMakeData
 		Copy block data manually (to allow optimizations by the caller)
 	*/
 	void fillBlockDataBegin(const v3s16 &blockpos);
-	void fillBlockData(const v3s16 &bp, MapNode *data);
+	void fillBlockData(const v3s16 &bp, const MapNode *data);
 
 	/*
 		Set the (node) position of a crack
