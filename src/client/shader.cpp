@@ -506,7 +506,7 @@ void ShaderSource::rebuildShaders()
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		ShaderInfo *info = &i;
 		if (!info->name.empty()) {
-			*info = generateShader(info->name, info->material_type, info->drawtype);
+			*info = generateShader(info->name.data(), info->material_type, info->drawtype);
 		}
 	}
 }

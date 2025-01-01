@@ -29,14 +29,13 @@ std::string getShaderPath(const std::string &name_of_shader,
 		const std::string &filename);
 
 struct ShaderInfo {
-	std::string name = "";
+	std::string_view name = "";
 	video::E_MATERIAL_TYPE base_material = video::EMT_SOLID;
 	video::E_MATERIAL_TYPE material = video::EMT_SOLID;
 	NodeDrawType drawtype = NDT_NORMAL;
 	MaterialType material_type = TILE_MATERIAL_BASIC;
 
-	ShaderInfo() = default;
-	virtual ~ShaderInfo() = default;
+	constexpr ShaderInfo() = default;
 };
 
 /*
