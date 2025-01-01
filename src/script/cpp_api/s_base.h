@@ -47,7 +47,8 @@ enum class ScriptingType: u8 {
 	Client,
 	MainMenu,
 	Server,
-	Emerge
+	Emerge,
+	PauseMenu,
 };
 
 class Server;
