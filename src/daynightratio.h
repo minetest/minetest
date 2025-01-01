@@ -4,7 +4,7 @@
 
 #pragma once
 
-inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
+constexpr u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 {
 	float t = time_of_day;
 	if (t < 0.0f)
