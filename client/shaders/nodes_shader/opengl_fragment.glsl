@@ -39,14 +39,16 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying lowp vec4 varColor;
 #ifdef GL_ES
+varying lowp vec4 varColor;
 varying mediump vec2 varTexCoord;
+varying float nightRatio;
 #else
+centroid varying lowp vec4 varColor;
 centroid varying vec2 varTexCoord;
+centroid varying float nightRatio;
 #endif
 varying highp vec3 eyeVec;
-varying float nightRatio;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 #if (defined(ENABLE_WATER_REFLECTIONS) && MATERIAL_WAVING_LIQUID && ENABLE_WAVING_WATER)
