@@ -94,12 +94,21 @@ public:
 	}
 
 	/**
+	 * Returns the pointer position in pixels.
+	 *
+	 * May only be used if crosshair is disabled (see setUseCrosshair)
+	 */
+	v2s32 getPointerPos() { return m_move_pos; }
+
+	/**
 	 * Returns a line which describes what the player is pointing at.
 	 * The starting point and looking direction are significant,
 	 * the line should be scaled to match its length to the actual distance
 	 * the player can reach.
 	 * The line starts at the camera and ends on the camera's far plane.
 	 * The coordinates do not contain the camera offset.
+	 *
+	 * May only be used if crosshair is disabled (see setUseCrosshair)
 	 */
 	line3d<f32> getShootline() { return m_shootline; }
 
@@ -152,7 +161,9 @@ private:
 	size_t m_move_id;
 	bool m_move_has_really_moved = false;
 	u64 m_move_downtime = 0;
-	// m_move_pos stays valid even after m_move_id has been released.
+	// m_move_pos is equivalent to m_pointer_pos[m_move_id] while m_has_move_id
+	// is true. However, m_move_pos stays valid even after the m_move_id pointer
+	// has been released and m_pointer_pos[m_move_id] has been erased.
 	v2s32 m_move_pos;
 	// This is needed so that we don't miss if m_has_move_id is true for less
 	// than one client step, i.e. press and release happen in the same step.
@@ -227,7 +238,6 @@ private:
 	// map to store the IDs and positions of currently pressed pointers
 	std::unordered_map<size_t, v2s32> m_pointer_pos;
 
-	v2s32 getPointerPos();
 	void emitMouseEvent(EMOUSE_INPUT_EVENT type);
 	TouchInteractionMode m_last_mode = TouchInteractionMode_END;
 	TapState m_tap_state = TapState::None;
