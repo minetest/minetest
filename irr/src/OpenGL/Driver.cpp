@@ -386,28 +386,28 @@ void COpenGL3DriverBase::createMaterialRenderers()
 
 	// EMT_SOLID
 	core::stringc FragmentShader = OGLES2ShaderPath + "Solid.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "Solid",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID, 0);
 
 	// EMT_TRANSPARENT_ALPHA_CHANNEL
 	FragmentShader = OGLES2ShaderPath + "TransparentAlphaChannel.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "TransparentAlphaChannel",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
 
 	// EMT_TRANSPARENT_ALPHA_CHANNEL_REF
 	FragmentShader = OGLES2ShaderPath + "TransparentAlphaChannelRef.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_SOLID, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "TransparentAlphaChannelRef",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_SOLID, 0);
 
 	// EMT_TRANSPARENT_VERTEX_ALPHA
 	FragmentShader = OGLES2ShaderPath + "TransparentVertexAlpha.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentVertexAlphaCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "TransparentVertexAlpha",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentVertexAlphaCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
 
 	// EMT_ONETEXTURE_BLEND
 	FragmentShader = OGLES2ShaderPath + "OneTextureBlend.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, OneTextureBlendCB, EMT_ONETEXTURE_BLEND, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "OneTextureBlend",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, OneTextureBlendCB, EMT_ONETEXTURE_BLEND, 0);
 
 	// Drop callbacks.
 
@@ -566,10 +566,8 @@ COpenGL3DriverBase::SHWBufferLink *COpenGL3DriverBase::createHardwareBuffer(cons
 	if (!vb || vb->getHardwareMappingHint() == scene::EHM_NEVER)
 		return 0;
 
-	SHWBufferLink_opengl *HWBuffer = new SHWBufferLink_opengl(vb);
-
-	// add to map
-	HWBuffer->listPosition = HWBufferList.insert(HWBufferList.end(), HWBuffer);
+	auto *HWBuffer = new SHWBufferLink_opengl(vb);
+	registerHardwareBuffer(HWBuffer);
 
 	if (!updateVertexHardwareBuffer(HWBuffer)) {
 		deleteHardwareBuffer(HWBuffer);
@@ -584,10 +582,8 @@ COpenGL3DriverBase::SHWBufferLink *COpenGL3DriverBase::createHardwareBuffer(cons
 	if (!ib || ib->getHardwareMappingHint() == scene::EHM_NEVER)
 		return 0;
 
-	SHWBufferLink_opengl *HWBuffer = new SHWBufferLink_opengl(ib);
-
-	// add to map
-	HWBuffer->listPosition = HWBufferList.insert(HWBufferList.end(), HWBuffer);
+	auto *HWBuffer = new SHWBufferLink_opengl(ib);
+	registerHardwareBuffer(HWBuffer);
 
 	if (!updateIndexHardwareBuffer(HWBuffer)) {
 		deleteHardwareBuffer(HWBuffer);
@@ -1344,60 +1340,74 @@ void COpenGL3DriverBase::setTextureRenderStates(const SMaterial &material, bool 
 
 		CacheHandler->setActiveTexture(GL_TEXTURE0 + i);
 
-		if (resetAllRenderstates)
-			tmpTexture->getStatesCache().IsCached = false;
+		const auto &layer = material.TextureLayers[i];
+		auto &states = tmpTexture->getStatesCache();
 
-		if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].MagFilter != tmpTexture->getStatesCache().MagFilter) {
-			E_TEXTURE_MAG_FILTER magFilter = material.TextureLayers[i].MagFilter;
+		if (resetAllRenderstates)
+			states.IsCached = false;
+
+		if (!states.IsCached || layer.MagFilter != states.MagFilter) {
+			E_TEXTURE_MAG_FILTER magFilter = layer.MagFilter;
 			GL.TexParameteri(tmpTextureType, GL_TEXTURE_MAG_FILTER,
 					magFilter == ETMAGF_NEAREST ? GL_NEAREST : (assert(magFilter == ETMAGF_LINEAR), GL_LINEAR));
 
-			tmpTexture->getStatesCache().MagFilter = magFilter;
+			states.MagFilter = magFilter;
 		}
 
 		if (material.UseMipMaps && tmpTexture->hasMipMaps()) {
-			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].MinFilter != tmpTexture->getStatesCache().MinFilter ||
-					!tmpTexture->getStatesCache().MipMapStatus) {
-				E_TEXTURE_MIN_FILTER minFilter = material.TextureLayers[i].MinFilter;
+			if (!states.IsCached || layer.MinFilter != states.MinFilter ||
+					!states.MipMapStatus) {
+				E_TEXTURE_MIN_FILTER minFilter = layer.MinFilter;
 				GL.TexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 						minFilter == ETMINF_NEAREST_MIPMAP_NEAREST ? GL_NEAREST_MIPMAP_NEAREST : minFilter == ETMINF_LINEAR_MIPMAP_NEAREST ? GL_LINEAR_MIPMAP_NEAREST
 																						 : minFilter == ETMINF_NEAREST_MIPMAP_LINEAR       ? GL_NEAREST_MIPMAP_LINEAR
 																																		   : (assert(minFilter == ETMINF_LINEAR_MIPMAP_LINEAR), GL_LINEAR_MIPMAP_LINEAR));
 
-				tmpTexture->getStatesCache().MinFilter = minFilter;
-				tmpTexture->getStatesCache().MipMapStatus = true;
+				states.MinFilter = minFilter;
+				states.MipMapStatus = true;
 			}
 		} else {
-			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].MinFilter != tmpTexture->getStatesCache().MinFilter ||
-					tmpTexture->getStatesCache().MipMapStatus) {
-				E_TEXTURE_MIN_FILTER minFilter = material.TextureLayers[i].MinFilter;
+			if (!states.IsCached || layer.MinFilter != states.MinFilter ||
+					states.MipMapStatus) {
+				E_TEXTURE_MIN_FILTER minFilter = layer.MinFilter;
 				GL.TexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 						(minFilter == ETMINF_NEAREST_MIPMAP_NEAREST || minFilter == ETMINF_NEAREST_MIPMAP_LINEAR) ? GL_NEAREST : (assert(minFilter == ETMINF_LINEAR_MIPMAP_NEAREST || minFilter == ETMINF_LINEAR_MIPMAP_LINEAR), GL_LINEAR));
 
-				tmpTexture->getStatesCache().MinFilter = minFilter;
-				tmpTexture->getStatesCache().MipMapStatus = false;
+				states.MinFilter = minFilter;
+				states.MipMapStatus = false;
 			}
 		}
 
+		if (LODBiasSupported &&
+			(!states.IsCached || layer.LODBias != states.LODBias)) {
+			if (layer.LODBias) {
+				const float tmp = core::clamp(layer.LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+				GL.TexParameterf(tmpTextureType, GL.TEXTURE_LOD_BIAS, tmp);
+			} else
+				GL.TexParameterf(tmpTextureType, GL.TEXTURE_LOD_BIAS, 0.f);
+
+			states.LODBias = layer.LODBias;
+		}
+
 		if (AnisotropicFilterSupported &&
-				(!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter)) {
+				(!states.IsCached || layer.AnisotropicFilter != states.AnisotropicFilter)) {
 			GL.TexParameteri(tmpTextureType, GL.TEXTURE_MAX_ANISOTROPY,
-					material.TextureLayers[i].AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, material.TextureLayers[i].AnisotropicFilter) : 1);
+					layer.AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, layer.AnisotropicFilter) : 1);
 
-			tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayers[i].AnisotropicFilter;
+			states.AnisotropicFilter = layer.AnisotropicFilter;
 		}
 
-		if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].TextureWrapU != tmpTexture->getStatesCache().WrapU) {
-			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayers[i].TextureWrapU));
-			tmpTexture->getStatesCache().WrapU = material.TextureLayers[i].TextureWrapU;
+		if (!states.IsCached || layer.TextureWrapU != states.WrapU) {
+			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_S, getTextureWrapMode(layer.TextureWrapU));
+			states.WrapU = layer.TextureWrapU;
 		}
 
-		if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].TextureWrapV != tmpTexture->getStatesCache().WrapV) {
-			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayers[i].TextureWrapV));
-			tmpTexture->getStatesCache().WrapV = material.TextureLayers[i].TextureWrapV;
+		if (!states.IsCached || layer.TextureWrapV != states.WrapV) {
+			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_T, getTextureWrapMode(layer.TextureWrapV));
+			states.WrapV = layer.TextureWrapV;
 		}
 
-		tmpTexture->getStatesCache().IsCached = true;
+		states.IsCached = true;
 	}
 }
 
@@ -1592,14 +1602,9 @@ bool COpenGL3DriverBase::setPixelShaderConstant(s32 index, const u32 *ints, int 
 //! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
 s32 COpenGL3DriverBase::addHighLevelShaderMaterial(
 		const c8 *vertexShaderProgram,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		const c8 *pixelShaderProgram,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		const c8 *geometryShaderProgram,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType,
 		scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,

@@ -1594,7 +1594,7 @@ ToolCapabilities read_tool_capabilities(
 						// key at index -2 and value at index -1
 						int rating = luaL_checkinteger(L, -2);
 						float time = luaL_checknumber(L, -1);
-						groupcap.times[rating] = time;
+						groupcap.times.emplace_back(rating, time);
 						// removes value, keeps key for next iteration
 						lua_pop(L, 1);
 					}

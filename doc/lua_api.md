@@ -188,7 +188,6 @@ Mod directory structure
     │   ├── models
     │   ├── textures
     │   │   ├── modname_stuff.png
-    │   │   ├── modname_stuff_normal.png
     │   │   ├── modname_something_else.png
     │   │   ├── subfolder_foo
     │   │   │   ├── modname_more_stuff.png
