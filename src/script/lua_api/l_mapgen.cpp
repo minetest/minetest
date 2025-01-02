@@ -892,7 +892,7 @@ int ModApiMapgen::l_get_mapgen_setting_noiseparams(lua_State *L)
 		getEmergeManager(L)->map_settings_mgr;
 
 	const char *name = luaL_checkstring(L, 1);
-	if (!settingsmgr->getMapSettingNoiseParams(name, &np))
+	if (!settingsmgr->getNoiseParams(name, &np))
 		return 0;
 
 	push_noiseparams(L, &np);
