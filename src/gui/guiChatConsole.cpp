@@ -210,10 +210,11 @@ void GUIChatConsole::draw()
 		m_screensize = screensize;
 		m_desired_height = m_desired_height_fraction * m_screensize.Y;
 		reformatConsole();
-	} else if (!m_scrollbar->getAbsolutePosition().isPointInside(core::vector2di(screensize.X, m_height)))
+	} else if (!m_scrollbar->getAbsolutePosition().isPointInside(core::vector2di(screensize.X, m_height))) {
 		// the height of the chat window is no longer the height of the scrollbar
 		// happens while opening/closing the window
 		updateScrollbar(true);
+	}
 
 	// Animation
 	u64 now = porting::getTimeMs();
@@ -333,6 +334,13 @@ void GUIChatConsole::drawText()
 		return;
 
 	ChatBuffer& buf = m_chat_backend->getConsoleBuffer();
+
+	core::recti rect;
+	if (m_scrollbar->isVisible())
+		rect = core::rect<s32> (0, 0, m_screensize.X - getScrollbarSize(Environment), m_height);
+	else
+		rect = AbsoluteClippingRect;
+
 	for (u32 row = 0; row < buf.getRows(); ++row)
 	{
 		const ChatFormattedLine& line = buf.getFormattedLine(row);
@@ -348,14 +356,6 @@ void GUIChatConsole::drawText()
 			s32 x = (fragment.column + 1) * m_fontsize.X;
 			core::rect<s32> destrect(
 				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
-
-
-			core::recti rect;
-			if (m_scrollbar->isVisible())
-				rect = core::rect<s32> (0, 0, m_screensize.X - getScrollbarSize(Environment), m_height);
-			else
-				rect = AbsoluteClippingRect;
-
 
 			if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
 				// Draw colored text if possible
@@ -818,11 +818,12 @@ void GUIChatConsole::updatePrimarySelection()
 
 void GUIChatConsole::updateScrollbar(bool update_size)
 {
-	m_scrollbar->setMin(m_chat_backend->getConsoleBuffer().getTopScrollPos());
-	m_scrollbar->setMax(m_chat_backend->getConsoleBuffer().getBottomScrollPos());
-	m_scrollbar->setPos(m_chat_backend->getConsoleBuffer().getScrollPosition());
+	ChatBuffer &buf = m_chat_backend->getConsoleBuffer();
+	m_scrollbar->setMin(buf.getTopScrollPos());
+	m_scrollbar->setMax(buf.getBottomScrollPos());
+	m_scrollbar->setPos(buf.getScrollPosition());
+	m_scrollbar->setPageSize(m_fontsize.Y * buf.getLineCount());
 	m_scrollbar->setVisible(m_scrollbar->getMin() != m_scrollbar->getMax());
-	m_scrollbar->setPageSize(m_fontsize.Y * m_chat_backend->getConsoleBuffer().getLineCount());
 
 	if (update_size) {
 		const core::rect<s32> rect (m_screensize.X - getScrollbarSize(Environment), 0, m_screensize.X, m_height);
