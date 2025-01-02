@@ -69,6 +69,7 @@ typedef int socket_t;
 
 const char* adv_multicast_addr = "224.1.1.1";
 const static unsigned short int adv_port = 29998;
+const char* proto = "Luanti";
 static std::string ask_str;
 
 bool use_ipv6 = true;
@@ -84,6 +85,7 @@ void lan_adv::ask()
 	if (ask_str.empty()) {
 		Json::Value j;
 		j["cmd"] = "ask";
+		j["proto"] = proto;
 		ask_str = fastWriteJson(j);
 	}
 
@@ -258,6 +260,7 @@ void *lan_adv::run()
 		server["port"] = server_port;
 		server["clients"] = clients_num.load();
 		server["clients_max"] = g_settings->getU16("max_users");
+		server["proto"] = proto;
 
 		send_string(fastWriteJson(server));
 	}
@@ -280,7 +283,7 @@ void *lan_adv::run()
 		if (server_port) {
 			if (p["cmd"] == "ask" && limiter[addr_str] < now) {
 				(clients_num.load() ? infostream : actionstream)
-						<< "lan: want play " << addr_str << std::endl;
+						<< "lan: want play " << addr_str << " " << p["proto"] << std::endl;
 
 				server["clients"] = clients_num.load();
 				answer_str = fastWriteJson(server);
@@ -292,7 +295,7 @@ void *lan_adv::run()
 			}
 		} else {
 			if (p["cmd"] == "ask") {
-				actionstream << "lan: want play " << addr_str << std::endl;
+				actionstream << "lan: want play " << addr_str << " " << p["proto"] << std::endl;
 			}
 			if (p["port"].isInt()) {
 				p["address"] = addr_str;
@@ -302,7 +305,7 @@ void *lan_adv::run()
 					//infostream << "server shutdown " << key << "\n";
 					collected.erase(key);
 					fresh = true;
-				} else {
+				} else if (p["proto"] == proto) {
 					if (!collected.count(key))
 						actionstream << "lan server start " << key << "\n";
 					collected.insert_or_assign(key, p);
