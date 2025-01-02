@@ -22,7 +22,7 @@ serverlistmgr = {
 	-- list of locally favorites servers
 	favorites = nil,
 
-	-- list of servers fetched from public list
+	-- list of servers fetched from public list and local servers
 	servers = nil,
 }
 

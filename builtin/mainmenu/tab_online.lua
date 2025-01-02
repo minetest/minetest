@@ -23,24 +23,21 @@ local function get_sorted_servers()
 		incompatible = {}
 	}
 
-	local merged_serverlist = table.copy(serverlistmgr.servers)
+	local serverlist = table.copy(serverlistmgr.servers)
 
 	if minetest.settings:get_bool("serverlist_lan") then
-		if core.get_lan_servers then
-			local lan = core.get_lan_servers()
-			for _, server in ipairs(lan) do
-				server.is_compatible = is_server_protocol_compat(server.proto_min, server.proto_max)
-				server.is_local = true
-				table.insert(merged_serverlist, server)
-			end
-		else
-			print("core.get_lan_servers isn't defined.")
+		local lan_servers = core.get_lan_servers()
+
+		for _, server in ipairs(lan_servers) do
+			server.is_compatible = is_server_protocol_compat(server.proto_min, server.proto_max)
+			server.is_local = true
+			table.insert(serverlist, server)
 		end
 	end
 
 	local favs = serverlistmgr.get_favorites()
 	local taken_favs = {}
-	local result = menudata.search_result or merged_serverlist
+	local result = menudata.search_result or serverlist
 	for _, server in ipairs(result) do
 		server.is_favorite = false
 		for index, fav in ipairs(favs) do
