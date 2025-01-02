@@ -1706,8 +1706,8 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 	if (stats2.Drawcalls > 0)
 		g_profiler->avg("Irr: primitives per drawcall",
 			stats2.PrimitivesDrawn / float(stats2.Drawcalls));
-	g_profiler->avg("Irr: buffers uploaded", stats2.HWBuffersUploaded);
-	g_profiler->avg("Irr: buffers uploaded (bytes)", stats2.HWBuffersUploadedSize);
+	g_profiler->avg("Irr: HW buffers uploaded", stats2.HWBuffersUploaded);
+	g_profiler->avg("Irr: HW buffers active", stats2.HWBuffersActive);
 }
 
 void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
