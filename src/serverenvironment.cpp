@@ -2161,11 +2161,13 @@ void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
 
 		// If object's static data is stored in a deactivated block and object
-		// is actually located in an active block, re-save to the block in
-		// which the object is actually located in.
+		// is actually located in an active block, or the distance between stored
+		// and actual location of the object, re-save to the block in which
+		// the object is actually located in.
 		if (!force_delete && obj->isStaticAllowed() && obj->m_static_exists &&
-		   !m_active_blocks.contains(obj->m_static_block) &&
-		   m_active_blocks.contains(blockpos_o)) {
+		   m_active_blocks.contains(blockpos_o) &&
+		   (!m_active_blocks.contains(obj->m_static_block) ||
+		   blockpos_o.getDistanceFromSQ(obj->m_static_block) >= MAP_BLOCKSIZE * MAP_BLOCKSIZE)) {
 
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
