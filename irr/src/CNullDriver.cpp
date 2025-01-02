@@ -619,20 +619,17 @@ void CNullDriver::draw3DBox(const core::aabbox3d<f32> &box, SColor color)
 	core::vector3df edges[8];
 	box.getEdges(edges);
 
-	// TODO: optimize into one big drawIndexPrimitive call.
+	video::S3DVertex v[8];
+	for (u32 i = 0; i < 8; i++) {
+		v[i].Pos = edges[i];
+		v[i].Color = color;
+	}
 
-	draw3DLine(edges[5], edges[1], color);
-	draw3DLine(edges[1], edges[3], color);
-	draw3DLine(edges[3], edges[7], color);
-	draw3DLine(edges[7], edges[5], color);
-	draw3DLine(edges[0], edges[2], color);
-	draw3DLine(edges[2], edges[6], color);
-	draw3DLine(edges[6], edges[4], color);
-	draw3DLine(edges[4], edges[0], color);
-	draw3DLine(edges[1], edges[0], color);
-	draw3DLine(edges[3], edges[2], color);
-	draw3DLine(edges[7], edges[6], color);
-	draw3DLine(edges[5], edges[4], color);
+	const static u16 box_indices[24] = {
+		5, 1, 1, 3, 3, 7, 7, 5, 0, 2, 2, 6, 6, 4, 4, 0, 1, 0, 3, 2, 7, 6, 5, 4
+	};
+
+	drawVertexPrimitiveList(v, 8, box_indices, 12, EVT_STANDARD, scene::EPT_LINES);
 }
 
 //! draws an 2d image
