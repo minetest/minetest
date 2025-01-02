@@ -1,5 +1,5 @@
 /*
-Minetest
+Luanti
 Copyright (C) 2024 proller <proler@gmail.com> and contributors.
 
 This program is free software; you can redistribute it and/or modify
