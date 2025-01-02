@@ -11,6 +11,12 @@
 #include <cassert>
 #include <list>
 
+#include "IGUIEnvironment.h"
+
+namespace irr::gui {
+	class IGUIStaticText;
+}
+
 class IGameCallback
 {
 public:
