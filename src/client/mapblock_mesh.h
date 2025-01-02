@@ -4,14 +4,21 @@
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include "irr_ptr.h"
+#include "IMesh.h"
+#include "SMeshBuffer.h"
+
 #include "util/numeric.h"
 #include "client/tile.h"
 #include "voxel.h"
 #include <array>
 #include <map>
 #include <unordered_map>
+
+namespace irr::video {
+	class IVideoDriver;
+}
 
 class Client;
 class NodeDefManager;

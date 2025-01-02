@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "irr_v2d.h"
 #include "network/connection.h"
+#include "network/networkpacket.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "server/ban.h"

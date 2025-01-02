@@ -22,6 +22,8 @@
 #include "settings.h"
 #include "profiler.h"
 
+#include "SMeshBuffer.h"
+
 using BlendMode = ParticleParamTypes::BlendMode;
 
 ClientParticleTexture::ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc)

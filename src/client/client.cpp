@@ -37,6 +37,7 @@
 #include "profiler.h"
 #include "shader.h"
 #include "gettext.h"
+#include "gettime.h"
 #include "clientdynamicinfo.h"
 #include "clientmap.h"
 #include "clientmedia.h"

@@ -7,6 +7,8 @@
 #include "log.h"
 #include "gamedef.h"
 
+#include <cassert>
+
 ObjDefManager::ObjDefManager(IGameDef *gamedef, ObjDefType type)
 {
 	m_objtype = type;
