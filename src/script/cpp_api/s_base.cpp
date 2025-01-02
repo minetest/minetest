@@ -203,7 +203,7 @@ void ScriptApiBase::checkSetByBuiltin()
 {
 	lua_State *L = getStack();
 
-	if (m_gamedef) {
+	if (m_gamedef && getType() != ScriptingType::PauseMenu) {
 		CHECK(CUSTOM_RIDX_READ_VECTOR, "read_vector");
 		CHECK(CUSTOM_RIDX_PUSH_VECTOR, "push_vector");
 		CHECK(CUSTOM_RIDX_READ_NODE, "read_node");
