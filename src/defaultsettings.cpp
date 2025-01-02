@@ -82,6 +82,7 @@ void set_default_settings()
 
 	// Client
 	settings->setDefault("address", "");
+	settings->setDefault("remote_port", "30000");
 	settings->setDefault("enable_sound", "true");
 #if defined(__unix__) && !defined(__APPLE__) && !defined (__ANDROID__)
 	// On Linux+X11 (not Linux+Wayland or Linux+XWayland), I've encountered a bug
@@ -129,7 +130,43 @@ void set_default_settings()
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
 	// Keymap
-	settings->setDefault("remote_port", "30000");
+#if USE_SDL2
+	settings->setDefault("save_keys_as_scancodes", "true");
+	settings->setDefault("keymap_forward", "<26>");
+	settings->setDefault("keymap_autoforward", "");
+	settings->setDefault("keymap_backward", "<22>");
+	settings->setDefault("keymap_left", "<4>");
+	settings->setDefault("keymap_right", "<7>");
+	settings->setDefault("keymap_jump", "<44>");
+	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
+	settings->setDefault("keymap_dig", "KEY_LBUTTON");
+	settings->setDefault("keymap_place", "KEY_RBUTTON");
+	settings->setDefault("keymap_drop", "<20>");
+	settings->setDefault("keymap_zoom", "<29>");
+	settings->setDefault("keymap_inventory", "<12>");
+	settings->setDefault("keymap_aux1", "<8>");
+	settings->setDefault("keymap_chat", "<23>");
+	settings->setDefault("keymap_cmd", "<56>");
+	settings->setDefault("keymap_cmd_local", "<55>");
+	settings->setDefault("keymap_minimap", "<25>");
+	settings->setDefault("keymap_console", "KEY_F10");
+
+	// See https://github.com/minetest/minetest/issues/12792
+	settings->setDefault("keymap_rangeselect", has_touch ? "<21>" : "");
+
+	settings->setDefault("keymap_freemove", "<14>");
+	settings->setDefault("keymap_pitchmove", "");
+	settings->setDefault("keymap_fastmove", "<13>");
+	settings->setDefault("keymap_noclip", "<11>");
+	settings->setDefault("keymap_hotbar_next", "<17>");
+	settings->setDefault("keymap_hotbar_previous", "<5>");
+	settings->setDefault("keymap_mute", "<16>");
+	settings->setDefault("keymap_camera_mode", "<6>");
+	settings->setDefault("keymap_increase_viewing_range_min", "<46>");
+	settings->setDefault("keymap_decrease_viewing_range_min", "<45>");
+#else
+	// TODO: Remove this once we fully switch to SDL2
+	settings->setDefault("save_keys_as_scancodes", "false");
 	settings->setDefault("keymap_forward", "KEY_KEY_W");
 	settings->setDefault("keymap_autoforward", "");
 	settings->setDefault("keymap_backward", "KEY_KEY_S");
@@ -159,6 +196,11 @@ void set_default_settings()
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
 	settings->setDefault("keymap_hotbar_previous", "KEY_KEY_B");
 	settings->setDefault("keymap_mute", "KEY_KEY_M");
+	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
+	settings->setDefault("keymap_increase_viewing_range_min", "+");
+	settings->setDefault("keymap_decrease_viewing_range_min", "-");
+#endif
+
 	settings->setDefault("keymap_increase_volume", "");
 	settings->setDefault("keymap_decrease_volume", "");
 	settings->setDefault("keymap_cinematic", "");
@@ -173,11 +215,8 @@ void set_default_settings()
 #endif
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
-	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_fullscreen", "KEY_F11");
-	settings->setDefault("keymap_increase_viewing_range_min", "+");
-	settings->setDefault("keymap_decrease_viewing_range_min", "-");
 	settings->setDefault("keymap_slot1", "KEY_KEY_1");
 	settings->setDefault("keymap_slot2", "KEY_KEY_2");
 	settings->setDefault("keymap_slot3", "KEY_KEY_3");

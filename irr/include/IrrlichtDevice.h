@@ -16,6 +16,7 @@
 #include "IrrCompileConfig.h"
 #include "position2d.h"
 #include "SColor.h" // video::ECOLOR_FORMAT
+#include <variant>
 
 namespace irr
 {
@@ -342,6 +343,20 @@ public:
 	{
 		return video::isDriverSupported(driver);
 	}
+
+#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || USE_SDL2
+	//! Get the scancode of the corresponding keycode.
+	virtual std::variant<u32, EKEY_CODE> getScancodeFromKey(const Keycode &key) const {
+		if (auto pv = std::get_if<EKEY_CODE>(&key))
+			return *pv;
+		return (u32)std::get<wchar_t>(key);
+	}
+
+	//! Get the keycode of the corresponding scancode.
+	virtual Keycode getKeyFromScancode(const u32 scancode) const {
+		return Keycode(KEY_UNKNOWN, (wchar_t)scancode);
+	}
+#endif
 };
 
 } // end namespace irr
