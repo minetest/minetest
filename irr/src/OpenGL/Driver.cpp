@@ -1191,7 +1191,7 @@ void COpenGL3DriverBase::setRenderStates3DMode()
 void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const SMaterial &lastmaterial, bool resetAllRenderStates)
 {
 	// fillmode
-	if (getDriverType() == EDT_OPENGL3 && // not supported in gles
+	if (Version.Spec != OpenGLSpec::ES && // not supported in gles
 			(resetAllRenderStates ||
 			(lastmaterial.Wireframe != material.Wireframe) ||
 			(lastmaterial.PointCloud != material.PointCloud))) {
