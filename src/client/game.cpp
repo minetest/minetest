@@ -2261,7 +2261,9 @@ void Game::toggleDebug()
 	else if (state == 2)
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
 	else if (state == 3)
-		m_game_ui->showTranslatedStatusText("Wireframe shown");
+		m_game_ui->showTranslatedStatusText(driver->getDriverType() == video::EDT_OGLES2 ?
+				"Wireframe shown, but not supported in OpenGL ES" :
+				"Wireframe shown");
 	else if (state == 4)
 		m_game_ui->showTranslatedStatusText("Bounding boxes shown");
 	else

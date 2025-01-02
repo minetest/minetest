@@ -1032,9 +1032,7 @@ void COpenGL3DriverBase::drawGeneric(const void *vertices, const void *indexList
 		GL.DrawElements(GL_TRIANGLE_FAN, primitiveCount + 2, indexSize, indexList);
 		break;
 	case scene::EPT_TRIANGLES:
-		GL.DrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS
-																						: GL_TRIANGLES,
-				primitiveCount * 3, indexSize, indexList);
+		GL.DrawElements(GL_TRIANGLES, primitiveCount * 3, indexSize, indexList);
 		break;
 	default:
 		break;
@@ -1199,6 +1197,17 @@ void COpenGL3DriverBase::setRenderStates3DMode()
 //! Can be called by an IMaterialRenderer to make its work easier.
 void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const SMaterial &lastmaterial, bool resetAllRenderStates)
 {
+	// fillmode
+	if (Version.Spec != OpenGLSpec::ES && // not supported in gles
+			(resetAllRenderStates ||
+			(lastmaterial.Wireframe != material.Wireframe) ||
+			(lastmaterial.PointCloud != material.PointCloud))) {
+		GL.PolygonMode(GL_FRONT_AND_BACK,
+				material.Wireframe ? GL_LINE :
+				material.PointCloud ? GL_POINT :
+				GL_FILL);
+	}
+
 	// ZBuffer
 	switch (material.ZBuffer) {
 	case ECFN_DISABLED:
