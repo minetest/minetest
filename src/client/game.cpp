@@ -2250,7 +2250,10 @@ void Game::toggleDebug()
 			m_game_ui->m_flags.show_basic_debug = true;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
-		m_game_ui->showTranslatedStatusText("Wireframe shown");
+		if (driver->getDriverType() == video::EDT_OGLES2)
+			m_game_ui->showTranslatedStatusText("Wireframe shown, but not supported in OpenGL ES");
+		else
+			m_game_ui->showTranslatedStatusText("Wireframe shown");
 	} else {
 		m_game_ui->m_flags.show_minimal_debug = false;
 		m_game_ui->m_flags.show_basic_debug = false;
