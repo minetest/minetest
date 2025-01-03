@@ -69,7 +69,7 @@ typedef int socket_t;
 
 const char* adv_multicast_addr = "224.1.1.1";
 const static unsigned short int adv_port = 29998;
-const char* proto = "Luanti";
+const std::string proto = "Luanti";
 static std::string ask_str;
 
 bool use_ipv6 = true;
@@ -94,7 +94,7 @@ void lan_adv::ask()
 
 void lan_adv::send_string(const std::string &str)
 {
-	if (g_settings->getBool("enable_ipv6")) {
+	if (g_settings->getBool("ipv6_server")) {
 		std::vector<uint32_t> scopes;
 		// todo: windows and android
 
@@ -150,36 +150,60 @@ void lan_adv::send_string(const std::string &str)
 						socket_send.Send(Address(addr), str.c_str(), str.size());
 					}
 				} catch (const std::exception &e) {
-					verbosestream << "udp broadcast send over ipv6 fail " << e.what() << "\n";
+					verbosestream << "udp multicast send over ipv6 fail [" << e.what() << "]\n" << "Trying ipv4.\n";
+					try {
+						sockaddr_in addr = {};
+						addr.sin_family = AF_INET;
+						addr.sin_port = htons(adv_port);
+						UDPSocket socket_send(false);
+
+						inet_pton(AF_INET, adv_multicast_addr, &(addr.sin_addr));
+
+						struct ip_mreq mreq;
+
+						mreq.imr_multiaddr.s_addr = inet_addr(adv_multicast_addr);
+						mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+
+						setsockopt(socket_send.GetHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+								(const char *)&mreq, sizeof(mreq));
+
+						//int set_option_on = 2;
+						//setsockopt(socket_send.GetHandle(), SOL_SOCKET, IP_MULTICAST_TTL,
+						//		(const char *)&set_option_on, sizeof(set_option_on));
+
+						socket_send.Send(Address(addr), str.c_str(), str.size());
+					} catch (const std::exception &e) {
+						verbosestream << "udp mulitcast send over ipv4 fail too. " << e.what() << "\n";
+					}
 				}
 			}
 			freeaddrinfo(result);
 		}
-	}
+	} else {
+		try {
+			sockaddr_in addr = {};
+			addr.sin_family = AF_INET;
+			addr.sin_port = htons(adv_port);
+			UDPSocket socket_send(false);
 
-	try {
-		sockaddr_in addr = {};
-		addr.sin_family = AF_INET;
-		addr.sin_port = htons(adv_port);
-		UDPSocket socket_send(false);
+			inet_pton(AF_INET, adv_multicast_addr, &(addr.sin_addr));
 
-		inet_pton(AF_INET, adv_multicast_addr, &(addr.sin_addr));
+			struct ip_mreq mreq;
 
-		struct ip_mreq mreq;
+			mreq.imr_multiaddr.s_addr = inet_addr(adv_multicast_addr);
+			mreq.imr_interface.s_addr = htonl(INADDR_ANY);
 
-		mreq.imr_multiaddr.s_addr = inet_addr(adv_multicast_addr);
-		mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+			setsockopt(socket_send.GetHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+					(const char *)&mreq, sizeof(mreq));
 
-		setsockopt(socket_send.GetHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
-				(const char *)&mreq, sizeof(mreq));
+			//int set_option_on = 2;
+			//setsockopt(socket_send.GetHandle(), SOL_SOCKET, IP_MULTICAST_TTL,
+			//		(const char *)&set_option_on, sizeof(set_option_on));
 
-		//int set_option_on = 2;
-		//setsockopt(socket_send.GetHandle(), SOL_SOCKET, IP_MULTICAST_TTL,
-		//		(const char *)&set_option_on, sizeof(set_option_on));
-
-		socket_send.Send(Address(addr), str.c_str(), str.size());
-	} catch (const std::exception &e) {
-		verbosestream << "udp broadcast send over ipv4 fail " << e.what() << "\n";
+			socket_send.Send(Address(addr), str.c_str(), str.size());
+		} catch (const std::exception &e) {
+			verbosestream << "udp mulitcast send over ipv4 fail " << e.what() << "\n";
+		}
 	}
 }
 
@@ -195,7 +219,7 @@ void *lan_adv::run()
 	BEGIN_DEBUG_EXCEPTION_HANDLER;
 
 	setName("lan_adv " + (server_port ? std::string("server") : std::string("client")));
-	UDPSocket socket_recv(g_settings->getBool("enable_ipv6"));
+	UDPSocket socket_recv(g_settings->getBool("ipv6_server"));
 
 	int set_option_off = 0, set_option_on = 1;
 	setsockopt(socket_recv.GetHandle(), SOL_SOCKET, SO_REUSEADDR,
@@ -215,7 +239,7 @@ void *lan_adv::run()
 			(const char *)&set_option_off, sizeof(set_option_off));
 	socket_recv.setTimeoutMs(200);
 
-	if (g_settings->getBool("enable_ipv6")) {
+	if (g_settings->getBool("ipv6_server")) {
 		try {
 			socket_recv.Bind(Address(in6addr_any, adv_port));
 		} catch (const std::exception &e) {
