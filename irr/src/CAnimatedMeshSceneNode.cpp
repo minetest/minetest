@@ -276,9 +276,6 @@ void CAnimatedMeshSceneNode::render()
 		debug_mat.ZBuffer = video::ECFN_DISABLED;
 		driver->setMaterial(debug_mat);
 
-		if (DebugDataVisible & scene::EDS_BBOX)
-			driver->draw3DBox(Box, video::SColor(255, 255, 255, 255));
-
 		// show bounding box
 		if (DebugDataVisible & scene::EDS_BBOX_BUFFERS) {
 			for (u32 g = 0; g < m->getMeshBufferCount(); ++g) {
@@ -289,6 +286,9 @@ void CAnimatedMeshSceneNode::render()
 				driver->draw3DBox(mb->getBoundingBox(), video::SColor(255, 190, 128, 128));
 			}
 		}
+
+		if (DebugDataVisible & scene::EDS_BBOX)
+			driver->draw3DBox(Box, video::SColor(255, 255, 255, 255));
 
 		// show skeleton
 		if (DebugDataVisible & scene::EDS_SKELETON) {

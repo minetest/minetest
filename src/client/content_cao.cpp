@@ -656,25 +656,33 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		}
 	} else if (m_prop.visual == "upright_sprite") {
 		grabMatrixNode();
-		scene::SMesh *mesh = new scene::SMesh();
-		double dx = BS * m_prop.visual_size.X / 2;
-		double dy = BS * m_prop.visual_size.Y / 2;
+		auto mesh = make_irr<scene::SMesh>();
+		f32 dx = BS * m_prop.visual_size.X / 2;
+		f32 dy = BS * m_prop.visual_size.Y / 2;
 		video::SColor c(0xFFFFFFFF);
 
-		{ // Front
-			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-			video::S3DVertex vertices[4] = {
-				video::S3DVertex(-dx, -dy, 0, 0,0,1, c, 1,1),
-				video::S3DVertex( dx, -dy, 0, 0,0,1, c, 0,1),
-				video::S3DVertex( dx,  dy, 0, 0,0,1, c, 0,0),
-				video::S3DVertex(-dx,  dy, 0, 0,0,1, c, 1,0),
-			};
-			if (m_is_player) {
-				// Move minimal Y position to 0 (feet position)
-				for (video::S3DVertex &vertex : vertices)
-					vertex.Pos.Y += dy;
+		video::S3DVertex vertices[4] = {
+			video::S3DVertex(-dx, -dy, 0, 0,0,1, c, 1,1),
+			video::S3DVertex( dx, -dy, 0, 0,0,1, c, 0,1),
+			video::S3DVertex( dx,  dy, 0, 0,0,1, c, 0,0),
+			video::S3DVertex(-dx,  dy, 0, 0,0,1, c, 1,0),
+		};
+		if (m_is_player) {
+			// Move minimal Y position to 0 (feet position)
+			for (auto &vertex : vertices)
+				vertex.Pos.Y += dy;
+		}
+		const u16 indices[] = {0,1,2,2,3,0};
+
+		for (int face : {0, 1}) {
+			auto buf = make_irr<scene::SMeshBuffer>();
+			// Front (0) or Back (1)
+			if (face == 1) {
+				for (auto &v : vertices)
+					v.Normal *= -1;
+				for (int i : {0, 2})
+					std::swap(vertices[i].Pos, vertices[i+1].Pos);
 			}
-			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
 
 			// Set material
@@ -682,36 +690,12 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			buf->getMaterial().ColorParam = c;
 
 			// Add to mesh
-			mesh->addMeshBuffer(buf);
-			buf->drop();
+			mesh->addMeshBuffer(buf.get());
 		}
-		{ // Back
-			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-			video::S3DVertex vertices[4] = {
-				video::S3DVertex( dx,-dy, 0, 0,0,-1, c, 1,1),
-				video::S3DVertex(-dx,-dy, 0, 0,0,-1, c, 0,1),
-				video::S3DVertex(-dx, dy, 0, 0,0,-1, c, 0,0),
-				video::S3DVertex( dx, dy, 0, 0,0,-1, c, 1,0),
-			};
-			if (m_is_player) {
-				// Move minimal Y position to 0 (feet position)
-				for (video::S3DVertex &vertex : vertices)
-					vertex.Pos.Y += dy;
-			}
-			u16 indices[] = {0,1,2,2,3,0};
-			buf->append(vertices, 4, indices, 6);
 
-			// Set material
-			setMaterial(buf->getMaterial());
-			buf->getMaterial().ColorParam = c;
-
-			// Add to mesh
-			mesh->addMeshBuffer(buf);
-			buf->drop();
-		}
-		m_meshnode = m_smgr->addMeshSceneNode(mesh, m_matrixnode);
+		mesh->recalculateBoundingBox();
+		m_meshnode = m_smgr->addMeshSceneNode(mesh.get(), m_matrixnode);
 		m_meshnode->grab();
-		mesh->drop();
 	} else if (m_prop.visual == "cube") {
 		grabMatrixNode();
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));

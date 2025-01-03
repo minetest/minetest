@@ -427,6 +427,8 @@ public:
 
 const static float object_hit_delay = 0.2;
 
+const static u16 bbox_debug_flag = scene::EDS_BBOX_ALL;
+
 /* The reason the following structs are not anonymous structs within the
  * class is that they are not used by the majority of member functions and
  * many functions that do require objects of thse types do not modify them
@@ -635,6 +637,8 @@ protected:
 private:
 	struct Flags {
 		bool disable_camera_update = false;
+		/// 0 = no debug text active, see toggleDebug() for the rest
+		int debug_state = 0;
 	};
 
 	void pauseAnimation();
@@ -1663,6 +1667,7 @@ void Game::updateDebugState()
 		hud->disableBlockBounds();
 	if (!has_debug) {
 		draw_control->show_wireframe = false;
+		smgr->setGlobalDebugData(0, bbox_debug_flag);
 		m_flags.disable_camera_update = false;
 		m_game_formspec.disableDebugView();
 	}
@@ -2222,46 +2227,41 @@ void Game::toggleDebug()
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	bool has_debug = client->checkPrivilege("debug");
 	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
+
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
 	// 3x toggle: Debug text and wireframe (needs "debug" priv)
-	// Next toggle: Back to initial
+	// 4x toggle: Debug text and bbox (needs "debug" priv)
 	//
 	// The debug text can be in 2 modes: minimal and basic.
 	// * Minimal: Only technical client info that not gameplay-relevant
 	// * Basic: Info that might give gameplay advantage, e.g. pos, angle
 	// Basic mode is used when player has the debug HUD flag set,
 	// otherwise the Minimal mode is used.
-	if (!m_game_ui->m_flags.show_minimal_debug) {
-		m_game_ui->m_flags.show_minimal_debug = true;
-		if (has_basic_debug)
-			m_game_ui->m_flags.show_basic_debug = true;
-		m_game_ui->m_flags.show_profiler_graph = false;
-		draw_control->show_wireframe = false;
+
+	auto &state = m_flags.debug_state;
+	state = (state + 1) % 5;
+	if (state >= 3 && !has_debug)
+		state = 0;
+
+	m_game_ui->m_flags.show_minimal_debug = state > 0;
+	m_game_ui->m_flags.show_basic_debug = state > 0 && has_basic_debug;
+	m_game_ui->m_flags.show_profiler_graph = state == 2;
+	draw_control->show_wireframe = state == 3;
+	smgr->setGlobalDebugData(state == 4 ? bbox_debug_flag : 0,
+			state == 4 ? 0 : bbox_debug_flag);
+
+	if (state == 1)
 		m_game_ui->showTranslatedStatusText("Debug info shown");
-	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
-		if (has_basic_debug)
-			m_game_ui->m_flags.show_basic_debug = true;
-		m_game_ui->m_flags.show_profiler_graph = true;
+	else if (state == 2)
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
-	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
-		if (has_basic_debug)
-			m_game_ui->m_flags.show_basic_debug = true;
-		m_game_ui->m_flags.show_profiler_graph = false;
-		draw_control->show_wireframe = true;
+	else if (state == 3)
 		m_game_ui->showTranslatedStatusText("Wireframe shown");
-	} else {
-		m_game_ui->m_flags.show_minimal_debug = false;
-		m_game_ui->m_flags.show_basic_debug = false;
-		m_game_ui->m_flags.show_profiler_graph = false;
-		draw_control->show_wireframe = false;
-		if (has_debug) {
-			m_game_ui->showTranslatedStatusText("Debug info, profiler graph, and wireframe hidden");
-		} else {
-			m_game_ui->showTranslatedStatusText("Debug info and profiler graph hidden");
-		}
-	}
+	else if (state == 4)
+		m_game_ui->showTranslatedStatusText("Bounding boxes shown");
+	else
+		m_game_ui->showTranslatedStatusText("All debug info hidden");
 }
 
 
