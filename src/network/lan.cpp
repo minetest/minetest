@@ -69,7 +69,7 @@ typedef int socket_t;
 
 const char* adv_multicast_addr = "224.1.1.1";
 const static unsigned short int adv_port = 29998;
-const std::string proto = "Luanti";
+const std::string proto = "lanti";
 static std::string ask_str;
 
 bool use_ipv6 = true;
