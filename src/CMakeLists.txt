@@ -249,6 +249,19 @@ if(ENABLE_SPATIAL)
 	endif(SPATIAL_LIBRARY AND SPATIAL_INCLUDE_DIR)
 endif(ENABLE_SPATIAL)
 
+option(ENABLE_OPENSSL "Use OpenSSL's libcrypto for faster SHA implementations" TRUE)
+set(USE_OPENSSL FALSE)
+
+if(ENABLE_OPENSSL)
+	find_package(OpenSSL 3.0)
+	if(OPENSSL_FOUND)
+		set(USE_OPENSSL TRUE)
+		message(STATUS "OpenSSL's libcrypto SHA enabled.")
+	else()
+		message(STATUS "OpenSSL not found!")
+	endif()
+endif(ENABLE_OPENSSL)
+
 
 find_package(ZLIB REQUIRED)
 find_package(Zstd REQUIRED)
@@ -273,7 +286,7 @@ set(PLATFORM_LIBS Threads::Threads)
 if(WIN32)
 	# Windows
 	if(MSVC) # MSVC Specifics
-		set(PLATFORM_LIBS dbghelp.lib ${PLATFORM_LIBS})
+		list(APPEND PLATFORM_LIBS dbghelp.lib)
 		# Surpress some useless warnings
 		add_compile_options(/W1)
 		add_compile_definitions(
@@ -285,7 +298,7 @@ if(WIN32)
 			NOMINMAX
 		)
 	endif()
-	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
+	list(APPEND PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib)
 
 	set(EXTRA_DLL "" CACHE FILEPATH "Optional paths to additional DLLs that should be packaged")
 
@@ -312,28 +325,28 @@ if(WIN32)
 	endif()
 else()
 	# Unix probably
-	set(PLATFORM_LIBS ${PLATFORM_LIBS} ${CMAKE_DL_LIBS})
+	list(APPEND PLATFORM_LIBS ${CMAKE_DL_LIBS})
 	if(APPLE)
-		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
+		list(APPEND PLATFORM_LIBS "-framework CoreFoundation")
 	else()
 		check_library_exists(rt clock_gettime "" HAVE_LIBRT)
 		if (HAVE_LIBRT)
-			set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
+			list(APPEND PLATFORM_LIBS -lrt)
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
 	find_library(ICONV_LIBRARY iconv)
 	mark_as_advanced(ICONV_LIBRARY)
 	if (ICONV_LIBRARY)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ICONV_LIBRARY})
+		list(APPEND PLATFORM_LIBS ${ICONV_LIBRARY})
 	endif()
 
 	if (HAIKU)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} network)
+		list(APPEND PLATFORM_LIBS network)
 	endif()
 
 	if (ANDROID)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
+		list(APPEND PLATFORM_LIBS android log)
 	endif()
 endif()
 
@@ -347,7 +360,7 @@ if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
 	set(CMAKE_REQUIRED_LIBRARIES "")
 	if(HAVE_LINK_ATOMIC)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+		list(APPEND PLATFORM_LIBS "-latomic")
 	endif()
 endif()
 
@@ -471,21 +484,21 @@ set(common_SRCS
 )
 
 if(ANDROID)
-	set(common_SRCS ${common_SRCS} porting_android.cpp)
+	list(APPEND common_SRCS porting_android.cpp)
 endif()
 
 if(BUILD_UNITTESTS)
 	add_subdirectory(unittest)
-	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
+	list(APPEND common_SRCS ${UNITTEST_SRCS})
 endif()
 
 if(BUILD_BENCHMARKS)
 	add_subdirectory(benchmark)
-	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
+	list(APPEND common_SRCS ${BENCHMARK_SRCS})
 endif()
 
 if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
-	set(common_SRCS ${common_SRCS} catch.cpp)
+	list(APPEND common_SRCS catch.cpp)
 endif()
 
 # This gives us the icon and file version information
@@ -516,8 +529,7 @@ if (BUILD_CLIENT)
 	add_subdirectory(irrlicht_changes)
 endif(BUILD_CLIENT)
 
-set(client_SRCS
-	${client_SRCS}
+list(APPEND client_SRCS
 	${common_SRCS}
 	${gui_SRCS}
 	${client_network_SRCS}
@@ -526,11 +538,11 @@ set(client_SRCS
 )
 
 if(BUILD_UNITTESTS)
-	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
+	list(APPEND client_SRCS ${UNITTEST_CLIENT_SRCS})
 endif()
 
 if(BUILD_BENCHMARKS)
-	set(client_SRCS ${client_SRCS} ${BENCHMARK_CLIENT_SRCS})
+	list(APPEND client_SRCS ${BENCHMARK_CLIENT_SRCS})
 endif()
 
 # Server sources
@@ -594,6 +606,9 @@ add_dependencies(EngineCommon GenerateVersion)
 target_link_libraries(EngineCommon
 	sha256
 )
+if(USE_OPENSSL)
+	target_link_libraries(EngineCommon OpenSSL::Crypto)
+endif()
 get_target_property(
 	IRRLICHT_INCLUDES IrrlichtMt::IrrlichtMt INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(EngineCommon PRIVATE ${IRRLICHT_INCLUDES})
@@ -727,6 +742,9 @@ if(BUILD_CLIENT)
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
+	if (USE_OPENSSL)
+		target_link_libraries(${PROJECT_NAME} OpenSSL::Crypto)
+	endif()
 	if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 		target_link_libraries(${PROJECT_NAME} Catch2::Catch2)
 	endif()
@@ -795,6 +813,9 @@ if(BUILD_SERVER)
 	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME}server ${SPATIAL_LIBRARY})
+	endif()
+	if (USE_OPENSSL)
+		target_link_libraries(${PROJECT_NAME}server OpenSSL::Crypto)
 	endif()
 	if(USE_CURL)
 		target_link_libraries(
@@ -896,12 +917,12 @@ if(MSVC)
 	# Flags that cannot be shared between cl and clang-cl
 	# https://clang.llvm.org/docs/UsersManual.html#clang-cl
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=lld")
+		add_compile_options(-fuse-ld=lld)
 
 		# Disable pragma-pack warning
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-pragma-pack")
 	else()
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+		add_compile_options(/MP)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /TP /FD /GL")
 		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 	endif()
@@ -1106,7 +1127,7 @@ elseif (USE_GETTEXT)
 			COMMENT "mo-update [${LOCALE}]: Creating mo file."
 			)
 
-		set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
+		list(APPEND MO_FILES ${MO_FILE_PATH})
 	endforeach()
 
 	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})

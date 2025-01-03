@@ -78,7 +78,7 @@ void set_default_settings()
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");
 	settings->setDefault("bind_address", "");
-	settings->setDefault("serverlist_url", "servers.luanti.org");
+	settings->setDefault("serverlist_url", "https://servers.luanti.org");
 
 	// Client
 	settings->setDefault("address", "");
@@ -104,6 +104,7 @@ void set_default_settings()
 	settings->setDefault("sound_extensions_blacklist", "");
 	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("mesh_generation_threads", "0");
+	settings->setDefault("mesh_buffer_min_vertices", "100");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
@@ -311,6 +312,7 @@ void set_default_settings()
 
 	// Effects
 	settings->setDefault("enable_post_processing", "true");
+	settings->setDefault("post_processing_texture_bits", "10");
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
@@ -567,8 +569,12 @@ void set_default_settings()
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("viewing_range", "50");
 	settings->setDefault("leaves_style", "simple");
+	// Note: OpenGL ES 2.0 is not guaranteed to provide depth textures,
+	// which we would need for PP.
 	settings->setDefault("enable_post_processing", "false");
+	// still set these two settings in case someone wants to enable it
 	settings->setDefault("debanding", "false");
+	settings->setDefault("post_processing_texture_bits", "8");
 	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size

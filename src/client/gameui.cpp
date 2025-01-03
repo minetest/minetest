@@ -8,7 +8,6 @@
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "gui/guiChatConsole.h"
-#include "gui/guiFormSpecMenu.h"
 #include "gui/touchcontrols.h"
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
@@ -105,11 +104,11 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		os << std::fixed
 			<< PROJECT_NAME_C " " << g_version_hash
 			<< " | FPS: " << fps
-			<< std::setprecision(0)
+			<< std::setprecision(fps >= 100 ? 1 : 0)
 			<< " | drawtime: " << m_drawtime_avg << "ms"
 			<< std::setprecision(1)
 			<< " | dtime jitter: "
-			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
+			<< (stats.dtime_jitter.max_fraction * 100.0f) << "%"
 			<< std::setprecision(1)
 			<< " | view range: "
 			<< (draw_control->range_all ? "All" : itos(draw_control->wanted_range))
@@ -317,17 +316,6 @@ void GameUI::toggleProfiler()
 	} else {
 		showTranslatedStatusText("Profiler hidden");
 	}
-}
-
-
-void GameUI::deleteFormspec()
-{
-	if (m_formspec) {
-		m_formspec->drop();
-		m_formspec = nullptr;
-	}
-
-	m_formname.clear();
 }
 
 void GameUI::clearText()

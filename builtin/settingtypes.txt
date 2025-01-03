@@ -77,8 +77,11 @@
 # Sections are marked by a single line in the format: [Section Name]
 # Sub-section are marked by adding * in front of the section name: [*Sub-section]
 # Sub-sub-sections have two * etc.
-# There shouldn't be too much settings per category; settings that shouldn't be
-#  modified by the "average user" should be in (sub-)categories called "Advanced".
+# There shouldn't be too many settings per category.
+#
+# The top-level categories "Advanced", "Client and Server" and "Mapgen" are
+# handled specially and its contents only shown when a checkbox is checked.
+# They contain settings not intended for the "average user".
 
 
 [Controls]
@@ -403,6 +406,7 @@ bilinear_filter (Bilinear filtering) bool false
 trilinear_filter (Trilinear filtering) bool false
 
 #    Use anisotropic filtering when looking at textures from an angle.
+#    This provides a significant improvement when used together with mipmapping.
 anisotropic_filter (Anisotropic filtering) bool false
 
 #    Select the antialiasing method to apply.
@@ -471,6 +475,7 @@ performance_tradeoffs (Tradeoffs for performance) bool false
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
+
 [**Waving Nodes]
 
 #    Set to true to enable waving leaves.
@@ -534,12 +539,6 @@ shadow_map_texture_size (Shadow map texture size) int 2048 128 8192
 #    Requires: enable_dynamic_shadows, opengl
 shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
 
-#    Enable Poisson disk filtering.
-#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
-#
-#    Requires: enable_dynamic_shadows, opengl
-shadow_poisson_filter (Poisson filtering) bool true
-
 #    Define shadow filtering quality.
 #    This simulates the soft shadows effect by applying a PCF or Poisson disk
 #    but also uses more resources.
@@ -552,14 +551,6 @@ shadow_filters (Shadow filter quality) enum 1 0,1,2
 #
 #    Requires: enable_dynamic_shadows, opengl
 shadow_map_color (Colored shadows) bool false
-
-#    Spread a complete update of shadow map over given number of frames.
-#    Higher values might make shadows laggy, lower values
-#    will consume more resources.
-#    Minimum value: 1; maximum value: 16
-#
-#    Requires: enable_dynamic_shadows, opengl
-shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
@@ -782,7 +773,7 @@ contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3 1
 enable_local_map_saving (Saving map received from server) bool false
 
 #    URL to the server list displayed in the Multiplayer Tab.
-serverlist_url (Serverlist URL) string servers.luanti.org
+serverlist_url (Serverlist URL) string https://servers.luanti.org
 
 #    If enabled, account registration is separate from login in the UI.
 #    If disabled, new accounts will be registered automatically when logging in.
@@ -820,7 +811,7 @@ server_announce (Announce server) bool false
 server_announce_send_players (Send player names to the server list) bool true
 
 #    Announce to this serverlist.
-serverlist_url (Serverlist URL) string servers.luanti.org
+serverlist_url (Serverlist URL) string https://servers.luanti.org
 
 #    Message of the day displayed to players connecting.
 motd (Message of the day) string
@@ -1830,6 +1821,9 @@ ignore_world_load_errors (Ignore world errors) bool false
 
 [**Graphics]
 
+#    Enables debug and error-checking in the OpenGL driver.
+opengl_debug (OpenGL debug) bool false
+
 #    Path to shader directory. If no path is defined, default location will be used.
 shader_path (Shader path) path
 
@@ -1863,6 +1857,10 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Value of 0 (default) will let Luanti autodetect the number of available threads.
 mesh_generation_threads (Mapblock mesh generation threads) int 0 0 8
 
+#    All mesh buffers with less than this number of vertices will be merged
+#    during map rendering. This improves rendering performance.
+mesh_buffer_min_vertices (Minimum vertex count for mesh buffers) int 100 0 1000
+
 #    True = 256
 #    False = 128
 #    Usable to make minimap smoother on slower machines.
@@ -1884,12 +1882,11 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 #    Warning: This option is EXPERIMENTAL!
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
-#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
-#    can be blurred, so automatically upscale them with nearest-neighbor
-#    interpolation to preserve crisp pixels. This sets the minimum texture size
-#    for the upscaled textures; higher values look sharper, but require more
-#    memory. Powers of 2 are recommended. This setting is ONLY applied if
-#    bilinear/trilinear/anisotropic filtering is enabled.
+#    When using bilinear/trilinear filtering, low-resolution textures
+#    can be blurred, so this option automatically upscales them to preserve
+#    crisp pixels. This defines the minimum texture size for the upscaled textures;
+#    higher values look sharper, but require more memory.
+#    This setting is ONLY applied if any of the mentioned filters are enabled.
 #    This is also used as the base node texture size for world-aligned
 #    texture autoscaling.
 texture_min_size (Base texture size) int 64 1 32768
@@ -1901,8 +1898,26 @@ texture_min_size (Base texture size) int 64 1 32768
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
-#    Enables debug and error-checking in the OpenGL driver.
-opengl_debug (OpenGL debug) bool false
+#    Decide the color depth of the texture used for the post-processing pipeline.
+#    Reducing this can improve performance, but might cause some effects (e.g. bloom)
+#    to not work.
+#
+#    Requires: enable_post_processing
+post_processing_texture_bits (Color depth for post-processing texture) enum 16 8,10,16
+
+#    Enable Poisson disk filtering.
+#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
+#
+#    Requires: enable_dynamic_shadows, opengl
+shadow_poisson_filter (Poisson filtering) bool true
+
+#    Spread a complete update of shadow map over given number of frames.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+#
+#    Requires: enable_dynamic_shadows, opengl
+shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set to true to render debugging breakdown of the bloom effect.
 #    In debug mode, the screen is split into 4 quadrants:

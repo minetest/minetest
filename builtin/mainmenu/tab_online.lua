@@ -55,19 +55,29 @@ local function get_sorted_servers()
 	return servers
 end
 
+local function is_selected_fav(server)
+	local address = core.settings:get("address")
+	local port = tonumber(core.settings:get("remote_port"))
+
+	for _, fav in ipairs(serverlistmgr.get_favorites()) do
+		if address == fav.address and port == fav.port then
+			return true
+		end
+	end
+	return false
+end
+
 -- Persists the selected server in the "address" and "remote_port" settings
+
 local function set_selected_server(server)
+	if server == nil then -- reset selection
+		core.settings:remove("address")
+		core.settings:remove("remote_port")
+		return
+	end
 	local address = server.address
 	local port    = server.port
 	gamedata.serverdescription = server.description
-
-	gamedata.fav = false
-	for _, fav in ipairs(serverlistmgr.get_favorites()) do
-		if address == fav.address and port == fav.port then
-			gamedata.fav = true
-			break
-		end
-	end
 
 	if address and port then
 		core.settings:set("address", address)
@@ -79,6 +89,11 @@ local function find_selected_server()
 	local address = core.settings:get("address")
 	local port = tonumber(core.settings:get("remote_port"))
 	for _, server in ipairs(serverlistmgr.servers) do
+		if server.address == address and server.port == port then
+			return server
+		end
+	end
+	for _, server in ipairs(serverlistmgr.get_favorites()) do
 		if server.address == address and server.port == port then
 			return server
 		end
@@ -97,6 +112,7 @@ local function get_formspec(tabview, name, tabdata)
 	local retval =
 		-- Search
 		"field[0.25,0.25;7,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
+		"tooltip[te_search;" .. fgettext("Possible filters\ngame:<name>\nmod:<name>\nplayer:<name>") .. "]" ..
 		"field_enter_after_edit[te_search;true]" ..
 		"container[7.25,0.25]" ..
 		"image_button[0,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "search.png") .. ";btn_mp_search;]" ..
@@ -160,15 +176,27 @@ local function get_formspec(tabview, name, tabdata)
 						fgettext("Clients:\n$1", table.concat(clients_list, "\n")) .. "]"
 			end
 			retval = retval .. "style[btn_view_clients;padding=6]"
-			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+			retval = retval .. "image_button[4.5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
 				"server_view_clients.png") .. ";btn_view_clients;]"
 		end
 
-		if gamedata.fav then
+		if selected_server.url then
+			retval = retval .. "tooltip[btn_server_url;" .. fgettext("Open server website") .. "]"
+			retval = retval .. "style[btn_server_url;padding=6]"
+			retval = retval .. "image_button[" .. (can_view_clients_list and "4" or "4.5") .. ",1.3;0.5,0.5;" ..
+				core.formspec_escape(defaulttexturedir .. "server_url.png") .. ";btn_server_url;]"
+		end
+
+		if is_selected_fav() then
 			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
-			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" ..
 				core.formspec_escape(defaulttexturedir .. "server_favorite_delete.png") .. ";btn_delete_favorite;]"
+		else
+			retval = retval .. "tooltip[btn_add_favorite;" .. fgettext("Add favorite") .. "]"
+			retval = retval .. "style[btn_add_favorite;padding=6]"
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" ..
+				core.formspec_escape(defaulttexturedir .. "server_favorite.png") .. ";btn_add_favorite;]"
 		end
 	end
 
@@ -244,19 +272,106 @@ end
 
 --------------------------------------------------------------------------------
 
+local function parse_search_input(input)
+	if not input:find("%S") then
+		return -- Return nil if nothing to search for
+	end
+
+	-- Search is not case sensitive
+	input = input:lower()
+
+	local query = {keywords = {}, mods = {}, players = {}}
+
+	-- Process quotation enclosed parts
+	input = input:gsub('(%S?)"([^"]*)"(%S?)', function(before, match, after)
+		if before == "" and after == "" then -- Also have be separated by spaces
+			table.insert(query.keywords, match)
+			return " "
+		end
+		return before..'"'..match..'"'..after
+	end)
+
+	-- Separate by space characters and handle special prefixes
+	-- (words with special prefixes need an exact match and none of them can contain spaces)
+	for word in input:gmatch("%S+") do
+		local mod = word:match("^mod:(.*)")
+		table.insert(query.mods, mod)
+		local player = word:match("^player:(.*)")
+		table.insert(query.players, player)
+		local game = word:match("^game:(.*)")
+		query.game = query.game or game
+		if not (mod or player or game) then
+			table.insert(query.keywords, word)
+		end
+	end
+
+	return query
+end
+
+-- Prepares the server to be used for searching
+local function uncapitalize_server(server)
+	local function table_lower(t)
+		local r = {}
+		for i, s in ipairs(t or {}) do
+			r[i] = s:lower()
+		end
+		return r
+	end
+
+	return {
+		name = (server.name or ""):lower(),
+		description = (server.description or ""):lower(),
+		gameid = (server.gameid or ""):lower(),
+		mods = table_lower(server.mods),
+		clients_list = table_lower(server.clients_list),
+	}
+end
+
+-- Returns false if the query does not match
+-- otherwise returns a number to adjust the sorting priority
+local function matches_query(server, query)
+	-- Search is not case sensitive
+	server = uncapitalize_server(server)
+
+	-- Check if mods found
+	for _, mod in ipairs(query.mods) do
+		if table.indexof(server.mods, mod) < 0 then
+			return false
+		end
+	end
+
+	-- Check if players found
+	for _, player in ipairs(query.players) do
+		if table.indexof(server.clients_list, player) < 0 then
+			return false
+		end
+	end
+
+	-- Check if game matches
+	if query.game and query.game ~= server.gameid then
+		return false
+	end
+
+	-- Check if keyword found
+	local name_matches = true
+	local description_matches = true
+	for _, keyword in ipairs(query.keywords) do
+		name_matches = name_matches and server.name:find(keyword, 1, true)
+		description_matches = description_matches and server.description:find(keyword, 1, true)
+	end
+
+	return name_matches and 50 or description_matches and 0
+end
+
 local function search_server_list(input)
 	menudata.search_result = nil
 	if #serverlistmgr.servers < 2 then
 		return
 	end
 
-	-- setup the keyword list
-	local keywords = {}
-	for word in input:gmatch("%S+") do
-		table.insert(keywords, word:lower())
-	end
-
-	if #keywords == 0 then
+	-- setup the search query
+	local query = parse_search_input(input)
+	if not query then
 		return
 	end
 
@@ -265,16 +380,9 @@ local function search_server_list(input)
 	-- Search the serverlist
 	local search_result = {}
 	for i, server in ipairs(serverlistmgr.servers) do
-		local name_matches, description_matches = true, true
-		for _, keyword in ipairs(keywords) do
-			name_matches = name_matches and not not
-					(server.name or ""):lower():find(keyword, 1, true)
-			description_matches = description_matches and not not
-					(server.description or ""):lower():find(keyword, 1, true)
-		end
-		if name_matches or description_matches then
-			server.points = #serverlistmgr.servers - i
-					+ (name_matches and 50 or 0)
+		local match = matches_query(server, query)
+		if match then
+			server.points = #serverlistmgr.servers - i + match
 			table.insert(search_result, server)
 		end
 	end
@@ -331,6 +439,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		end
 	end
 
+	if fields.btn_add_favorite then
+		serverlistmgr.add_favorite(find_selected_server())
+		return true
+	end
+
 	if fields.btn_delete_favorite then
 		local idx = core.get_table_index("servers")
 		if not idx then return end
@@ -339,6 +452,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		serverlistmgr.delete_favorite(server)
 		set_selected_server(server)
+		return true
+	end
+
+	if fields.btn_server_url then
+		core.open_url_dialog(find_selected_server().url)
 		return true
 	end
 
@@ -358,8 +476,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.btn_mp_search or fields.key_enter_field == "te_search" then
 		tabdata.search_for = fields.te_search
-		search_server_list(fields.te_search:lower())
+		search_server_list(fields.te_search)
 		if menudata.search_result then
+			-- Note: This clears the selection if there are no results
 			set_selected_server(menudata.search_result[1])
 		end
 

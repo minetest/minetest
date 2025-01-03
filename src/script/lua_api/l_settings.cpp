@@ -10,6 +10,7 @@
 #include "settings.h"
 #include "noise.h"
 #include "log.h"
+#include "common/c_converter.h"
 
 
 /*
@@ -177,6 +178,21 @@ int LuaSettings::l_get_flags(lua_State *L)
 	return 1;
 }
 
+// get_pos(self, key) -> vector or nil
+int LuaSettings::l_get_pos(lua_State *L)
+{
+    NO_MAP_LOCK_REQUIRED;
+    LuaSettings *o = checkObject<LuaSettings>(L, 1);
+    std::string key = luaL_checkstring(L, 2);
+
+    std::optional<v3f> pos;
+    if (o->m_settings->getV3FNoEx(key, pos) && pos.has_value())
+        push_v3f(L, *pos);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
 // set(self, key, value)
 int LuaSettings::l_set(lua_State* L)
 {
@@ -225,6 +241,22 @@ int LuaSettings::l_set_np_group(lua_State *L)
 	o->m_settings->setNoiseParams(key, value);
 
 	return 0;
+}
+
+// set_pos(self, key, value)
+int LuaSettings::l_set_pos(lua_State *L)
+{
+    NO_MAP_LOCK_REQUIRED;
+    LuaSettings *o = checkObject<LuaSettings>(L, 1);
+
+    std::string key = luaL_checkstring(L, 2);
+    v3f value = check_v3f(L, 3);
+
+    CHECK_SETTING_SECURITY(L, key);
+
+    o->m_settings->setV3F(key, value);
+
+    return 0;
 }
 
 // remove(self, key) -> success
@@ -356,9 +388,11 @@ const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, get_np_group),
 	luamethod(LuaSettings, get_flags),
+    luamethod(LuaSettings, get_pos),
 	luamethod(LuaSettings, set),
 	luamethod(LuaSettings, set_bool),
 	luamethod(LuaSettings, set_np_group),
+    luamethod(LuaSettings, set_pos),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
 	luamethod(LuaSettings, has),

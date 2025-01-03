@@ -19,7 +19,7 @@ namespace video
 bool COpenGLExtensionHandler::needsDSAFramebufferHack = true;
 
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
-		StencilBuffer(false), TextureCompressionExtension(false), MaxLights(1),
+		StencilBuffer(false), TextureCompressionExtension(false),
 		MaxAnisotropy(1), MaxAuxBuffers(0), MaxIndices(65535),
 		MaxTextureSize(1), MaxGeometryVerticesOut(0),
 		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0),
@@ -399,8 +399,6 @@ void COpenGLExtensionHandler::initExtensions(video::IContextManager *cmgr, bool 
 		Feature.MaxTextureUnits = core::max_(Feature.MaxTextureUnits, static_cast<u8>(num));
 	}
 #endif
-	glGetIntegerv(GL_MAX_LIGHTS, &num);
-	MaxLights = static_cast<u8>(num);
 #ifdef GL_EXT_texture_filter_anisotropic
 	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic]) {
 		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &num);

@@ -105,10 +105,6 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters &param) :
 		WindowHasFocus(false), WindowMinimized(false), WindowMaximized(param.WindowMaximized),
 		ExternalWindow(false), AutorepeatSupport(0)
 {
-#ifdef _DEBUG
-	setDebugName("CIrrDeviceLinux");
-#endif
-
 	// print version, distribution etc.
 	// thx to LynxLuna for pointing me to the uname function
 	core::stringc linuxversion;

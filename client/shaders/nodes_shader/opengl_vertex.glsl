@@ -14,14 +14,17 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying lowp vec4 varColor;
 // The centroid keyword ensures that after interpolation the texture coordinates
 // lie within the same bounds when MSAA is en- and disabled.
 // This fixes the stripes problem with nearest-neighbor textures and MSAA.
 #ifdef GL_ES
+varying lowp vec4 varColor;
 varying mediump vec2 varTexCoord;
+varying float nightRatio;
 #else
+centroid varying lowp vec4 varColor;
 centroid varying vec2 varTexCoord;
+centroid varying float nightRatio;
 #endif
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow uniforms
@@ -44,7 +47,6 @@ centroid varying vec2 varTexCoord;
 varying float area_enable_parallax;
 
 varying highp vec3 eyeVec;
-varying float nightRatio;
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
@@ -108,8 +110,7 @@ float smoothTriangleWave(float x)
 	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
 }
 
-// OpenGL < 4.3 does not support continued preprocessor lines
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
+#if MATERIAL_WAVING_LIQUID && ENABLE_WAVING_WATER
 
 //
 // Simple, fast noise function.
@@ -166,8 +167,7 @@ void main(void)
 #endif
 
 	vec4 pos = inVertexPosition;
-// OpenGL < 4.3 does not support continued preprocessor lines
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
+#if MATERIAL_WAVING_LIQUID && ENABLE_WAVING_WATER
 	// Generate waves with Perlin-type noise.
 	// The constants are calibrated such that they roughly
 	// correspond to the old sine waves.

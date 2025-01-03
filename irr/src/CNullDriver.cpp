@@ -53,10 +53,6 @@ CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &scre
 		ViewPort(0, 0, 0, 0), ScreenSize(screenSize), MinVertexCountForVBO(500),
 		TextureCreationFlags(0), OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
-#ifdef _DEBUG
-	setDebugName("CNullDriver");
-#endif
-
 	DriverAttributes = new io::CAttributes();
 	DriverAttributes->addInt("MaxTextures", MATERIAL_MAX_TEXTURES);
 	DriverAttributes->addInt("MaxSupportedTextures", MATERIAL_MAX_TEXTURES);
@@ -222,7 +218,7 @@ bool CNullDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u
 bool CNullDriver::endScene()
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime());
-	updateAllHardwareBuffers();
+	expireHardwareBuffers();
 	updateAllOcclusionQueries();
 	return true;
 }
@@ -743,19 +739,6 @@ SFrameStats CNullDriver::getFrameStats() const
 	return FrameStats;
 }
 
-//! Sets the dynamic ambient light color. The default color is
-//! (0,0,0,0) which means it is dark.
-//! \param color: New color of the ambient light.
-void CNullDriver::setAmbientLight(const SColorf &color)
-{
-	AmbientLight = color;
-}
-
-const SColorf &CNullDriver::getAmbientLight() const
-{
-	return AmbientLight;
-}
-
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 //! driver, it would return "Direct3D8".
 
@@ -1158,30 +1141,66 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IIndexBuffer
 	return createHardwareBuffer(ib); // no hardware links, and mesh wants one, create it
 }
 
-//! Update all hardware buffers, remove unused ones
-void CNullDriver::updateAllHardwareBuffers()
+void CNullDriver::registerHardwareBuffer(SHWBufferLink *HWBuffer)
 {
-	auto it = HWBufferList.begin();
-	while (it != HWBufferList.end()) {
-		SHWBufferLink *Link = *it;
-		++it;
+	_IRR_DEBUG_BREAK_IF(!HWBuffer)
+	HWBuffer->ListPosition = HWBufferList.size();
+	HWBufferList.push_back(HWBuffer);
+}
 
-		if (Link->IsVertex) {
-			if (!Link->VertexBuffer || Link->VertexBuffer->getReferenceCount() == 1)
-				deleteHardwareBuffer(Link);
-		} else {
-			if (!Link->IndexBuffer || Link->IndexBuffer->getReferenceCount() == 1)
-				deleteHardwareBuffer(Link);
-		}
+void CNullDriver::expireHardwareBuffers()
+{
+	for (size_t i = 0; i < HWBufferList.size(); ) {
+		auto *Link = HWBufferList[i];
+
+		bool del;
+		if (Link->IsVertex)
+			del = !Link->VertexBuffer || Link->VertexBuffer->getReferenceCount() == 1;
+		else
+			del = !Link->IndexBuffer || Link->IndexBuffer->getReferenceCount() == 1;
+		// deleting can reorder, so don't advance in list
+		if (del)
+			deleteHardwareBuffer(Link);
+		else
+			i++;
 	}
+
+	FrameStats.HWBuffersActive = HWBufferList.size();
 }
 
 void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 {
 	if (!HWBuffer)
 		return;
-	HWBufferList.erase(HWBuffer->listPosition);
+	const size_t pos = HWBuffer->ListPosition;
+	_IRR_DEBUG_BREAK_IF(HWBufferList.at(pos) != HWBuffer)
+	if (HWBufferList.size() < 2 || pos == HWBufferList.size() - 1) {
+		HWBufferList.erase(HWBufferList.begin() + pos);
+	} else {
+		// swap with last
+		std::swap(HWBufferList[pos], HWBufferList.back());
+		HWBufferList.pop_back();
+		HWBufferList[pos]->ListPosition = pos;
+	}
 	delete HWBuffer;
+}
+
+void CNullDriver::updateHardwareBuffer(const scene::IVertexBuffer *vb)
+{
+	if (!vb)
+		return;
+	auto *link = getBufferLink(vb);
+	if (link)
+		updateHardwareBuffer(link);
+}
+
+void CNullDriver::updateHardwareBuffer(const scene::IIndexBuffer *ib)
+{
+	if (!ib)
+		return;
+	auto *link = getBufferLink(ib);
+	if (link)
+		updateHardwareBuffer(link);
 }
 
 void CNullDriver::removeHardwareBuffer(const scene::IVertexBuffer *vb)
@@ -1501,34 +1520,24 @@ IGPUProgrammingServices *CNullDriver::getGPUProgrammingServices()
 //! Adds a new material renderer to the VideoDriver, based on a high level shading language.
 s32 CNullDriver::addHighLevelShaderMaterial(
 		const c8 *vertexShaderProgram,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		const c8 *pixelShaderProgram,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		const c8 *geometryShaderProgram,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack *callback,
 		E_MATERIAL_TYPE baseMaterial,
 		s32 userData)
 {
-	os::Printer::log("High level shader materials not available (yet) in this driver, sorry");
+	os::Printer::log("Shader materials not available in this driver", ELL_ERROR);
 	return -1;
 }
 
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		const io::path &vertexShaderProgramFileName,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		const io::path &pixelShaderProgramFileName,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		const io::path &geometryShaderProgramFileName,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack *callback,
@@ -1564,9 +1573,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 	}
 
 	s32 result = addHighLevelShaderMaterialFromFiles(
-			vsfile, vertexShaderEntryPointName, vsCompileTarget,
-			psfile, pixelShaderEntryPointName, psCompileTarget,
-			gsfile, geometryShaderEntryPointName, gsCompileTarget,
+			vsfile, psfile, gsfile, shaderName,
 			inType, outType, verticesOut,
 			callback, baseMaterial, userData);
 
@@ -1584,14 +1591,9 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		io::IReadFile *vertexShaderProgram,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		io::IReadFile *pixelShaderProgram,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		io::IReadFile *geometryShaderProgram,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack *callback,
@@ -1637,9 +1639,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 	}
 
 	s32 result = this->addHighLevelShaderMaterial(
-			vs, vertexShaderEntryPointName, vsCompileTarget,
-			ps, pixelShaderEntryPointName, psCompileTarget,
-			gs, geometryShaderEntryPointName, gsCompileTarget,
+			vs, ps, gs, shaderName,
 			inType, outType, verticesOut,
 			callback, baseMaterial, userData);
 
@@ -1772,22 +1772,6 @@ bool CNullDriver::needsTransparentRenderPass(const irr::video::SMaterial &materi
 		return true;
 
 	return false;
-}
-
-//! Color conversion convenience function
-/** Convert an image (as array of pixels) from source to destination
-array, thereby converting the color format. The pixel size is
-determined by the color formats.
-\param sP Pointer to source
-\param sF Color format of source
-\param sN Number of pixels to convert, both array must be large enough
-\param dP Pointer to destination
-\param dF Color format of destination
-*/
-void CNullDriver::convertColor(const void *sP, ECOLOR_FORMAT sF, s32 sN,
-		void *dP, ECOLOR_FORMAT dF) const
-{
-	video::CColorConverter::convert_viaFormat(sP, sF, sN, dP, dF);
 }
 
 } // end namespace
