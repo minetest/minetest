@@ -115,6 +115,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	m_menumanager(menumgr),
 	m_smgr(rendering_engine->get_scene_manager()),
 	m_data(data),
+	m_joystick(joystick),
 	m_kill(kill)
 {
 	// initialize texture pointers
