@@ -53,7 +53,6 @@ centroid varying vec2 varTexCoord;
 centroid varying float nightRatio;
 #endif
 varying highp vec3 eyeVec;
-varying float nightRatio;
 varying float nightFactor;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
@@ -561,10 +560,6 @@ void main(void)
 #endif
 	}
 #endif
-
-	// We clip the color if it gets too bright
-	col *= min(2.0 / base.a / max(col.r, max(col.g, col.b)), 1.0);
-
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the
 	// clamp() is an addition. Else, the clamp() seems to be ignored.
