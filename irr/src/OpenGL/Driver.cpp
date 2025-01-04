@@ -1313,7 +1313,17 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 				getGLBlend(srcAlphaFact), getGLBlend(dstAlphaFact));
 	}
 
-	// TODO: Polygon Offset. Not sure if it was left out deliberately or if it won't work with this driver.
+	// Polygon Offset
+	if (resetAllRenderStates ||
+			lastmaterial.PolygonOffsetDepthBias != material.PolygonOffsetDepthBias ||
+			lastmaterial.PolygonOffsetSlopeScale != material.PolygonOffsetSlopeScale) {
+		if (material.PolygonOffsetDepthBias || material.PolygonOffsetSlopeScale) {
+			GL.Enable(GL.POLYGON_OFFSET_FILL);
+			GL.PolygonOffset(material.PolygonOffsetSlopeScale, material.PolygonOffsetDepthBias);
+		} else {
+			GL.Disable(GL.POLYGON_OFFSET_FILL);
+		}
+	}
 
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 		GL.LineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));

@@ -304,11 +304,7 @@ public:
 
 	//! A constant z-buffer offset for a polygon/line/point
 	/** The range of the value is driver specific.
-	On OpenGL you get units which are multiplied by the smallest value that is guaranteed to produce a resolvable offset.
-	On D3D9 you can pass a range between -1 and 1. But you should likely divide it by the range of the depthbuffer.
-	Like dividing by 65535.0 for a 16 bit depthbuffer. Thought it still might produce too large of a bias.
-	Some article (https://aras-p.info/blog/2008/06/12/depth-bias-and-the-power-of-deceiving-yourself/)
-	recommends multiplying by 2.0*4.8e-7 (and strangely on both 16 bit and 24 bit).	*/
+	On OpenGL you get units which are multiplied by the smallest value that is guaranteed to produce a resolvable offset. */
 	f32 PolygonOffsetDepthBias;
 
 	//! Variable Z-Buffer offset based on the slope of the polygon.
