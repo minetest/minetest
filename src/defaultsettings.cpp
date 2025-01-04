@@ -411,7 +411,6 @@ void set_default_settings()
 #endif
 
 	// Server
-	settings->setDefault("disable_escape_sequences", "false");
 	settings->setDefault("strip_color_codes", "false");
 #ifndef NDEBUG
 	settings->setDefault("random_mod_load_order", "true");

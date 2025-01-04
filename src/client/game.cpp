@@ -741,7 +741,6 @@ private:
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	bool m_cache_disable_escape_sequences;
 	bool m_cache_doubletap_jump;
 	bool m_cache_enable_joysticks;
 	bool m_cache_enable_fog;
@@ -784,8 +783,6 @@ Game::Game() :
 	m_game_ui(new GameUI())
 {
 	g_settings->registerChangedCallback("chat_log_level",
-		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("disable_escape_sequences",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
@@ -2880,10 +2877,7 @@ void Game::updateChat(f32 dtime)
 	std::vector<LogEntry> entries = m_chat_log_buf.take();
 	for (const auto& entry : entries) {
 		std::string line;
-		if (!m_cache_disable_escape_sequences) {
-			line.append(color_for(entry.level));
-		}
-		line.append(entry.combined);
+		line.append(color_for(entry.level)).append(entry.combined);
 		chat_backend->addMessage(L"", utf8_to_wide(line));
 	}
 
@@ -4067,7 +4061,6 @@ void Game::readSettings()
 	}
 	m_chat_log_buf.setLogLevel(chat_log_level);
 
-	m_cache_disable_escape_sequences     = g_settings->getBool("disable_escape_sequences");
 	m_cache_doubletap_jump               = g_settings->getBool("doubletap_jump");
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
