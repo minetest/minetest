@@ -377,17 +377,12 @@ fog_start (Fog start) float 0.4 0.0 0.99
 
 [**Clouds]
 
-#    Clouds are a client-side effect.
-enable_clouds (Clouds) bool true
-
-#    Use 3D cloud look instead of flat.
-#
-#    Requires: enable_clouds
+#    Allow clouds to look 3D instead of flat.
 enable_3d_clouds (3D clouds) bool true
 
 #   Use smooth cloud shading.
 #
-#   Requires: enable_3d_clouds, enable_clouds
+#   Requires: enable_3d_clouds
 soft_clouds (Soft clouds) bool false
 
 [**Filtering and Antialiasing]
@@ -471,9 +466,6 @@ smooth_lighting (Smooth lighting) bool true
 #    Enables tradeoffs that reduce CPU load or increase rendering performance
 #    at the expense of minor visual glitches that do not impact game playability.
 performance_tradeoffs (Tradeoffs for performance) bool false
-
-#    Adds particles when digging a node.
-enable_particles (Digging particles) bool true
 
 
 [**Waving Nodes]
@@ -683,12 +675,6 @@ formspec_fullscreen_bg_color (Formspec Full-Screen Background Color) string (0,0
 #    filtered in software, but some images are generated directly
 #    to hardware (e.g. render-to-texture for nodes in inventory).
 gui_scaling_filter (GUI scaling filter) bool false
-
-#    When gui_scaling_filter_txr2img is true, copy those images
-#    from hardware to software for scaling.  When false, fall back
-#    to the old scaling method, for video drivers that don't
-#    properly support downloading textures back from hardware.
-gui_scaling_filter_txr2img (GUI scaling filter txr2img) bool true
 
 #    Delay showing tooltips, stated in milliseconds.
 tooltip_show_delay (Tooltip delay) int 400 0 18446744073709551615
@@ -1844,10 +1830,7 @@ transparency_sorting_group_by_buffers (Transparency Sorting Group by Buffers) bo
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
-cloud_radius (Cloud radius) int 12 1 62
-
-#    Whether node texture animations should be desynchronized per mapblock.
-desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
+cloud_radius (Cloud radius) int 12 8 62
 
 #    Delay between mesh updates on the client in ms. Increasing this will slow
 #    down the rate of mesh updates, thus reducing jitter on slower clients.
@@ -2101,9 +2084,6 @@ max_block_send_distance (Max block send distance) int 12 1 65535
 #    Set this to -1 to disable the limit.
 max_forceloaded_blocks (Maximum forceloaded blocks) int 16 -1
 
-#    Interval of sending time of day to clients, stated in seconds.
-time_send_interval (Time send interval) float 5.0 0.001
-
 #    Interval of saving important changes in the world, stated in seconds.
 server_map_save_interval (Map save interval) float 5.3 0.001
 
@@ -2112,7 +2092,7 @@ server_map_save_interval (Map save interval) float 5.3 0.001
 server_unload_unused_data_timeout (Unload unused server data) int 29 0 4294967295
 
 #    Maximum number of statically stored objects in a block.
-max_objects_per_block (Maximum objects per block) int 256 1 65535
+max_objects_per_block (Maximum objects per block) int 256 256 65535
 
 #    Length of time between active block management cycles, stated in seconds.
 active_block_mgmt_interval (Active block management interval) float 2.0 0.0

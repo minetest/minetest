@@ -31,7 +31,8 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 
 	u32 vertex_count = p.vertices.size();
 	for (u32 i = 0; i < numVertices; i++) {
-		p.vertices.emplace_back(vertices[i].Pos + offset, vertices[i].Normal,
+		auto lo = layernum == 1 ? (vertices[i].Normal * 1e-2f) : v3f();
+		p.vertices.emplace_back(vertices[i].Pos + offset + lo, vertices[i].Normal,
 				vertices[i].Color, scale * vertices[i].TCoords);
 		m_bounding_radius_sq = std::max(m_bounding_radius_sq,
 				(vertices[i].Pos - m_center_pos).getLengthSQ());
@@ -69,7 +70,8 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 		video::SColor color = c;
 		if (!light_source)
 			applyFacesShading(color, vertices[i].Normal);
-		auto vpos = vertices[i].Pos + pos + offset;
+		auto lo = layernum == 1 ? (vertices[i].Normal * 1e-2f) : v3f();
+		auto vpos = vertices[i].Pos + pos + offset + lo;
 		p.vertices.emplace_back(vpos, vertices[i].Normal, color,
 				scale * vertices[i].TCoords);
 		m_bounding_radius_sq = std::max(m_bounding_radius_sq,
