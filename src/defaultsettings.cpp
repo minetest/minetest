@@ -82,7 +82,6 @@ void set_default_settings()
 
 	// Client
 	settings->setDefault("address", "");
-	settings->setDefault("enable_sound", "true");
 #if defined(__unix__) && !defined(__APPLE__) && !defined (__ANDROID__)
 	// On Linux+X11 (not Linux+Wayland or Linux+XWayland), I've encountered a bug
 	// where fake mouse events were generated from touch events if in relative

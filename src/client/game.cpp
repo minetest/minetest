@@ -1125,7 +1125,7 @@ bool Game::init(
 bool Game::initSound()
 {
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
+	if (g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
 		sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
 				std::make_unique<SoundFallbackPathProvider>());
@@ -1859,34 +1859,22 @@ void Game::processKeyInput()
 		toggleNoClip();
 #if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		if (g_settings->getBool("enable_sound")) {
-			bool new_mute_sound = !g_settings->getBool("mute_sound");
-			g_settings->setBool("mute_sound", new_mute_sound);
-			if (new_mute_sound)
-				m_game_ui->showTranslatedStatusText("Sound muted");
-			else
-				m_game_ui->showTranslatedStatusText("Sound unmuted");
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		bool new_mute_sound = !g_settings->getBool("mute_sound");
+		g_settings->setBool("mute_sound", new_mute_sound);
+		if (new_mute_sound)
+			m_game_ui->showTranslatedStatusText("Sound muted");
+		else
+			m_game_ui->showTranslatedStatusText("Sound unmuted");
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		if (g_settings->getBool("enable_sound")) {
-			float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
-			g_settings->setFloat("sound_volume", new_volume);
-			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-			m_game_ui->showStatusText(msg);
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
+		g_settings->setFloat("sound_volume", new_volume);
+		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+		m_game_ui->showStatusText(msg);
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		if (g_settings->getBool("enable_sound")) {
-			float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
-			g_settings->setFloat("sound_volume", new_volume);
-			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-			m_game_ui->showStatusText(msg);
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
+		g_settings->setFloat("sound_volume", new_volume);
+		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+		m_game_ui->showStatusText(msg);
 #else
 	} else if (wasKeyDown(KeyType::MUTE) || wasKeyDown(KeyType::INC_VOLUME)
 			|| wasKeyDown(KeyType::DEC_VOLUME)) {

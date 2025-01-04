@@ -130,7 +130,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	// create soundmanager
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
+	if (g_sound_manager_singleton.get()) {
 		m_sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
 				std::make_unique<MenuMusicFetcher>());
 	}

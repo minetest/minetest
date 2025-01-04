@@ -634,8 +634,7 @@ sound_volume (Volume) float 0.8 0.0 1.0
 #    Volume multiplier when the window is unfocused.
 sound_volume_unfocused (Volume when unfocused) float 0.3 0.0 1.0
 
-#    Whether to mute sounds. You can unmute sounds at any time, unless the
-#    sound system is disabled (enable_sound=false).
+#    Whether to mute sounds. You can unmute sounds at any time.
 #    In-game, you can toggle the mute state with the mute key or by using the
 #    pause menu.
 mute_sound (Mute sound) bool false
@@ -2310,12 +2309,6 @@ show_technical_names (Show technical names) bool false
 
 #    Controlled by a checkbox in the settings menu.
 show_advanced (Show advanced settings) bool false
-
-#    Enables the sound system.
-#    If disabled, this completely disables all sounds everywhere and the in-game
-#    sound controls will be non-functional.
-#    Changing this setting requires a restart.
-enable_sound (Sound) bool true
 
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W
