@@ -27,6 +27,18 @@
 #define MIN_EXTRUSION_MESH_RESOLUTION 16
 #define MAX_EXTRUSION_MESH_RESOLUTION 512
 
+/*!
+ * Applies overlays, textures and optionally materials to the given mesh and
+ * extracts tile colors for colorization.
+ * \param mattype overrides the buffer's material type, but can also
+ * be NULL to leave the original material.
+ * \param colors returns the colors of the mesh buffers in the mesh.
+ */
+static void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
+		bool set_material, const video::E_MATERIAL_TYPE *mattype,
+		std::vector<ItemPartColor> *colors, bool apply_scale = false);
+
+
 static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 {
 	const f32 r = 0.5;
@@ -317,25 +329,32 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 
 	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
-	for (auto &prebuffers : collector.prebuffers)
+	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+		auto &prebuffers = collector.prebuffers[layer];
 		for (PreMeshBuffer &p : prebuffers) {
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
 				const FrameSpec &frame = (*p.layer.frames)[0];
 				p.layer.texture = frame.texture;
 			}
-			for (video::S3DVertex &v : p.vertices) {
+			for (video::S3DVertex &v : p.vertices)
 				v.Color.setAlpha(255);
-			}
-			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-			buf->Material.setTexture(0, p.layer.texture);
-			p.layer.applyMaterialOptions(buf->Material);
-			mesh->addMeshBuffer(buf);
+
+			auto buf = make_irr<scene::SMeshBuffer>();
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
-			buf->drop();
-			colors->push_back(
-				ItemPartColor(p.layer.has_color, p.layer.color));
+
+			// Set up material
+			buf->Material.setTexture(0, p.layer.texture);
+			if (layer == 1) {
+				buf->Material.PolygonOffsetSlopeScale = -1;
+				buf->Material.PolygonOffsetDepthBias = -1;
+			}
+			p.layer.applyMaterialOptions(buf->Material);
+
+			mesh->addMeshBuffer(buf.get());
+			colors->emplace_back(p.layer.has_color, p.layer.color);
 		}
+	}
 	return mesh;
 }
 
@@ -688,13 +707,15 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	return mesh;
 }
 
-void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
+static void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 	bool set_material, const video::E_MATERIAL_TYPE *mattype,
 	std::vector<ItemPartColor> *colors, bool apply_scale)
 {
+	// FIXME: this function is weirdly inconsistent with what MapBlockMesh does.
+	// also set_material is never true
+
 	const u32 mc = mesh->getMeshBufferCount();
 	// Allocate colors for existing buffers
-	colors->clear();
 	colors->resize(mc);
 
 	for (u32 i = 0; i < mc; ++i) {
@@ -705,6 +726,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 			if (layer->texture_id == 0)
 				continue;
 			if (layernum != 0) {
+				// FIXME: why do this?
 				scene::IMeshBuffer *copy = cloneMeshBuffer(buf);
 				copy->getMaterial() = buf->getMaterial();
 				mesh->addMeshBuffer(copy);

@@ -50,6 +50,11 @@ struct FrameSpec
 	video::ITexture *texture = nullptr;
 };
 
+/**
+ * We have two tile layers:
+ * layer 0 = base
+ * layer 1 = overlay
+ */
 #define MAX_TILE_LAYERS 2
 
 //! Defines a layer of a tile.
