@@ -1752,8 +1752,8 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 	if (stats2.Drawcalls > 0)
 		g_profiler->avg("Irr: primitives per drawcall",
 			stats2.PrimitivesDrawn / float(stats2.Drawcalls));
-	g_profiler->avg("Irr: buffers uploaded", stats2.HWBuffersUploaded);
-	g_profiler->avg("Irr: buffers uploaded (bytes)", stats2.HWBuffersUploadedSize);
+	g_profiler->avg("Irr: HW buffers uploaded", stats2.HWBuffersUploaded);
+	g_profiler->avg("Irr: HW buffers active", stats2.HWBuffersActive);
 }
 
 void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
@@ -3246,7 +3246,7 @@ PointedThing Game::updatePointedThing(
 		hud->pointing_at_object = true;
 
 		runData.selected_object = client->getEnv().getActiveObject(result.object_id);
-		aabb3f selection_box;
+		aabb3f selection_box{{0.0f, 0.0f, 0.0f}};
 		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&
 				runData.selected_object->getSelectionBox(&selection_box)) {
 			v3f pos = runData.selected_object->getPosition();

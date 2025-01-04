@@ -121,7 +121,7 @@ void NodeBox::deSerialize(std::istream &is)
 		case NODEBOX_LEVELED: {
 			u16 fixed_count = readU16(is);
 			while(fixed_count--) {
-				aabb3f box;
+				aabb3f box{{0.0f, 0.0f, 0.0f}};
 				box.MinEdge = readV3F32(is);
 				box.MaxEdge = readV3F32(is);
 				fixed.push_back(box);
@@ -742,7 +742,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	}
 }
 
-bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype)
+static bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype)
 {
 	if (style == ALIGN_STYLE_WORLD)
 		return true;

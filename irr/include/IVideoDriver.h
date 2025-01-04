@@ -61,8 +61,8 @@ struct SFrameStats {
 	u32 PrimitivesDrawn = 0;
 	//! Number of hardware buffers uploaded (new or updated)
 	u32 HWBuffersUploaded = 0;
-	//! Sum of uploaded hardware buffer size
-	u32 HWBuffersUploadedSize = 0;
+	//! Number of active hardware buffers
+	u32 HWBuffersActive = 0;
 };
 
 //! Interface to driver which is able to perform 2d and 3d graphics functions.
@@ -309,6 +309,18 @@ public:
 	good idea to set all materials which are using this texture to
 	0 or another texture first. */
 	virtual void removeAllTextures() = 0;
+
+	//! Eagerly upload buffer to hardware
+	/** This can be a good idea if you have a newly created or modified buffer,
+	which you know you will draw in the near future (e.g. end of same frame,
+	or next frame), because it gives the GPU driver to copy the contents. */
+	virtual void updateHardwareBuffer(const scene::IVertexBuffer *vb) = 0;
+
+	//! Eagerly upload buffer to hardware
+	/** This can be a good idea if you have a newly created or modified buffer,
+	which you know you will draw in the near future (e.g. end of same frame,
+	or next frame), because it gives the GPU driver to copy the contents. */
+	virtual void updateHardwareBuffer(const scene::IIndexBuffer *ib) = 0;
 
 	//! Remove hardware buffer
 	virtual void removeHardwareBuffer(const scene::IVertexBuffer *vb) = 0;

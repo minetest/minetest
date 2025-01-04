@@ -67,9 +67,6 @@ struct button_info
 		SECOND_TEXTURE
 	} toggleable = NOT_TOGGLEABLE;
 	std::string toggle_textures[2];
-
-	void emitAction(bool action, video::IVideoDriver *driver,
-			IEventReceiver *receiver, ISimpleTextureSource *tsrc);
 };
 
 
@@ -185,6 +182,19 @@ private:
 	std::vector<recti> m_overflow_button_rects;
 
 	std::shared_ptr<IGUIStaticText> m_status_text;
+
+	// Note: TouchControls intentionally uses IGUIImage instead of IGUIButton
+	// for its buttons. We only want static image display, not interactivity,
+	// from Irrlicht.
+
+	void emitKeyboardEvent(EKEY_CODE keycode, bool pressed);
+
+	void loadButtonTexture(IGUIImage *gui_button, const std::string &path);
+	void buttonEmitAction(button_info &btn, bool action);
+
+	bool buttonsHandlePress(std::vector<button_info> &buttons, size_t pointer_id, IGUIElement *element);
+	bool buttonsHandleRelease(std::vector<button_info> &buttons, size_t pointer_id);
+	bool buttonsStep(std::vector<button_info> &buttons, float dtime);
 
 	void toggleOverflowMenu();
 	void updateVisibility();

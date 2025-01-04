@@ -161,6 +161,7 @@ public:
 		GL.BlendEquation(mode);
 	}
 
+	bool LODBiasSupported = false;
 	bool AnisotropicFilterSupported = false;
 	bool BlendMinMaxSupported = false;
 	bool TextureMultisampleSupported = false;

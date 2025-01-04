@@ -195,8 +195,7 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	else
 		g_extrusion_mesh_cache->grab();
 
-	// Disable bounding box culling for this scene node
-	// since we won't calculate the bounding box.
+	// This class doesn't render anything, so disable culling.
 	setAutomaticCulling(scene::EAC_OFF);
 
 	// Create the child scene node
@@ -299,8 +298,7 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	MeshMakeData mesh_make_data(client->ndef(), 1);
 	MeshCollector collector(v3f(0.0f * BS), v3f());
 	mesh_make_data.setSmoothLighting(false);
-	MapblockMeshGenerator gen(&mesh_make_data, &collector,
-		client->getSceneManager()->getMeshManipulator());
+	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 
 	if (n.getParam2()) {
 		// keep it

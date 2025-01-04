@@ -104,6 +104,7 @@ void set_default_settings()
 	settings->setDefault("sound_extensions_blacklist", "");
 	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("mesh_generation_threads", "0");
+	settings->setDefault("mesh_buffer_min_vertices", "100");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
@@ -311,7 +312,7 @@ void set_default_settings()
 
 	// Effects
 	settings->setDefault("enable_post_processing", "true");
-	settings->setDefault("post_processing_texture_bits", "16");
+	settings->setDefault("post_processing_texture_bits", "10");
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");

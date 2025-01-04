@@ -134,7 +134,7 @@ private:
 	// Bounding box culling is disabled for this type of scene node,
 	// so this variable is just required so we can implement
 	// getBoundingBox() and is set to an empty box.
-	aabb3f m_bounding_box;
+	aabb3f m_bounding_box{{0, 0, 0}};
 
 	ShadowRenderer *m_shadow;
 };

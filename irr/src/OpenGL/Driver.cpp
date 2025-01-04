@@ -177,6 +177,8 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 
 COpenGL3DriverBase::~COpenGL3DriverBase()
 {
+	QuadIndexVBO.destroy();
+
 	deleteMaterialRenders();
 
 	CacheHandler->getTextureCache().clear();
@@ -198,12 +200,16 @@ COpenGL3DriverBase::~COpenGL3DriverBase()
 	}
 }
 
-void COpenGL3DriverBase::initQuadsIndices(int max_vertex_count)
+void COpenGL3DriverBase::initQuadsIndices(u32 max_vertex_count)
 {
-	int max_quad_count = max_vertex_count / 4;
-	std::vector<GLushort> QuadsIndices;
-	QuadsIndices.reserve(6 * max_quad_count);
-	for (int k = 0; k < max_quad_count; k++) {
+	u32 max_quad_count = max_vertex_count / 4;
+	u32 indices_size = 6 * max_quad_count;
+	if (indices_size == QuadIndexVBO.getSize() * sizeof(u16))
+		return;
+	// initialize buffer contents
+	std::vector<u16> QuadsIndices;
+	QuadsIndices.reserve(indices_size);
+	for (u32 k = 0; k < max_quad_count; k++) {
 		QuadsIndices.push_back(4 * k + 0);
 		QuadsIndices.push_back(4 * k + 1);
 		QuadsIndices.push_back(4 * k + 2);
@@ -211,11 +217,8 @@ void COpenGL3DriverBase::initQuadsIndices(int max_vertex_count)
 		QuadsIndices.push_back(4 * k + 2);
 		QuadsIndices.push_back(4 * k + 3);
 	}
-	GL.GenBuffers(1, &QuadIndexBuffer);
-	GL.BindBuffer(GL_ARRAY_BUFFER, QuadIndexBuffer);
-	GL.BufferData(GL_ARRAY_BUFFER, sizeof(QuadsIndices[0]) * QuadsIndices.size(), QuadsIndices.data(), GL_STATIC_DRAW);
-	GL.BindBuffer(GL_ARRAY_BUFFER, 0);
-	QuadIndexCount = QuadsIndices.size();
+	QuadIndexVBO.upload(QuadsIndices.data(), QuadsIndices.size() * sizeof(u16),
+		0, GL_STATIC_DRAW, true);
 }
 
 void COpenGL3DriverBase::initVersion()
@@ -383,28 +386,28 @@ void COpenGL3DriverBase::createMaterialRenderers()
 
 	// EMT_SOLID
 	core::stringc FragmentShader = OGLES2ShaderPath + "Solid.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "Solid",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID, 0);
 
 	// EMT_TRANSPARENT_ALPHA_CHANNEL
 	FragmentShader = OGLES2ShaderPath + "TransparentAlphaChannel.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "TransparentAlphaChannel",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
 
 	// EMT_TRANSPARENT_ALPHA_CHANNEL_REF
 	FragmentShader = OGLES2ShaderPath + "TransparentAlphaChannelRef.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_SOLID, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "TransparentAlphaChannelRef",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_SOLID, 0);
 
 	// EMT_TRANSPARENT_VERTEX_ALPHA
 	FragmentShader = OGLES2ShaderPath + "TransparentVertexAlpha.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentVertexAlphaCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "TransparentVertexAlpha",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentVertexAlphaCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
 
 	// EMT_ONETEXTURE_BLEND
 	FragmentShader = OGLES2ShaderPath + "OneTextureBlend.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
-			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, OneTextureBlendCB, EMT_ONETEXTURE_BLEND, 0);
+	addHighLevelShaderMaterialFromFiles(VertexShader, FragmentShader, "", "OneTextureBlend",
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, OneTextureBlendCB, EMT_ONETEXTURE_BLEND, 0);
 
 	// Drop callbacks.
 
@@ -474,41 +477,18 @@ void COpenGL3DriverBase::setTransform(E_TRANSFORMATION_STATE state, const core::
 	Transformation3DChanged = true;
 }
 
-bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink_opengl *HWBuffer,
+bool COpenGL3DriverBase::uploadHardwareBuffer(OpenGLVBO &vbo,
 	const void *buffer, size_t bufferSize, scene::E_HARDWARE_MAPPING hint)
 {
-	assert(HWBuffer);
-
 	accountHWBufferUpload(bufferSize);
 
-	// get or create buffer
-	bool newBuffer = false;
-	if (!HWBuffer->vbo_ID) {
-		GL.GenBuffers(1, &HWBuffer->vbo_ID);
-		if (!HWBuffer->vbo_ID)
-			return false;
-		newBuffer = true;
-	} else if (HWBuffer->vbo_Size < bufferSize) {
-		newBuffer = true;
-	}
+	GLenum usage = GL_STATIC_DRAW;
+	if (hint == scene::EHM_STREAM)
+		usage = GL_STREAM_DRAW;
+	else if (hint == scene::EHM_DYNAMIC)
+		usage = GL_DYNAMIC_DRAW;
 
-	GL.BindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_ID);
-
-	// copy data to graphics card
-	if (!newBuffer)
-		GL.BufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, buffer);
-	else {
-		HWBuffer->vbo_Size = bufferSize;
-
-		GLenum usage = GL_STATIC_DRAW;
-		if (hint == scene::EHM_STREAM)
-			usage = GL_STREAM_DRAW;
-		else if (hint == scene::EHM_DYNAMIC)
-			usage = GL_DYNAMIC_DRAW;
-		GL.BufferData(GL_ARRAY_BUFFER, bufferSize, buffer, usage);
-	}
-
-	GL.BindBuffer(GL_ARRAY_BUFFER, 0);
+	vbo.upload(buffer, bufferSize, 0, usage);
 
 	return (!TEST_GL_ERROR(this));
 }
@@ -525,7 +505,8 @@ bool COpenGL3DriverBase::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuff
 	const u32 vertexSize = getVertexPitchFromType(vb->getType());
 	const size_t bufferSize = vertexSize * vb->getCount();
 
-	return updateHardwareBuffer(HWBuffer, vb->getData(), bufferSize, vb->getHardwareMappingHint());
+	return uploadHardwareBuffer(HWBuffer->Vbo, vb->getData(),
+		bufferSize, vb->getHardwareMappingHint());
 }
 
 bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
@@ -551,7 +532,8 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 
 	const size_t bufferSize = ib->getCount() * indexSize;
 
-	return updateHardwareBuffer(HWBuffer, ib->getData(), bufferSize, ib->getHardwareMappingHint());
+	return uploadHardwareBuffer(HWBuffer->Vbo, ib->getData(),
+		bufferSize, ib->getHardwareMappingHint());
 }
 
 bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink *HWBuffer)
@@ -563,14 +545,14 @@ bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 
 	if (b->IsVertex) {
 		assert(b->VertexBuffer);
-		if (b->ChangedID != b->VertexBuffer->getChangedID() || !b->vbo_ID) {
+		if (b->ChangedID != b->VertexBuffer->getChangedID() || !b->Vbo.exists()) {
 			if (!updateVertexHardwareBuffer(b))
 				return false;
 			b->ChangedID = b->VertexBuffer->getChangedID();
 		}
 	} else {
 		assert(b->IndexBuffer);
-		if (b->ChangedID != b->IndexBuffer->getChangedID() || !b->vbo_ID) {
+		if (b->ChangedID != b->IndexBuffer->getChangedID() || !b->Vbo.exists()) {
 			if (!updateIndexHardwareBuffer(b))
 				return false;
 			b->ChangedID = b->IndexBuffer->getChangedID();
@@ -584,10 +566,8 @@ COpenGL3DriverBase::SHWBufferLink *COpenGL3DriverBase::createHardwareBuffer(cons
 	if (!vb || vb->getHardwareMappingHint() == scene::EHM_NEVER)
 		return 0;
 
-	SHWBufferLink_opengl *HWBuffer = new SHWBufferLink_opengl(vb);
-
-	// add to map
-	HWBuffer->listPosition = HWBufferList.insert(HWBufferList.end(), HWBuffer);
+	auto *HWBuffer = new SHWBufferLink_opengl(vb);
+	registerHardwareBuffer(HWBuffer);
 
 	if (!updateVertexHardwareBuffer(HWBuffer)) {
 		deleteHardwareBuffer(HWBuffer);
@@ -602,10 +582,8 @@ COpenGL3DriverBase::SHWBufferLink *COpenGL3DriverBase::createHardwareBuffer(cons
 	if (!ib || ib->getHardwareMappingHint() == scene::EHM_NEVER)
 		return 0;
 
-	SHWBufferLink_opengl *HWBuffer = new SHWBufferLink_opengl(ib);
-
-	// add to map
-	HWBuffer->listPosition = HWBufferList.insert(HWBufferList.end(), HWBuffer);
+	auto *HWBuffer = new SHWBufferLink_opengl(ib);
+	registerHardwareBuffer(HWBuffer);
 
 	if (!updateIndexHardwareBuffer(HWBuffer)) {
 		deleteHardwareBuffer(HWBuffer);
@@ -621,10 +599,7 @@ void COpenGL3DriverBase::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 		return;
 
 	auto *b = static_cast<SHWBufferLink_opengl *>(HWBuffer);
-	if (b->vbo_ID) {
-		GL.DeleteBuffers(1, &b->vbo_ID);
-		b->vbo_ID = 0;
-	}
+	b->Vbo.destroy();
 
 	CNullDriver::deleteHardwareBuffer(HWBuffer);
 }
@@ -644,14 +619,14 @@ void COpenGL3DriverBase::drawBuffers(const scene::IVertexBuffer *vb,
 	const void *vertices = vb->getData();
 	if (hwvert) {
 		assert(hwvert->IsVertex);
-		GL.BindBuffer(GL_ARRAY_BUFFER, hwvert->vbo_ID);
+		GL.BindBuffer(GL_ARRAY_BUFFER, hwvert->Vbo.getName());
 		vertices = nullptr;
 	}
 
 	const void *indexList = ib->getData();
 	if (hwidx) {
 		assert(!hwidx->IsVertex);
-		GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, hwidx->vbo_ID);
+		GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, hwidx->Vbo.getName());
 		indexList = nullptr;
 	}
 
@@ -710,58 +685,32 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 
 	setRenderStates3DMode();
 
-	auto &vTypeDesc = getVertexTypeDescription(vType);
-	beginDraw(vTypeDesc, reinterpret_cast<uintptr_t>(vertices));
-	GLenum indexSize = 0;
-
-	switch (iType) {
-	case (EIT_16BIT): {
-		indexSize = GL_UNSIGNED_SHORT;
-		break;
-	}
-	case (EIT_32BIT): {
-		indexSize = GL_UNSIGNED_INT;
-		break;
-	}
-	}
-
-	switch (pType) {
-	case scene::EPT_POINTS:
-	case scene::EPT_POINT_SPRITES:
-		GL.DrawArrays(GL_POINTS, 0, primitiveCount);
-		break;
-	case scene::EPT_LINE_STRIP:
-		GL.DrawElements(GL_LINE_STRIP, primitiveCount + 1, indexSize, indexList);
-		break;
-	case scene::EPT_LINE_LOOP:
-		GL.DrawElements(GL_LINE_LOOP, primitiveCount, indexSize, indexList);
-		break;
-	case scene::EPT_LINES:
-		GL.DrawElements(GL_LINES, primitiveCount * 2, indexSize, indexList);
-		break;
-	case scene::EPT_TRIANGLE_STRIP:
-		GL.DrawElements(GL_TRIANGLE_STRIP, primitiveCount + 2, indexSize, indexList);
-		break;
-	case scene::EPT_TRIANGLE_FAN:
-		GL.DrawElements(GL_TRIANGLE_FAN, primitiveCount + 2, indexSize, indexList);
-		break;
-	case scene::EPT_TRIANGLES:
-		GL.DrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS
-																						: GL_TRIANGLES,
-				primitiveCount * 3, indexSize, indexList);
-		break;
-	default:
-		break;
-	}
-
-	endDraw(vTypeDesc);
+	drawGeneric(vertices, indexList, primitiveCount, vType, pType, iType);
 }
 
+//! draws a vertex primitive list in 2d
 void COpenGL3DriverBase::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCount,
 		const void *indexList, u32 primitiveCount,
 		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
-	os::Printer::log("draw2DVertexPrimitiveList unimplemented", ELL_ERROR);
+	if (!primitiveCount || !vertexCount)
+		return;
+
+	if (!vertices)
+		return;
+
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
+
+	setRenderStates2DMode(
+		Material.MaterialType == EMT_TRANSPARENT_VERTEX_ALPHA,
+		Material.getTexture(0),
+		Material.MaterialType == EMT_TRANSPARENT_ALPHA_CHANNEL
+	);
+
+	drawGeneric(vertices, indexList, primitiveCount, vType, pType, iType);
 }
 
 void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core::position2d<s32> &destPos,
@@ -824,10 +773,10 @@ void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core:
 				clipRect->getWidth(), clipRect->getHeight());
 	}
 
-	f32 left = (f32)destRect.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 right = (f32)destRect.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 down = 2.f - (f32)destRect.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-	f32 top = 2.f - (f32)destRect.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+	f32 left  = (f32)destRect.UpperLeftCorner.X;
+	f32 right = (f32)destRect.LowerRightCorner.X;
+	f32 down  = (f32)destRect.LowerRightCorner.Y;
+	f32 top   = (f32)destRect.UpperLeftCorner.Y;
 
 	S3DVertex vertices[4];
 	vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, useColor[0], tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
@@ -903,7 +852,7 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 	}
 
 	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
-	assert(6 * drawCount <= QuadIndexCount); // FIXME split the batch? or let it crash?
+	assert(6 * drawCount * sizeof(u16) <= QuadIndexVBO.getSize()); // FIXME split the batch? or let it crash?
 
 	std::vector<S3DVertex> vtx;
 	vtx.reserve(drawCount * 4);
@@ -924,10 +873,10 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 
 		const core::rect<s32> poss(targetPos, sourceSize);
 
-		f32 left = (f32)poss.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 right = (f32)poss.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 down = 2.f - (f32)poss.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-		f32 top = 2.f - (f32)poss.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+		f32 left  = (f32)poss.UpperLeftCorner.X;
+		f32 right = (f32)poss.LowerRightCorner.X;
+		f32 down  = (f32)poss.LowerRightCorner.Y;
+		f32 top   = (f32)poss.UpperLeftCorner.Y;
 
 		vtx.emplace_back(left, top, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
@@ -943,7 +892,7 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 	}
 
-	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadIndexBuffer);
+	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadIndexVBO.getName());
 	drawElements(GL_TRIANGLES, vt2DImage, vtx.data(), vtx.size(), 0, 6 * drawCount);
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -956,33 +905,7 @@ void COpenGL3DriverBase::draw2DRectangle(SColor color,
 		const core::rect<s32> &position,
 		const core::rect<s32> *clip)
 {
-	chooseMaterial2D();
-	setMaterialTexture(0, 0);
-
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-
-	core::rect<s32> pos = position;
-
-	if (clip)
-		pos.clipAgainst(*clip);
-
-	if (!pos.isValid())
-		return;
-
-	const core::dimension2d<u32> &renderTargetSize = getCurrentRenderTargetSize();
-
-	f32 left = (f32)pos.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 right = (f32)pos.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 down = 2.f - (f32)pos.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-	f32 top = 2.f - (f32)pos.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-
-	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, color, 0, 0);
-	vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, color, 0, 0);
-	vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, color, 0, 0);
-	vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, color, 0, 0);
-
-	drawQuad(vtPrimitive, vertices);
+	draw2DRectangle(position, color, color, color, color, clip);
 }
 
 //! draw an 2d rectangle
@@ -1008,18 +931,16 @@ void COpenGL3DriverBase::draw2DRectangle(const core::rect<s32> &position,
 								  colorRightDown.getAlpha() < 255,
 			false, false);
 
-	const core::dimension2d<u32> &renderTargetSize = getCurrentRenderTargetSize();
-
-	f32 left = (f32)pos.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 right = (f32)pos.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 down = 2.f - (f32)pos.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-	f32 top = 2.f - (f32)pos.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+	f32 left  = (f32)pos.UpperLeftCorner.X;
+	f32 right = (f32)pos.LowerRightCorner.X;
+	f32 down  = (f32)pos.LowerRightCorner.Y;
+	f32 top   = (f32)pos.UpperLeftCorner.Y;
 
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, colorLeftUp, 0, 0);
-	vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, colorRightUp, 0, 0);
+	vertices[0] = S3DVertex(left,   top, 0, 0, 0, 1, colorLeftUp, 0, 0);
+	vertices[1] = S3DVertex(right,  top, 0, 0, 0, 1, colorRightUp, 0, 0);
 	vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, colorRightDown, 0, 0);
-	vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, colorLeftDown, 0, 0);
+	vertices[3] = S3DVertex(left,  down, 0, 0, 0, 1, colorLeftDown, 0, 0);
 
 	drawQuad(vtPrimitive, vertices);
 }
@@ -1034,12 +955,10 @@ void COpenGL3DriverBase::draw2DLine(const core::position2d<s32> &start,
 
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
-		const core::dimension2d<u32> &renderTargetSize = getCurrentRenderTargetSize();
-
-		f32 startX = (f32)start.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 endX = (f32)end.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 startY = 2.f - (f32)start.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-		f32 endY = 2.f - (f32)end.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+		f32 startX = (f32)start.X;
+		f32 endX   = (f32)end.X;
+		f32 startY = (f32)start.Y;
+		f32 endY   = (f32)end.Y;
 
 		S3DVertex vertices[2];
 		vertices[0] = S3DVertex(startX, startY, 0, 0, 0, 1, color, 0, 0);
@@ -1066,6 +985,55 @@ void COpenGL3DriverBase::drawElements(GLenum primitiveType, const VertexType &ve
 	beginDraw(vertexType, reinterpret_cast<uintptr_t>(vertices));
 	GL.DrawRangeElements(primitiveType, 0, vertexCount - 1, indexCount, GL_UNSIGNED_SHORT, indices);
 	endDraw(vertexType);
+}
+
+void COpenGL3DriverBase::drawGeneric(const void *vertices, const void *indexList,
+		u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	auto &vTypeDesc = getVertexTypeDescription(vType);
+	beginDraw(vTypeDesc, reinterpret_cast<uintptr_t>(vertices));
+	GLenum indexSize = 0;
+
+	switch (iType) {
+	case EIT_16BIT:
+		indexSize = GL_UNSIGNED_SHORT;
+		break;
+	case EIT_32BIT:
+		indexSize = GL_UNSIGNED_INT;
+		break;
+	}
+
+	switch (pType) {
+	case scene::EPT_POINTS:
+	case scene::EPT_POINT_SPRITES:
+		GL.DrawArrays(GL_POINTS, 0, primitiveCount);
+		break;
+	case scene::EPT_LINE_STRIP:
+		GL.DrawElements(GL_LINE_STRIP, primitiveCount + 1, indexSize, indexList);
+		break;
+	case scene::EPT_LINE_LOOP:
+		GL.DrawElements(GL_LINE_LOOP, primitiveCount, indexSize, indexList);
+		break;
+	case scene::EPT_LINES:
+		GL.DrawElements(GL_LINES, primitiveCount * 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLE_STRIP:
+		GL.DrawElements(GL_TRIANGLE_STRIP, primitiveCount + 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLE_FAN:
+		GL.DrawElements(GL_TRIANGLE_FAN, primitiveCount + 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLES:
+		GL.DrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS
+																						: GL_TRIANGLES,
+				primitiveCount * 3, indexSize, indexList);
+		break;
+	default:
+		break;
+	}
+
+	endDraw(vTypeDesc);
 }
 
 void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verticesBase)
@@ -1372,60 +1340,74 @@ void COpenGL3DriverBase::setTextureRenderStates(const SMaterial &material, bool 
 
 		CacheHandler->setActiveTexture(GL_TEXTURE0 + i);
 
-		if (resetAllRenderstates)
-			tmpTexture->getStatesCache().IsCached = false;
+		const auto &layer = material.TextureLayers[i];
+		auto &states = tmpTexture->getStatesCache();
 
-		if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].MagFilter != tmpTexture->getStatesCache().MagFilter) {
-			E_TEXTURE_MAG_FILTER magFilter = material.TextureLayers[i].MagFilter;
+		if (resetAllRenderstates)
+			states.IsCached = false;
+
+		if (!states.IsCached || layer.MagFilter != states.MagFilter) {
+			E_TEXTURE_MAG_FILTER magFilter = layer.MagFilter;
 			GL.TexParameteri(tmpTextureType, GL_TEXTURE_MAG_FILTER,
 					magFilter == ETMAGF_NEAREST ? GL_NEAREST : (assert(magFilter == ETMAGF_LINEAR), GL_LINEAR));
 
-			tmpTexture->getStatesCache().MagFilter = magFilter;
+			states.MagFilter = magFilter;
 		}
 
 		if (material.UseMipMaps && tmpTexture->hasMipMaps()) {
-			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].MinFilter != tmpTexture->getStatesCache().MinFilter ||
-					!tmpTexture->getStatesCache().MipMapStatus) {
-				E_TEXTURE_MIN_FILTER minFilter = material.TextureLayers[i].MinFilter;
+			if (!states.IsCached || layer.MinFilter != states.MinFilter ||
+					!states.MipMapStatus) {
+				E_TEXTURE_MIN_FILTER minFilter = layer.MinFilter;
 				GL.TexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 						minFilter == ETMINF_NEAREST_MIPMAP_NEAREST ? GL_NEAREST_MIPMAP_NEAREST : minFilter == ETMINF_LINEAR_MIPMAP_NEAREST ? GL_LINEAR_MIPMAP_NEAREST
 																						 : minFilter == ETMINF_NEAREST_MIPMAP_LINEAR       ? GL_NEAREST_MIPMAP_LINEAR
 																																		   : (assert(minFilter == ETMINF_LINEAR_MIPMAP_LINEAR), GL_LINEAR_MIPMAP_LINEAR));
 
-				tmpTexture->getStatesCache().MinFilter = minFilter;
-				tmpTexture->getStatesCache().MipMapStatus = true;
+				states.MinFilter = minFilter;
+				states.MipMapStatus = true;
 			}
 		} else {
-			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].MinFilter != tmpTexture->getStatesCache().MinFilter ||
-					tmpTexture->getStatesCache().MipMapStatus) {
-				E_TEXTURE_MIN_FILTER minFilter = material.TextureLayers[i].MinFilter;
+			if (!states.IsCached || layer.MinFilter != states.MinFilter ||
+					states.MipMapStatus) {
+				E_TEXTURE_MIN_FILTER minFilter = layer.MinFilter;
 				GL.TexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 						(minFilter == ETMINF_NEAREST_MIPMAP_NEAREST || minFilter == ETMINF_NEAREST_MIPMAP_LINEAR) ? GL_NEAREST : (assert(minFilter == ETMINF_LINEAR_MIPMAP_NEAREST || minFilter == ETMINF_LINEAR_MIPMAP_LINEAR), GL_LINEAR));
 
-				tmpTexture->getStatesCache().MinFilter = minFilter;
-				tmpTexture->getStatesCache().MipMapStatus = false;
+				states.MinFilter = minFilter;
+				states.MipMapStatus = false;
 			}
 		}
 
+		if (LODBiasSupported &&
+			(!states.IsCached || layer.LODBias != states.LODBias)) {
+			if (layer.LODBias) {
+				const float tmp = core::clamp(layer.LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+				GL.TexParameterf(tmpTextureType, GL.TEXTURE_LOD_BIAS, tmp);
+			} else
+				GL.TexParameterf(tmpTextureType, GL.TEXTURE_LOD_BIAS, 0.f);
+
+			states.LODBias = layer.LODBias;
+		}
+
 		if (AnisotropicFilterSupported &&
-				(!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter)) {
+				(!states.IsCached || layer.AnisotropicFilter != states.AnisotropicFilter)) {
 			GL.TexParameteri(tmpTextureType, GL.TEXTURE_MAX_ANISOTROPY,
-					material.TextureLayers[i].AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, material.TextureLayers[i].AnisotropicFilter) : 1);
+					layer.AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, layer.AnisotropicFilter) : 1);
 
-			tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayers[i].AnisotropicFilter;
+			states.AnisotropicFilter = layer.AnisotropicFilter;
 		}
 
-		if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].TextureWrapU != tmpTexture->getStatesCache().WrapU) {
-			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayers[i].TextureWrapU));
-			tmpTexture->getStatesCache().WrapU = material.TextureLayers[i].TextureWrapU;
+		if (!states.IsCached || layer.TextureWrapU != states.WrapU) {
+			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_S, getTextureWrapMode(layer.TextureWrapU));
+			states.WrapU = layer.TextureWrapU;
 		}
 
-		if (!tmpTexture->getStatesCache().IsCached || material.TextureLayers[i].TextureWrapV != tmpTexture->getStatesCache().WrapV) {
-			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayers[i].TextureWrapV));
-			tmpTexture->getStatesCache().WrapV = material.TextureLayers[i].TextureWrapV;
+		if (!states.IsCached || layer.TextureWrapV != states.WrapV) {
+			GL.TexParameteri(tmpTextureType, GL_TEXTURE_WRAP_T, getTextureWrapMode(layer.TextureWrapV));
+			states.WrapV = layer.TextureWrapV;
 		}
 
-		tmpTexture->getStatesCache().IsCached = true;
+		states.IsCached = true;
 	}
 }
 
@@ -1620,14 +1602,9 @@ bool COpenGL3DriverBase::setPixelShaderConstant(s32 index, const u32 *ints, int 
 //! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
 s32 COpenGL3DriverBase::addHighLevelShaderMaterial(
 		const c8 *vertexShaderProgram,
-		const c8 *vertexShaderEntryPointName,
-		E_VERTEX_SHADER_TYPE vsCompileTarget,
 		const c8 *pixelShaderProgram,
-		const c8 *pixelShaderEntryPointName,
-		E_PIXEL_SHADER_TYPE psCompileTarget,
 		const c8 *geometryShaderProgram,
-		const c8 *geometryShaderEntryPointName,
-		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		const c8 *shaderName,
 		scene::E_PRIMITIVE_TYPE inType,
 		scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
