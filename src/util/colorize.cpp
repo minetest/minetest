@@ -20,10 +20,13 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef HAVE_COLORIZE_URL
 
 #include <curl/urlapi.h>
-#include "log.h"
-#include "string.h"
 #include <sstream>
 #include <memory>
+#include <iomanip>
+
+constexpr std::string_view red = COLOR_CODE("#faa");
+constexpr std::string_view white = COLOR_CODE("#fff");
+constexpr std::string_view grey = COLOR_CODE("#aaa");
 
 std::string colorize_url(const std::string &url)
 {
@@ -59,10 +62,6 @@ std::string colorize_url(const std::string &url)
 #endif
 
 	std::ostringstream os;
-
-	std::string_view red = COLOR_CODE("#faa");
-	std::string_view white = COLOR_CODE("#fff");
-	std::string_view grey = COLOR_CODE("#aaa");
 
 	os << grey << scheme << "://";
 	if (!user.empty())
