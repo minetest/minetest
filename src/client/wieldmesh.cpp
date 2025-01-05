@@ -244,6 +244,7 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
 	postProcessNodeMesh(copy, f, false, &m_material_type, &m_colors, true);
+	copy->recalculateBoundingBox();
 	changeToMesh(copy);
 	copy->drop();
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
@@ -279,6 +280,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		mesh->addMeshBuffer(copy);
 		copy->drop();
 	}
+	mesh->recalculateBoundingBox();
 	changeToMesh(mesh);
 	mesh->drop();
 
@@ -355,6 +357,7 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 			colors->emplace_back(p.layer.has_color, p.layer.color);
 		}
 	}
+	mesh->recalculateBoundingBox();
 	return mesh;
 }
 
