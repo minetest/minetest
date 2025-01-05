@@ -24,12 +24,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <memory>
 #include <iomanip>
 
-constexpr std::string_view red = COLOR_CODE("#faa");
-constexpr std::string_view white = COLOR_CODE("#fff");
-constexpr std::string_view grey = COLOR_CODE("#aaa");
-
 std::string colorize_url(const std::string &url)
 {
+	constexpr std::string_view red = COLOR_CODE("#faa");
+	constexpr std::string_view white = COLOR_CODE("#fff");
+	constexpr std::string_view grey = COLOR_CODE("#aaa");
+
 	auto urlHandleRAII = std::unique_ptr<CURLU, decltype(&curl_url_cleanup)>(
 			curl_url(), curl_url_cleanup);
 	CURLU *urlHandle = urlHandleRAII.get();
