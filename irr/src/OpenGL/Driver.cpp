@@ -1197,17 +1197,6 @@ void COpenGL3DriverBase::setRenderStates3DMode()
 //! Can be called by an IMaterialRenderer to make its work easier.
 void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const SMaterial &lastmaterial, bool resetAllRenderStates)
 {
-	// fillmode
-	if (Version.Spec != OpenGLSpec::ES && // not supported in gles
-			(resetAllRenderStates ||
-			(lastmaterial.Wireframe != material.Wireframe) ||
-			(lastmaterial.PointCloud != material.PointCloud))) {
-		GL.PolygonMode(GL_FRONT_AND_BACK,
-				material.Wireframe ? GL_LINE :
-				material.PointCloud ? GL_POINT :
-				GL_FILL);
-	}
-
 	// ZBuffer
 	switch (material.ZBuffer) {
 	case ECFN_DISABLED:
@@ -1320,6 +1309,17 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 
 		CacheHandler->setBlendFuncSeparate(getGLBlend(srcRGBFact), getGLBlend(dstRGBFact),
 				getGLBlend(srcAlphaFact), getGLBlend(dstAlphaFact));
+	}
+
+	// fillmode
+	if (Version.Spec != OpenGLSpec::ES && // not supported in gles
+			(resetAllRenderStates ||
+			(lastmaterial.Wireframe != material.Wireframe) ||
+			(lastmaterial.PointCloud != material.PointCloud))) {
+		GL.PolygonMode(GL_FRONT_AND_BACK,
+				material.Wireframe ? GL_LINE :
+				material.PointCloud ? GL_POINT :
+				GL_FILL);
 	}
 
 	// Polygon Offset
