@@ -2167,7 +2167,7 @@ void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 		if (!force_delete && obj->isStaticAllowed() && obj->m_static_exists &&
 		   m_active_blocks.contains(blockpos_o) &&
 		   (!m_active_blocks.contains(obj->m_static_block) ||
-		   blockpos_o.getDistanceFromSQ(obj->m_static_block) >= MAP_BLOCKSIZE * MAP_BLOCKSIZE)) {
+		   blockpos_o.getDistanceFromSQ(obj->m_static_block) >= 2 * 2)) {
 
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
