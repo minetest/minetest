@@ -22,9 +22,8 @@
 namespace
 {
 
-bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
+bool getGameConfig(const std::string &game_path, Settings &conf)
 {
-	// TODO: rename this
 	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
 	return conf.readConfigFile(conf_path.c_str());
 }
@@ -355,7 +354,7 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		game_settings = Settings::createLayer(SL_GAME);
 	}
 
-	getGameMinetestConfig(gamespec.path, *game_settings);
+	getGameConfig(gamespec.path, *game_settings);
 	game_settings->removeSecureSettings();
 
 	infostream << "Initializing world at " << final_path << std::endl;
