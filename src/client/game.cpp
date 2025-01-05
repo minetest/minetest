@@ -896,6 +896,10 @@ bool Game::startup(bool *kill,
 	runData.time_from_last_punch = 10.0;
 
 	m_game_ui->initFlags();
+	if (g_settings->getBool("show_debug")) {
+		m_flags.debug_state = 1;
+		m_game_ui->m_flags.show_minimal_debug = true;
+	}
 
 	m_first_loop_after_window_activation = true;
 
