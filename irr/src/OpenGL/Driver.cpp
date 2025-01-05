@@ -1314,8 +1314,8 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 	// fillmode
 	if (Version.Spec != OpenGLSpec::ES && // not supported in gles
 			(resetAllRenderStates ||
-			(lastmaterial.Wireframe != material.Wireframe) ||
-			(lastmaterial.PointCloud != material.PointCloud))) {
+			lastmaterial.Wireframe != material.Wireframe ||
+			lastmaterial.PointCloud != material.PointCloud)) {
 		GL.PolygonMode(GL_FRONT_AND_BACK,
 				material.Wireframe ? GL_LINE :
 				material.PointCloud ? GL_POINT :
