@@ -34,3 +34,48 @@ local function test_raycast_pointabilities(player, pos1)
 end
 
 unittests.register("test_raycast_pointabilities", test_raycast_pointabilities, {map=true})
+
+local function test_raycast_noskip(_, pos)
+	local function cuboid_minmax(extent)
+		return pos:offset(-extent, -extent, -extent),
+				pos:offset(extent, extent, extent)
+	end
+
+	-- Carve out a 3x3x3 dirt cuboid in a larger air cuboid
+	local r = 8
+	local min, max = cuboid_minmax(r + 1)
+	local vm = core.get_voxel_manip(min, max)
+	local old_data = vm:get_data()
+	local data = vm:get_data()
+	local emin, emax = vm:get_emerged_area()
+	local va = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+	for index in va:iterp(min, max) do
+		data[index] = core.CONTENT_AIR
+	end
+	for index in va:iterp(cuboid_minmax(1)) do
+		data[index] = core.get_content_id("basenodes:dirt")
+	end
+	vm:set_data(data)
+	vm:write_to_map()
+
+	-- Raycast many times from outside the cuboid
+	for _ = 1, 100 do
+		local ray_start
+		repeat
+			ray_start = vector.random_in_area(cuboid_minmax(r))
+		until not ray_start:in_area(cuboid_minmax(1.501))
+		-- Pick a random position inside the dirt
+		local ray_end = vector.random_in_area(cuboid_minmax(1.499))
+		-- The first pointed thing should have only air "in front" of it,
+		-- or a dirt node got falsely skipped.
+		local pt = core.raycast(ray_start, ray_end, false, false):next()
+		if pt then
+			assert(core.get_node(pt.above).name == "air")
+		end
+	end
+
+	vm:set_data(old_data)
+	vm:write_to_map()
+end
+
+unittests.register("test_raycast_noskip", test_raycast_noskip, {map = true})
