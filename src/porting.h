@@ -32,11 +32,15 @@
 	#define sleep_ms(x) Sleep(x)
 	#define sleep_us(x) Sleep((x)/1000)
 
+	#define SLEEP_ACCURACY 2000
+
 	#define setenv(n,v,o) _putenv_s(n,v)
 	#define unsetenv(n) _putenv_s(n,"")
 #else
 	#include <unistd.h>
 	#include <cstdlib> // setenv
+
+	#define SLEEP_ACCURACY 200
 
 	#define sleep_ms(x) usleep((x)*1000)
 	#define sleep_us(x) usleep(x)
