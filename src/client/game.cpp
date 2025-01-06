@@ -2256,16 +2256,20 @@ void Game::toggleDebug()
 	smgr->setGlobalDebugData(state == 4 ? bbox_debug_flag : 0,
 			state == 4 ? 0 : bbox_debug_flag);
 
-	if (state == 1)
+	if (state == 1) {
 		m_game_ui->showTranslatedStatusText("Debug info shown");
-	else if (state == 2)
+	} else if (state == 2) {
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
-	else if (state == 3)
-		m_game_ui->showTranslatedStatusText("Wireframe shown");
-	else if (state == 4)
+	} else if (state == 3) {
+		if (driver->getDriverType() == video::EDT_OGLES2)
+			m_game_ui->showTranslatedStatusText("Wireframe not supported by video driver");
+		else
+			m_game_ui->showTranslatedStatusText("Wireframe shown");
+	} else if (state == 4) {
 		m_game_ui->showTranslatedStatusText("Bounding boxes shown");
-	else
+	} else {
 		m_game_ui->showTranslatedStatusText("All debug info hidden");
+	}
 }
 
 
