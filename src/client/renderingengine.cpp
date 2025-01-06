@@ -57,7 +57,7 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime, bool assume_paused)
 				sleep_us(sleep_time-SLEEP_ACCURACY);
 
 			// Busy-wait the remaining time to adjust for sleep inaccuracies
-			while ((s64)(target_time - porting::getTimeUs()) > 0);
+			porting::preciseSleepUntil(target_time);
 		}
 	} else {
 		sleep_time = 0;
