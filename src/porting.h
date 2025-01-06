@@ -224,9 +224,18 @@ inline u64 getDeltaMs(u64 old_time_ms, u64 new_time_ms)
 	return (old_time_ms - new_time_ms);
 }
 
-inline void preciseSleepUntil(u64 target_time)
+inline void preciseSleepUs(u64 sleep_time)
 {
-	while ((s64)(target_time - porting::getTimeUs()) > 0);
+	if (sleep_time > 0)
+	{
+		u64 time = porting::getTimeUs();
+		u64 target_time = time + sleep_time;
+		if (sleep_time > SLEEP_ACCURACY)
+			sleep_us(sleep_time-SLEEP_ACCURACY);
+
+		// Busy-wait the remaining time to adjust for sleep inaccuracies
+		while ((s64)(target_time - porting::getTimeUs()) > 0);
+	}
 }
 
 inline const char *getPlatformName()
