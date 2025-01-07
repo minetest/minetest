@@ -66,7 +66,6 @@ private:
 		LightPair light;
 		LightFrame frame;
 		video::SColor color;
-		TileSpec tile;
 		f32 scale;
 	} cur_node;
 
@@ -76,21 +75,23 @@ private:
 	video::SColor blendLightColor(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
-	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
+	void useTile(TileSpec *tile_ret, int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
 		u8 reset_flags = 0, bool special = false);
-	void getTile(int index, TileSpec *tile);
-	void getTile(v3s16 direction, TileSpec *tile);
-	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
+	void getTile(int index, TileSpec *tile_ret);
+	void getTile(v3s16 direction, TileSpec *tile_ret);
+	void getSpecialTile(int index, TileSpec *tile_ret, bool apply_crack = false);
 
 // face drawing
-	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
+	void drawQuad(const TileSpec &tile, v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
 		float vertical_tiling = 1.0);
 
 // cuboid drawing!
 	template <typename Fn>
-	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount, const f32 *txc, u8 mask, Fn &&face_lighter);
+	void drawCuboid(const aabb3f &box, const TileSpec *tiles, int tilecount,
+			const f32 *txc, u8 mask, Fn &&face_lighter);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
-	void drawAutoLightedCuboid(aabb3f box, f32 const *txc = nullptr, TileSpec *tiles = nullptr, int tile_count = 0, u8 mask = 0);
+	void drawAutoLightedCuboid(aabb3f box, const TileSpec &tile, f32 const *txc	= nullptr, u8 mask = 0);
+	void drawAutoLightedCuboid(aabb3f box, const TileSpec *tiles, int tile_count, f32 const *txc = nullptr, u8 mask = 0);
 	u8 getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const;
 
 // liquid-specific
@@ -143,12 +144,12 @@ private:
 	};
 	PlantlikeData cur_plant;
 
-	void drawPlantlikeQuad(float rotation, float quad_offset = 0,
+	void drawPlantlikeQuad(const TileSpec &tile, float rotation, float quad_offset = 0,
 		bool offset_top_only = false);
-	void drawPlantlike(bool is_rooted = false);
+	void drawPlantlike(const TileSpec &tile, bool is_rooted = false);
 
 // firelike-specific
-	void drawFirelikeQuad(float rotation, float opening_angle,
+	void drawFirelikeQuad(const TileSpec &tile, float rotation, float opening_angle,
 		float offset_h, float offset_v = 0.0);
 
 // drawtypes
