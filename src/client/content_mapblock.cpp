@@ -1685,22 +1685,27 @@ void MapblockMeshGenerator::drawMeshNode()
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		u32 vertex_count = buf->getVertexCount();
 
+		// Mesh is always private here. So the lighting is applied to each
+		// vertex right here.
 		if (data->m_smooth_lighting) {
-			// Mesh is always private here. So the lighting is applied to each
-			// vertex right here.
 			for (u32 k = 0; k < vertex_count; k++) {
 				video::S3DVertex &vertex = vertices[k];
 				vertex.Color = blendLightColor(vertex.Pos, vertex.Normal);
 				vertex.Pos += cur_node.origin;
 			}
-			collector->append(cur_node.tile, vertices, vertex_count,
-				buf->getIndices(), buf->getIndexCount());
 		} else {
-			// Let the collector process colors, etc.
-			collector->append(cur_node.tile, vertices, vertex_count,
-				buf->getIndices(), buf->getIndexCount(), cur_node.origin,
-				cur_node.color, cur_node.f->light_source);
+			bool is_light_source = cur_node.f->light_source != 0;
+			for (u32 k = 0; k < vertex_count; k++) {
+				video::S3DVertex &vertex = vertices[k];
+				video::SColor color = cur_node.color;
+				if (!is_light_source)
+					applyFacesShading(color, vertex.Normal);
+				vertex.Color = color;
+				vertex.Pos += cur_node.origin;
+			}
 		}
+		collector->append(cur_node.tile, vertices, vertex_count,
+			buf->getIndices(), buf->getIndexCount());
 	}
 	mesh->drop();
 }
