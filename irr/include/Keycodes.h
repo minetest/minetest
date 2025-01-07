@@ -183,6 +183,7 @@ enum EKEY_CODE
 	KEY_KEY_CODES_COUNT = 0x100 // this is not a key, but the amount of keycodes there are.
 };
 
+// A Keycode is either a character produced by the key or one of Irrlicht's codes (EKEY_CODE)
 class Keycode : public std::variant<EKEY_CODE, wchar_t> {
 	using super = std::variant<EKEY_CODE, wchar_t>;
 public:
