@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-02 23:00+0000\n"
-"Last-Translator: grorp <grorp@posteo.de>\n"
+"PO-Revision-Date: 2025-01-08 20:00+0000\n"
+"Last-Translator: mineplayer <realmineplayer@users.noreply.hosted.weblate.org>"
+"\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -12,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -24,7 +25,7 @@ msgstr "Leerer Befehl."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "Beenden, zum Hauptmenü"
+msgstr "Ins Hauptmenü beenden"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -48,7 +49,7 @@ msgstr "Die ausgehende Chatwarteschlange ist nun leer."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "Dieser Befehl ist vom Server deaktiviert."
+msgstr "Dieser Befehl wurde vom Server deaktiviert."
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -115,7 +116,7 @@ msgstr "Der Server erfordert Protokollversion $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Der Server unterstützt die Protokollversionen von $1 bis $2. "
+msgstr "Der Server unterstützt Protokollversionen von $1 bis $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -131,11 +132,11 @@ msgstr "Fehler bei Installation von „$1“: $2"
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Failed to download \"$1\""
-msgstr "Fehler beim Download von „$1“"
+msgstr "Fehler beim Herunterladen von „$1“"
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Failed to download $1"
-msgstr "Fehler beim Download von $1"
+msgstr "Fehler beim Herunterladen von $1"
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid ""
