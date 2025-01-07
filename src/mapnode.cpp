@@ -419,57 +419,47 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 
 		boxes.reserve(boxes_size);
 
-#define BOXESPUSHBACK(c) \
-		for (std::vector<aabb3f>::const_iterator \
-				it = (c).begin(); \
-				it != (c).end(); ++it) \
-			(boxes).push_back(*it);
+		auto boxes_insert = [&](const std::vector<aabb3f> &boxes_src) {
+			boxes.insert(boxes.end(), boxes_src.begin(), boxes_src.end());
+		};
 
-		BOXESPUSHBACK(nodebox.fixed);
+		boxes_insert(nodebox.fixed);
 
-		if (neighbors & 1) {
-			BOXESPUSHBACK(c.connect_top);
-		} else {
-			BOXESPUSHBACK(c.disconnected_top);
-		}
+		if (neighbors & 1)
+			boxes_insert(c.connect_top);
+		else
+			boxes_insert(c.disconnected_top);
 
-		if (neighbors & 2) {
-			BOXESPUSHBACK(c.connect_bottom);
-		} else {
-			BOXESPUSHBACK(c.disconnected_bottom);
-		}
+		if (neighbors & 2)
+			boxes_insert(c.connect_bottom);
+		else
+			boxes_insert(c.disconnected_bottom);
 
-		if (neighbors & 4) {
-			BOXESPUSHBACK(c.connect_front);
-		} else {
-			BOXESPUSHBACK(c.disconnected_front);
-		}
+		if (neighbors & 4)
+			boxes_insert(c.connect_front);
+		else
+			boxes_insert(c.disconnected_front);
 
-		if (neighbors & 8) {
-			BOXESPUSHBACK(c.connect_left);
-		} else {
-			BOXESPUSHBACK(c.disconnected_left);
-		}
+		if (neighbors & 8)
+			boxes_insert(c.connect_left);
+		else
+			boxes_insert(c.disconnected_left);
 
-		if (neighbors & 16) {
-			BOXESPUSHBACK(c.connect_back);
-		} else {
-			BOXESPUSHBACK(c.disconnected_back);
-		}
+		if (neighbors & 16)
+			boxes_insert(c.connect_back);
+		else
+			boxes_insert(c.disconnected_back);
 
-		if (neighbors & 32) {
-			BOXESPUSHBACK(c.connect_right);
-		} else {
-			BOXESPUSHBACK(c.disconnected_right);
-		}
+		if (neighbors & 32)
+			boxes_insert(c.connect_right);
+		else
+			boxes_insert(c.disconnected_right);
 
-		if (neighbors == 0) {
-			BOXESPUSHBACK(c.disconnected);
-		}
+		if (neighbors == 0)
+			boxes_insert(c.disconnected);
 
-		if (neighbors < 4) {
-			BOXESPUSHBACK(c.disconnected_sides);
-		}
+		if (neighbors < 4)
+			boxes_insert(c.disconnected_sides);
 
 	}
 	else // NODEBOX_REGULAR
