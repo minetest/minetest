@@ -347,8 +347,12 @@ public:
 		return video::isDriverSupported(driver);
 	}
 
-#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || USE_SDL2
 	//! Get the scancode of the corresponding keycode.
+	/**
+	\param key The keycode to convert.
+	\return The implementation-dependent scancode for the key (represented by the u32 component) or, if a scancode is not
+	available, the corresponding Irrlicht keycode (represented by the EKEY_CODE component).
+	*/
 	virtual std::variant<u32, EKEY_CODE> getScancodeFromKey(const Keycode &key) const {
 		if (auto pv = std::get_if<EKEY_CODE>(&key))
 			return *pv;
@@ -356,10 +360,13 @@ public:
 	}
 
 	//! Get the keycode of the corresponding scancode.
+	/**
+	\param scancode The implementation-dependent scancode for the key.
+	\return The corresponding keycode.
+	*/
 	virtual Keycode getKeyFromScancode(const u32 scancode) const {
 		return Keycode(KEY_UNKNOWN, (wchar_t)scancode);
 	}
-#endif
 };
 
 } // end namespace irr
