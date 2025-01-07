@@ -1267,7 +1267,8 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		getSmoothLightFrame();
 	} else {
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p);
-		cur_node.light = LightPair(getInteriorLight(ntop, 0, nodedef)); // FIXME: unused write
+		cur_node.light = LightPair(getInteriorLight(ntop, 0, nodedef));
+		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
 	}
 	drawPlantlike(tile, true);
 	cur_node.p.Y--;
