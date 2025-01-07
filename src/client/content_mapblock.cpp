@@ -127,7 +127,7 @@ void MapblockMeshGenerator::drawQuad(const TileSpec &tile, v3f *coords, const v3
 		if (data->m_smooth_lighting)
 			vertices[j].Color = blendLightColor(coords[j]);
 		else
-			vertices[j].Color = cur_node.color;
+			vertices[j].Color = cur_node.lcolor;
 		if (shade_face)
 			applyFacesShading(vertices[j].Color, normal2);
 		vertices[j].TCoords = tcoords[j];
@@ -239,16 +239,16 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 void MapblockMeshGenerator::getSmoothLightFrame()
 {
 	for (int k = 0; k < 8; ++k)
-		cur_node.frame.sunlight[k] = false;
+		cur_node.lframe.sunlight[k] = false;
 	for (int k = 0; k < 8; ++k) {
 		LightPair light(getSmoothLightTransparent(blockpos_nodes + cur_node.p, light_dirs[k], data));
-		cur_node.frame.lightsDay[k] = light.lightDay;
-		cur_node.frame.lightsNight[k] = light.lightNight;
+		cur_node.lframe.lightsDay[k] = light.lightDay;
+		cur_node.lframe.lightsNight[k] = light.lightNight;
 		// If there is direct sunlight and no ambient occlusion at some corner,
 		// mark the vertical edge (top and bottom corners) containing it.
 		if (light.lightDay == 255) {
-			cur_node.frame.sunlight[k] = true;
-			cur_node.frame.sunlight[k ^ 2] = true;
+			cur_node.lframe.sunlight[k] = true;
+			cur_node.lframe.sunlight[k ^ 2] = true;
 		}
 	}
 }
@@ -271,9 +271,9 @@ LightInfo MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 		f32 dy = (k & 2) ? y : 1 - y;
 		f32 dz = (k & 1) ? z : 1 - z;
 		// Use direct sunlight (255), if any; use daylight otherwise.
-		f32 light_boosted = cur_node.frame.sunlight[k] ? 255 : cur_node.frame.lightsDay[k];
-		lightDay += dx * dy * dz * cur_node.frame.lightsDay[k];
-		lightNight += dx * dy * dz * cur_node.frame.lightsNight[k];
+		f32 light_boosted = cur_node.lframe.sunlight[k] ? 255 : cur_node.lframe.lightsDay[k];
+		lightDay += dx * dy * dz * cur_node.lframe.lightsDay[k];
+		lightNight += dx * dy * dz * cur_node.lframe.lightsNight[k];
 		lightBoosted += dx * dy * dz * light_boosted;
 	}
 	return LightInfo{lightDay, lightNight, lightBoosted};
@@ -379,7 +379,7 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box,
 		});
 	} else {
 		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
-			video::SColor color = cur_node.color;
+			video::SColor color = cur_node.lcolor;
 			if (!cur_node.f->light_source)
 				applyFacesShading(color, vertices[0].Normal);
 			for (int j = 0; j < 4; j++) {
@@ -555,7 +555,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	}
 
 	cur_liquid.color_top = encode_light(light, cur_node.f->light_source);
-	cur_node.color = encode_light(light, cur_node.f->light_source);
+	cur_node.lcolor = encode_light(light, cur_node.f->light_source);
 }
 
 void MapblockMeshGenerator::getLiquidNeighborhood()
@@ -702,7 +702,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 			if (data->m_smooth_lighting)
 				color = blendLightColor(pos);
 			else
-				color = cur_node.color;
+				color = cur_node.lcolor;
 
 			pos += cur_node.origin;
 
@@ -1269,7 +1269,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 	} else {
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p);
 		auto light = LightPair(getInteriorLight(ntop, 0, nodedef));
-		cur_node.color = encode_light(light, cur_node.f->light_source);
+		cur_node.lcolor = encode_light(light, cur_node.f->light_source);
 	}
 	drawPlantlike(tile, true);
 	cur_node.p.Y--;
@@ -1713,7 +1713,7 @@ void MapblockMeshGenerator::drawMeshNode()
 			bool is_light_source = cur_node.f->light_source != 0;
 			for (u32 k = 0; k < vertex_count; k++) {
 				video::S3DVertex &vertex = vertices[k];
-				video::SColor color = cur_node.color;
+				video::SColor color = cur_node.lcolor;
 				if (!is_light_source)
 					applyFacesShading(color, vertex.Normal);
 				vertex.Color = color;
@@ -1750,7 +1750,7 @@ void MapblockMeshGenerator::drawNode()
 		getSmoothLightFrame();
 	} else {
 		auto light = LightPair(getInteriorLight(cur_node.n, 0, nodedef));
-		cur_node.color = encode_light(light, cur_node.f->light_source);
+		cur_node.lcolor = encode_light(light, cur_node.f->light_source);
 	}
 	switch (cur_node.f->drawtype) {
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
