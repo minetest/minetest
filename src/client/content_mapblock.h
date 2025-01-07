@@ -66,7 +66,6 @@ private:
 		LightPair light;
 		LightFrame frame;
 		video::SColor color;
-		f32 scale;
 	} cur_node;
 
 // lighting
@@ -137,6 +136,7 @@ private:
 	struct PlantlikeData {
 		PlantlikeStyle draw_style;
 		v3f offset;
+		float scale;
 		float rotate_degree;
 		bool random_offset_Y;
 		int face_num;
