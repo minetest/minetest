@@ -40,6 +40,7 @@ MeshUpdateQueue::MeshUpdateQueue(Client *client):
 	m_client(client)
 {
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
+	m_cache_enable_water_reflections = g_settings->getBool("enable_water_reflections");
 }
 
 MeshUpdateQueue::~MeshUpdateQueue()
@@ -191,7 +192,8 @@ void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 	}
 
 	data->setCrack(q->crack_level, q->crack_pos);
-	data->setSmoothLighting(m_cache_smooth_lighting);
+	data->m_smooth_lighting = m_cache_smooth_lighting;
+	data->m_enable_water_reflections = m_cache_enable_water_reflections;
 }
 
 /*

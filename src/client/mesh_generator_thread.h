@@ -69,8 +69,9 @@ private:
 	std::unordered_set<v3s16> m_inflight_blocks;
 	std::mutex m_mutex;
 
-	// TODO: Add callback to update these when g_settings changes
+	// TODO: Add callback to update these when g_settings changes, and update all meshes
 	bool m_cache_smooth_lighting;
+	bool m_cache_enable_water_reflections;
 
 	void fillDataFromMapBlocks(QueuedMeshUpdate *q);
 };

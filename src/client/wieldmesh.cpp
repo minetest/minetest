@@ -311,7 +311,8 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 {
 	MeshMakeData mesh_make_data(client->ndef(), 1);
 	MeshCollector collector(v3f(0.0f * BS), v3f());
-	mesh_make_data.setSmoothLighting(false);
+	mesh_make_data.m_smooth_lighting = false;
+	mesh_make_data.m_enable_water_reflections = false;
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 
 	if (n.getParam2()) {

@@ -63,8 +63,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	data(input),
 	collector(output),
 	nodedef(data->nodedef),
-	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
-	smooth_liquids(g_settings->getBool("enable_water_reflections"))
+	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE)
 {
 }
 
@@ -733,7 +732,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 		int u = corner_resolve[i][0];
 		int w = corner_resolve[i][1];
 
-		if (smooth_liquids) {
+		if (data->m_enable_water_reflections) {
 			int x = vertices[i].Pos.X > 0;
 			int z = vertices[i].Pos.Z > 0;
 
@@ -785,7 +784,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 
 		vertex.TCoords += tcoord_translate;
 
-		if (!smooth_liquids) {
+		if (!data->m_enable_water_reflections) {
 			vertex.Normal = v3f(dx, 1., dz).normalize();
 		}
 	}

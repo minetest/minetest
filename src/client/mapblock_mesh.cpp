@@ -58,11 +58,6 @@ void MeshMakeData::setCrack(int crack_level, v3s16 crack_pos)
 		m_crack_pos_relative = crack_pos - m_blockpos*MAP_BLOCKSIZE;
 }
 
-void MeshMakeData::setSmoothLighting(bool smooth_lighting)
-{
-	m_smooth_lighting = smooth_lighting;
-}
-
 /*
 	Light and vertex color functions
 */
