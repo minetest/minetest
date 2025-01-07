@@ -179,130 +179,52 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
 		const auto &fixed = nodebox.fixed;
 		int facedir = n.getFaceDir(nodemgr, true);
-		u8 axisdir = facedir>>2;
-		facedir&=0x03;
+		u8 axisdir = facedir >> 2;
+		facedir &= 0x03;
 
 		boxes.reserve(boxes.size() + fixed.size());
 		for (aabb3f box : fixed) {
 			if (nodebox.type == NODEBOX_LEVELED)
 				box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
 
+			if(facedir == 1) {
+				box.MinEdge.rotateXZBy(-90);
+				box.MaxEdge.rotateXZBy(-90);
+			} else if(facedir == 2) {
+				box.MinEdge.rotateXZBy(180);
+				box.MaxEdge.rotateXZBy(180);
+			} else if(facedir == 3) {
+				box.MinEdge.rotateXZBy(90);
+				box.MaxEdge.rotateXZBy(90);
+			}
+
 			switch (axisdir) {
 			case 0:
-				if(facedir == 1)
-				{
-					box.MinEdge.rotateXZBy(-90);
-					box.MaxEdge.rotateXZBy(-90);
-				}
-				else if(facedir == 2)
-				{
-					box.MinEdge.rotateXZBy(180);
-					box.MaxEdge.rotateXZBy(180);
-				}
-				else if(facedir == 3)
-				{
-					box.MinEdge.rotateXZBy(90);
-					box.MaxEdge.rotateXZBy(90);
-				}
 				break;
 			case 1: // z+
 				box.MinEdge.rotateYZBy(90);
 				box.MaxEdge.rotateYZBy(90);
-				if(facedir == 1)
-				{
-					box.MinEdge.rotateXYBy(90);
-					box.MaxEdge.rotateXYBy(90);
-				}
-				else if(facedir == 2)
-				{
-					box.MinEdge.rotateXYBy(180);
-					box.MaxEdge.rotateXYBy(180);
-				}
-				else if(facedir == 3)
-				{
-					box.MinEdge.rotateXYBy(-90);
-					box.MaxEdge.rotateXYBy(-90);
-				}
 				break;
 			case 2: //z-
 				box.MinEdge.rotateYZBy(-90);
 				box.MaxEdge.rotateYZBy(-90);
-				if(facedir == 1)
-				{
-					box.MinEdge.rotateXYBy(-90);
-					box.MaxEdge.rotateXYBy(-90);
-				}
-				else if(facedir == 2)
-				{
-					box.MinEdge.rotateXYBy(180);
-					box.MaxEdge.rotateXYBy(180);
-				}
-				else if(facedir == 3)
-				{
-					box.MinEdge.rotateXYBy(90);
-					box.MaxEdge.rotateXYBy(90);
-				}
 				break;
 			case 3:  //x+
 				box.MinEdge.rotateXYBy(-90);
 				box.MaxEdge.rotateXYBy(-90);
-				if(facedir == 1)
-				{
-					box.MinEdge.rotateYZBy(90);
-					box.MaxEdge.rotateYZBy(90);
-				}
-				else if(facedir == 2)
-				{
-					box.MinEdge.rotateYZBy(180);
-					box.MaxEdge.rotateYZBy(180);
-				}
-				else if(facedir == 3)
-				{
-					box.MinEdge.rotateYZBy(-90);
-					box.MaxEdge.rotateYZBy(-90);
-				}
 				break;
 			case 4:  //x-
 				box.MinEdge.rotateXYBy(90);
 				box.MaxEdge.rotateXYBy(90);
-				if(facedir == 1)
-				{
-					box.MinEdge.rotateYZBy(-90);
-					box.MaxEdge.rotateYZBy(-90);
-				}
-				else if(facedir == 2)
-				{
-					box.MinEdge.rotateYZBy(180);
-					box.MaxEdge.rotateYZBy(180);
-				}
-				else if(facedir == 3)
-				{
-					box.MinEdge.rotateYZBy(90);
-					box.MaxEdge.rotateYZBy(90);
-				}
 				break;
 			case 5:
 				box.MinEdge.rotateXYBy(-180);
 				box.MaxEdge.rotateXYBy(-180);
-				if(facedir == 1)
-				{
-					box.MinEdge.rotateXZBy(90);
-					box.MaxEdge.rotateXZBy(90);
-				}
-				else if(facedir == 2)
-				{
-					box.MinEdge.rotateXZBy(180);
-					box.MaxEdge.rotateXZBy(180);
-				}
-				else if(facedir == 3)
-				{
-					box.MinEdge.rotateXZBy(-90);
-					box.MaxEdge.rotateXZBy(-90);
-				}
 				break;
 			default:
 				break;
 			}
+
 			box.repair();
 			boxes.push_back(box);
 		}
