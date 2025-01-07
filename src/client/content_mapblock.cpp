@@ -1108,7 +1108,7 @@ void MapblockMeshGenerator::drawSignlikeNode()
 void MapblockMeshGenerator::drawPlantlikeQuad(const TileSpec &tile,
 		float rotation, float quad_offset, bool offset_top_only)
 {
-	const f32 scale = cur_node.scale;
+	const f32 scale = cur_plant.scale;
 	v3f vertices[4] = {
 		v3f(-scale, -BS / 2 + 2.0 * scale * cur_plant.plant_height, 0),
 		v3f( scale, -BS / 2 + 2.0 * scale * cur_plant.plant_height, 0),
@@ -1164,8 +1164,8 @@ void MapblockMeshGenerator::drawPlantlikeQuad(const TileSpec &tile,
 void MapblockMeshGenerator::drawPlantlike(const TileSpec &tile, bool is_rooted)
 {
 	cur_plant.draw_style = PLANT_STYLE_CROSS;
-	cur_node.scale = BS / 2 * cur_node.f->visual_scale;
 	cur_plant.offset = v3f(0, 0, 0);
+	cur_plant.scale = BS / 2 * cur_node.f->visual_scale;
 	cur_plant.rotate_degree = 0.0f;
 	cur_plant.random_offset_Y = false;
 	cur_plant.face_num = 0;
@@ -1175,7 +1175,7 @@ void MapblockMeshGenerator::drawPlantlike(const TileSpec &tile, bool is_rooted)
 	case CPT2_MESHOPTIONS:
 		cur_plant.draw_style = PlantlikeStyle(cur_node.n.param2 & MO_MASK_STYLE);
 		if (cur_node.n.param2 & MO_BIT_SCALE_SQRT2)
-			cur_node.scale *= 1.41421;
+			cur_plant.scale *= 1.41421;
 		if (cur_node.n.param2 & MO_BIT_RANDOM_OFFSET) {
 			PseudoRandom rng(cur_node.p.X << 8 | cur_node.p.Z | cur_node.p.Y << 16);
 			cur_plant.offset.X = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
@@ -1274,7 +1274,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 void MapblockMeshGenerator::drawFirelikeQuad(const TileSpec &tile, float rotation,
 		float opening_angle, float offset_h, float offset_v)
 {
-	const f32 scale = cur_node.scale;
+	const f32 scale = BS / 2 * cur_node.f->visual_scale;
 	v3f vertices[4] = {
 		v3f(-scale, -BS / 2 + scale * 2, 0),
 		v3f( scale, -BS / 2 + scale * 2, 0),
@@ -1295,7 +1295,6 @@ void MapblockMeshGenerator::drawFirelikeNode()
 {
 	TileSpec tile;
 	useTile(&tile);
-	cur_node.scale = BS / 2 * cur_node.f->visual_scale;
 
 	// Check for adjacent nodes
 	bool neighbors = false;
