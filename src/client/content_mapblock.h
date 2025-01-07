@@ -63,7 +63,6 @@ private:
 		v3f origin;
 		MapNode n;
 		const ContentFeatures *f;
-		LightPair light;
 		LightFrame frame;
 		video::SColor color;
 	} cur_node;

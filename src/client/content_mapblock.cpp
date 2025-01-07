@@ -542,19 +542,20 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	if (data->m_smooth_lighting)
 		return; // don't need to pre-compute anything in this case
 
+	auto light = LightPair(getInteriorLight(cur_node.n, 0, nodedef));
 	if (cur_node.f->light_source != 0) {
 		// If this liquid emits light and doesn't contain light, draw
 		// it at what it emits, for an increased effect
 		u8 e = decode_light(cur_node.f->light_source);
-		cur_node.light = LightPair(std::max(e, cur_node.light.lightDay),
-				std::max(e, cur_node.light.lightNight));
+		light = LightPair(std::max(e, light.lightDay),
+				std::max(e, light.lightNight));
 	} else if (nodedef->getLightingFlags(ntop).has_light) {
 		// Otherwise, use the light of the node on top if possible
-		cur_node.light = LightPair(getInteriorLight(ntop, 0, nodedef));
+		light = LightPair(getInteriorLight(ntop, 0, nodedef));
 	}
 
-	cur_liquid.color_top = encode_light(cur_node.light, cur_node.f->light_source);
-	cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
+	cur_liquid.color_top = encode_light(light, cur_node.f->light_source);
+	cur_node.color = encode_light(light, cur_node.f->light_source);
 }
 
 void MapblockMeshGenerator::getLiquidNeighborhood()
@@ -1267,8 +1268,8 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		getSmoothLightFrame();
 	} else {
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p);
-		cur_node.light = LightPair(getInteriorLight(ntop, 0, nodedef));
-		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
+		auto light = LightPair(getInteriorLight(ntop, 0, nodedef));
+		cur_node.color = encode_light(light, cur_node.f->light_source);
 	}
 	drawPlantlike(tile, true);
 	cur_node.p.Y--;
@@ -1748,8 +1749,8 @@ void MapblockMeshGenerator::drawNode()
 	if (data->m_smooth_lighting) {
 		getSmoothLightFrame();
 	} else {
-		cur_node.light = LightPair(getInteriorLight(cur_node.n, 0, nodedef));
-		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
+		auto light = LightPair(getInteriorLight(cur_node.n, 0, nodedef));
+		cur_node.color = encode_light(light, cur_node.f->light_source);
 	}
 	switch (cur_node.f->drawtype) {
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
