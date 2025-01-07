@@ -59,12 +59,12 @@ private:
 
 // current node
 	struct {
-		v3s16 p;
-		v3f origin;
+		v3s16 p; // relative to blockpos_nodes
+		v3f origin; // p in BS space
 		MapNode n;
 		const ContentFeatures *f;
-		LightFrame frame;
-		video::SColor color;
+		LightFrame lframe; // smooth lighting
+		video::SColor lcolor; // unsmooth lighting
 	} cur_node;
 
 // lighting
