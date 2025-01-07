@@ -75,8 +75,6 @@ void MapblockMeshGenerator::useTile(TileSpec *tile_ret, int index, u8 set_flags,
 		getSpecialTile(index, tile_ret, cur_node.p == data->m_crack_pos_relative);
 	else
 		getTile(index, tile_ret);
-	if (!data->m_smooth_lighting)
-		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
 
 	for (auto &layer : tile_ret->layers) {
 		layer.material_flags |= set_flags;
@@ -283,7 +281,6 @@ LightInfo MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 
 // Calculates vertex color to be used in mapblock mesh
 //  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
-//  tile_color - node's tile color
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
 {
 	LightInfo light = blendLight(vertex_pos);
@@ -382,7 +379,7 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box,
 		});
 	} else {
 		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
-			video::SColor color = encode_light(cur_node.light, cur_node.f->light_source);
+			video::SColor color = cur_node.color;
 			if (!cur_node.f->light_source)
 				applyFacesShading(color, vertices[0].Normal);
 			for (int j = 0; j < 4; j++) {
@@ -700,10 +697,18 @@ void MapblockMeshGenerator::drawLiquidSides()
 				v += 0.5f - cur_liquid.corner_levels[base.Z][base.X];
 			}
 
+			video::SColor color;
 			if (data->m_smooth_lighting)
-				cur_node.color = blendLightColor(pos);
+				color = blendLightColor(pos);
+			else
+				color = cur_node.color;
+
 			pos += cur_node.origin;
-			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, face.dir.X, face.dir.Y, face.dir.Z, cur_node.color, vertex.u, v);
+
+			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z,
+					face.dir.X, face.dir.Y, face.dir.Z,
+					color,
+					vertex.u, v);
 		};
 		collector->append(cur_liquid.tile, vertices, 4, quad_indices, 6);
 	}
@@ -865,9 +870,6 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++)
 		getTile(g_6dirs[face], &tiles[face]);
-
-	if (!data->m_smooth_lighting)
-		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
 
 	TileSpec glass_tiles[6];
 	for (auto &glass_tile : glass_tiles)
@@ -1265,7 +1267,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		getSmoothLightFrame();
 	} else {
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p);
-		cur_node.light = LightPair(getInteriorLight(ntop, 0, nodedef));
+		cur_node.light = LightPair(getInteriorLight(ntop, 0, nodedef)); // FIXME: unused write
 	}
 	drawPlantlike(tile, true);
 	cur_node.p.Y--;
@@ -1742,10 +1744,12 @@ void MapblockMeshGenerator::drawNode()
 			break;
 	}
 	cur_node.origin = intToFloat(cur_node.p, BS);
-	if (data->m_smooth_lighting)
+	if (data->m_smooth_lighting) {
 		getSmoothLightFrame();
-	else
+	} else {
 		cur_node.light = LightPair(getInteriorLight(cur_node.n, 0, nodedef));
+		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
+	}
 	switch (cur_node.f->drawtype) {
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
