@@ -18,7 +18,6 @@
 #include "COSOperator.h"
 #include <cstdio>
 #include <cstdlib>
-#include <unordered_set>
 #include "SIrrCreationParameters.h"
 #include <SDL_video.h>
 
@@ -28,12 +27,19 @@
 
 #include "CSDLManager.h"
 
-// Since SDL doesn't have mouse keys as keycodes we fall back to EKEY_CODE
-static const std::unordered_set<irr::EKEY_CODE> fake_keys = {
-	irr::KEY_LBUTTON, irr::KEY_MBUTTON, irr::KEY_RBUTTON, irr::KEY_XBUTTON1, irr::KEY_XBUTTON2
-};
+// Since SDL doesn't have mouse keys as keycodes we need to fall back to EKEY_CODE in some cases.
 static inline bool is_fake_key(irr::EKEY_CODE key) {
-	return fake_keys.find(key) != fake_keys.end();
+	switch (key) {
+	case irr::KEY_LBUTTON:
+	case irr::KEY_MBUTTON:
+	case irr::KEY_RBUTTON:
+	case irr::KEY_XBUTTON1:
+	case irr::KEY_XBUTTON2:
+		return true;
+
+	default:
+		return false;
+	}
 }
 
 static int SDLDeviceInstances = 0;
@@ -233,8 +239,10 @@ std::variant<u32, EKEY_CODE> CIrrDeviceSDL::getScancodeFromKey(const Keycode &ke
 {
 	u32 keynum = 0;
 	if (const auto *keycode = std::get_if<EKEY_CODE>(&key)) {
+		// Fake keys (e.g. mouse buttons): use EKEY_CODE since there is no corresponding scancode.
 		if (is_fake_key(*keycode))
 			return *keycode;
+		// Try to convert the EKEY_CODE to a SDL scancode.
 		for (const auto &entry: KeyMap) {
 			if (entry.second == *keycode) {
 				keynum = entry.first;
