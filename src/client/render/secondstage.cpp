@@ -21,7 +21,7 @@ PostProcessingStep::PostProcessingStep(u32 _shader_id, const std::vector<u8> &_t
 void PostProcessingStep::configureMaterial()
 {
 	material.UseMipMaps = false;
-	material.ZBuffer = true;
+	material.ZBuffer = video::ECFN_LESSEQUAL;
 	material.ZWriteEnable = video::EZW_ON;
 	for (u32 k = 0; k < texture_map.size(); ++k) {
 		material.TextureLayers[k].AnisotropicFilter = 0;

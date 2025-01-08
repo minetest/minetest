@@ -253,7 +253,7 @@ void CAnimatedMeshSceneNode::render()
 	// for debug purposes only:
 	if (DebugDataVisible && PassCount == 1) {
 		video::SMaterial debug_mat;
-		debug_mat.AntiAliasing = 0;
+		debug_mat.AntiAliasing = video::EAAM_OFF;
 		driver->setMaterial(debug_mat);
 		// show normals
 		if (DebugDataVisible & scene::EDS_NORMALS) {
