@@ -741,11 +741,8 @@ private:
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	bool m_cache_disable_escape_sequences;
 	bool m_cache_doubletap_jump;
-	bool m_cache_enable_clouds;
 	bool m_cache_enable_joysticks;
-	bool m_cache_enable_particles;
 	bool m_cache_enable_fog;
 	bool m_cache_enable_noclip;
 	bool m_cache_enable_free_move;
@@ -787,15 +784,9 @@ Game::Game() :
 {
 	g_settings->registerChangedCallback("chat_log_level",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("disable_escape_sequences",
-		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("enable_clouds",
-		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_joysticks",
-		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("enable_particles",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_fog",
 		&settingChangedCallback, this);
@@ -1138,7 +1129,7 @@ bool Game::init(
 bool Game::initSound()
 {
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
+	if (g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
 		sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
 				std::make_unique<SoundFallbackPathProvider>());
@@ -1296,8 +1287,7 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Clouds
 	 */
-	if (m_cache_enable_clouds)
-		clouds = make_irr<Clouds>(smgr, shader_src, -1, rand());
+	clouds = make_irr<Clouds>(smgr, shader_src, -1, myrand());
 
 	/* Skybox
 	 */
@@ -1873,34 +1863,22 @@ void Game::processKeyInput()
 		toggleNoClip();
 #if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		if (g_settings->getBool("enable_sound")) {
-			bool new_mute_sound = !g_settings->getBool("mute_sound");
-			g_settings->setBool("mute_sound", new_mute_sound);
-			if (new_mute_sound)
-				m_game_ui->showTranslatedStatusText("Sound muted");
-			else
-				m_game_ui->showTranslatedStatusText("Sound unmuted");
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		bool new_mute_sound = !g_settings->getBool("mute_sound");
+		g_settings->setBool("mute_sound", new_mute_sound);
+		if (new_mute_sound)
+			m_game_ui->showTranslatedStatusText("Sound muted");
+		else
+			m_game_ui->showTranslatedStatusText("Sound unmuted");
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		if (g_settings->getBool("enable_sound")) {
-			float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
-			g_settings->setFloat("sound_volume", new_volume);
-			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-			m_game_ui->showStatusText(msg);
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
+		g_settings->setFloat("sound_volume", new_volume);
+		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+		m_game_ui->showStatusText(msg);
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		if (g_settings->getBool("enable_sound")) {
-			float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
-			g_settings->setFloat("sound_volume", new_volume);
-			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-			m_game_ui->showStatusText(msg);
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
+		g_settings->setFloat("sound_volume", new_volume);
+		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+		m_game_ui->showStatusText(msg);
 #else
 	} else if (wasKeyDown(KeyType::MUTE) || wasKeyDown(KeyType::INC_VOLUME)
 			|| wasKeyDown(KeyType::DEC_VOLUME)) {
@@ -2859,9 +2837,6 @@ void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 
 void Game::handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam)
 {
-	if (!clouds)
-		return;
-
 	clouds->setDensity(event->cloud_params.density);
 	clouds->setColorBright(video::SColor(event->cloud_params.color_bright));
 	clouds->setColorAmbient(video::SColor(event->cloud_params.color_ambient));
@@ -2898,10 +2873,7 @@ void Game::updateChat(f32 dtime)
 	std::vector<LogEntry> entries = m_chat_log_buf.take();
 	for (const auto& entry : entries) {
 		std::string line;
-		if (!m_cache_disable_escape_sequences) {
-			line.append(color_for(entry.level));
-		}
-		line.append(entry.combined);
+		line.append(color_for(entry.level)).append(entry.combined);
 		chat_backend->addMessage(L"", utf8_to_wide(line));
 	}
 
@@ -2986,8 +2958,7 @@ void Game::updateCamera(f32 dtime)
 			client->updateCameraOffset(camera_offset);
 			client->getEnv().updateCameraOffset(camera_offset);
 
-			if (clouds)
-				clouds->updateCameraOffset(camera_offset);
+			clouds->updateCameraOffset(camera_offset);
 		}
 	}
 }
@@ -3646,10 +3617,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	} else {
 		runData.dig_time_complete = params.time;
 
-		if (m_cache_enable_particles) {
-			client->getParticleManager()->addNodeParticle(client,
-					player, nodepos, n, features);
-		}
+		client->getParticleManager()->addNodeParticle(client,
+				player, nodepos, n, features);
 	}
 
 	if (!runData.digging) {
@@ -3734,11 +3703,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 		client->interact(INTERACT_DIGGING_COMPLETED, pointed);
 
-		if (m_cache_enable_particles) {
-			client->getParticleManager()->addDiggingParticles(client,
-				player, nodepos, n, features);
-		}
-
+		client->getParticleManager()->addDiggingParticles(client,
+			player, nodepos, n, features);
 
 		// Send event to trigger sound
 		client->getEventManager()->put(new NodeDugEvent(nodepos, n));
@@ -3829,8 +3795,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Update clouds
 	*/
-	if (clouds)
-		updateClouds(dtime);
+	updateClouds(dtime);
 
 	/*
 		Update particles
@@ -4092,11 +4057,8 @@ void Game::readSettings()
 	}
 	m_chat_log_buf.setLogLevel(chat_log_level);
 
-	m_cache_disable_escape_sequences     = g_settings->getBool("disable_escape_sequences");
 	m_cache_doubletap_jump               = g_settings->getBool("doubletap_jump");
-	m_cache_enable_clouds                = g_settings->getBool("enable_clouds");
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
-	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);

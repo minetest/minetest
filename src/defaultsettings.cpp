@@ -82,7 +82,6 @@ void set_default_settings()
 
 	// Client
 	settings->setDefault("address", "");
-	settings->setDefault("enable_sound", "true");
 #if defined(__unix__) && !defined(__APPLE__) && !defined (__ANDROID__)
 	// On Linux+X11 (not Linux+Wayland or Linux+XWayland), I've encountered a bug
 	// where fake mouse events were generated from touch events if in relative
@@ -270,7 +269,6 @@ void set_default_settings()
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0.0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
-	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.03");
 	settings->setDefault("enable_3d_clouds", "true");
@@ -292,14 +290,11 @@ void set_default_settings()
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
-	settings->setDefault("gui_scaling_filter_txr2img", "true");
 	settings->setDefault("smooth_scrolling", "true");
-	settings->setDefault("desynchronize_mapblock_texture_animation", "false");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
 	settings->setDefault("show_block_bounds_radius_near", "4");
@@ -415,7 +410,6 @@ void set_default_settings()
 #endif
 
 	// Server
-	settings->setDefault("disable_escape_sequences", "false");
 	settings->setDefault("strip_color_codes", "false");
 #ifndef NDEBUG
 	settings->setDefault("random_mod_load_order", "true");
@@ -435,7 +429,6 @@ void set_default_settings()
 	settings->setDefault("protocol_version_min", "1");
 	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
-	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "15");
