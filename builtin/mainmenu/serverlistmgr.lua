@@ -116,12 +116,14 @@ local function order_server_list_internal(list)
 end
 
 local function order_server_list(list)
-	-- split the list into two parts and sort them separately, to keep empty
+	-- split the list into three parts and sort them separately, to keep empty
 	-- servers at the bottom.
-	local nonempty, empty = {}, {}
+	local visited, nonempty, empty = {}, {}, {}
 
 	for _, fav in ipairs(list) do
-		if (fav.clients or 0) > 0 then
+		if fav.last_visited then
+			table.insert(visited, fav)
+		elseif (fav.clients or 0) > 0 then
 			table.insert(nonempty, fav)
 		else
 			table.insert(empty, fav)
@@ -131,8 +133,11 @@ local function order_server_list(list)
 	order_server_list_internal(nonempty)
 	order_server_list_internal(empty)
 
-	table.insert_all(nonempty, empty)
-	return nonempty
+	local result = {}
+	table.insert_all(result, visited)
+	table.insert_all(result, nonempty)
+	table.insert_all(result, empty)
+	return result
 end
 
 local public_downloading = false
