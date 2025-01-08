@@ -18,7 +18,6 @@
 #include "util/basic_macros.h"
 #include "util/tracy_wrapper.h"
 #include "client/renderingengine.h"
-#include "util/quicktune.h"
 
 #include <queue>
 
@@ -817,8 +816,7 @@ static u32 transformBuffersToDrawOrder(
 	 * results since HW buffers stick around and Irrlicht handles large amounts
 	 * inefficiently.
 	 */
-	u32 target_min_vertices = g_settings->getU32("mesh_buffer_min_vertices");
-	QUICKTUNE_AUTONAME(QVT_INT, target_min_vertices, 0, 2000);
+	const u32 target_min_vertices = g_settings->getU32("mesh_buffer_min_vertices");
 
 	const auto draw_order_pre = draw_order.size();
 	auto *driver = RenderingEngine::get_video_driver();
@@ -844,9 +842,6 @@ static u32 transformBuffersToDrawOrder(
 			continue;
 		}
 		to_merge.emplace_back(translate, buf);
-		// TEMP: workaround for updateAllHardwareBuffers() inefficiency
-		driver->removeHardwareBuffer(buf->getVertexBuffer());
-		driver->removeHardwareBuffer(buf->getIndexBuffer());
 	}
 
 	/*
@@ -1089,13 +1084,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		g_profiler->avg("renderMap(): animated meshes [#]", mesh_animate_count);
 		g_profiler->avg(prefix + "merged buffers [#]", merged_count);
 
-		u32 USE_CACHE = 1;
-		QUICKTUNE_AUTONAME(QVT_INT, USE_CACHE, 0, 1);
 		u32 cached_count = 0;
 		for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
 			// prune aggressively since every new/changed block or camera
 			// rotation can have big effects
-			if (!USE_CACHE || ++it->second.age > 1) {
+			if (++it->second.age > 1) {
 				it->second.drop();
 				it = m_dynamic_buffers.erase(it);
 			} else {
