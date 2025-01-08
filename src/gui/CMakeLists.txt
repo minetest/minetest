@@ -13,6 +13,7 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiInventoryList.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiItemImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiKeyChangeMenu.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/guiJoystickChangeMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiOpenURL.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPasswordChange.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPathSelectMenu.cpp

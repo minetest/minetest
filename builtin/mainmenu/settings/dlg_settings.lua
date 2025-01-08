@@ -123,6 +123,22 @@ local function load()
 		end,
 	}
 
+	local change_joysticks = {
+		query_text = "Joysticks controls",
+		requires = {
+			touch_controls = false,
+		},
+		get_formspec = function(self, avail_w)
+			local btn_w = math.min(avail_w, 3)
+			return ("button[0,0;%f,0.8;btn_change_joysticks;%s]"):format(btn_w, fgettext("Joysticks controls")), 0.8
+		end,
+		on_submit = function(self, fields)
+			if fields.btn_change_joysticks then
+				core.show_joysticks_menu()
+			end
+		end,
+	}
+
 	local touchscreen_layout = {
 		query_text = "Touchscreen layout",
 		requires = {
@@ -167,6 +183,8 @@ local function load()
 	load_settingtypes()
 
 	table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
+
+	table.insert(page_by_id.advanced_gamepads.content, 1, change_joysticks)
 	-- insert after "touch_controls"
 	table.insert(page_by_id.controls_touchscreen.content, 2, touchscreen_layout)
 	do

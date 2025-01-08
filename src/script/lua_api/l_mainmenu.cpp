@@ -10,6 +10,7 @@
 #include "gui/guiEngine.h"
 #include "gui/guiMainMenu.h"
 #include "gui/guiKeyChangeMenu.h"
+#include "gui/guiJoystickChangeMenu.h"
 #include "gui/guiPathSelectMenu.h"
 #include "gui/touchscreeneditor.h"
 #include "version.h"
@@ -527,6 +528,21 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 	sanity_check(engine != NULL);
 
 	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(
+			engine->m_rendering_engine->get_gui_env(),
+			engine->m_parent,
+			-1,
+			engine->m_menumanager,
+			engine->m_texture_source.get());
+	kmenu->drop();
+	return 0;
+}
+
+int ModApiMainMenu::l_show_joysticks_menu(lua_State *L)
+{
+	GUIEngine *engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+
+	GUIJoystickChangeMenu *kmenu = new GUIJoystickChangeMenu(
 			engine->m_rendering_engine->get_gui_env(),
 			engine->m_parent,
 			-1,
@@ -1097,6 +1113,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(start);
 	API_FCT(close);
 	API_FCT(show_keys_menu);
+	API_FCT(show_joysticks_menu);
 	API_FCT(show_touchscreen_layout);
 	API_FCT(create_world);
 	API_FCT(delete_world);
