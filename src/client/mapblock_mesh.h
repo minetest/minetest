@@ -36,15 +36,25 @@ struct MinimapMapblock;
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
+
+	// base pos of meshgen area, in blocks
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
+	// size of meshgen area, in nodes.
+	// vmanip will have at least an extra 1 node onion layer.
+	// area is expected to fit into mesh grid cell.
+	u16 m_side_length;
+	// vertex positions will be relative to this grid
+	MeshGrid m_mesh_grid;
+
+	// relative to blockpos
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
+	bool m_generate_minimap = false;
 	bool m_smooth_lighting = false;
 	bool m_enable_water_reflections = false;
-	u16 side_length;
 
-	const NodeDefManager *nodedef;
+	const NodeDefManager *m_nodedef;
 
-	MeshMakeData(const NodeDefManager *ndef, u16 side_length);
+	MeshMakeData(const NodeDefManager *ndef, u16 side_lingth, MeshGrid mesh_grid);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)

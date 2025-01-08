@@ -62,7 +62,7 @@ const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_railli
 MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output):
 	data(input),
 	collector(output),
-	nodedef(data->nodedef),
+	nodedef(data->m_nodedef),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE)
 {
 }
@@ -1773,9 +1773,9 @@ void MapblockMeshGenerator::generate()
 {
 	ZoneScoped;
 
-	for (cur_node.p.Z = 0; cur_node.p.Z < data->side_length; cur_node.p.Z++)
-	for (cur_node.p.Y = 0; cur_node.p.Y < data->side_length; cur_node.p.Y++)
-	for (cur_node.p.X = 0; cur_node.p.X < data->side_length; cur_node.p.X++) {
+	for (cur_node.p.Z = 0; cur_node.p.Z < data->m_side_length; cur_node.p.Z++)
+	for (cur_node.p.Y = 0; cur_node.p.Y < data->m_side_length; cur_node.p.Y++)
+	for (cur_node.p.X = 0; cur_node.p.X < data->m_side_length; cur_node.p.X++) {
 		cur_node.n = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p);
 		cur_node.f = &nodedef->get(cur_node.n);
 		drawNode();
