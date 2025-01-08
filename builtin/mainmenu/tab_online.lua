@@ -472,12 +472,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.btn_delete_favorite then
 		local idx = core.get_table_index("servers")
-		if not idx then return end
-		local server = tabdata.lookup[idx]
-		if not server then return end
+		local server = find_selected_server()
 
 		serverlistmgr.delete_favorite(server)
-		set_selected_server(server)
+		set_selected_server(tabdata.lookup[idx+1])
 		return true
 	end
 
