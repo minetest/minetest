@@ -22,6 +22,9 @@ serverlistmgr = {
 	-- list of locally favorites servers
 	favorites = nil,
 
+	-- list of last visited servers
+	last_visited = nil,
+
 	-- list of servers fetched from public list
 	servers = nil,
 }
@@ -232,6 +235,15 @@ local function get_favorites_path(folder)
 end
 
 --------------------------------------------------------------------------------
+local function get_last_visited_path(folder)
+	local base = core.get_user_path() .. DIR_DELIM .. "client" .. DIR_DELIM .. "serverlist" .. DIR_DELIM
+	if folder then
+		return base
+	end
+	return base .. "last_visited.json"
+end
+
+--------------------------------------------------------------------------------
 local function save_favorites(favorites)
 	local filename = core.settings:get("serverlist_file")
 	-- If setting specifies legacy format change the filename to the new one
@@ -241,6 +253,12 @@ local function save_favorites(favorites)
 
 	assert(core.create_dir(get_favorites_path(true)))
 	core.safe_file_write(get_favorites_path(), core.write_json(favorites))
+end
+
+--------------------------------------------------------------------------------
+local function save_last_visited(visited)
+	assert(core.create_dir(get_last_visited_path(true)))
+	core.safe_file_write(get_last_visited_path(), core.write_json(visited))
 end
 
 --------------------------------------------------------------------------------
@@ -327,12 +345,39 @@ local function read_favorites()
 end
 
 --------------------------------------------------------------------------------
+local function read_last_visited()
+	local path = get_last_visited_path()
+
+	local file = io.open(path, "r")
+	if not file then
+		return {}
+	end
+
+	local json = file:read("*all")
+	file:close()
+
+	return core.parse_json(json)
+end
+
+--------------------------------------------------------------------------------
 local function delete_favorite(favorites, del_favorite)
 	for i=1, #favorites do
 		local fav = favorites[i]
 
 		if fav.address == del_favorite.address and fav.port == del_favorite.port then
 			table.remove(favorites, i)
+			return
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
+local function delete_last_visited(visited, del_visited)
+	for i=1, #visited do
+		local vis = visited[i]
+
+		if vis.address == del_visited.address and vis.port == del_visited.port then
+			table.remove(visited, i)
 			return
 		end
 	end
@@ -359,6 +404,16 @@ function serverlistmgr.get_favorites()
 	return serverlistmgr.favorites
 end
 
+-------------------------------------------------------------------------------
+function serverlistmgr.get_last_visited()
+	if serverlistmgr.last_visited then
+		return serverlistmgr.last_visited
+	end
+
+	serverlistmgr.last_visited = read_last_visited()
+	return serverlistmgr.last_visited
+end
+
 --------------------------------------------------------------------------------
 function serverlistmgr.add_favorite(new_favorite)
 	assert(type(new_favorite.port) == "number")
@@ -377,9 +432,40 @@ function serverlistmgr.add_favorite(new_favorite)
 	save_favorites(favorites)
 end
 
+-------------------------------------------------------------------------------
+function serverlistmgr.add_last_visited(new_visited)
+	assert(type(new_visited.port) == "number")
+	assert(new_visited.address)
+
+	-- Whitelist visited keys
+	new_visited = {
+		name = new_visited.name,
+		address = new_visited.address,
+		port = new_visited.port,
+		description = new_visited.description,
+	}
+
+	local visited = serverlistmgr.get_last_visited()
+	delete_last_visited(visited, new_visited)
+	table.insert(visited, 1, new_visited)
+
+	if #visited > 5 then
+		table.remove(visited, #visited)
+	end
+
+	save_last_visited(visited)
+end
+
 --------------------------------------------------------------------------------
 function serverlistmgr.delete_favorite(del_favorite)
 	local favorites = serverlistmgr.get_favorites()
 	delete_favorite(favorites, del_favorite)
 	save_favorites(favorites)
+end
+
+-------------------------------------------------------------------------------
+function serverlistmgr.delete_last_visited(del_visited)
+	local visited = serverlistmgr.get_last_visited()
+	delete_last_visited(visited, del_visited)
+	save_last_visited(visited)
 end

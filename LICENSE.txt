@@ -55,6 +55,9 @@ srifqi:
   textures/base/pack/joystick_off.png
   textures/base/pack/minimap_btn.png
 
+siliconsniffer:
+  textures/base/pack/server_visited.png
+
 Zughy:
   textures/base/pack/cdb_downloading.png
   textures/base/pack/cdb_queued.png
