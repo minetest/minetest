@@ -19,7 +19,6 @@
 #include "util/tracy_wrapper.h"
 #include "client/renderingengine.h"
 #include "util/quicktune.h"
-#include "util/hex.h"
 
 #include <queue>
 
@@ -841,42 +840,54 @@ static u32 transformBuffersToDrawOrder(
 		driver->removeHardwareBuffer(buf->getIndexBuffer());
 	}
 
-	// TODO: explain and document
-	std::string kkk;
+	/*
+	 * Tracking buffers, their contents and modifications would be quite complicated
+	 * so we opt for something simple here: We identify buffers by their location
+	 * in memory.
+	 * This imposes the following assumptions:
+	 * - buffers don't move in memory
+	 * - vertex and index data is immutable
+	 * Invalidation is taken care of by invalidateMapBlockMesh().
+	 */
 	std::sort(to_merge.begin(), to_merge.end(), [] (const auto &l, const auto &r) {
 		return static_cast<void*>(l.second) < static_cast<void*>(r.second);
 	});
-	for (auto &it : to_merge) {
-		kkk.append(reinterpret_cast<const char*>(&it.second), sizeof(it.second));
-	}
-
-	scene::SMeshBuffer *tmp = nullptr;
-	const auto &finish_buf = [&] () {
-		if (tmp) {
-			draw_order.emplace_back(v3f(0), tmp);
-			total_vtx = subtract_or_zero(total_vtx, tmp->getVertexCount());
-			total_idx = subtract_or_zero(total_idx, tmp->getIndexCount());
-
-			// Upload buffer here explicitly to give the driver some
-			// extra time to get it ready before drawing.
-			tmp->setHardwareMappingHint(scene::EHM_STREAM);
-			driver->updateHardwareBuffer(tmp->getVertexBuffer());
-			driver->updateHardwareBuffer(tmp->getIndexBuffer());
-		}
-		tmp = nullptr;
-	};
+	// cache key is a sorted string of raw pointers
+	std::string key;
+	key.reserve(sizeof(void*) * to_merge.size());
+	for (auto &it : to_merge)
+		key.append(reinterpret_cast<const char*>(&it.second), sizeof(void*));
 
 	// take from cache or run merging
-	auto it2 = dynamic_buffers.find(kkk);
+	auto it2 = dynamic_buffers.find(key);
 	if (it2 != dynamic_buffers.end()) {
-		g_profiler->avg("transformBuffersToDrawOrder: cache hit rate", 1);
-		for (auto *buf : it2->second.buf)
+		g_profiler->avg("CM::transformBuffersToDrawOrder: cache hit rate", 1);
+		const auto &use_mat = to_merge.front().second->getMaterial();
+		for (auto *buf : it2->second.buf) {
+			// material is not part of the cache key, so make sure it still matches
+			buf->getMaterial() = use_mat;
 			draw_order.emplace_back(v3f(0), buf);
+		}
 		it2->second.age = 0;
-	} else if (!kkk.empty()) {
-		g_profiler->avg("transformBuffersToDrawOrder: cache hit rate", 0);
-		auto &put_buffers = dynamic_buffers[kkk];
-		//rawstream << "new " << hex_encode(kkk) << std::endl;
+	} else if (!key.empty()) {
+		g_profiler->avg("CM::transformBuffersToDrawOrder: cache hit rate", 0);
+		auto &put_buffers = dynamic_buffers[key];
+		scene::SMeshBuffer *tmp = nullptr;
+		const auto &finish_buf = [&] () {
+			if (tmp) {
+				draw_order.emplace_back(v3f(0), tmp);
+				total_vtx = subtract_or_zero(total_vtx, tmp->getVertexCount());
+				total_idx = subtract_or_zero(total_idx, tmp->getIndexCount());
+
+				// Upload buffer here explicitly to give the driver some
+				// extra time to get it ready before drawing.
+				tmp->setHardwareMappingHint(scene::EHM_STREAM);
+				driver->updateHardwareBuffer(tmp->getVertexBuffer());
+				driver->updateHardwareBuffer(tmp->getIndexBuffer());
+			}
+			tmp = nullptr;
+		};
+
 		for (auto &it : to_merge) {
 			v3f translate = it.first;
 			auto *buf = it.second;
@@ -899,6 +910,7 @@ static u32 transformBuffersToDrawOrder(
 			appendToMeshBuffer(tmp, buf, translate);
 		}
 		finish_buf();
+		assert(!put_buffers.buf.empty());
 	}
 
 	// first call needs to set the material
@@ -1071,6 +1083,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		QUICKTUNE_AUTONAME(QVT_INT, USE_CACHE, 0, 1);
 		u32 cached_count = 0;
 		for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
+			// prune aggressively since every new/changed block or camera
+			// rotation can have big effects
 			if (!USE_CACHE || ++it->second.age > 1) {
 				for (auto *buf : it->second.buf)
 					buf->drop();
@@ -1080,7 +1094,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				it++;
 			}
 		}
-		g_profiler->avg(prefix + "merged buffers cached [#]", cached_count);
+		g_profiler->avg(prefix + "merged buffers in cache [#]", cached_count);
 	}
 
 	if (pass == scene::ESNRP_TRANSPARENT) {
@@ -1094,8 +1108,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 void ClientMap::invalidateMapBlockMesh(MapBlockMesh *mesh)
 {
-	ScopeProfiler sp(g_profiler, "CM::invalidateMapBlockMesh", SPT_ADD, PRECISION_MICRO);
-
 	// find all buffers
 	MeshBufListMaps tmp;
 	tmp.addFromBlock(v3s16(), mesh, getSceneManager()->getVideoDriver());
@@ -1105,40 +1117,35 @@ void ClientMap::invalidateMapBlockMesh(MapBlockMesh *mesh)
 	for (auto &it : tmp.maps) {
 		for (auto &it2 : it) {
 			for (auto &it3 : it2.second) {
-				void *const p = it3.second;
+				void *const p = it3.second; // explicit downcast
 				to_delete.push_back(p);
 				maxp = std::max(maxp, p);
 			}
 		}
 	}
-
-	g_profiler->add("CM::invalidateMapBlockMesh to_delete", to_delete.size());
-
 	if (to_delete.empty())
 		return;
 
 	// remove matching cache elements
-	u32 deleted = 0;
-	for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
-		const std::string &key = it->first;
+	const auto &match_any = [&] (const std::string &key) {
 		assert(key.size() % sizeof(void*) == 0);
+		void *v;
 		for (size_t off = 0; off < key.size(); off += sizeof(void*)) {
-			void *v;
+			// no alignment guarantee so *(void**)&key[off] is not allowed!
 			memcpy(&v, &key[off], sizeof(void*));
-			if (v > maxp) // early exit
+			if (v > maxp) // early exit, since it's sorted
 				break;
-			if (CONTAINS(to_delete, v)) {
-				it = m_dynamic_buffers.erase(it);
-				deleted++;
-				goto continue_outer;
-			}
+			if (CONTAINS(to_delete, v))
+				return true;
 		}
-		it++;
-		continue_outer:
-		continue;
+		return false;
+	};
+	for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
+		if (match_any(it->first))
+			it = m_dynamic_buffers.erase(it);
+		else
+			it++;
 	}
-
-	g_profiler->add("CM::invalidateMapBlockMesh deleted", deleted);
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,

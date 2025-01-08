@@ -1841,7 +1841,7 @@ mesh_generation_threads (Mapblock mesh generation threads) int 0 0 8
 
 #    All mesh buffers with less than this number of vertices will be merged
 #    during map rendering. This improves rendering performance.
-mesh_buffer_min_vertices (Minimum vertex count for mesh buffers) int 100 0 1000
+mesh_buffer_min_vertices (Minimum vertex count for mesh buffers) int 300 0 1000
 
 #    True = 256
 #    False = 128
