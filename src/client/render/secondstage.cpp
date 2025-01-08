@@ -196,7 +196,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 		}
 
 		if (enable_volumetric_light) {
-			buffer->setTexture(TEXTURE_VOLUME, scale, "volume", color_format);
+			buffer->setTexture(TEXTURE_VOLUME, scale, "volume", bloom_format);
 
 			shader_id = client->getShaderSource()->getShaderRaw("volumetric_light");
 			auto volume = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source, TEXTURE_DEPTH });
