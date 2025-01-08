@@ -123,6 +123,12 @@ namespace {
 	}
 }
 
+void CachedMeshBuffer::drop()
+{
+	for (auto *it : buf)
+		it->drop();
+}
+
 /*
 	ClientMap
 */
@@ -192,6 +198,9 @@ void ClientMap::onSettingChanged(std::string_view name, bool all)
 ClientMap::~ClientMap()
 {
 	g_settings->deregisterAllChangedCallbacks(this);
+
+	for (auto &it : m_dynamic_buffers)
+		it.second.drop();
 }
 
 void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color)
@@ -789,7 +798,7 @@ void MeshBufListMaps::addFromBlock(v3s16 block_pos, MapBlockMesh *block_mesh,
  * @param src buffer list
  * @param dst draw order
  * @param get_world_pos returns translation for a buffer
- * @param dynamic_buffers
+ * @param dynamic_buffers cache structure for merged buffers
  * @return number of buffers that were merged
  */
 template <typename F>
@@ -861,7 +870,7 @@ static u32 transformBuffersToDrawOrder(
 	// take from cache or run merging
 	auto it2 = dynamic_buffers.find(key);
 	if (it2 != dynamic_buffers.end()) {
-		g_profiler->avg("CM::transformBuffersToDrawOrder: cache hit rate", 1);
+		g_profiler->avg("CM::transformBuffersToDO: cache hit rate", 1);
 		const auto &use_mat = to_merge.front().second->getMaterial();
 		for (auto *buf : it2->second.buf) {
 			// material is not part of the cache key, so make sure it still matches
@@ -870,7 +879,7 @@ static u32 transformBuffersToDrawOrder(
 		}
 		it2->second.age = 0;
 	} else if (!key.empty()) {
-		g_profiler->avg("CM::transformBuffersToDrawOrder: cache hit rate", 0);
+		g_profiler->avg("CM::transformBuffersToDO: cache hit rate", 0);
 		auto &put_buffers = dynamic_buffers[key];
 		scene::SMeshBuffer *tmp = nullptr;
 		const auto &finish_buf = [&] () {
@@ -1086,8 +1095,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			// prune aggressively since every new/changed block or camera
 			// rotation can have big effects
 			if (!USE_CACHE || ++it->second.age > 1) {
-				for (auto *buf : it->second.buf)
-					buf->drop();
+				it->second.drop();
 				it = m_dynamic_buffers.erase(it);
 			} else {
 				cached_count += it->second.buf.size();
@@ -1141,10 +1149,12 @@ void ClientMap::invalidateMapBlockMesh(MapBlockMesh *mesh)
 		return false;
 	};
 	for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
-		if (match_any(it->first))
+		if (match_any(it->first)) {
+			it->second.drop();
 			it = m_dynamic_buffers.erase(it);
-		else
+		} else {
 			it++;
+		}
 	}
 }
 

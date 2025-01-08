@@ -39,6 +39,8 @@ namespace irr::video
 struct CachedMeshBuffer {
 	std::vector<scene::IMeshBuffer*> buf;
 	u8 age = 0;
+
+	void drop();
 };
 
 using CachedMeshBuffers = std::unordered_map<std::string, CachedMeshBuffer>;
