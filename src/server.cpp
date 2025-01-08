@@ -625,6 +625,11 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	ZoneScoped;
 	auto framemarker = FrameMarker("Server::AsyncRunStep()-frame").started();
 
+	if (!m_async_fatal_error.get().empty()) {
+		infostream << "Refusing server step in error state" << std::endl;
+		return;
+	}
+
 	{
 		// Send blocks to clients
 		SendBlocks(dtime);
@@ -3852,6 +3857,14 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+void Server::setAsyncFatalError(const std::string &error)
+{
+	m_async_fatal_error.set(error);
+	// make sure server steps stop happening immediately
+	if (m_thread)
+		m_thread->stop();
 }
 
 // Not thread-safe.
