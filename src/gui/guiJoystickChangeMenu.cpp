@@ -30,7 +30,6 @@ GUIJoystickChangeMenu::~GUIJoystickChangeMenu()
 void GUIJoystickChangeMenu::regenerateGui(v2u32 screensize)
 {
 	removeAllChildren();
-	// Build buttons
 }
 
 void GUIJoystickChangeMenu::drawMenu()
