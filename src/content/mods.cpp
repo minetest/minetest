@@ -167,6 +167,7 @@ std::map<std::string, ModSpec> getModsInPath(
 
 		mod_path.clear();
 		mod_path.append(path).append(DIR_DELIM).append(modname);
+		mod_path = fs::AbsolutePath(mod_path);
 
 		mod_virtual_path.clear();
 		// Intentionally uses / to keep paths same on different platforms
@@ -174,7 +175,7 @@ std::map<std::string, ModSpec> getModsInPath(
 
 		ModSpec spec(modname, mod_path, part_of_modpack, mod_virtual_path);
 		parseModContents(spec);
-		result.insert(std::make_pair(modname, spec));
+		result[modname] = std::move(spec);
 	}
 	return result;
 }
