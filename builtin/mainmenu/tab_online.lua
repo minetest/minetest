@@ -15,6 +15,7 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local last_visited_collapsed = false
 local function get_sorted_servers()
 	local servers = {
 		fav = {},
@@ -51,7 +52,7 @@ local function get_sorted_servers()
 		server.is_compatible = is_server_protocol_compat(server.proto_min, server.proto_max)
 		if server.is_favorite then
 			table.insert(servers.fav, server)
-		elseif server.is_visited then
+		elseif server.is_visited and not last_visited_collapsed then
 			table.insert(servers.visited, server)
 		elseif server.is_compatible then
 			table.insert(servers.public, server)
@@ -71,6 +72,12 @@ local function get_sorted_servers()
                 table.insert(servers.visited, visited)
                 if #servers.visited >= 5 then
                     break -- Limit to 5 visited servers
+                end
+                else
+		            if visited.is_compatible ~= false then  -- Only add if not explicitly incompatible
+		                table.insert(servers.public, visited)
+					else
+						table.insert(servers.incompatible, visited)
                 end
             end
         end
@@ -260,7 +267,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	local dividers = {
 		fav = "5,#ffff00," .. fgettext("Favorites") .. ",,,0,0,,",
-		visited = "6,#ff9900," .. fgettext("Last Visited") .. ",,,0,0,,",
+		visited = "6,#ff9900," .. fgettext("Last Visited") .. (last_visited_collapsed and " ►" or " ▼") .. ",,,0,0,,",
 		public = "7,#4bdd42," .. fgettext("Public Servers") .. ",,,0,0,,",
 		incompatible = "8,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
 	}
@@ -269,15 +276,27 @@ local function get_formspec(tabview, name, tabdata)
 	tabdata.lookup = {} -- maps row number to server
 	local rows = {}
 	for _, section in ipairs(order) do
-		local section_servers = servers[section]
-		if next(section_servers) ~= nil then
-			rows[#rows + 1] = dividers[section]
-			for _, server in ipairs(section_servers) do
-				tabdata.lookup[#rows + 1] = server
-				rows[#rows + 1] = render_serverlist_row(server)
-			end
-		end
-	end
+	    local section_servers = servers[section]
+	    if section == "visited" then
+	        -- Always show the visited divider, even when collapsed
+	        tabdata.lookup[#rows + 1] = "last_visited_divider"
+	        rows[#rows + 1] = dividers[section]
+
+	        -- Only add the servers if not collapsed and there are servers to show
+	        if not last_visited_collapsed and next(section_servers) ~= nil then
+	            for _, server in ipairs(section_servers) do
+	                tabdata.lookup[#rows + 1] = server
+	                rows[#rows + 1] = render_serverlist_row(server)
+	            end
+	        end
+	    elseif next(section_servers) ~= nil then
+	        rows[#rows + 1] = dividers[section]
+	        for _, server in ipairs(section_servers) do
+	            tabdata.lookup[#rows + 1] = server
+	            rows[#rows + 1] = render_serverlist_row(server)
+	        end
+	    end
+end
 
 	retval = retval .. table.concat(rows, ",")
 
@@ -437,6 +456,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			if event.type == "DCL" then
 				if not is_server_protocol_compat_or_error(
 							server.proto_min, server.proto_max) then
+					return true
+				end
+
+				if tabdata.lookup[event.row] == "last_visited_divider" then
+					last_visited_collapsed = not last_visited_collapsed
 					return true
 				end
 
