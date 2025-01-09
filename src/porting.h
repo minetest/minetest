@@ -235,7 +235,7 @@ inline void preciseSleepUs(u64 sleep_time)
 		// Busy-wait the remaining time to adjust for sleep inaccuracies
 		// The target - now > 0 construct will handle overflow gracefully (even though it should
 		// never happen)
-		while ((s64)(target_time - porting::getTimeUs()) > 0);
+		while ((s64)(target_time - porting::getTimeUs()) > 0) {}
 	}
 }
 
