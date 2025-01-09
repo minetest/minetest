@@ -3,13 +3,16 @@
 // Copyright (C) 2010-2014 sapier <sapier at gmx dot net>
 
 #include "fontengine.h"
-#include <cmath>
+
 #include "client/renderingengine.h"
 #include "settings.h"
 #include "irrlicht_changes/CGUITTFont.h"
 #include "util/numeric.h" // rangelim
 #include <IGUIEnvironment.h>
 #include <IGUIFont.h>
+
+#include <cmath>
+#include <unordered_set>
 
 /** reference to access font engine, has to be initialized by main */
 FontEngine *g_fontengine = nullptr;
@@ -181,6 +184,15 @@ void FontEngine::refresh() {
 
 void FontEngine::setMediaFont(const std::string &name, const std::string &data)
 {
+	static std::unordered_set<std::string> valid_names {
+		"regular", "bold", "italic", "italic_bold",
+		"mono", "mono_bold", "mono_italic", "mono_bold_italic",
+	};
+	if (!valid_names.count(name)) {
+		warningstream << "Ignoring unrecognized media font: " << name << std::endl;
+		return;
+	}
+
 	std::string copy = data;
 	irr_ptr<gui::SGUITTFace> face(gui::SGUITTFace::createFace(std::move(copy)));
 	m_media_faces.emplace(name, face);

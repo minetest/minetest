@@ -121,12 +121,6 @@ public:
 	/** update internal parameters from settings */
 	void readSettings();
 
-	/**
-	 * @brief Set a media-provided font.
-	 * Name should currently be one of
-	 * {regular, bold, italic_bold, mono, mono_bold, mono_bold_italic},
-	 * but arbitrary names are to be supported in the future.
-	 */
 	void setMediaFont(const std::string &name, const std::string &data);
 
 	void clearMediaFonts();

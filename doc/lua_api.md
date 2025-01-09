@@ -353,13 +353,16 @@ It is recommended that this only be used by game mods to set a look and feel.
 
 The stems (file names without extension) are self-explanatory:
 
-* `regular`
-* `bold`
-* `italic`
-* `bold_italic`
-* `mono`
-* `mono_bold`
-* `mono_bold_italic`
+* Regular variants:
+	* `regular`
+	* `bold`
+	* `italic`
+	* `bold_italic`
+* Monospaced variants:
+	* `mono`
+	* `mono_bold`
+	* `mono_italic`
+	* `mono_bold_italic`
 
 Naming conventions
 ------------------
