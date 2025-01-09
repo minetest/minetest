@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-22 02:04+0000\n"
-"Last-Translator: Oleg <bauyrakoleg@gmail.com>\n"
+"PO-Revision-Date: 2025-01-15 05:00+0000\n"
+"Last-Translator: Yof <Yof@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -931,7 +931,7 @@ msgstr "Загальне"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Movement"
-msgstr "Рух"
+msgstr "Пересування"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -1012,7 +1012,7 @@ msgstr "Дуже низький"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "Про рушій"
+msgstr "Деталі"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -2302,7 +2302,7 @@ msgstr "Імʼя гравця не дозволене"
 
 #: src/network/clientpackethandler.cpp
 msgid "Server shutting down"
-msgstr "Вимкнення серверу"
+msgstr "Сервер вимикається"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
@@ -3374,8 +3374,9 @@ msgid ""
 "Use this to limit the performance impact of transparency depth sorting.\n"
 "Set to 0 to disable it entirely."
 msgstr ""
-"Відстань у блоках, на якій увімкненно розділення за глибиною прозорості\n"
-"Користуйтеся цим для обмеження впливу розділення на продуктивність"
+"Відстань у блоках, на якій увімкнено розділення за глибиною прозорості.\n"
+"Користуйтеся цим для обмеження впливу розділення на продуктивність.\n"
+"Встановіть на 0 для повного вимкнення."
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3515,9 +3516,7 @@ msgstr "Увімкнути випадкове введення користув�
 
 #: src/settings_translation_file.cpp
 msgid "Enable smooth lighting with simple ambient occlusion."
-msgstr ""
-"Увімкнути згладжене освітлення із простим навколишнім затіненням.\n"
-"Вимикається для швидкості або іншого вигляду."
+msgstr "Увімкнути згладжене освітлення із простим навколишнім затіненням."
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
@@ -3599,7 +3598,7 @@ msgstr "Вмикає зневадження й перевірку помилок
 
 #: src/settings_translation_file.cpp
 msgid "Enables smooth scrolling."
-msgstr "Увімкнути плавну прокрутку"
+msgstr "Вмикає плавну прокрутку."
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
@@ -4548,7 +4547,9 @@ msgid ""
 msgstr ""
 "Довжина кроку серверу (інтервал, з яким все зазвичай оновлюються),\n"
 "зазначається у секундах.\n"
-"Не застосовується до сесій, які запущено з клієнтського меню."
+"Не застосовується до сесій, які запущено з клієнтського меню.\n"
+"Це нижня границя, тобто кроки серверу не можуть бути коротше за це\n"
+"значення, але вони часто длініше."
 
 #: src/settings_translation_file.cpp
 msgid "Length of liquid waves."
@@ -6478,8 +6479,7 @@ msgid ""
 msgstr ""
 "Двигун промальовування.\n"
 "Примітка: після змінення цього потрібен перезапуск!\n"
-"За замовчуванням OpenGL для ПК, й OGLES2 для Android.\n"
-"Відтінювачі підтримуються усіма крім OGLES1."
+"За замовчуванням OpenGL для настільних комп'ютерів, й OGLES2 для Android."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6600,8 +6600,8 @@ msgid ""
 "Tolerance of movement cheat detector.\n"
 "Increase the value if players experience stuttery movement."
 msgstr ""
-"Детектор чітерства \" стійкість до руху\".Збільште значення.якщо гравець "
-"починає невпевнено рухатись."
+"Значення допустимості детектору читів на рух.\n"
+"Збільште значення, якщо рух гравців занадто часто затримується."
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -6998,9 +6998,9 @@ msgid ""
 "When enabled, the GUI is optimized to be more usable on touchscreens.\n"
 "Whether this is enabled by default depends on your hardware form-factor."
 msgstr ""
-"Якщо включено, інтерфейс оптимізований для більш зручного використання на "
+"Якщо увімкнено, інтерфейс оптимізується для більш зручного використання на "
 "сенсорних екранах.\n"
-"Чи буде він ввімкнений, залежить від вашого пристрою."
+"Розмір вашого пристрою визначає, чи буде це увімкнено за замовчуванням."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7126,8 +7126,9 @@ msgid ""
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
-"Тільки для Windows: запускати Luanti з вікном командного рядка позаду.\n"
-"Містить таку ж саму інформацію, що й файл debug.txt (звичайна назва файлу)."
+"Тільки для Windows: запускати Luanti з вікном командного рядка у фоновому "
+"режимі.\n"
+"Містить ту ж саму інформацію, що й файл debug.txt (назва за замовчуванням)."
 
 #: src/settings_translation_file.cpp
 msgid ""
