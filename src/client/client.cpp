@@ -838,7 +838,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		return true;
 	}
 
-	const char *font_ext[] = {".ttf", NULL};
+	const char *font_ext[] = {".ttf", ".woff2", NULL};
 	name = removeStringEnd(filename, font_ext);
 	if (!name.empty()) {
 		g_fontengine->setMediaFont(name, data);

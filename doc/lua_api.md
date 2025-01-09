@@ -278,7 +278,7 @@ Accepted formats are:
     images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
-    fonts: .ttf (since version 5.11, see notes below)
+    fonts: .ttf, .woff2 (since version 5.11, see notes below)
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -345,18 +345,21 @@ and thus cause your model to render differently there.
 
 #### Custom fonts
 
-You can supply custom fonts in TrueType Font (TTF) format.
+You can supply custom fonts in TrueType Font (`.ttf`) or Web Open Font Format 2 (`.woff2`) format.
+The former is supported primarily for convenience. The latter is preferred due to its compression.
 In the future, having multiple custom fonts and the ability to switch between them is planned,
 but for now this feature is limited to the ability to override Luanti's default fonts via mods.
-It is recommended that this only be used by game mods. The names are self-explanatory:
+It is recommended that this only be used by game mods to set a look and feel.
 
-* `regular.ttf`
-* `bold.ttf`
-* `italic.ttf`
-* `bold_italic.ttf`
-* `mono.ttf`
-* `mono_bold.ttf`
-* `mono_bold_italic.ttf`
+The stems (file names without extension) are self-explanatory:
+
+* `regular`
+* `bold`
+* `italic`
+* `bold_italic`
+* `mono`
+* `mono_bold`
+* `mono_bold_italic`
 
 Naming conventions
 ------------------
