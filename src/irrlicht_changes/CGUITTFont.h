@@ -3,6 +3,7 @@
    Copyright (c) 2009-2010 John Norman
    Copyright (c) 2016 Nathanaëlle Courant
    Copyright (c) 2023 Caleb Butler
+   Copyright (c) 2024 Luanti contributors
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -32,8 +33,6 @@
 
 #pragma once
 
-#include <map>
-
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -41,15 +40,11 @@
 #include "IGUIFont.h"
 #include "IVideoDriver.h"
 #include "IrrlichtDevice.h"
-#include "SMesh.h"
 #include "util/enriched_string.h"
 #include "util/basic_macros.h"
 
-// TODO these should be in the C++ when the struct is properly split into C++ & header
+#include <map>
 #include <optional>
-#include "irr_ptr.h"
-#include "log.h"
-#include "filesys.h"
 
 namespace irr
 {

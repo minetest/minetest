@@ -32,7 +32,6 @@
 */
 
 #include <cstdlib>
-#include <freetype/freetype.h>
 #include <iostream>
 #include <optional>
 #include "irr_ptr.h"
@@ -260,8 +259,6 @@ void SGUITTGlyph::unload()
 }
 
 //////////////////////
-
-// TODO constructor which takes bogus filename and data
 
 CGUITTFont* CGUITTFont::createTTFont(IGUIEnvironment *env,
 		SGUITTFace *face, u32 size, bool antialias,

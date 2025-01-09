@@ -121,6 +121,12 @@ public:
 	/** update internal parameters from settings */
 	void readSettings();
 
+	/**
+	 * @brief Set a media-provided font.
+	 * Name should currently be one of
+	 * {regular, bold, italic_bold, mono, mono_bold, mono_bold_italic},
+	 * but arbitrary names are to be supported in the future.
+	 */
 	void setMediaFont(const std::string &name, const std::string &data);
 
 	void clearMediaFonts();
@@ -137,8 +143,10 @@ private:
 	/** update current minetest skin with font changes */
 	void updateSkin();
 
-	/** clean cache */
 	void clearCache();
+
+	/** refresh after fonts have been changed */
+	void refresh();
 
 	/** pointer to irrlicht gui environment */
 	gui::IGUIEnvironment* m_env = nullptr;

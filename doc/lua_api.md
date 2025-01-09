@@ -278,7 +278,7 @@ Accepted formats are:
     images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
-    fonts: .ttf (since version 5.?, see notes below) <!-- TODO before merge -->
+    fonts: .ttf (since version 5.11, see notes below)
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)

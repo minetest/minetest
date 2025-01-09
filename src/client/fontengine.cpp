@@ -155,9 +155,7 @@ void FontEngine::readSettings()
 	m_default_bold = g_settings->getBool("font_bold");
 	m_default_italic = g_settings->getBool("font_italic");
 
-	clearCache();
-	updateCache();
-	updateSkin();
+	refresh();
 }
 
 void FontEngine::updateSkin()
@@ -175,25 +173,25 @@ void FontEngine::updateCache()
 	getFont(FONT_SIZE_UNSPECIFIED, FM_Unspecified);
 }
 
+void FontEngine::refresh() {
+	clearCache();
+	updateCache();
+	updateSkin();
+}
+
 void FontEngine::setMediaFont(const std::string &name, const std::string &data)
 {
 	std::string copy = data;
 	irr_ptr<gui::SGUITTFace> face(gui::SGUITTFace::createFace(std::move(copy)));
 	m_media_faces.emplace(name, face);
-	// HACK dedup this
-	clearCache();
-	updateCache();
-	updateSkin();
+	refresh();
 }
 
 void FontEngine::clearMediaFonts()
 {
 	RecursiveMutexAutoLock l(m_font_mutex);
 	m_media_faces.clear();
-	// HACK dedup this
-	clearCache();
-	updateCache();
-	updateSkin();
+	refresh();
 }
 
 gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
@@ -246,26 +244,29 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 			: (setting_suffix.empty() ? "" : setting_suffix.substr(1));
 	if (media_name == "") media_name = "regular";
 
-	auto it = m_media_faces.find(media_name);
-	if (it != m_media_faces.end()) {
-		auto *face = it->second.get();
-		face->grab();
+	auto createFont = [&](gui::SGUITTFace *face) -> gui::CGUITTFont* {
 		auto *font = gui::CGUITTFont::createTTFont(m_env,
 				face, size, true, true, font_shadow,
 				font_shadow_alpha);
-		
-		if (!font) {
-			errorstream << "FontEngine: Cannot load media font '" << media_name <<
-				"'. Falling back to client settings." << std::endl;
-		}
 
-		// HACK this tidbit is duplicated
+		if (!font) return nullptr;
+
 		if (spec.mode != _FM_Fallback) {
 			FontSpec spec2(spec);
 			spec2.mode = _FM_Fallback;
 			font->setFallback(getFont(spec2, true));
 		}
+
 		return font;
+	};
+
+	auto it = m_media_faces.find(media_name);
+	if (it != m_media_faces.end()) {
+		auto *face = it->second.get();
+		if (auto *font = createFont(face))
+			return font;
+		errorstream << "FontEngine: Cannot load media font '" << media_name <<
+			"'. Falling back to client settings." << std::endl;
 	}
 
 	for (const std::string &font_path : fallback_settings) {
@@ -274,25 +275,11 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 
 		// Grab the face.
 		auto *face = irr::gui::SGUITTFace::loadFace(font_path);
-		gui::CGUITTFont *font = nullptr;
-		if (face) {
-			font = gui::CGUITTFont::createTTFont(m_env,
-					face, size, true, true, font_shadow,
-					font_shadow_alpha);
-		}
+		if (auto *font = face ? createFont(face) : nullptr)
+			return font;
 
-		if (!font) {
-			errorstream << "FontEngine: Cannot load '" << font_path <<
-				"'. Trying to fall back to another path." << std::endl;
-			continue;
-		}
-
-		if (spec.mode != _FM_Fallback) {
-			FontSpec spec2(spec);
-			spec2.mode = _FM_Fallback;
-			font->setFallback(getFont(spec2, true));
-		}
-		return font;
+		errorstream << "FontEngine: Cannot load '" << font_path <<
+			"'. Trying to fall back to another path." << std::endl;
 	}
 	return nullptr;
 }

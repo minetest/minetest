@@ -2544,7 +2544,6 @@ bool Server::addMediaFile(const std::string &filename,
 		// Translation file formats
 		".tr", ".po", ".mo",
 		// Fonts
-		// TODO throw a warning and ignore file if name is not one of the few recognized ones?
 		".ttf",
 		NULL
 	};
