@@ -298,7 +298,6 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 			face->drop();
 			return font;
 		}
-		
 
 		errorstream << "FontEngine: Cannot load '" << font_path <<
 			"'. Trying to fall back to another path." << std::endl;
