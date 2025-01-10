@@ -56,7 +56,7 @@ namespace gui
 	private:
 
 		static std::map<io::path, SGUITTFace*> faces;
-		static std::optional<FT_Library> freetype_library;
+		static FT_Library freetype_library;
 		static std::size_t n_faces;
 
 		static FT_Library getFreeTypeLibrary();

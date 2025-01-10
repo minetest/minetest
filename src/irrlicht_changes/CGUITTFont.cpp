@@ -42,7 +42,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <optional>
 
 namespace irr
 {
@@ -50,18 +49,18 @@ namespace gui
 {
 
 std::map<io::path, SGUITTFace*> SGUITTFace::faces;
-std::optional<FT_Library> SGUITTFace::freetype_library;
-std::size_t SGUITTFace::n_faces;
+FT_Library SGUITTFace::freetype_library = nullptr;
+std::size_t SGUITTFace::n_faces = 0;
 
 FT_Library SGUITTFace::getFreeTypeLibrary()
 {
 	if (freetype_library)
-		return *freetype_library;
+		return freetype_library;
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
 		FATAL_ERROR("initializing freetype failed");
 	freetype_library = ft;
-	return *freetype_library;
+	return freetype_library;
 }
 
 SGUITTFace::SGUITTFace(std::string &&buffer) : face_buffer(std::move(buffer))
@@ -77,8 +76,8 @@ SGUITTFace::~SGUITTFace()
 	// If there are no more faces referenced by FreeType, clean up.
 	if (n_faces == 0) {
 		assert(freetype_library);
-		FT_Done_FreeType(*freetype_library);
-		freetype_library = std::nullopt;
+		FT_Done_FreeType(freetype_library);
+		freetype_library = nullptr;
 	}
 }
 
