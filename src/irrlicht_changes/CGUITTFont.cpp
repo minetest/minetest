@@ -57,7 +57,7 @@ std::optional<FT_Library> SGUITTFace::getFreeTypeLibrary()
 	if (freetype_library) return *freetype_library;
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
-		return std::nullopt; // TODO can't we just bail out entirely if this fails?
+		return std::nullopt;
 	return freetype_library = ft;
 }
 
