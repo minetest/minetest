@@ -286,9 +286,12 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 				<< " " << size << "pt" << std::endl;
 
 		// Grab the face.
-		auto *face = irr::gui::SGUITTFace::loadFace(font_path);
-		if (auto *font = face ? createFont(face) : nullptr)
+		if (auto *face = irr::gui::SGUITTFace::loadFace(font_path)) {
+			auto *font = createFont(face);
+			face->drop();
 			return font;
+		}
+		
 
 		errorstream << "FontEngine: Cannot load '" << font_path <<
 			"'. Trying to fall back to another path." << std::endl;
