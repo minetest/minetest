@@ -55,7 +55,8 @@ std::size_t SGUITTFace::n_faces;
 
 FT_Library SGUITTFace::getFreeTypeLibrary()
 {
-	if (freetype_library) return *freetype_library;
+	if (freetype_library)
+		return *freetype_library;
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
 		FATAL_ERROR("initializing freetype failed");
@@ -85,7 +86,8 @@ SGUITTFace* SGUITTFace::createFace(std::string &&buffer)
 {
 	irr_ptr<SGUITTFace> face(new SGUITTFace(std::move(buffer)));
 	auto ft = getFreeTypeLibrary();
-	if (!ft) return nullptr;
+	if (!ft)
+		return nullptr;
 	return (FT_New_Memory_Face(ft,
 			reinterpret_cast<const FT_Byte*>(face->face_buffer.data()),
 			face->face_buffer.size(), 0, &face->face))
@@ -117,10 +119,12 @@ SGUITTFace* SGUITTFace::loadFace(const io::path &filename)
 
 void SGUITTFace::dropFilename()
 {
-	if (!filename.has_value()) return;
+	if (!filename.has_value())
+		return;
 
 	auto it = faces.find(*filename);
-	if (it == faces.end()) return;
+	if (it == faces.end())
+		return;
 
 	SGUITTFace* f = it->second;
 	// Drop our face.  If this was the last face, the destructor will clean up.
@@ -302,10 +306,8 @@ shadow_offset(0), shadow_alpha(0), fallback(0)
 
 bool CGUITTFont::load(SGUITTFace *face, const u32 size, const bool antialias, const bool transparency)
 {
-	// Some sanity checks.
-	if (!Driver) return false;
-	if (size == 0) return false;
-	if (!face) return false;
+	if (!Driver || size == 0 || !face)
+		return false;
 
 	this->size = size;
 

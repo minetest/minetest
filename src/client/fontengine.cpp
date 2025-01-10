@@ -261,14 +261,16 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	std::string media_name = spec.mode == FM_Mono
 			? "mono" + setting_suffix
 			: (setting_suffix.empty() ? "" : setting_suffix.substr(1));
-	if (media_name == "") media_name = "regular";
+	if (media_name.empty())
+		media_name = "regular";
 
 	auto createFont = [&](gui::SGUITTFace *face) -> gui::CGUITTFont* {
 		auto *font = gui::CGUITTFont::createTTFont(m_env,
 				face, size, true, true, font_shadow,
 				font_shadow_alpha);
 
-		if (!font) return nullptr;
+		if (!font)
+			return nullptr;
 
 		if (spec.mode != _FM_Fallback) {
 			FontSpec spec2(spec);
