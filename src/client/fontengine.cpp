@@ -254,11 +254,6 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	else
 		path_setting = setting_prefix + "font_path" + setting_suffix;
 
-	std::string fallback_settings[] = {
-		g_settings->get(path_setting),
-		Settings::getLayer(SL_DEFAULTS)->get(path_setting)
-	};
-
 	std::string media_name = spec.mode == FM_Mono
 			? "mono" + setting_suffix
 			: (setting_suffix.empty() ? "" : setting_suffix.substr(1));
@@ -291,6 +286,10 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 			"'. Falling back to client settings." << std::endl;
 	}
 
+	std::string fallback_settings[] = {
+		g_settings->get(path_setting),
+		Settings::getLayer(SL_DEFAULTS)->get(path_setting)
+	};
 	for (const std::string &font_path : fallback_settings) {
 		infostream << "Creating new font: " << font_path.c_str()
 				<< " " << size << "pt" << std::endl;
