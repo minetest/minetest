@@ -68,15 +68,14 @@ GUIChatConsole::GUIChatConsole(
 	}
 
 	const u16 chat_font_size = g_settings->getU16("chat_font_size");
-	m_font = g_fontengine->getFont(chat_font_size != 0 ?
-		rangelim(chat_font_size, 5, 72) : FONT_SIZE_UNSPECIFIED, FM_Mono);
+	m_font.grab(g_fontengine->getFont(chat_font_size != 0 ?
+		rangelim(chat_font_size, 5, 72) : FONT_SIZE_UNSPECIFIED, FM_Mono));
 
 	if (!m_font) {
 		errorstream << "GUIChatConsole: Unable to load mono font" << std::endl;
 	} else {
 		core::dimension2d<u32> dim = m_font->getDimension(L"M");
 		m_fontsize = v2u32(dim.Width, dim.Height);
-		m_font->grab();
 	}
 	m_fontsize.X = MYMAX(m_fontsize.X, 1);
 	m_fontsize.Y = MYMAX(m_fontsize.Y, 1);
@@ -88,19 +87,10 @@ GUIChatConsole::GUIChatConsole(
 	m_is_ctrl_down = false;
 	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
 
-	m_scrollbar = new GUIScrollBar(env, this, -1, core::rect<s32>(0, 0, 30, m_height), false, true, tsrc);
+	m_scrollbar.reset(new GUIScrollBar(env, this, -1, core::rect<s32>(0, 0, 30, m_height), false, true, tsrc));
 	m_scrollbar->setSubElement(true);
 	m_scrollbar->setLargeStep(1);
 	m_scrollbar->setSmallStep(1);
-}
-
-GUIChatConsole::~GUIChatConsole()
-{
-	if (m_font)
-		m_font->drop();
-
-	if (m_scrollbar)
-		m_scrollbar->drop();
 }
 
 void GUIChatConsole::openConsole(f32 scale)
@@ -315,7 +305,7 @@ void GUIChatConsole::drawBackground()
 
 void GUIChatConsole::drawText()
 {
-	if (m_font == NULL)
+	if (!m_font)
 		return;
 
 	ChatBuffer& buf = m_chat_backend->getConsoleBuffer();
@@ -344,7 +334,7 @@ void GUIChatConsole::drawText()
 
 			if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
 				// Draw colored text if possible
-				gui::CGUITTFont *tmp = static_cast<gui::CGUITTFont*>(m_font);
+				auto *tmp = static_cast<gui::CGUITTFont*>(m_font.get());
 				tmp->draw(
 					fragment.text,
 					destrect,
@@ -712,7 +702,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		return true;
 	}
 	else if (event.EventType == EET_GUI_EVENT && event.GUIEvent.EventType == EGET_SCROLL_BAR_CHANGED &&
-			(void*) event.GUIEvent.Caller == (void*) m_scrollbar)
+			(void*) event.GUIEvent.Caller == (void*) m_scrollbar.get())
 	{
 		m_chat_backend->getConsoleBuffer().scrollAbsolute(m_scrollbar->getPos());
 	}
