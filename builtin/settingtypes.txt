@@ -1899,7 +1899,7 @@ shadow_poisson_filter (Poisson filtering) bool true
 #    Minimum value: 1; maximum value: 16
 #
 #    Requires: enable_dynamic_shadows, opengl
-shadow_update_frames (Map shadows update frames) int 8 1 16
+shadow_update_frames (Map shadows update frames) int 16 1 32
 
 #    Set to true to render debugging breakdown of the bloom effect.
 #    In debug mode, the screen is split into 4 quadrants:
