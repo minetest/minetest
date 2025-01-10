@@ -12,6 +12,7 @@
 #include <IGUIFont.h>
 
 #include <cmath>
+#include <cstring>
 #include <unordered_set>
 
 /** reference to access font engine, has to be initialized by main */
@@ -185,11 +186,17 @@ void FontEngine::refresh() {
 void FontEngine::setMediaFont(const std::string &name, const std::string &data)
 {
 	static std::unordered_set<std::string> valid_names {
-		"regular", "bold", "italic", "italic_bold",
+		"regular", "bold", "italic", "bold_italic",
 		"mono", "mono_bold", "mono_italic", "mono_bold_italic",
 	};
 	if (!valid_names.count(name)) {
 		warningstream << "Ignoring unrecognized media font: " << name << std::endl;
+		return;
+	}
+
+	constexpr char TTF_MAGIC[5] = {0, 1, 0, 0, 0};
+	if (memcmp(data.data(), "wOF2", 4) && memcmp(data.data(), TTF_MAGIC, 5)) {
+		warningstream << "Rejecting media font with unrecognized magic" << std::endl;
 		return;
 	}
 
