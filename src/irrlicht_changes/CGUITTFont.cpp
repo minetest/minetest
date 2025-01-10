@@ -31,17 +31,18 @@
    john@suckerfreegames.com
 */
 
-#include <cstdlib>
-#include <iostream>
-#include <optional>
+#include "CGUITTFont.h"
+
 #include "irr_ptr.h"
 #include "log.h"
 #include "filesys.h"
 #include "debug.h"
-
-#include "CGUITTFont.h"
 #include "IFileSystem.h"
 #include "IGUIEnvironment.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <optional>
 
 namespace irr
 {
@@ -52,13 +53,14 @@ std::map<io::path, SGUITTFace*> SGUITTFace::faces;
 std::optional<FT_Library> SGUITTFace::freetype_library;
 std::size_t SGUITTFace::n_faces;
 
-std::optional<FT_Library> SGUITTFace::getFreeTypeLibrary()
+FT_Library SGUITTFace::getFreeTypeLibrary()
 {
 	if (freetype_library) return *freetype_library;
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
-		return std::nullopt;
-	return freetype_library = ft;
+		FATAL_ERROR("initializing freetype failed");
+	freetype_library = ft;
+	return *freetype_library;
 }
 
 SGUITTFace::SGUITTFace(std::string &&buffer) : face_buffer(std::move(buffer))
@@ -84,7 +86,7 @@ SGUITTFace* SGUITTFace::createFace(std::string &&buffer)
 	irr_ptr<SGUITTFace> face(new SGUITTFace(std::move(buffer)));
 	auto ft = getFreeTypeLibrary();
 	if (!ft) return nullptr;
-	return (FT_New_Memory_Face(*ft,
+	return (FT_New_Memory_Face(ft,
 			reinterpret_cast<const FT_Byte*>(face->face_buffer.data()),
 			face->face_buffer.size(), 0, &face->face))
 			? nullptr : face.release();

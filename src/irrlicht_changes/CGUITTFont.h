@@ -34,7 +34,7 @@
 #pragma once
 
 #include <ft2build.h>
-#include FT_FREETYPE_H
+#include <freetype/freetype.h>
 
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
@@ -59,7 +59,7 @@ namespace gui
 		static std::optional<FT_Library> freetype_library;
 		static std::size_t n_faces;
 
-		static std::optional<FT_Library> getFreeTypeLibrary();
+		static FT_Library getFreeTypeLibrary();
 
 	public:
 
