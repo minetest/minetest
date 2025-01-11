@@ -101,7 +101,7 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	if (dirty && !force)
 		return;
 
-	if (timeoftheday < 0.05 || timeoftheday > 0.95 || (timeoftheday > 0.45 && timeoftheday < 0.55)) {
+	if (timeoftheday < 0.1 || timeoftheday > 0.9 || (timeoftheday > 0.4 && timeoftheday < 0.6)) {
 		/*
 		 * When we are close to noon or midnight shadows do not move much,
 		 * so shadow-jitter due to rounding is more visible.
