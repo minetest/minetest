@@ -856,18 +856,18 @@ static u32 transformBuffersToDrawOrder(
 	 * This imposes the following assumptions:
 	 * - buffers don't move in memory
 	 * - vertex and index data is immutable
-	 * Invalidation is taken care of by invalidateMapBlockMesh().
+	 * - we know when to invalidate (invalidateMapBlockMesh does this)
 	 */
 	std::sort(to_merge.begin(), to_merge.end(), [] (const auto &l, const auto &r) {
 		return static_cast<void*>(l.second) < static_cast<void*>(r.second);
 	});
-	// cache key is a sorted string of raw pointers
+	// cache key is a string of sorted raw pointers
 	std::string key;
 	key.reserve(sizeof(void*) * to_merge.size());
 	for (auto &it : to_merge)
 		key.append(reinterpret_cast<const char*>(&it.second), sizeof(void*));
 
-	// take from cache or run merging
+	// try to take from cache
 	auto it2 = dynamic_buffers.find(key);
 	if (it2 != dynamic_buffers.end()) {
 		g_profiler->avg("CM::transformBuffersToDO: cache hit rate", 1);
@@ -880,6 +880,7 @@ static u32 transformBuffersToDrawOrder(
 		it2->second.age = 0;
 	} else if (!key.empty()) {
 		g_profiler->avg("CM::transformBuffersToDO: cache hit rate", 0);
+		// merge and save to cache
 		auto &put_buffers = dynamic_buffers[key];
 		scene::SMeshBuffer *tmp = nullptr;
 		const auto &finish_buf = [&] () {
@@ -912,8 +913,8 @@ static u32 transformBuffersToDrawOrder(
 				put_buffers.buf.push_back(tmp);
 				assert(tmp->getPrimitiveType() == buf->getPrimitiveType());
 				tmp->Material = buf->getMaterial();
-				// preallocate
-				tmp->Vertices->Data.reserve(total_vtx);
+				// preallocate approximately
+				tmp->Vertices->Data.reserve(MYMIN(U16_MAX, total_vtx));
 				tmp->Indices->Data.reserve(total_idx);
 			}
 			appendToMeshBuffer(tmp, buf, translate);
@@ -1116,7 +1117,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 void ClientMap::invalidateMapBlockMesh(MapBlockMesh *mesh)
 {
-	// find all buffers
+	// find all buffers for this block
 	MeshBufListMaps tmp;
 	tmp.addFromBlock(v3s16(), mesh, getSceneManager()->getVideoDriver());
 
@@ -1134,7 +1135,8 @@ void ClientMap::invalidateMapBlockMesh(MapBlockMesh *mesh)
 	if (to_delete.empty())
 		return;
 
-	// remove matching cache elements
+	// we know which buffers were used to produce a merged buffer
+	// so go through the cache and drop any entries that match
 	const auto &match_any = [&] (const std::string &key) {
 		assert(key.size() % sizeof(void*) == 0);
 		void *v;
