@@ -103,6 +103,7 @@ public:
 	{
 		MinEdge -= d;
 		MaxEdge += d;
+		cacheExtent();
 	}
 
 	/*
@@ -188,6 +189,7 @@ public:
 		ret.MaxEdge.Y = std::min(a.MaxEdge.Y, MaxEdge.Y);
 		ret.MinEdge.Z = std::max(a.MinEdge.Z, MinEdge.Z);
 		ret.MaxEdge.Z = std::min(a.MaxEdge.Z, MaxEdge.Z);
+		ret.cacheExtent();
 
 		return ret;
 	}
