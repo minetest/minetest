@@ -21,8 +21,8 @@
 #include "server/clientiface.h"
 #include "threading/ordered_mutex.h"
 #include "chatmessage.h"
-#include "sound.h"
 #include "translation.h"
+#include "server_playing_sound.h"
 #include <atomic>
 #include <string>
 #include <list>
@@ -101,25 +101,6 @@ struct MediaInfo
 		delete_at_shutdown(false)
 	{
 	}
-};
-
-// Combines the pure sound (SoundSpec) with positional information
-struct ServerPlayingSound
-{
-	SoundLocation type = SoundLocation::Local;
-
-	float gain = 1.0f; // for amplification of the base sound
-	float max_hear_distance = 32 * BS;
-	v3f pos;
-	u16 object = 0;
-	std::string to_player;
-	std::string exclude_player;
-
-	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
-
-	SoundSpec spec;
-
-	std::unordered_set<session_t> clients; // peer ids
 };
 
 struct MinimapMode {

@@ -472,6 +472,7 @@ set(common_SRCS
 	server.cpp
 	serverenvironment.cpp
 	servermap.cpp
+	server_playing_sound.cpp
 	translation.cpp
 	version.cpp
 	voxel.cpp
