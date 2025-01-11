@@ -214,9 +214,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (!m_properties_sent) {
-		m_properties_sent = true;
-		std::string str = getPropertyPacket();
+	if (m_properties_to_send.any()) {
+		std::string str = getPropertyPacket(m_properties_to_send);
+		m_properties_to_send.reset();
 		// create message and add to list
 		m_messages_out.emplace(getId(), true, str);
 		m_env->getScriptIface()->player_event(this, "properties_changed");
@@ -524,7 +524,7 @@ void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool fr
 
 	// Update properties on death
 	if ((hp == 0) != (m_hp == 0))
-		m_properties_sent = false;
+		m_properties_to_send = ObjectProperties::full_change;
 
 	if (hp != m_hp) {
 		m_hp = hp;
@@ -614,6 +614,11 @@ std::string PlayerSAO::getPropertyPacket()
 {
 	m_prop.is_visible = (true);
 	return generateSetPropertiesCommand(m_prop);
+}
+
+std::string PlayerSAO::getPropertyPacket(const ObjectProperties::ChangedProperties &change)
+{
+	return generateUpdatePropertiesCommand(m_prop, change);
 }
 
 void PlayerSAO::setMaxSpeedOverride(const v3f &vel)

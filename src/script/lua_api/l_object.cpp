@@ -807,7 +807,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 	read_object_properties(L, 2, sao, prop, getServer(L)->idef());
 	if (*prop != old) {
 		prop->validate();
-		sao->notifyObjectPropertiesModified();
+		sao->notifyObjectPropertiesModified(prop->getChange(old));
 	}
 	return 0;
 }
@@ -950,7 +950,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	prop->nametag = getstringfield_default(L, 2, "text", prop->nametag);
 
 	prop->validate();
-	sao->notifyObjectPropertiesModified();
+	sao->notifyObjectPropertiesModified(ObjectProperties::nametag_change);
 	return 0;
 }
 

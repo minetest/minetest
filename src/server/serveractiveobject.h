@@ -11,6 +11,7 @@
 #include "activeobject.h"
 #include "itemgroup.h"
 #include "util/container.h"
+#include "object_properties.h"
 
 
 /*
@@ -32,7 +33,6 @@ Some planning
 class ServerEnvironment;
 struct ItemStack;
 struct ToolCapabilities;
-struct ObjectProperties;
 struct PlayerHPChangeReason;
 class Inventory;
 struct InventoryLocation;
@@ -162,7 +162,7 @@ public:
 	virtual ServerActiveObject *getParent() const { return nullptr; }
 	virtual ObjectProperties *accessObjectProperties()
 	{ return NULL; }
-	virtual void notifyObjectPropertiesModified()
+	virtual void notifyObjectPropertiesModified(const ObjectProperties::ChangedProperties &change)
 	{}
 
 	// Inventory and wielded item

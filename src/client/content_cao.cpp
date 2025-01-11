@@ -1583,11 +1583,15 @@ void GenericCAO::processMessage(const std::string &data)
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
-	if (cmd == AO_CMD_SET_PROPERTIES) {
+	if (cmd == AO_CMD_SET_PROPERTIES || cmd == AO_CMD_UPDATE_PROPERTIES) {
 		ObjectProperties newprops;
-		newprops.show_on_minimap = m_is_player; // default
-
-		newprops.deSerialize(is);
+		if (cmd == AO_CMD_UPDATE_PROPERTIES) {
+			newprops = m_prop;
+			newprops.deSerializeChanges(is);
+		} else {
+			newprops.show_on_minimap = m_is_player; // default
+			newprops.deSerialize(is);
+		}
 
 		// Check what exactly changed
 		bool expire_visuals = visualExpiryRequired(newprops);

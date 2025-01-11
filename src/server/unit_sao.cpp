@@ -278,9 +278,9 @@ ObjectProperties *UnitSAO::accessObjectProperties()
 	return &m_prop;
 }
 
-void UnitSAO::notifyObjectPropertiesModified()
+void UnitSAO::notifyObjectPropertiesModified(const ObjectProperties::ChangedProperties &change)
 {
-	m_properties_sent = false;
+	m_properties_to_send |= change;
 }
 
 std::string UnitSAO::generateUpdateAttachmentCommand() const
@@ -384,6 +384,18 @@ std::string UnitSAO::generateSetPropertiesCommand(const ObjectProperties &prop) 
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, AO_CMD_SET_PROPERTIES);
 	prop.serialize(os);
+	return os.str();
+}
+
+std::string UnitSAO::generateUpdatePropertiesCommand(const ObjectProperties &prop,
+	const ObjectProperties::ChangedProperties &change) const
+{
+	if (change == ObjectProperties::full_change)
+		return generateSetPropertiesCommand(prop);
+
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, AO_CMD_UPDATE_PROPERTIES);
+	prop.serializeChanges(os, change);
 	return os.str();
 }
 
