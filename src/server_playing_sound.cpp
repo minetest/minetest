@@ -8,7 +8,7 @@ v3f ServerPlayingSound::getPos(ServerEnvironment *env, bool *pos_exists) const
 	if (pos_exists)
 		*pos_exists = false;
 
-	switch (type ){
+	switch (type) {
 	case SoundLocation::Local:
 		return v3f(0,0,0);
 	case SoundLocation::Position:
