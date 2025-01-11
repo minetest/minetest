@@ -278,7 +278,7 @@ Accepted formats are:
     images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
-    fonts: .ttf, .woff2 (since version 5.11, see notes below)
+    fonts: .ttf, .woff (both since version 5.11, see notes below)
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -345,7 +345,7 @@ and thus cause your model to render differently there.
 
 #### Custom fonts
 
-You can supply custom fonts in TrueType Font (`.ttf`) or Web Open Font Format 2 (`.woff2`) format.
+You can supply custom fonts in TrueType Font (`.ttf`) or Web Open Font Format (`.woff`) format.
 The former is supported primarily for convenience. The latter is preferred due to its compression.
 In the future, having multiple custom fonts and the ability to switch between them is planned,
 but for now this feature is limited to the ability to override Luanti's default fonts via mods.

@@ -195,7 +195,7 @@ void FontEngine::setMediaFont(const std::string &name, const std::string &data)
 	}
 
 	constexpr char TTF_MAGIC[5] = {0, 1, 0, 0, 0};
-	if (data.size() < 5 || (memcmp(data.data(), "wOF2", 4) &&
+	if (data.size() < 5 || (memcmp(data.data(), "wOFF", 4) &&
 			memcmp(data.data(), TTF_MAGIC, 5))) {
 		warningstream << "Rejecting media font with unrecognized magic" << std::endl;
 		return;
