@@ -459,7 +459,9 @@ public:
 	{
 		if(!m_area.contains(p))
 			return false;
-		m_data[m_area.index(p)] = n;
+		const s32 index = m_area.index(p);
+		m_data[index] = n;
+		m_flags[index] &= ~VOXELFLAG_NO_DATA;
 		return true;
 	}
 

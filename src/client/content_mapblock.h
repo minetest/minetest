@@ -47,7 +47,6 @@ class MapblockMeshGenerator
 public:
 	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output);
 	void generate();
-	void renderSingle(content_t node, u8 param2 = 0x00);
 
 private:
 	MeshMakeData *const data;

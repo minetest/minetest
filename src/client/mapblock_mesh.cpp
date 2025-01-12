@@ -31,7 +31,9 @@ MeshMakeData::MeshMakeData(const NodeDefManager *ndef,
 	m_side_length(side_length),
 	m_mesh_grid(mesh_grid),
 	m_nodedef(ndef)
-{}
+{
+	assert(m_side_length > 0);
+}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
 {
@@ -53,6 +55,24 @@ void MeshMakeData::fillBlockData(const v3s16 &bp, MapNode *data)
 
 	v3s16 blockpos_nodes = bp * MAP_BLOCKSIZE;
 	m_vmanip.copyFrom(data, data_area, v3s16(0,0,0), blockpos_nodes, data_size);
+}
+
+void MeshMakeData::fillSingleNode(MapNode data, MapNode padding)
+{
+	m_blockpos = {0, 0, 0};
+
+	m_vmanip.clear();
+	// area around 0,0,0 so that this positon has neighbors
+	const s16 sz = 3;
+	m_vmanip.addArea({v3s16(-sz), v3s16(sz)});
+
+	u32 count = m_vmanip.m_area.getVolume();
+	for (u32 i = 0; i < count; i++) {
+		m_vmanip.m_data[i] = padding;
+		m_vmanip.m_flags[i] &= ~VOXELFLAG_NO_DATA;
+	}
+
+	m_vmanip.setNodeNoEmerge({0, 0, 0}, data);
 }
 
 void MeshMakeData::setCrack(int crack_level, v3s16 crack_pos)
@@ -628,6 +648,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	MeshCollector collector(m_bounding_sphere_center, offset);
 
 	{
+		// Generate everything
 		MapblockMeshGenerator(data, &collector).generate();
 	}
 
@@ -940,21 +961,22 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 
 u8 get_solid_sides(MeshMakeData *data)
 {
-	std::unordered_map<v3s16, u8> results;
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 	const NodeDefManager *ndef = data->m_nodedef;
 
-	u8 result = 0x3F; // all sides solid;
+	const u16 side = data->m_side_length;
+	assert(data->m_vmanip.m_area.contains(blockpos_nodes + v3s16(side - 1)));
 
-	for (s16 i = 0; i < data->m_side_length && result != 0; i++)
-	for (s16 j = 0; j < data->m_side_length && result != 0; j++) {
+	u8 result = 0x3F; // all sides solid
+	for (s16 i = 0; i < side && result != 0; i++)
+	for (s16 j = 0; j < side && result != 0; j++) {
 		v3s16 positions[6] = {
 			v3s16(0, i, j),
-			v3s16(data->m_side_length - 1, i, j),
+			v3s16(side - 1, i, j),
 			v3s16(i, 0, j),
-			v3s16(i, data->m_side_length - 1, j),
+			v3s16(i, side - 1, j),
 			v3s16(i, j, 0),
-			v3s16(i, j, data->m_side_length - 1)
+			v3s16(i, j, side - 1)
 		};
 
 		for (u8 k = 0; k < 6; k++) {
