@@ -36,10 +36,9 @@ public:
 	Buffer(unsigned int size)
 	{
 		m_size = size;
-		if(size != 0) {
+		if (size != 0) {
 			data = new T[size];
-		}
-		else {
+		} else {
 			data = nullptr;
 		}
 	}
@@ -51,25 +50,24 @@ public:
 	Buffer(Buffer &&buffer)
 	{
 		m_size = buffer.m_size;
-		if(m_size != 0)
-		{
+		if (m_size != 0) {
 			data = buffer.data;
 			buffer.data = nullptr;
 			buffer.m_size = 0;
-		}
-		else
+		} else {
 			data = nullptr;
+		}
 	}
 	// Copies whole buffer
 	Buffer(const T *t, unsigned int size)
 	{
 		m_size = size;
-		if(size != 0) {
+		if (size != 0) {
 			data = new T[size];
 			memcpy(data, t, sizeof(T) * size);
-		}
-		else
+		} else {
 			data = nullptr;
+		}
 	}
 
 	~Buffer()
@@ -79,16 +77,16 @@ public:
 
 	Buffer& operator=(Buffer &&buffer)
 	{
-		if(this == &buffer)
+		if (this == &buffer) {
 			return *this;
+		}
 		drop();
 		m_size = buffer.m_size;
-		if(m_size != 0) {
+		if (m_size != 0) {
 			data = buffer.data;
 			buffer.data = nullptr;
 			buffer.m_size = 0;
-		}
-		else {
+		} else {
 			data = nullptr;
 		}
 		return *this;
@@ -122,8 +120,9 @@ public:
 
 	operator std::string_view() const
 	{
-		if (!data)
+		if (!data) {
 			return std::string_view();
+		}
 		return std::string_view(reinterpret_cast<char*>(data), m_size);
 	}
 
@@ -157,10 +156,9 @@ public:
 	SharedBuffer(unsigned int size)
 	{
 		m_size = size;
-		if(m_size != 0) {
+		if (m_size != 0) {
 			data = new T[m_size];
-		}
-		else {
+		} else {
 			data = nullptr;
 		}
 
@@ -177,7 +175,7 @@ public:
 	}
 	SharedBuffer & operator=(const SharedBuffer & buffer)
 	{
-		if(this == &buffer) {
+		if (this == &buffer) {
 			return *this;
 		}
 
@@ -194,11 +192,10 @@ public:
 	SharedBuffer(const T *t, unsigned int size)
 	{
 		m_size = size;
-		if(m_size != 0) {
+		if (m_size != 0) {
 			data = new T[m_size];
 			memcpy(data, t, sizeof(T) * m_size);
-		}
-		else {
+		} else {
 			data = nullptr;
 		}
 		refcount = new unsigned int;
@@ -207,14 +204,13 @@ public:
 	/*
 		Copies whole buffer
 	*/
-	SharedBuffer(const Buffer<T> &buffer)
+	SharedBuffer(const Buffer<T> &buffer) : SharedBuffer(*buffer, buffer.getSize())
 	{
 		m_size = buffer.getSize();
 		if (m_size != 0) {
 			data = new T[m_size];
 			memcpy(data, *buffer, sizeof(T) * m_size);
-		}
-		else {
+		} else {
 			data = nullptr;
 		}
 
@@ -247,8 +243,7 @@ private:
 	{
 		assert((*refcount) > 0);
 		(*refcount)--;
-		if(*refcount == 0)
-		{
+		if (*refcount == 0) {
 			delete[] data;
 			delete refcount;
 		}
