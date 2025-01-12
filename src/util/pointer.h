@@ -186,9 +186,7 @@ public:
 		(*refcount)++;
 		return *this;
 	}
-	/*
-		Copies whole buffer
-	*/
+	//! Copies whole buffer
 	SharedBuffer(const T *t, unsigned int size)
 	{
 		m_size = size;
@@ -201,21 +199,9 @@ public:
 		refcount = new unsigned int;
 		(*refcount) = 1;
 	}
-	/*
-		Copies whole buffer
-	*/
+	//! Copies whole buffer
 	SharedBuffer(const Buffer<T> &buffer) : SharedBuffer(*buffer, buffer.getSize())
 	{
-		m_size = buffer.getSize();
-		if (m_size != 0) {
-			data = new T[m_size];
-			memcpy(data, *buffer, sizeof(T) * m_size);
-		} else {
-			data = nullptr;
-		}
-
-		refcount = new unsigned int;
-		(*refcount) = 1;
 	}
 	~SharedBuffer()
 	{
