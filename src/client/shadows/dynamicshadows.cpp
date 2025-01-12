@@ -13,18 +13,6 @@
 
 using m4f = core::matrix4;
 
-static v3f quantizeDirection(v3f direction, float step)
-{
-
-	float yaw = std::atan2(direction.Z, direction.X);
-	float pitch = std::asin(direction.Y); // assume look is normalized
-
-	yaw = std::floor(yaw / step) * step;
-	pitch = std::floor(pitch / step) * step;
-
-	return v3f(std::cos(yaw)*std::cos(pitch), std::sin(pitch), std::sin(yaw)*std::cos(pitch));
-}
-
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
 	static const float COS_15_DEG = 0.965926f;
@@ -96,23 +84,10 @@ DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
 		farPlane(farValue), mapRes(shadowMapResolution), pos(position)
 {}
 
-void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool force, float timeoftheday)
+void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool force)
 {
 	if (dirty && !force)
 		return;
-
-	if (timeoftheday < 0.05 || timeoftheday > 0.95 || (timeoftheday > 0.45 && timeoftheday < 0.55)) {
-		/*
-		 * When we are close to noon or midnight shadows do not move much,
-		 * so shadow-jitter due to rounding is more visible.
-		 * At those times we update shadows less often.
-		 */
-		v3f q_direction  = quantizeDirection(direction, M_PI / 2880 /*15 seconds*/);
-		if (q_direction == last_quant_directin)
-			return;
-
-		last_quant_directin = q_direction;
-	}
 
 	float zNear = cam->getCameraNode()->getNearValue();
 	float zFar = getMaxFarValue();

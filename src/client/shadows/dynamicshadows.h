@@ -36,7 +36,7 @@ public:
 
 	//DISABLE_CLASS_COPY(DirectionalLight)
 
-	void update_frustum(const Camera *cam, Client *client, bool force, float timeoftheday);
+	void update_frustum(const Camera *cam, Client *client, bool force = false);
 
 	// when set direction is updated to negative normalized(direction)
 	void setDirection(v3f dir);
@@ -102,7 +102,6 @@ private:
 
 	v3f last_cam_pos_world{0,0,0};
 	v3f last_look{0,1,0};
-	v3f last_quant_directin{0,0,0};
 
 	shadowFrustum shadow_frustum;
 	shadowFrustum future_frustum;
