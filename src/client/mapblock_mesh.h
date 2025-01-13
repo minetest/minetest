@@ -63,6 +63,11 @@ struct MeshMakeData
 	void fillBlockData(const v3s16 &bp, MapNode *data);
 
 	/*
+		Prepare block data for rendering a single node located at (0,0,0).
+	*/
+	void fillSingleNode(MapNode data, MapNode padding = MapNode(CONTENT_AIR));
+
+	/*
 		Set the (node) position of a crack
 	*/
 	void setCrack(int crack_level, v3s16 crack_pos);

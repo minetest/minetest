@@ -1781,11 +1781,3 @@ void MapblockMeshGenerator::generate()
 		drawNode();
 	}
 }
-
-void MapblockMeshGenerator::renderSingle(content_t node, u8 param2)
-{
-	cur_node.p = {0, 0, 0};
-	cur_node.n = MapNode(node, 0xff, param2);
-	cur_node.f = &nodedef->get(cur_node.n);
-	drawNode();
-}
