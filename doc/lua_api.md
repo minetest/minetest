@@ -194,7 +194,8 @@ Mod directory structure
     │   │   │   └── another_subfolder
     │   │   └── bar_subfolder
     │   ├── sounds
-    │   ├── media
+    │   ├── fonts
+    │   ├── media
     │   ├── locale
     │   └── <custom data>
     └── another
@@ -347,6 +348,7 @@ and thus cause your model to render differently there.
 
 You can supply custom fonts in TrueType Font (`.ttf`) or Web Open Font Format (`.woff`) format.
 The former is supported primarily for convenience. The latter is preferred due to its compression.
+
 In the future, having multiple custom fonts and the ability to switch between them is planned,
 but for now this feature is limited to the ability to override Luanti's default fonts via mods.
 It is recommended that this only be used by game mods to set a look and feel.
