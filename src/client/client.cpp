@@ -564,7 +564,8 @@ void Client::step(float dtime)
 			std::vector<MinimapMapblock*> minimap_mapblocks;
 			bool do_mapper_update = true;
 
-			MapSector *sector = m_env.getMap().emergeSector(v2s16(r.p.X, r.p.Z));
+			ClientMap &map = m_env.getClientMap();
+			MapSector *sector = map.emergeSector(v2s16(r.p.X, r.p.Z));
 
 			MapBlock *block = sector->getBlockNoCreateNoEx(r.p.Y);
 
@@ -576,6 +577,8 @@ void Client::step(float dtime)
 
 			if (block) {
 				// Delete the old mesh
+				if (block->mesh)
+					map.invalidateMapBlockMesh(block->mesh);
 				delete block->mesh;
 				block->mesh = nullptr;
 				block->solid_sides = r.solid_sides;
@@ -590,9 +593,9 @@ void Client::step(float dtime)
 						if (r.mesh->getMesh(l)->getMeshBufferCount() != 0)
 							is_empty = false;
 
-					if (is_empty)
+					if (is_empty) {
 						delete r.mesh;
-					else {
+					} else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
 						if (r.urgent)
