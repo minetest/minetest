@@ -1640,10 +1640,10 @@ void Connection::DisconnectPeer(session_t peer_id)
 
 void Connection::SetPeerID(session_t id)
 {
-	assert(id != PEER_ID_INEXISTENT);
 	m_peer_id = id;
 	// fix peer id in existing queued reliable packets
-	putCommand(ConnectionCommand::peer_id_set(id));
+	if (id != PEER_ID_INEXISTENT)
+		putCommand(ConnectionCommand::peer_id_set(id));
 }
 
 void Connection::doResendOne(session_t peer_id)
