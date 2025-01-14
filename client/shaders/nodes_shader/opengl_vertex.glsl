@@ -58,7 +58,9 @@ uniform float xyPerspectiveBias0;
 uniform float xyPerspectiveBias1;
 uniform float zPerspectiveBias;
 
-uniform vec3 beta_r0_l;
+#ifdef ENABLE_TINTED_SUNLIGHT
+	uniform vec3 beta_r0_l;
+#endif
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 

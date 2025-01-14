@@ -221,6 +221,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 		}};
 	float m_user_exposure_compensation;
 	bool m_bloom_enabled;
+	bool m_color_grading_enabled;
 	CachedPixelShaderSetting<float> m_bloom_intensity_pixel{"bloomIntensity"};
 	CachedPixelShaderSetting<float> m_bloom_strength_pixel{"bloomStrength"};
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel{"bloomRadius"};
@@ -278,6 +279,7 @@ public:
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
 		m_volumetric_light_enabled = g_settings->getBool("enable_volumetric_lighting") && m_bloom_enabled;
 		m_gamma = g_settings->getFloat("secondstage_gamma");
+		m_color_grading_enabled = g_settings->getBool("enable_color_grading");
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -368,14 +370,11 @@ public:
 		m_foliage_translucency_pixel.set(&lighting.foliage_translucency, services);
 		m_specular_intensity_pixel.set(&lighting.specular_intensity, services);
 
-		if (g_settings->getBool("enable_color_grading")) {
+		if (m_color_grading_enabled) {
 			const ColorDecisionList& cdl_params = lighting.cdl;
-			core::vector3df slope = cdl_params.slope;
-			m_cdl_slope_pixel.set(slope, services);
-			core::vector3df offset = cdl_params.offset;
-			m_cdl_offset_pixel.set(offset, services);
-			core::vector3df power = cdl_params.power;
-			m_cdl_power_pixel.set(power, services);
+			m_cdl_slope_pixel.set(cdl_params.slope, services);
+			m_cdl_offset_pixel.set(cdl_params.offset, services);
+			m_cdl_power_pixel.set(cdl_params.power, services);
 		}
 
 		if (m_volumetric_light_enabled) {
@@ -422,7 +421,7 @@ public:
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
 		}
 
-		core::vector3df beta_r0 = lighting.volumetric_beta_r0;
+		v3f beta_r0 = lighting.volumetric_beta_r0;
 		m_volumetric_beta_r0_vertex.set(beta_r0, services);
 		m_volumetric_beta_r0_pixel.set(beta_r0, services);
 	}

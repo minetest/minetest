@@ -1,7 +1,4 @@
 uniform sampler2D baseTexture;
-uniform vec2 texelSize0;
-
-varying vec3 sunTint;
 
 uniform vec3 dayLight;
 uniform lowp vec4 fogColor;
@@ -33,6 +30,7 @@ uniform float animationTimer;
 	varying float f_normal_length;
 	varying vec3 shadow_position;
 	varying float perspective_factor;
+	varying vec3 sunTint;
 #endif
 
 varying vec3 vNormal;

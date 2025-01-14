@@ -4,9 +4,7 @@
 
 #pragma once
 #include "SColor.h"
-#include "vector3d.h"
-
-using namespace irr;
+#include "irr_v3d.h"
 
 /**
  * Parameters for automatic exposure compensation
@@ -35,7 +33,7 @@ struct AutoExposure
 };
 
 /**
- * Parameters for vignette in post
+ * Parameters for vignette in post-processing
  *
  */
 struct Vignette {
@@ -56,9 +54,9 @@ struct Vignette {
  *
  */
 struct ColorDecisionList {
-	core::vector3df slope{1.0, 1.0, 1.0};
-	core::vector3df offset{0.0, 0.0, 0.0};
-	core::vector3df power{1.0, 1.0, 1.0};
+	v3f slope{1.0, 1.0, 1.0};
+	v3f offset{0.0, 0.0, 0.0};
+	v3f power{1.0, 1.0, 1.0};
 };
 
 /** Describes ambient light settings for a player
@@ -75,7 +73,7 @@ struct Lighting
 	float specular_intensity{1.5f};
 	// These factors are calculated based on expected value of scattering factor of 1e-5
 	// for Nitrogen at 532nm (green), 2e25 molecules/m3 in atmosphere
-	core::vector3df volumetric_beta_r0{ 3.3362176e-01, 8.75378289198826e-01, 1.95342379700656 };
+	v3f volumetric_beta_r0{ 3.3362176e-01f, 8.753783e-01f, 1.9534237f };
 	video::SColor artificial_light_color{ 255, 133, 133, 133 };
 	video::SColor shadow_tint {255, 0, 0, 0};
 	float bloom_intensity {0.05f};
