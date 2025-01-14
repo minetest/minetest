@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "irr_v2d.h"
 #include "network/connection.h"
+#include "network/networkpacket.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "server/ban.h"
@@ -624,6 +625,11 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	ZoneScoped;
 	auto framemarker = FrameMarker("Server::AsyncRunStep()-frame").started();
 
+	if (!m_async_fatal_error.get().empty()) {
+		infostream << "Refusing server step in error state" << std::endl;
+		return;
+	}
+
 	{
 		// Send blocks to clients
 		SendBlocks(dtime);
@@ -649,9 +655,10 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Send to clients at constant intervals
 	*/
 
+	static const float time_send_interval = 5.0f;
 	m_time_of_day_send_timer -= dtime;
-	if (m_time_of_day_send_timer < 0.0) {
-		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
+	if (m_time_of_day_send_timer < 0) {
+		m_time_of_day_send_timer = time_send_interval;
 		u16 time = m_env->getTimeOfDay();
 		float time_speed = g_settings->getFloat("time_speed");
 		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
@@ -3860,6 +3867,14 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+void Server::setAsyncFatalError(const std::string &error)
+{
+	m_async_fatal_error.set(error);
+	// make sure server steps stop happening immediately
+	if (m_thread)
+		m_thread->stop();
 }
 
 // Not thread-safe.

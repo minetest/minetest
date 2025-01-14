@@ -50,8 +50,7 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime, bool assume_paused)
 
 	if (busy_time < frametime_min) {
 		sleep_time = frametime_min - busy_time;
-		if (sleep_time > 0)
-			sleep_us(sleep_time);
+		porting::preciseSleepUs(sleep_time);
 	} else {
 		sleep_time = 0;
 	}

@@ -13,6 +13,7 @@
 class ISimpleTextureSource;
 namespace irr::gui
 {
+	class IGUIButton;
 	class IGUIImage;
 }
 

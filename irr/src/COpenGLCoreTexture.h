@@ -137,6 +137,9 @@ public:
 			Images.clear();
 		}
 
+		if (!name.empty())
+			Driver->irrGlObjectLabel(GL_TEXTURE, TextureName, name.c_str());
+
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
 		TEST_GL_ERROR(Driver);
@@ -246,6 +249,9 @@ public:
 			GL.TexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
 			break;
 		}
+
+		if (!name.empty())
+			Driver->irrGlObjectLabel(GL_TEXTURE, TextureName, name.c_str());
 
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 		if (TEST_GL_ERROR(Driver)) {

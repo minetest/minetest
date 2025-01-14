@@ -5044,7 +5044,7 @@ inside the VoxelManip.
   can use `core.emerge_area` to make sure that the area you want to
   read/write is already generated.
 
-* Other mods, or the core itself, could possibly modify the area of the map
+* Other mods, or the engine itself, could possibly modify the area of the map
   currently loaded into a VoxelManip object. With the exception of Mapgen
   VoxelManips (see above section), the internal buffers are not updated. For
   this reason, it is strongly encouraged to complete the usage of a particular
@@ -5059,9 +5059,11 @@ inside the VoxelManip.
 Methods
 -------
 
-* `read_from_map(p1, p2)`:  Loads a chunk of map into the VoxelManip object
+* `read_from_map(p1, p2)`: Loads a chunk of map into the VoxelManip object
   containing the region formed by `p1` and `p2`.
     * returns actual emerged `pmin`, actual emerged `pmax`
+    * Note that calling this multiple times will *add* to the area loaded in the
+      VoxelManip, and not reset it.
 * `write_to_map([light])`: Writes the data loaded from the `VoxelManip` back to
   the map.
     * **important**: data must be set using `VoxelManip:set_data()` before
@@ -5120,8 +5122,8 @@ Methods
       generated mapchunk above are propagated down into the mapchunk, defaults
       to `true` if left out.
 * `update_liquids()`: Update liquid flow
-* `was_modified()`: Returns `true` if the data in the voxel manipulator has been modified
-   since it was last read from the map. This means you have to call `get_data` again.
+* `was_modified()`: Returns `true` if the data in the VoxelManip has been modified
+   since it was last read from the map. This means you have to call `get_data()` again.
    This only applies to a `VoxelManip` object from `core.get_mapgen_object`,
    where the engine will keep the map and the VM in sync automatically.
    * Note: this doesn't do what you think it does and is subject to removal. Don't use it!

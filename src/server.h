@@ -344,8 +344,7 @@ public:
 	void setStepSettings(StepSettings spdata) { m_step_settings.store(spdata); }
 	StepSettings getStepSettings() { return m_step_settings.load(); }
 
-	inline void setAsyncFatalError(const std::string &error)
-			{ m_async_fatal_error.set(error); }
+	void setAsyncFatalError(const std::string &error);
 	inline void setAsyncFatalError(const LuaError &e)
 	{
 		setAsyncFatalError(std::string("Lua: ") + e.what());

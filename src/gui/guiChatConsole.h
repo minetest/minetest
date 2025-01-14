@@ -8,8 +8,10 @@
 #include "modalMenu.h"
 #include "chat.h"
 #include "config.h"
+#include "irr_ptr.h"
 
 class Client;
+class GUIScrollBar;
 
 class GUIChatConsole : public gui::IGUIElement
 {
@@ -20,7 +22,6 @@ public:
 			ChatBackend* backend,
 			Client* client,
 			IMenuManager* menumgr);
-	virtual ~GUIChatConsole();
 
 	// Open the console (height = desired fraction of screen size)
 	// This doesn't open immediately but initiates an animation.
@@ -76,10 +77,13 @@ private:
 	// If the selected text changed, we need to update the (X11) primary selection.
 	void updatePrimarySelection();
 
+	void updateScrollbar(bool update_size = false);
+
 private:
 	ChatBackend* m_chat_backend;
 	Client* m_client;
 	IMenuManager* m_menumgr;
+	irr_ptr<GUIScrollBar> m_scrollbar;
 
 	// current screen size
 	v2u32 m_screensize;
@@ -116,7 +120,7 @@ private:
 	video::SColor m_background_color = video::SColor(255, 0, 0, 0);
 
 	// font
-	gui::IGUIFont *m_font = nullptr;
+	irr_ptr<gui::IGUIFont> m_font;
 	v2u32 m_fontsize;
 
 	// Enable clickable chat weblinks

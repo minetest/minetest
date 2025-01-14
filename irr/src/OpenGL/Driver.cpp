@@ -164,13 +164,6 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData, false);
 	GL.LoadAllProcedures(ContextManager);
-	if (EnableErrorTest && GL.IsExtensionPresent("GL_KHR_debug")) {
-		GL.Enable(GL_DEBUG_OUTPUT);
-		GL.DebugMessageCallback(debugCb, this);
-	} else if (EnableErrorTest) {
-		os::Printer::log("GL debug extension not available");
-	}
-	initQuadsIndices();
 
 	TEST_GL_ERROR(this);
 }
@@ -247,6 +240,20 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	initVersion();
 	initFeatures();
 	printTextureFormats();
+
+	if (EnableErrorTest) {
+		if (KHRDebugSupported) {
+			GL.Enable(GL_DEBUG_OUTPUT);
+			GL.DebugMessageCallback(debugCb, this);
+		} else {
+			os::Printer::log("GL debug extension not available");
+		}
+	} else {
+		// don't do debug things if they are not wanted (even if supported)
+		KHRDebugSupported = false;
+	}
+
+	initQuadsIndices();
 
 	// reset cache handler
 	delete CacheHandler;
@@ -1025,9 +1032,7 @@ void COpenGL3DriverBase::drawGeneric(const void *vertices, const void *indexList
 		GL.DrawElements(GL_TRIANGLE_FAN, primitiveCount + 2, indexSize, indexList);
 		break;
 	case scene::EPT_TRIANGLES:
-		GL.DrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS
-																						: GL_TRIANGLES,
-				primitiveCount * 3, indexSize, indexList);
+		GL.DrawElements(GL_TRIANGLES, primitiveCount * 3, indexSize, indexList);
 		break;
 	default:
 		break;
@@ -1306,7 +1311,28 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 				getGLBlend(srcAlphaFact), getGLBlend(dstAlphaFact));
 	}
 
-	// TODO: Polygon Offset. Not sure if it was left out deliberately or if it won't work with this driver.
+	// fillmode
+	if (Version.Spec != OpenGLSpec::ES && // not supported in gles
+			(resetAllRenderStates ||
+			lastmaterial.Wireframe != material.Wireframe ||
+			lastmaterial.PointCloud != material.PointCloud)) {
+		GL.PolygonMode(GL_FRONT_AND_BACK,
+				material.Wireframe ? GL_LINE :
+				material.PointCloud ? GL_POINT :
+				GL_FILL);
+	}
+
+	// Polygon Offset
+	if (resetAllRenderStates ||
+			lastmaterial.PolygonOffsetDepthBias != material.PolygonOffsetDepthBias ||
+			lastmaterial.PolygonOffsetSlopeScale != material.PolygonOffsetSlopeScale) {
+		if (material.PolygonOffsetDepthBias || material.PolygonOffsetSlopeScale) {
+			GL.Enable(GL.POLYGON_OFFSET_FILL);
+			GL.PolygonOffset(material.PolygonOffsetSlopeScale, material.PolygonOffsetDepthBias);
+		} else {
+			GL.Disable(GL.POLYGON_OFFSET_FILL);
+		}
+	}
 
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 		GL.LineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
@@ -1615,7 +1641,7 @@ s32 COpenGL3DriverBase::addHighLevelShaderMaterial(
 	s32 nr = -1;
 	COpenGL3MaterialRenderer *r = new COpenGL3MaterialRenderer(
 			this, nr, vertexShaderProgram,
-			pixelShaderProgram,
+			pixelShaderProgram, shaderName,
 			callback, baseMaterial, userData);
 
 	r->drop();

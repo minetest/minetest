@@ -687,11 +687,21 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 		case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
 		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
-		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			shaders_header << "#define MATERIAL_WAVING_LIQUID 1\n";
 			break;
 		default:
 			shaders_header << "#define MATERIAL_WAVING_LIQUID 0\n";
+			break;
+	}
+	switch (material_type) {
+		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
+		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			shaders_header << "#define MATERIAL_WATER_REFLECTIONS 1\n";
+			break;
+		default:
+			shaders_header << "#define MATERIAL_WATER_REFLECTIONS 0\n";
 			break;
 	}
 

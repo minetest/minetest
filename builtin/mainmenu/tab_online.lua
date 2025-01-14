@@ -161,6 +161,26 @@ local function get_formspec(tabview, name, tabdata)
 				core.formspec_escape(gamedata.serverdescription) .. "]"
 		end
 
+		-- Mods button
+		local mods = selected_server.mods
+		if mods and #mods > 0 then
+			local tooltip = ""
+			if selected_server.gameid then
+				tooltip = fgettext("Game: $1", selected_server.gameid) .. "\n"
+			end
+			tooltip = tooltip .. fgettext("Number of mods: $1", #mods)
+
+			retval = retval ..
+				"tooltip[btn_view_mods;" .. tooltip .. "]" ..
+				"style[btn_view_mods;padding=6]" ..
+				"image_button[4,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_mods.png") .. ";btn_view_mods;]"
+		else
+			retval = retval .. "image[4.1,1.4;0.3,0.3;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_mods_unavailable.png") .. "]"
+		end
+
+		-- Clients list button
 		local clients_list = selected_server.clients_list
 		local can_view_clients_list = clients_list and #clients_list > 0
 		if can_view_clients_list then
@@ -178,15 +198,23 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. "style[btn_view_clients;padding=6]"
 			retval = retval .. "image_button[4.5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
 				"server_view_clients.png") .. ";btn_view_clients;]"
+		else
+			retval = retval .. "image[4.6,1.4;0.3,0.3;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_clients_unavailable.png") .. "]"
 		end
 
+		-- URL button
 		if selected_server.url then
 			retval = retval .. "tooltip[btn_server_url;" .. fgettext("Open server website") .. "]"
 			retval = retval .. "style[btn_server_url;padding=6]"
-			retval = retval .. "image_button[" .. (can_view_clients_list and "4" or "4.5") .. ",1.3;0.5,0.5;" ..
+			retval = retval .. "image_button[3.5,1.3;0.5,0.5;" ..
 				core.formspec_escape(defaulttexturedir .. "server_url.png") .. ";btn_server_url;]"
+		else
+			retval = retval .. "image[3.6,1.4;0.3,0.3;" .. core.formspec_escape(defaulttexturedir ..
+				"server_url_unavailable.png") .. "]"
 		end
 
+		-- Favorites toggle button
 		if is_selected_fav() then
 			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
@@ -462,6 +490,14 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.btn_view_clients then
 		local dlg = create_clientslist_dialog(find_selected_server())
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
+		return true
+	end
+
+	if fields.btn_view_mods then
+		local dlg = create_server_list_mods_dialog(find_selected_server())
 		dlg:set_parent(tabview)
 		tabview:hide()
 		dlg:show()

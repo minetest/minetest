@@ -333,12 +333,11 @@ void GameFormSpec::showPauseMenu()
 
 #ifndef __ANDROID__
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound")) {
-		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-			<< strgettext("Sound Volume") << "]";
-	}
+	os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+		<< strgettext("Sound Volume") << "]";
 #endif
 #endif
+
 	if (g_touchcontrols) {
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_touchscreen_layout;"
 			<< strgettext("Touchscreen Layout")  << "]";

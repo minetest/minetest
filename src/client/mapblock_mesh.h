@@ -4,14 +4,21 @@
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include "irr_ptr.h"
+#include "IMesh.h"
+#include "SMeshBuffer.h"
+
 #include "util/numeric.h"
 #include "client/tile.h"
 #include "voxel.h"
 #include <array>
 #include <map>
 #include <unordered_map>
+
+namespace irr::video {
+	class IVideoDriver;
+}
 
 class Client;
 class NodeDefManager;
@@ -29,14 +36,25 @@ struct MinimapMapblock;
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
+
+	// base pos of meshgen area, in blocks
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
+	// size of meshgen area, in nodes.
+	// vmanip will have at least an extra 1 node onion layer.
+	// area is expected to fit into mesh grid cell.
+	u16 m_side_length;
+	// vertex positions will be relative to this grid
+	MeshGrid m_mesh_grid;
+
+	// relative to blockpos
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
+	bool m_generate_minimap = false;
 	bool m_smooth_lighting = false;
-	u16 side_length;
+	bool m_enable_water_reflections = false;
 
-	const NodeDefManager *nodedef;
+	const NodeDefManager *m_nodedef;
 
-	MeshMakeData(const NodeDefManager *ndef, u16 side_length);
+	MeshMakeData(const NodeDefManager *ndef, u16 side_lingth, MeshGrid mesh_grid);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -45,14 +63,14 @@ struct MeshMakeData
 	void fillBlockData(const v3s16 &bp, MapNode *data);
 
 	/*
+		Prepare block data for rendering a single node located at (0,0,0).
+	*/
+	void fillSingleNode(MapNode data, MapNode padding = MapNode(CONTENT_AIR));
+
+	/*
 		Set the (node) position of a crack
 	*/
 	void setCrack(int crack_level, v3s16 crack_pos);
-
-	/*
-		Enable or disable smooth lighting
-	*/
-	void setSmoothLighting(bool smooth_lighting);
 };
 
 // represents a triangle as indexes into the vertex buffer in SMeshBuffer

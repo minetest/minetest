@@ -13,18 +13,6 @@
 
 using m4f = core::matrix4;
 
-static v3f quantizeDirection(v3f direction, float step)
-{
-
-	float yaw = std::atan2(direction.Z, direction.X);
-	float pitch = std::asin(direction.Y); // assume look is normalized
-
-	yaw = std::floor(yaw / step) * step;
-	pitch = std::floor(pitch / step) * step;
-
-	return v3f(std::cos(yaw)*std::cos(pitch), std::sin(pitch), std::sin(yaw)*std::cos(pitch));
-}
-
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
 	static const float COS_15_DEG = 0.965926f;
@@ -74,7 +62,7 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	v3f boundVec = (cam_pos_scene + farCorner * sfFar) - center_scene;
 	float radius = boundVec.getLength();
 	float length = radius * 3.0f;
-	v3f eye_displacement = quantizeDirection(direction, M_PI / 2880 /*15 seconds*/) * length;
+	v3f eye_displacement = direction * length;
 
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position

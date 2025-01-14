@@ -170,9 +170,6 @@ public:
 			const core::position2d<s32> &end,
 			SColor color = SColor(255, 255, 255, 255)) override;
 
-	//! Draws a 3d box
-	void draw3DBox(const core::aabbox3d<f32> &box, SColor color = SColor(255, 255, 255, 255)) override;
-
 	//! Draws a 3d line.
 	virtual void draw3DLine(const core::vector3df &start,
 			const core::vector3df &end,

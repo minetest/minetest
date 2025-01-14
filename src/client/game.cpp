@@ -472,6 +472,8 @@ public:
 
 const static float object_hit_delay = 0.2;
 
+const static u16 bbox_debug_flag = scene::EDS_BBOX_ALL;
+
 /* The reason the following structs are not anonymous structs within the
  * class is that they are not used by the majority of member functions and
  * many functions that do require objects of thse types do not modify them
@@ -680,6 +682,8 @@ protected:
 private:
 	struct Flags {
 		bool disable_camera_update = false;
+		/// 0 = no debug text active, see toggleDebug() for the rest
+		int debug_state = 0;
 	};
 
 	void pauseAnimation();
@@ -782,11 +786,8 @@ private:
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	bool m_cache_disable_escape_sequences;
 	bool m_cache_doubletap_jump;
-	bool m_cache_enable_clouds;
 	bool m_cache_enable_joysticks;
-	bool m_cache_enable_particles;
 	bool m_cache_enable_fog;
 	bool m_cache_enable_noclip;
 	bool m_cache_enable_free_move;
@@ -828,15 +829,9 @@ Game::Game() :
 {
 	g_settings->registerChangedCallback("chat_log_level",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("disable_escape_sequences",
-		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("enable_clouds",
-		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_joysticks",
-		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("enable_particles",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_fog",
 		&settingChangedCallback, this);
@@ -937,6 +932,10 @@ bool Game::startup(bool *kill,
 	runData.time_from_last_punch = 10.0;
 
 	m_game_ui->initFlags();
+	if (g_settings->getBool("show_debug")) {
+		m_flags.debug_state = 1;
+		m_game_ui->m_flags.show_minimal_debug = true;
+	}
 
 	m_first_loop_after_window_activation = true;
 
@@ -1175,7 +1174,7 @@ bool Game::init(
 bool Game::initSound()
 {
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
+	if (g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
 		sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
 				std::make_unique<SoundFallbackPathProvider>());
@@ -1333,8 +1332,7 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Clouds
 	 */
-	if (m_cache_enable_clouds)
-		clouds = make_irr<Clouds>(smgr, shader_src, -1, rand());
+	clouds = make_irr<Clouds>(smgr, shader_src, -1, myrand());
 
 	/* Skybox
 	 */
@@ -1708,6 +1706,7 @@ void Game::updateDebugState()
 		hud->disableBlockBounds();
 	if (!has_debug) {
 		draw_control->show_wireframe = false;
+		smgr->setGlobalDebugData(0, bbox_debug_flag);
 		m_flags.disable_camera_update = false;
 		m_game_formspec.disableDebugView();
 	}
@@ -1845,7 +1844,9 @@ void Game::processUserInput(f32 dtime)
 		m_game_focused = true;
 	}
 
-	if (!guienv->hasFocus(gui_chat_console.get()) && gui_chat_console->isOpen()) {
+	if (!guienv->hasFocus(gui_chat_console.get()) && gui_chat_console->isOpen()
+		&& !gui_chat_console->isMyChild(guienv->getFocus()))
+	{
 		gui_chat_console->closeConsoleAtOnce();
 	}
 
@@ -1909,34 +1910,22 @@ void Game::processKeyInput()
 		toggleNoClip();
 #if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		if (g_settings->getBool("enable_sound")) {
-			bool new_mute_sound = !g_settings->getBool("mute_sound");
-			g_settings->setBool("mute_sound", new_mute_sound);
-			if (new_mute_sound)
-				m_game_ui->showTranslatedStatusText("Sound muted");
-			else
-				m_game_ui->showTranslatedStatusText("Sound unmuted");
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		bool new_mute_sound = !g_settings->getBool("mute_sound");
+		g_settings->setBool("mute_sound", new_mute_sound);
+		if (new_mute_sound)
+			m_game_ui->showTranslatedStatusText("Sound muted");
+		else
+			m_game_ui->showTranslatedStatusText("Sound unmuted");
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		if (g_settings->getBool("enable_sound")) {
-			float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
-			g_settings->setFloat("sound_volume", new_volume);
-			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-			m_game_ui->showStatusText(msg);
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
+		g_settings->setFloat("sound_volume", new_volume);
+		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+		m_game_ui->showStatusText(msg);
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		if (g_settings->getBool("enable_sound")) {
-			float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
-			g_settings->setFloat("sound_volume", new_volume);
-			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
-			m_game_ui->showStatusText(msg);
-		} else {
-			m_game_ui->showTranslatedStatusText("Sound system is disabled");
-		}
+		float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
+		g_settings->setFloat("sound_volume", new_volume);
+		std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
+		m_game_ui->showStatusText(msg);
 #else
 	} else if (wasKeyDown(KeyType::MUTE) || wasKeyDown(KeyType::INC_VOLUME)
 			|| wasKeyDown(KeyType::DEC_VOLUME)) {
@@ -2267,45 +2256,44 @@ void Game::toggleDebug()
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	bool has_debug = client->checkPrivilege("debug");
 	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
+
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
 	// 3x toggle: Debug text and wireframe (needs "debug" priv)
-	// Next toggle: Back to initial
+	// 4x toggle: Debug text and bbox (needs "debug" priv)
 	//
 	// The debug text can be in 2 modes: minimal and basic.
 	// * Minimal: Only technical client info that not gameplay-relevant
 	// * Basic: Info that might give gameplay advantage, e.g. pos, angle
 	// Basic mode is used when player has the debug HUD flag set,
 	// otherwise the Minimal mode is used.
-	if (!m_game_ui->m_flags.show_minimal_debug) {
-		m_game_ui->m_flags.show_minimal_debug = true;
-		if (has_basic_debug)
-			m_game_ui->m_flags.show_basic_debug = true;
-		m_game_ui->m_flags.show_profiler_graph = false;
-		draw_control->show_wireframe = false;
+
+	auto &state = m_flags.debug_state;
+	state = (state + 1) % 5;
+	if (state >= 3 && !has_debug)
+		state = 0;
+
+	m_game_ui->m_flags.show_minimal_debug = state > 0;
+	m_game_ui->m_flags.show_basic_debug = state > 0 && has_basic_debug;
+	m_game_ui->m_flags.show_profiler_graph = state == 2;
+	draw_control->show_wireframe = state == 3;
+	smgr->setGlobalDebugData(state == 4 ? bbox_debug_flag : 0,
+			state == 4 ? 0 : bbox_debug_flag);
+
+	if (state == 1) {
 		m_game_ui->showTranslatedStatusText("Debug info shown");
-	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
-		if (has_basic_debug)
-			m_game_ui->m_flags.show_basic_debug = true;
-		m_game_ui->m_flags.show_profiler_graph = true;
+	} else if (state == 2) {
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
-	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
-		if (has_basic_debug)
-			m_game_ui->m_flags.show_basic_debug = true;
-		m_game_ui->m_flags.show_profiler_graph = false;
-		draw_control->show_wireframe = true;
-		m_game_ui->showTranslatedStatusText("Wireframe shown");
+	} else if (state == 3) {
+		if (driver->getDriverType() == video::EDT_OGLES2)
+			m_game_ui->showTranslatedStatusText("Wireframe not supported by video driver");
+		else
+			m_game_ui->showTranslatedStatusText("Wireframe shown");
+	} else if (state == 4) {
+		m_game_ui->showTranslatedStatusText("Bounding boxes shown");
 	} else {
-		m_game_ui->m_flags.show_minimal_debug = false;
-		m_game_ui->m_flags.show_basic_debug = false;
-		m_game_ui->m_flags.show_profiler_graph = false;
-		draw_control->show_wireframe = false;
-		if (has_debug) {
-			m_game_ui->showTranslatedStatusText("Debug info, profiler graph, and wireframe hidden");
-		} else {
-			m_game_ui->showTranslatedStatusText("Debug info and profiler graph hidden");
-		}
+		m_game_ui->showTranslatedStatusText("All debug info hidden");
 	}
 }
 
@@ -2896,9 +2884,6 @@ void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 
 void Game::handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam)
 {
-	if (!clouds)
-		return;
-
 	clouds->setDensity(event->cloud_params.density);
 	clouds->setColorBright(video::SColor(event->cloud_params.color_bright));
 	clouds->setColorAmbient(video::SColor(event->cloud_params.color_ambient));
@@ -2935,10 +2920,7 @@ void Game::updateChat(f32 dtime)
 	std::vector<LogEntry> entries = m_chat_log_buf.take();
 	for (const auto& entry : entries) {
 		std::string line;
-		if (!m_cache_disable_escape_sequences) {
-			line.append(color_for(entry.level));
-		}
-		line.append(entry.combined);
+		line.append(color_for(entry.level)).append(entry.combined);
 		chat_backend->addMessage(L"", utf8_to_wide(line));
 	}
 
@@ -3023,8 +3005,7 @@ void Game::updateCamera(f32 dtime)
 			client->updateCameraOffset(camera_offset);
 			client->getEnv().updateCameraOffset(camera_offset);
 
-			if (clouds)
-				clouds->updateCameraOffset(camera_offset);
+			clouds->updateCameraOffset(camera_offset);
 		}
 	}
 }
@@ -3683,10 +3664,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	} else {
 		runData.dig_time_complete = params.time;
 
-		if (m_cache_enable_particles) {
-			client->getParticleManager()->addNodeParticle(client,
-					player, nodepos, n, features);
-		}
+		client->getParticleManager()->addNodeParticle(client,
+				player, nodepos, n, features);
 	}
 
 	if (!runData.digging) {
@@ -3771,11 +3750,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 		client->interact(INTERACT_DIGGING_COMPLETED, pointed);
 
-		if (m_cache_enable_particles) {
-			client->getParticleManager()->addDiggingParticles(client,
-				player, nodepos, n, features);
-		}
-
+		client->getParticleManager()->addDiggingParticles(client,
+			player, nodepos, n, features);
 
 		// Send event to trigger sound
 		client->getEventManager()->put(new NodeDugEvent(nodepos, n));
@@ -3866,8 +3842,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Update clouds
 	*/
-	if (clouds)
-		updateClouds(dtime);
+	updateClouds(dtime);
 
 	/*
 		Update particles
@@ -4129,11 +4104,8 @@ void Game::readSettings()
 	}
 	m_chat_log_buf.setLogLevel(chat_log_level);
 
-	m_cache_disable_escape_sequences     = g_settings->getBool("disable_escape_sequences");
 	m_cache_doubletap_jump               = g_settings->getBool("doubletap_jump");
-	m_cache_enable_clouds                = g_settings->getBool("enable_clouds");
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
-	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);

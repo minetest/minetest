@@ -53,7 +53,6 @@ centroid varying float nightRatio;
 varying highp vec3 eyeVec;
 varying float nightFactor;
 
-#ifdef ENABLE_DYNAMIC_SHADOWS
 #if (MATERIAL_WAVING_LIQUID && defined(ENABLE_WATER_REFLECTIONS))
 vec4 perm(vec4 x)
 {
@@ -536,7 +535,7 @@ void main(void)
 		col.rgb += water_reflect_color * f_shadow_factor * brightness_factor;
 #endif
 
-#if (defined(ENABLE_NODE_SPECULAR) && !MATERIAL_WAVING_LIQUID)
+#if (defined(ENABLE_NODE_SPECULAR) && !MATERIAL_WATER_REFLECTIONS)
 		// Apply specular to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
 			// This intensity is a placeholder and should be replaced by proper specular maps.
