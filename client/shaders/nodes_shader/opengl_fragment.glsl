@@ -53,6 +53,7 @@ centroid varying float nightRatio;
 varying highp vec3 eyeVec;
 varying float nightFactor;
 
+#ifdef ENABLE_DYNAMIC_SHADOWS
 #if (MATERIAL_WAVING_LIQUID && defined(ENABLE_WATER_REFLECTIONS))
 vec4 perm(vec4 x)
 {
