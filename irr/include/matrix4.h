@@ -162,20 +162,11 @@ public:
 	//! Returns true if the matrix is the identity matrix
 	inline bool isIdentity() const;
 
-	//! Returns true if the matrix is orthogonal
-	inline bool isOrthogonal() const;
-
-	//! Returns true if the matrix is the identity matrix
-	bool isIdentity_integer_base() const;
-
 	//! Set the translation of the current matrix. Will erase any previous values.
 	CMatrix4<T> &setTranslation(const vector3d<T> &translation);
 
 	//! Gets the current translation
 	vector3d<T> getTranslation() const;
-
-	//! Set the inverse translation of the current matrix. Will erase any previous values.
-	CMatrix4<T> &setInverseTranslation(const vector3d<T> &translation);
 
 	//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
 	//! NOTE: Rotation order is ZYX. This means that vectors are
@@ -208,14 +199,6 @@ public:
 		but the rotation will be equivalent,  i.e. will have the same result when used to rotate a vector or node.
 	*/
 	vector3d<T> getRotationDegrees() const;
-
-	//! Make an inverted rotation matrix from Euler angles.
-	/** The 4th row and column are unmodified. */
-	inline CMatrix4<T> &setInverseRotationRadians(const vector3d<T> &rotation);
-
-	//! Make an inverted rotation matrix from Euler angles.
-	/** The 4th row and column are unmodified. */
-	inline CMatrix4<T> &setInverseRotationDegrees(const vector3d<T> &rotation);
 
 	//! Make a rotation matrix from angle and axis, assuming left handed rotation.
 	/** The 4th row and column are unmodified. */
@@ -735,15 +718,6 @@ inline CMatrix4<T> &CMatrix4<T>::setTranslation(const vector3d<T> &translation)
 }
 
 template <class T>
-inline CMatrix4<T> &CMatrix4<T>::setInverseTranslation(const vector3d<T> &translation)
-{
-	M[12] = -translation.X;
-	M[13] = -translation.Y;
-	M[14] = -translation.Z;
-	return *this;
-}
-
-template <class T>
 inline CMatrix4<T> &CMatrix4<T>::setScale(const vector3d<T> &scale)
 {
 	M[0] = scale.X;
@@ -776,12 +750,6 @@ template <class T>
 inline CMatrix4<T> &CMatrix4<T>::setRotationDegrees(const vector3d<T> &rotation)
 {
 	return setRotationRadians(rotation * DEGTORAD);
-}
-
-template <class T>
-inline CMatrix4<T> &CMatrix4<T>::setInverseRotationDegrees(const vector3d<T> &rotation)
-{
-	return setInverseRotationRadians(rotation * DEGTORAD);
 }
 
 template <class T>
@@ -870,34 +838,6 @@ inline vector3d<T> CMatrix4<T>::getRotationDegrees() const
 	return getRotationDegrees(scale);
 }
 
-//! Sets matrix to rotation matrix of inverse angles given as parameters
-template <class T>
-inline CMatrix4<T> &CMatrix4<T>::setInverseRotationRadians(const vector3d<T> &rotation)
-{
-	f64 cPitch = cos(rotation.X);
-	f64 sPitch = sin(rotation.X);
-	f64 cYaw = cos(rotation.Y);
-	f64 sYaw = sin(rotation.Y);
-	f64 cRoll = cos(rotation.Z);
-	f64 sRoll = sin(rotation.Z);
-
-	M[0] = (T)(cYaw * cRoll);
-	M[4] = (T)(cYaw * sRoll);
-	M[8] = (T)(-sYaw);
-
-	f64 sPitch_sYaw = sPitch * sYaw;
-	f64 cPitch_sYaw = cPitch * sYaw;
-
-	M[1] = (T)(sPitch_sYaw * cRoll - cPitch * sRoll);
-	M[5] = (T)(sPitch_sYaw * sRoll + cPitch * cRoll);
-	M[9] = (T)(sPitch * cYaw);
-
-	M[2] = (T)(cPitch_sYaw * cRoll + sPitch * sRoll);
-	M[6] = (T)(cPitch_sYaw * sRoll - sPitch * cRoll);
-	M[10] = (T)(cPitch * cYaw);
-	return *this;
-}
-
 //! Sets matrix to rotation matrix defined by axis and angle, assuming LH rotation
 template <class T>
 inline CMatrix4<T> &CMatrix4<T>::setRotationAxisRadians(const T &angle, const vector3d<T> &axis)
@@ -967,77 +907,6 @@ inline bool CMatrix4<T>::isIdentity() const
 				if ((j != i) && (!iszero((*this)(i,j))))
 					return false;
 */
-	return true;
-}
-
-/* Check orthogonality of matrix. */
-template <class T>
-inline bool CMatrix4<T>::isOrthogonal() const
-{
-	T dp = M[0] * M[4] + M[1] * M[5] + M[2] * M[6] + M[3] * M[7];
-	if (!iszero(dp))
-		return false;
-	dp = M[0] * M[8] + M[1] * M[9] + M[2] * M[10] + M[3] * M[11];
-	if (!iszero(dp))
-		return false;
-	dp = M[0] * M[12] + M[1] * M[13] + M[2] * M[14] + M[3] * M[15];
-	if (!iszero(dp))
-		return false;
-	dp = M[4] * M[8] + M[5] * M[9] + M[6] * M[10] + M[7] * M[11];
-	if (!iszero(dp))
-		return false;
-	dp = M[4] * M[12] + M[5] * M[13] + M[6] * M[14] + M[7] * M[15];
-	if (!iszero(dp))
-		return false;
-	dp = M[8] * M[12] + M[9] * M[13] + M[10] * M[14] + M[11] * M[15];
-	return (iszero(dp));
-}
-
-/*
-	doesn't solve floating range problems..
-	but takes care on +/- 0 on translation because we are changing it..
-	reducing floating point branches
-	but it needs the floats in memory..
-*/
-template <class T>
-inline bool CMatrix4<T>::isIdentity_integer_base() const
-{
-	if (IR(M[0]) != F32_VALUE_1)
-		return false;
-	if (IR(M[1]) != 0)
-		return false;
-	if (IR(M[2]) != 0)
-		return false;
-	if (IR(M[3]) != 0)
-		return false;
-
-	if (IR(M[4]) != 0)
-		return false;
-	if (IR(M[5]) != F32_VALUE_1)
-		return false;
-	if (IR(M[6]) != 0)
-		return false;
-	if (IR(M[7]) != 0)
-		return false;
-
-	if (IR(M[8]) != 0)
-		return false;
-	if (IR(M[9]) != 0)
-		return false;
-	if (IR(M[10]) != F32_VALUE_1)
-		return false;
-	if (IR(M[11]) != 0)
-		return false;
-
-	if (IR(M[12]) != 0)
-		return false;
-	if (IR(M[13]) != 0)
-		return false;
-	if (IR(M[13]) != 0)
-		return false;
-	if (IR(M[15]) != F32_VALUE_1)
-		return false;
-
 	return true;
 }
 
