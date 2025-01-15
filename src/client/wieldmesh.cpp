@@ -204,7 +204,6 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	// Create the child scene node
 	scene::IMesh *dummymesh = g_extrusion_mesh_cache->createCube();
 	m_meshnode = SceneManager->addMeshSceneNode(dummymesh, this, -1);
-	m_meshnode->setReadOnlyMaterials(false);
 	m_meshnode->setVisible(false);
 	dummymesh->drop(); // m_meshnode grabbed it
 
