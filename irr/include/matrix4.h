@@ -645,21 +645,8 @@ inline CMatrix4<T> &CMatrix4<T>::operator*=(const T &scalar)
 template <class T>
 inline CMatrix4<T> &CMatrix4<T>::operator*=(const CMatrix4<T> &other)
 {
-#if defined(USE_MATRIX_TEST)
-	// do checks on your own in order to avoid copy creation
-	if (!other.isIdentity()) {
-		if (this->isIdentity()) {
-			return (*this = other);
-		} else {
-			CMatrix4<T> temp(*this);
-			return setbyproduct_nocheck(temp, other);
-		}
-	}
-	return *this;
-#else
 	CMatrix4<T> temp(*this);
 	return setbyproduct_nocheck(temp, other);
-#endif
 }
 
 //! multiply by another matrix
@@ -699,30 +686,13 @@ inline CMatrix4<T> &CMatrix4<T>::setbyproduct_nocheck(const CMatrix4<T> &other_a
 template <class T>
 inline CMatrix4<T> &CMatrix4<T>::setbyproduct(const CMatrix4<T> &other_a, const CMatrix4<T> &other_b)
 {
-#if defined(USE_MATRIX_TEST)
-	if (other_a.isIdentity())
-		return (*this = other_b);
-	else if (other_b.isIdentity())
-		return (*this = other_a);
-	else
-		return setbyproduct_nocheck(other_a, other_b);
-#else
 	return setbyproduct_nocheck(other_a, other_b);
-#endif
 }
 
 //! multiply by another matrix
 template <class T>
 inline CMatrix4<T> CMatrix4<T>::operator*(const CMatrix4<T> &m2) const
 {
-#if defined(USE_MATRIX_TEST)
-	// Testing purpose..
-	if (this->isIdentity())
-		return m2;
-	if (m2.isIdentity())
-		return *this;
-#endif
-
 	CMatrix4<T> m3(EM4CONST_NOTHING);
 
 	const T *m1 = M;
@@ -1153,11 +1123,6 @@ inline void CMatrix4<T>::transformPlane(const plane3d<f32> &in, plane3d<f32> &ou
 template <class T>
 inline void CMatrix4<T>::transformBoxEx(aabbox3d<f32> &box) const
 {
-#if defined(USE_MATRIX_TEST)
-	if (isIdentity())
-		return;
-#endif
-
 	const f32 Amin[3] = {box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z};
 	const f32 Amax[3] = {box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z};
 
@@ -1240,12 +1205,6 @@ inline bool CMatrix4<T>::getInverse(CMatrix4<T> &out) const
 	/// The inverse is calculated using Cramers rule.
 	/// If no inverse exists then 'false' is returned.
 
-#if defined(USE_MATRIX_TEST)
-	if (this->isIdentity()) {
-		out = *this;
-		return true;
-	}
-#endif
 	const CMatrix4<T> &m = *this;
 
 	f32 d = (m[0] * m[5] - m[1] * m[4]) * (m[10] * m[15] - m[11] * m[14]) -
