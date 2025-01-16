@@ -30,10 +30,13 @@ struct GameFormSpec
 
 	void showFormSpec(const std::string &formspec, const std::string &formname);
 	void showCSMFormSpec(const std::string &formspec, const std::string &formname);
+	// Used by the Lua pause menu environment to show formspecs.
+	// Currently only used for the in-game settings menu.
 	void showPauseMenuFormSpec(const std::string &formspec, const std::string &formname);
 	void showNodeFormspec(const std::string &formspec, const v3s16 &nodepos);
 	void showPlayerInventory();
 	void showDeathFormspecLegacy();
+	// Shows the hardcoded "main" pause menu.
 	void showPauseMenu();
 
 	void update();
