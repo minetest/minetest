@@ -1459,34 +1459,6 @@ void GenericCAO::updateBones(f32 dtime)
 		bone->setScale(props.getScale(bone->getScale()));
 	}
 
-	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
-	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
-		scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
-		if (!bone)
-			continue;
-
-		//If bone is manually positioned there is no need to perform the bug check
-		bool skip = false;
-		for (auto &it : m_bone_override) {
-			if (it.first == bone->getName()) {
-				skip = true;
-				break;
-			}
-		}
-		if (skip)
-			continue;
-
-		// Workaround for Irrlicht bug
-		// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
-		// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone to the proper position
-		// and update the bones transformation.
-		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
-		float offset = fabsf(bone_rot.X - bone->getRotation().X);
-		if (offset > 179.9f && offset < 180.1f) {
-			bone->setRotation(bone_rot);
-			bone->updateAbsolutePosition();
-		}
-	}
 	// The following is needed for set_bone_pos to propagate to
 	// attached objects correctly.
 	// Irrlicht ought to do this, but doesn't when using EJUOR_CONTROL.

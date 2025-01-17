@@ -66,4 +66,21 @@ SECTION("setRotationRadians") {
     }
 }
 
+SECTION("getScale") {
+    SECTION("correctly gets the length of each row of the 3x3 submatrix") {
+        matrix4 A(
+            1, 2, 3, 0,
+            4, 5, 6, 0,
+            7, 8, 9, 0,
+            0, 0, 0, 1
+        );
+        v3f scale = A.getScale();
+        CHECK(scale.equals(v3f(
+            v3f(1, 2, 3).getLength(),
+            v3f(4, 5, 6).getLength(),
+            v3f(7, 8, 9).getLength()
+        )));
+    }
+}
+
 }
