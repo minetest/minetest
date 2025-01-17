@@ -564,6 +564,7 @@ protected:
 	void updatePauseState();
 	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
+	void updateCameraOffset();
 	void updateCamera(f32 dtime);
 	void updateSound(f32 dtime);
 	void processPlayerInteraction(f32 dtime, bool show_hud);
@@ -988,6 +989,12 @@ void Game::run()
 		m_game_ui->clearInfoText();
 
 		updateProfilers(stats, draw_times, dtime);
+
+		// Update camera offset once before doing anything.
+		// In contrast to other updates the latency of this doesn't matter,
+		// since it's invisible to the user. But it needs to be consistent.
+		updateCameraOffset();
+
 		processUserInput(dtime);
 		// Update camera before player movement to avoid camera lag of one frame
 		updateCameraDirection(&cam_view_target, dtime);
@@ -1005,6 +1012,7 @@ void Game::run()
 
 		processClientEvents(&cam_view_target);
 		updateDebugState();
+		// Update camera here so it is in-sync with CAO position
 		updateCamera(dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud);
@@ -2919,8 +2927,6 @@ void Game::updateCamera(f32 dtime)
 	ToolCapabilities playeritem_toolcap =
 		playeritem.getToolCapabilities(itemdef_manager);
 
-	v3s16 old_camera_offset = camera->getOffset();
-
 	if (wasKeyPressed(KeyType::CAMERA_MODE)) {
 		GenericCAO *playercao = player->getCAO();
 
@@ -2945,26 +2951,36 @@ void Game::updateCamera(f32 dtime)
 	camera->update(player, dtime, tool_reload_ratio);
 	camera->step(dtime);
 
-	f32 camera_fov = camera->getFovMax();
-	v3s16 camera_offset = camera->getOffset();
-
-	m_camera_offset_changed = (camera_offset != old_camera_offset);
-
 	if (!m_flags.disable_camera_update) {
-		v3f camera_position = camera->getPosition();
-		v3f camera_direction = camera->getDirection();
-
-		auto &env = client->getEnv();
-		env.getClientMap().updateCamera(camera_position,
-				camera_direction, camera_fov, camera_offset, player->light_color);
-
-		if (m_camera_offset_changed) {
-			env.updateCameraOffset(camera_offset);
-			clouds->updateCameraOffset(camera_offset);
-		}
+		client->getEnv().getClientMap().updateCamera(camera->getPosition(),
+			camera->getDirection(), camera->getFovMax(), camera->getOffset(),
+			player->light_color);
 	}
 }
 
+void Game::updateCameraOffset()
+{
+	ClientEnvironment &env = client->getEnv();
+
+	v3s16 old_camera_offset = camera->getOffset();
+
+	camera->updateOffset();
+
+	v3s16 camera_offset = camera->getOffset();
+
+	m_camera_offset_changed = camera_offset != old_camera_offset;
+	if (!m_camera_offset_changed)
+		return;
+
+	if (!m_flags.disable_camera_update) {
+		env.getClientMap().updateCamera(camera->getPosition(),
+			camera->getDirection(), camera->getFovMax(), camera_offset,
+			env.getLocalPlayer()->light_color);
+
+		env.updateCameraOffset(camera_offset);
+		clouds->updateCameraOffset(camera_offset);
+	}
+}
 
 void Game::updateSound(f32 dtime)
 {
