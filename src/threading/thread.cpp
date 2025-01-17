@@ -65,7 +65,7 @@ DEALINGS IN THE SOFTWARE.
 thread_local Thread *current_thread = nullptr;
 
 
-Thread::Thread(const std::string &name) :
+Thread::Thread(std::string_view name) :
 	m_name(name),
 	m_request_stop(false),
 	m_running(false)
@@ -208,30 +208,30 @@ Thread *Thread::getCurrentThread()
 }
 
 
-void Thread::setName(const std::string &name)
+void Thread::setName(std::string_view name)
 {
 #if defined(__linux__)
 
 	// It would be cleaner to do this with pthread_setname_np,
 	// which was added to glibc in version 2.12, but some major
 	// distributions are still runing 2.11 and previous versions.
-	prctl(PR_SET_NAME, name.c_str());
+	prctl(PR_SET_NAME, name.data());
 
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 
-	pthread_set_name_np(pthread_self(), name.c_str());
+	pthread_set_name_np(pthread_self(), name.data());
 
 #elif defined(__NetBSD__)
 
-	pthread_setname_np(pthread_self(), "%s", const_cast<char*>(name.c_str()));
+	pthread_setname_np(pthread_self(), "%s", const_cast<char*>(name.data()));
 
 #elif defined(__APPLE__)
 
-	pthread_setname_np(name.c_str());
+	pthread_setname_np(name.data());
 
 #elif defined(__HAIKU__)
 
-	rename_thread(find_thread(NULL), name.c_str());
+	rename_thread(find_thread(NULL), name.data());
 
 #elif defined(_MSC_VER)
 
@@ -240,7 +240,7 @@ void Thread::setName(const std::string &name)
 	THREADNAME_INFO info;
 
 	info.dwType = 0x1000;
-	info.szName = name.c_str();
+	info.szName = name.data();
 	info.dwThreadID = -1;
 	info.dwFlags = 0;
 

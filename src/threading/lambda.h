@@ -17,7 +17,7 @@
 class LambdaThread : public Thread
 {
 	friend std::unique_ptr<LambdaThread> runInThread(
-		const std::function<void()> &, const std::string &);
+		const std::function<void()> &, std::string_view);
 public:
 	/// Re-throw a caught exception, if any. Can only be called after thread exit.
 	void rethrow()
@@ -29,7 +29,7 @@ public:
 
 private:
 	// hide methods
-	LambdaThread(const std::string &name="") : Thread(name) {}
+	LambdaThread(std::string_view name="") : Thread(name) {}
 	using Thread::start;
 
 	std::function<void()> m_fn;
@@ -55,7 +55,7 @@ private:
  * @return thread object of type `LambdaThread`
 */
 std::unique_ptr<LambdaThread> runInThread(const std::function<void()> &fn,
-	const std::string &thread_name = "")
+	std::string_view thread_name = "")
 {
 	std::unique_ptr<LambdaThread> t(new LambdaThread(thread_name));
 	t->m_fn = fn;

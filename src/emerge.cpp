@@ -691,7 +691,7 @@ void *EmergeThread::run()
 			continue;
 		}
 
-		g_profiler->add(m_name + ": processed [#]", 1);
+		g_profiler->add(std::string(m_name) + ": processed [#]", 1);
 
 		if (blockpos_over_max_limit(pos))
 			continue;
