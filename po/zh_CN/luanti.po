@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2025-01-05 17:22+0000\n"
-"Last-Translator: liu lizhi <kz-xy@163.com>\n"
+"PO-Revision-Date: 2025-01-17 17:24+0000\n"
+"Last-Translator: Poesty Li <poesty7450@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -317,7 +317,7 @@ msgstr "捐赠"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "论坛主题"
 
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
@@ -331,7 +331,7 @@ msgstr "安装$1"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
-msgstr ""
+msgstr "问题跟踪器"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
@@ -355,7 +355,7 @@ msgstr "网站"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
-msgstr ""
+msgstr "由 $1 — $2 次下载 — +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -503,7 +503,7 @@ msgstr "装饰"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "沙漠神庙"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -513,7 +513,7 @@ msgstr "开发测试版适用于开发者。"
 msgid ""
 "Different dungeon variant generated in desert biomes (only if dungeons "
 "enabled)"
-msgstr ""
+msgstr "在沙漠生物群落中生成的不同地牢变体（仅在启用地牢时）"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -2246,7 +2246,7 @@ msgstr "摇杆 ID"
 
 #: src/gui/touchcontrols.cpp
 msgid "Overflow menu"
-msgstr ""
+msgstr "溢出菜单"
 
 #: src/gui/touchcontrols.cpp
 #, fuzzy
@@ -2257,15 +2257,15 @@ msgstr "启用/禁用雾"
 msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
-msgstr ""
+msgstr "另一个客户端消耗此名称连接。如果您的客户端意外关闭，请一分钟后重试。"
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
+msgstr "不允许使用空密码。请设置密码并重试。"
 
 #: src/network/clientpackethandler.cpp
 msgid "Internal server error"
-msgstr ""
+msgstr "内部服务器错误"
 
 #: src/network/clientpackethandler.cpp
 #, fuzzy
@@ -2307,25 +2307,25 @@ msgstr "服务器正在关闭"
 #: src/network/clientpackethandler.cpp
 msgid ""
 "The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
+msgstr "服务器遇到内部错误。您将被断开连接。"
 
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
-msgstr ""
+msgstr "服务器正在单人游戏模式下运行。您无法连接。"
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr ""
+msgstr "用户过多"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "未知断开连接原因。"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
-msgstr ""
+msgstr "您的客户端发送了服务器未预期的内容。请尝试重新连接或更新您的客户端。"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
@@ -2569,7 +2569,7 @@ msgstr "高级"
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
-msgstr ""
+msgstr "允许液体呈现半透明效果。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2619,11 +2619,11 @@ msgstr "抗锯齿方法"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat flags"
-msgstr ""
+msgstr "反作弊标志"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat movement tolerance"
-msgstr ""
+msgstr "反作弊移动容忍度"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2647,10 +2647,15 @@ msgid ""
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
 msgstr ""
+"应用抖动以减少颜色带状伪影。\n"
+"抖动会显著增加无损压缩的截图的大小，并且如果显示器或操作系统进行额外的抖动，"
+"或颜色通道没有量化到 8 位，则会造成错误工作。\n"
+"在 OpenGL ES "
+"中，抖动仅在着色器支持高浮点精度时有效，并且可能会产生更高的性能影响。"
 
 #: src/settings_translation_file.cpp
 msgid "Apply specular shading to nodes."
-msgstr ""
+msgstr "对节点应用高光阴影。"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2984,6 +2989,8 @@ msgid ""
 "Comma-separated list of AL and ALC extensions that should not be used.\n"
 "Useful for testing. See al_extensions.[h,cpp] for details."
 msgstr ""
+"不应使用的 AL 和 ALC 扩展的逗号分隔列表。\n"
+"对测试很有用。请参阅 al_extensions.[h,cpp] 获取详细信息。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3517,7 +3524,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable updates available indicator on content tab"
-msgstr ""
+msgstr "在内容标签上启用可用更新指示器"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3573,7 +3580,7 @@ msgstr "启用翻转网状物facedir的缓存。"
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
-msgstr ""
+msgstr "在 OpenGL 驱动程序中启用调试和错误检查。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3582,7 +3589,7 @@ msgstr "后期处理"
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
-msgstr ""
+msgstr "启用后处理管道。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3591,6 +3598,8 @@ msgid ""
 "\"auto\" means that the touchscreen controls will be enabled and disabled\n"
 "automatically depending on the last used input method."
 msgstr ""
+"启用触摸屏控制，允许您通过触摸屏玩游戏。\n"
+"“自动”意味着触摸屏控件将根据上次使用的输入方法自动启用和禁用。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4143,7 +4152,8 @@ msgid ""
 "If enabled and you have ContentDB packages installed, Luanti may contact "
 "ContentDB to\n"
 "check for package updates when opening the mainmenu."
-msgstr ""
+msgstr "如果启用并且您安装了 ContentDB 包，Luanti 可能会在打开主菜单时联系 ContentDB "
+"检查包更新。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4945,6 +4955,8 @@ msgid ""
 "You generally don't need to change this, however busy servers may benefit "
 "from a higher number."
 msgstr ""
+"低级网络代码中每个发送步骤发送的最大数据包数量。\n"
+"您通常不需要更改此设置，但繁忙的服务器可能会受益于更高的数量。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -5173,7 +5185,7 @@ msgstr "方块高亮"
 
 #: src/settings_translation_file.cpp
 msgid "Node specular"
-msgstr ""
+msgstr "节点高光"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
@@ -5405,7 +5417,7 @@ msgstr "最低协议版本"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
-msgstr ""
+msgstr "打击手势"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5418,7 +5430,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Radius to use when the block bounds HUD feature is set to near blocks."
-msgstr ""
+msgstr "当块范围 HUD 功能设置为接近块时使用的半径。"
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
@@ -5767,7 +5779,7 @@ msgid ""
 "Server anticheat configuration.\n"
 "Flags are positive. Uncheck the flag to disable corresponding anticheat "
 "module."
-msgstr ""
+msgstr "服务器反作弊配置。标志是正数。取消选中标志以禁用相应的反作弊模块。"
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -5869,7 +5881,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
-msgstr ""
+msgstr "设置为true以启用体积光效（即“神光”）。"
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
@@ -5917,7 +5929,7 @@ msgstr "着色器"
 msgid ""
 "Shaders are a fundamental part of rendering and enable advanced visual "
 "effects."
-msgstr ""
+msgstr "着色器是渲染的基本部分，能够启用高级视觉效果。"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -5985,7 +5997,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Simulate translucency when looking at foliage in the sunlight."
-msgstr ""
+msgstr "在阳光下观看树叶时模拟半透明效果。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6282,7 +6294,7 @@ msgstr ""
 msgid ""
 "The delay in milliseconds after which a touch interaction is considered a "
 "long tap."
-msgstr ""
+msgstr "触碰交互后认为是长按的延迟（以毫秒为单位）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6301,6 +6313,15 @@ msgid ""
 "Known from the classic Luanti mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
+"击打玩家/实体的手势。\n"
+"这可以被子游戏和 Mod 覆盖。\n"
+"\n"
+"* 短按\n"
+"易于使用，并且在其它不可说的游戏中广为人知。\n"
+"\n"
+"* 长按\n"
+"来自经典的Luanti移动控制。\n"
+"战斗或多或少是不可能的。"
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6447,7 +6468,7 @@ msgstr "定义tunnels的最初2个3D噪音。"
 
 #: src/settings_translation_file.cpp
 msgid "Threshold for long taps"
-msgstr ""
+msgstr "长按的阈值"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6488,6 +6509,8 @@ msgid ""
 "Tolerance of movement cheat detector.\n"
 "Increase the value if players experience stuttery movement."
 msgstr ""
+"动作作弊检测器的容差。\n"
+"如果玩家体验到卡顿移动，请增加值。"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -6666,7 +6689,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
-msgstr ""
+msgstr "使用平滑云阴影。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6783,7 +6806,7 @@ msgstr "音量"
 
 #: src/settings_translation_file.cpp
 msgid "Volume multiplier when the window is unfocused."
-msgstr ""
+msgstr "窗口失去焦点时的音量倍增器。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6871,13 +6894,15 @@ msgstr "网页链接颜色"
 
 #: src/settings_translation_file.cpp
 msgid "When enabled, liquid reflections are simulated."
-msgstr ""
+msgstr "启用时，会模拟液体反射。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "When enabled, the GUI is optimized to be more usable on touchscreens.\n"
 "Whether this is enabled by default depends on your hardware form-factor."
 msgstr ""
+"启用时，GUI优化为在触摸屏上更易于使用。\n"
+"是否默认启用取决于您的硬件外形尺寸。"
 
 #: src/settings_translation_file.cpp
 msgid ""
