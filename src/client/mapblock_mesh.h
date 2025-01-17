@@ -180,7 +180,7 @@ class MapBlockMesh
 {
 public:
 	// Builds the mesh given
-	MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offset);
+	MapBlockMesh(Client *client, MeshMakeData *data);
 	~MapBlockMesh();
 
 	// Main animation function, parameters:
@@ -248,7 +248,6 @@ public:
 private:
 	struct AnimationInfo {
 		int frame; // last animation frame
-		int frame_offset;
 		TileLayer tile;
 	};
 

@@ -1750,11 +1750,6 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 		addUpdateMeshTask(blockpos + v3s16(0, 0, -1), false, urgent);
 }
 
-void Client::updateCameraOffset(v3s16 camera_offset)
-{
-	m_mesh_update_manager->m_camera_offset = camera_offset;
-}
-
 ClientEvent *Client::getClientEvent()
 {
 	FATAL_ERROR_IF(m_client_event_queue.empty(),
