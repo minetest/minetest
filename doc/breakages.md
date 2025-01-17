@@ -22,3 +22,4 @@ This list is largely advisory and items may be reevaluated once the time comes.
 * remove `DIR_DELIM` from Lua
 * stop reading initial properties from bare entity def
 * change particle default blend mode to `clip`
+* remove built-in knockback and related functions entirely
