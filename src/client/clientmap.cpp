@@ -126,6 +126,7 @@ void CachedMeshBuffer::drop()
 {
 	for (auto *it : buf)
 		it->drop();
+	buf.clear();
 }
 
 /*
@@ -204,6 +205,7 @@ ClientMap::~ClientMap()
 
 void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color)
 {
+	v3s16 previous_camera_offset = m_camera_offset;
 	v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
 
@@ -223,6 +225,13 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SCo
 	// reorder transparent meshes when camera crosses node boundary
 	if (previous_node != current_node)
 		m_needs_update_transparent_meshes = true;
+
+	// drop merged mesh cache when camera offset changes
+	if (previous_camera_offset != m_camera_offset) {
+		for (auto &it : m_dynamic_buffers)
+			it.second.drop();
+		m_dynamic_buffers.clear();
+	}
 }
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)
@@ -867,6 +876,7 @@ static u32 transformBuffersToDrawOrder(
 	if (it2 != dynamic_buffers.end()) {
 		g_profiler->avg("CM::transformBuffersToDO: cache hit rate", 1);
 		const auto &use_mat = to_merge.front().second->getMaterial();
+		assert(!it2->second.buf.empty());
 		for (auto *buf : it2->second.buf) {
 			// material is not part of the cache key, so make sure it still matches
 			buf->getMaterial() = use_mat;
