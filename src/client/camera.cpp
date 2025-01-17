@@ -26,7 +26,8 @@
 #include <IGUIFont.h>
 #include <IVideoDriver.h>
 
-#define CAMERA_OFFSET_STEP 200
+static constexpr f32 CAMERA_OFFSET_STEP = 200;
+
 #define WIELDMESH_OFFSET_X 55.0f
 #define WIELDMESH_OFFSET_Y -35.0f
 #define WIELDMESH_AMPLITUDE_X 7.0f
@@ -281,6 +282,20 @@ void Camera::addArmInertia(f32 player_yaw)
 	}
 }
 
+void Camera::updateOffset()
+{
+	v3f cp = m_camera_position / BS;
+
+	// Update offset if too far away from the center of the map
+	m_camera_offset = v3s16(
+		floorf(cp.X / CAMERA_OFFSET_STEP) * CAMERA_OFFSET_STEP,
+		floorf(cp.Y / CAMERA_OFFSET_STEP) * CAMERA_OFFSET_STEP,
+		floorf(cp.Z / CAMERA_OFFSET_STEP) * CAMERA_OFFSET_STEP
+	);
+
+	// No need to update m_cameranode as that will be done before the next render.
+}
+
 void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 {
 	// Get player position
@@ -366,6 +381,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		m_headnode->updateAbsolutePosition();
 	}
 
+
 	// Compute relative camera position and target
 	v3f rel_cam_pos = v3f(0,0,0);
 	v3f rel_cam_target = v3f(0,0,1);
@@ -397,12 +413,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	v3f abs_cam_up = m_headnode->getAbsoluteTransformation()
 			.rotateAndScaleVect(rel_cam_up);
 
-	// Separate camera position for calculation
-	v3f my_cp = m_camera_position;
-
 	// Reposition the camera for third person view
 	if (m_camera_mode > CAMERA_MODE_FIRST)
 	{
+		v3f my_cp = m_camera_position;
+
 		if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 			m_camera_direction *= -1;
 
@@ -434,27 +449,19 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		// If node blocks camera position don't move y to heigh
 		if (abort && my_cp.Y > player_position.Y+BS*2)
 			my_cp.Y = player_position.Y+BS*2;
+
+		// update the camera position in third-person mode to render blocks behind player
+		// and correctly apply liquid post FX.
+		m_camera_position = my_cp;
 	}
 
-	// Update offset if too far away from the center of the map
-	m_camera_offset.X += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.X/BS) - m_camera_offset.X)/CAMERA_OFFSET_STEP);
-	m_camera_offset.Y += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.Y/BS) - m_camera_offset.Y)/CAMERA_OFFSET_STEP);
-	m_camera_offset.Z += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.Z/BS) - m_camera_offset.Z)/CAMERA_OFFSET_STEP);
-
 	// Set camera node transformation
-	m_cameranode->setPosition(my_cp-intToFloat(m_camera_offset, BS));
-	m_cameranode->updateAbsolutePosition();
+	m_cameranode->setPosition(m_camera_position - intToFloat(m_camera_offset, BS));
 	m_cameranode->setUpVector(abs_cam_up);
-	// *100.0 helps in large map coordinates
-	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
-
-	// update the camera position in third-person mode to render blocks behind player
-	// and correctly apply liquid post FX.
-	if (m_camera_mode != CAMERA_MODE_FIRST)
-		m_camera_position = my_cp;
+	m_cameranode->updateAbsolutePosition();
+	// *100 helps in large map coordinates
+	m_cameranode->setTarget(m_camera_position - intToFloat(m_camera_offset, BS)
+		+ 100 * m_camera_direction);
 
 	/*
 	 * Apply server-sent FOV, instantaneous or smooth transition.

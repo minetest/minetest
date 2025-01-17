@@ -147,6 +147,9 @@ public:
 	// Update the camera from the local player's position.
 	void update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio);
 
+	// Adjust the camera offset when needed
+	void updateOffset();
+
 	// Update render distance
 	void updateViewingRange();
 
