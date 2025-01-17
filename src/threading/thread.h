@@ -137,7 +137,7 @@ public:
 	static unsigned int getNumberOfProcessors();
 
 protected:
-	std::string_view m_name;
+	std::string m_name;
 
 	virtual void *run() = 0;
 
