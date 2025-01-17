@@ -120,9 +120,6 @@ struct TileLayer
 		MATERIAL_FLAG_TILEABLE_HORIZONTAL|
 		MATERIAL_FLAG_TILEABLE_VERTICAL;
 
-	//! If true, the tile has its own color.
-	bool has_color = false;
-
 	std::vector<FrameSpec> *frames = nullptr;
 
 	/*!
@@ -130,6 +127,9 @@ struct TileLayer
 	 * a color then the color of the node owning this tile.
 	 */
 	video::SColor color = video::SColor(0, 0, 0, 0);
+
+	//! If true, the tile has its own color.
+	bool has_color = false;
 
 	u8 scale = 1;
 };

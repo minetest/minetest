@@ -608,7 +608,7 @@ void PartialMeshBuffer::draw(video::IVideoDriver *driver) const
 	MapBlockMesh
 */
 
-MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offset):
+MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data):
 	m_tsrc(client->getTextureSource()),
 	m_shdrsrc(client->getShaderSource()),
 	m_bounding_sphere_center((data->m_side_length * 0.5f - 0.5f) * BS),
@@ -692,7 +692,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				auto &info = m_animation_info[{layer, i}];
 				info.tile = p.layer;
 				info.frame = 0;
-				info.frame_offset = 0;
 				// Replace tile texture with the first animation frame
 				p.layer.texture = (*p.layer.frames)[0].texture;
 			}
@@ -815,8 +814,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	for (auto &it : m_animation_info) {
 		const TileLayer &tile = it.second.tile;
 		// Figure out current frame
-		int frameno = (int)(time * 1000 / tile.animation_frame_length_ms
-				+ it.second.frame_offset) % tile.animation_frame_count;
+		int frameno = (int)(time * 1000 / tile.animation_frame_length_ms) %
+			tile.animation_frame_count;
 		// If frame doesn't change, skip
 		if (frameno == it.second.frame)
 			continue;

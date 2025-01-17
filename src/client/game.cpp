@@ -2901,7 +2901,8 @@ void Game::updateChat(f32 dtime)
 
 void Game::updateCamera(f32 dtime)
 {
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	ClientEnvironment &env = client->getEnv();
+	LocalPlayer *player = env.getLocalPlayer();
 
 	/*
 		For interaction purposes, get info about the held item
@@ -2940,7 +2941,7 @@ void Game::updateCamera(f32 dtime)
 	float full_punch_interval = playeritem_toolcap.full_punch_interval;
 	float tool_reload_ratio = runData.time_from_last_punch / full_punch_interval;
 
-	tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
+	tool_reload_ratio = std::min(tool_reload_ratio, 1.0f);
 	camera->update(player, dtime, tool_reload_ratio);
 	camera->step(dtime);
 
@@ -2953,13 +2954,12 @@ void Game::updateCamera(f32 dtime)
 		v3f camera_position = camera->getPosition();
 		v3f camera_direction = camera->getDirection();
 
-		client->getEnv().getClientMap().updateCamera(camera_position,
+		auto &env = client->getEnv();
+		env.getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov, camera_offset, player->light_color);
 
 		if (m_camera_offset_changed) {
-			client->updateCameraOffset(camera_offset);
-			client->getEnv().updateCameraOffset(camera_offset);
-
+			env.updateCameraOffset(camera_offset);
 			clouds->updateCameraOffset(camera_offset);
 		}
 	}
