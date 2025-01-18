@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2025-01-02 10:35+0000\n"
-"Last-Translator: Emil Faltynek <faltynek.emil30@gmail.com>\n"
+"PO-Revision-Date: 2025-02-05 11:03+0000\n"
+"Last-Translator: Matyáš Pilz <matys.pilz@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -315,11 +315,11 @@ msgstr "Popis serveru"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Darovat"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Vlákno fóra"
 
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
@@ -333,15 +333,15 @@ msgstr "Instalovat $1"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Sledovač potíží"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr ""
+msgstr "Zdroj"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
-msgstr ""
+msgstr "Překlad"
 
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -912,7 +912,7 @@ msgstr "Přístupnost"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Auto"
-msgstr ""
+msgstr "Automaticky"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
@@ -989,7 +989,7 @@ msgstr "Aktualizace kamery zakázána"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
 msgid "This is not a recommended configuration."
-msgstr ""
+msgstr "Toto není doporučená konfigurace."
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
