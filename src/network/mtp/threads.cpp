@@ -587,17 +587,17 @@ void ConnectionSendThread::disconnect_peer(session_t peer_id)
 void ConnectionSendThread::fix_peer_id(session_t own_peer_id)
 {
 	auto peer_ids = m_connection->getPeerIDs();
-	for (const session_t peerId : peer_ids) {
-		PeerHelper peer = m_connection->getPeerNoEx(peerId);
+	for (const session_t peer_id : peer_ids) {
+		PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 		if (!peer)
 			continue;
 
-		UDPPeer *udpPeer = dynamic_cast<UDPPeer *>(&peer);
-		if (!udpPeer)
+		auto *udp_peer = dynamic_cast<UDPPeer*>(&peer);
+		if (!udp_peer)
 			continue;
 
 		for (int ch = 0; ch < CHANNEL_COUNT; ch++) {
-			auto &channel = udpPeer->channels[ch];
+			auto &channel = udp_peer->channels[ch];
 
 			channel.outgoing_reliables_sent.fixPeerId(own_peer_id);
 		}
