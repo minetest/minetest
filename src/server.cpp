@@ -2548,6 +2548,8 @@ bool Server::addMediaFile(const std::string &filename,
 		".x", ".b3d", ".obj", ".gltf", ".glb",
 		// Translation file formats
 		".tr", ".po", ".mo",
+		// Fonts
+		".ttf", ".woff",
 		NULL
 	};
 	if (removeStringEnd(filename, supported_ext).empty()) {

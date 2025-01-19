@@ -194,7 +194,8 @@ Mod directory structure
     │   │   │   └── another_subfolder
     │   │   └── bar_subfolder
     │   ├── sounds
-    │   ├── media
+    │   ├── fonts
+    │   ├── media
     │   ├── locale
     │   └── <custom data>
     └── another
@@ -265,7 +266,7 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on Luanti calling the
 registered callbacks.
 
-### `textures`, `sounds`, `media`, `models`, `locale`
+### `textures`, `sounds`, `media`, `models`, `locale`, `fonts`
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
@@ -278,6 +279,7 @@ Accepted formats are:
     images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
+    fonts: .ttf, .woff (both since version 5.11, see notes below)
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -341,6 +343,28 @@ The backwards compatibility guarantee does not extend to ignoring unsupported fe
 For example, if your model used an emissive material,
 you should expect that a future version of Luanti may respect this,
 and thus cause your model to render differently there.
+
+#### Custom fonts
+
+You can supply custom fonts in TrueType Font (`.ttf`) or Web Open Font Format (`.woff`) format.
+The former is supported primarily for convenience. The latter is preferred due to its compression.
+
+In the future, having multiple custom fonts and the ability to switch between them is planned,
+but for now this feature is limited to the ability to override Luanti's default fonts via mods.
+It is recommended that this only be used by game mods to set a look and feel.
+
+The stems (file names without extension) are self-explanatory:
+
+* Regular variants:
+  * `regular`
+  * `bold`
+  * `italic`
+  * `bold_italic`
+* Monospaced variants:
+  * `mono`
+  * `mono_bold`
+  * `mono_italic`
+  * `mono_bold_italic`
 
 Naming conventions
 ------------------
