@@ -586,8 +586,8 @@ void ConnectionSendThread::disconnect_peer(session_t peer_id)
 
 void ConnectionSendThread::fix_peer_id(session_t own_peer_id)
 {
-	auto peerIds = m_connection->getPeerIDs();
-	for (const session_t peerId : peerIds) {
+	auto peer_ids = m_connection->getPeerIDs();
+	for (const session_t peerId : peer_ids) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
 		if (!peer)
 			continue;
