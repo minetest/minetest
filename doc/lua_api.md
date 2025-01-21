@@ -5718,12 +5718,12 @@ Utilities
       avg_jitter = 0.03,         -- average packet time jitter
       -- the following information is available in a debug build only!!!
       -- DO NOT USE IN MODS
-      --ser_vers = 26,             -- serialization version used by client
-      --major = 0,                 -- major version number
-      --minor = 4,                 -- minor version number
-      --patch = 10,                -- patch version number
-      --vers_string = "0.4.9-git", -- full version string
-      --state = "Active"           -- current client state
+      --serialization_version = 26,     -- serialization version used by client
+      --major = 0,                      -- major version number
+      --minor = 4,                      -- minor version number
+      --patch = 10,                     -- patch version number
+      --version_string = "0.4.9-git",   -- full version string
+      --state = "Active"                -- current client state
   }
   ```
 
