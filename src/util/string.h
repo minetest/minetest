@@ -311,23 +311,23 @@ inline std::vector<std::basic_string_view<T> > str_split(
 		const std::basic_string_view<T> &strv,
 		T delimiter)
 {
-    std::vector<std::basic_string_view<T>> output;
-    size_t first = 0;
+	std::vector<std::basic_string_view<T>> output;
+	size_t first = 0;
 
-    while (first < strv.size())
-    {
-        const auto second = strv.find_first_of(delimiter, first);
+	while (first < strv.size())
+	{
+		const auto second = strv.find_first_of(delimiter, first);
 
-        if (first != second)
-            output.push_back(strv.substr(first, second - first));
+		if (first != second)
+			output.push_back(strv.substr(first, second - first));
 
-        if (second == std::string_view::npos)
-            break;
+		if (second == std::string_view::npos)
+			break;
 
-        first = second + 1;
-    }
+		first = second + 1;
+	}
 
-    return output;
+	return output;
 }
 
 
