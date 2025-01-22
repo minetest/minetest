@@ -62,7 +62,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 	m_nametags.clear();
 
 	readSettings();
-	for (const auto &name : setting_names)
+	for (auto name : setting_names)
 		g_settings->registerChangedCallback(name, settingChangedCallback, this);
 }
 

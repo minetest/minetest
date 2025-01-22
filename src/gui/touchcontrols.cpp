@@ -217,7 +217,7 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	m_button_size = ButtonLayout::getButtonSize(m_screensize);
 
 	readSettings();
-	for (const char *name : setting_names)
+	for (auto name : setting_names)
 		g_settings->registerChangedCallback(name, settingChangedCallback, this);
 }
 
