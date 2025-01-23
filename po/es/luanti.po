@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-10 00:00+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2025-01-23 21:01+0000\n"
+"Last-Translator: Miguel <mp0187595@tutamail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1053,11 +1053,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
-msgstr "Antiguos colaboradores"
+msgstr "Antiguos Colaboradores"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
-msgstr "Antiguos desarrolladores principales"
+msgstr "Antiguos Desarrolladores Principales"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
@@ -1198,7 +1198,7 @@ msgstr "Creativo"
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage / PvP"
-msgstr "Daño / PvP"
+msgstr "Daño / JcJ"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
@@ -1317,7 +1317,7 @@ msgstr "- Público: "
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr "- PvP: "
+msgstr "- JcJ: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
@@ -1428,7 +1428,7 @@ msgstr ""
 "- tocar pila, tocar ranura\n"
 " --> mover pila\n"
 "- tocar y arrastrar, tocar 2º dedo\n"
-" --> colocar un solo elemento en la ranura\n"
+" --> colocar un solo ítem en la ranura\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1518,7 +1518,7 @@ msgstr "Servidor anfitrión"
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr "Definiciones de objetos..."
+msgstr "Definiciones de ítems..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
@@ -2152,11 +2152,11 @@ msgstr "Silenciar"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr "Siguiente"
+msgstr "Siguiente ítem"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr "Anterior"
+msgstr "Ítem anterior"
 
 #: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Range select"
@@ -2172,7 +2172,7 @@ msgstr "Captura de pantalla"
 
 #: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Sneak"
-msgstr "Caminar"
+msgstr "Agacharse"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
@@ -2329,7 +2329,7 @@ msgstr ""
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
 msgstr ""
-"El servidor está funcionando en modo un jugador.    No puedes conectarte."
+"El servidor está funcionando en modo de un jugador.    No puedes conectarte."
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
@@ -2666,11 +2666,11 @@ msgstr "Tolerancia al movimiento antitrampas"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
-msgstr "Añadir nombre de objeto"
+msgstr "Añadir nombre de ítem"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name to tooltip."
-msgstr "Añadir nombre de objeto a la burbuja informativa."
+msgstr "Añadir nombre de ítem a la burbuja informativa."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
@@ -3554,7 +3554,7 @@ msgstr "Activar seguridad de mods"
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
-"Habilita la rueda del ratón (Desplazando) para seleccionar los items en la "
+"Habilita la rueda del ratón (Desplazando) para seleccionar los ítems en la "
 "hotbar."
 
 #: src/settings_translation_file.cpp
@@ -3638,7 +3638,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr "Habilita la animación de objetos en el inventario."
+msgstr "Habilita la animación de ítems en el inventario."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4268,8 +4268,8 @@ msgid ""
 "and\n"
 "descending."
 msgstr ""
-"Si está activada, se utiliza \"Aux1\" en lugar de la tecla \"Sneak\" para "
-"bajar y\n"
+"Si está activada, se utiliza \"Aux1\" en lugar de la tecla \"Agacharse\" "
+"para bajar y\n"
 "descender."
 
 #: src/settings_translation_file.cpp
@@ -4443,7 +4443,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr "Animaciones de objetos del inventario"
+msgstr "Animaciones de ítems del inventario"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4452,7 +4452,8 @@ msgstr "Invertir ratón"
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
 msgstr ""
-"Invierte la rueda del ratón (Desplazando) para seleccionar en la hotbar."
+"Invierte la rueda del ratón (Desplazando) para seleccionar ítems en la "
+"hotbar."
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -4468,7 +4469,7 @@ msgstr "Ruta de la fuente monoespacial cursiva"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
-msgstr "Tiempo de vida de entidades de objetos"
+msgstr "Tiempo de vida de entidades de ítems"
 
 #: src/settings_translation_file.cpp
 msgid "Iterations"
@@ -6288,7 +6289,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
-msgstr "Velocidad al usar sigilo"
+msgstr "Velocidad al agacharse"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
@@ -6329,9 +6330,9 @@ msgid ""
 "Note that mods or games may explicitly set a stack for certain (or all) "
 "items."
 msgstr ""
-"Especifica el tamaño de pila por defecto de nodos, objetos y herramientas.\n"
+"Especifica el tamaño de pila por defecto de nodos, ítems y herramientas.\n"
 "Ten en cuenta que los mods o los juegos pueden establecer explícitamente una "
-"pila para ciertos elementos (o para todos)."
+"pila para ciertos ítems (o para todos)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6664,8 +6665,7 @@ msgid ""
 msgstr ""
 "El tiempo (en segundos) que la cola de líquidos puede crecer más allá de la "
 "capacidad de procesamiento\n"
-"de procesamiento hasta que se intente reducir su tamaño vertiendo los "
-"elementos\n"
+"de procesamiento hasta que se intente reducir su tamaño vertiendo los ítems\n"
 "de la cola.  Un valor de 0 desactiva la funcionalidad."
 
 #: src/settings_translation_file.cpp
@@ -6723,7 +6723,7 @@ msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
-"Tiempo, en segundos, de vida de las entidades objeto (objetos soltados).\n"
+"Tiempo, en segundos, de vida de la entidad ítem (ítems soltados).\n"
 "Establecerla a -1 desactiva esta característica."
 
 #: src/settings_translation_file.cpp
