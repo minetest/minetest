@@ -3,7 +3,7 @@
 ## Supported Versions
 
 We only support the latest stable version for security issues.
-See the [releases page](https://github.com/minetest/minetest/releases).
+See the [releases page](https://github.com/luanti-org/luanti/releases).
 
 ## Reporting a Vulnerability
 

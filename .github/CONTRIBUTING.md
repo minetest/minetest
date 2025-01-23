@@ -14,7 +14,7 @@ Contributions are welcome! Here's how you can help:
    [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 
 2. Before you start coding, consider opening an
-   [issue at Github](https://github.com/minetest/minetest/issues) to discuss the
+   [issue on Github](https://github.com/luanti-org/luanti/issues) to discuss the
    suitability and implementation of your intended contribution with the core
    developers.
 
@@ -30,9 +30,9 @@ Contributions are welcome! Here's how you can help:
 
 3. Start coding!
     - Refer to the
-      [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.md),
+      [Lua API](https://github.com/luanti-org/luanti/blob/master/doc/lua_api.md),
       [Developer Wiki](http://dev.minetest.net/Main_Page) and other
-      [documentation](https://github.com/minetest/minetest/tree/master/doc).
+      [documentation](https://github.com/luanti-org/luanti/tree/master/doc).
     - Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and
       [Lua](http://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
     - Check your code works as expected and document any changes to the Lua API.
@@ -53,7 +53,7 @@ Contributions are welcome! Here's how you can help:
     - The following lines should describe the commit, starting a new line for each point.
 
 5. Once you are happy with your changes, submit a pull request.
-     - Open the [pull-request form](https://github.com/minetest/minetest/pull/new/master).
+     - Open the [pull-request form](https://github.com/luanti-org/luanti/pull/new/master).
      - Add a description explaining what you've done (or if it's a
        work-in-progress - what you need to do).
      - Make sure to fill out the pull request template.
@@ -78,7 +78,7 @@ a stable release is on the way.
 1. Do a quick search on GitHub to check if the issue has already been reported.
 2. Is it an issue with the Minetest *engine*? If not, report it
    [elsewhere](http://www.minetest.net/development/#reporting-issues).
-3. [Open an issue](https://github.com/minetest/minetest/issues/new) and describe
+3. [Open an issue](https://github.com/luanti-org/luanti/issues/new) and describe
    the issue you are having - you could include:
      - Error logs (check the bottom of the `debug.txt` file).
      - Screenshots.
@@ -159,13 +159,13 @@ Submit a :+1: (+1) or "Looks good" comment to show you believe the pull-request 
     - The title should follow the commit guidelines (title starts with a capital letter, present tense, descriptive).
     - Don't modify history older than 10 minutes.
     - Use rebase, not merge to get linear history:
-    - `curl https://github.com/minetest/minetest/pull/1.patch | git am`
+    - `curl -Ls https://github.com/luanti-org/luanti/pull/1.patch | git am`
 
 ## Reviewing issues and feature requests
 
 - If an issue does not get a response from its author within 1 month (when requiring more details), it can be closed.
 - When an issue is a duplicate, refer to the first ones and close the later ones.
-- Tag issues with the appropriate [labels](https://github.com/minetest/minetest/labels) for devices, platforms etc.
+- Tag issues with the appropriate [labels](https://github.com/luanti-org/luanti/labels) for devices, platforms etc.
 
 ## Releasing a new version
 

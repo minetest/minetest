@@ -70,14 +70,14 @@ For Void users:
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-    git clone --depth 1 https://github.com/minetest/minetest.git
+    git clone --depth 1 https://github.com/luanti-org/luanti
     cd minetest
 
 Download source, without using Git:
 
-    wget https://github.com/minetest/minetest/archive/master.tar.gz
+    wget https://github.com/luanti-org/luanti/archive/master.tar.gz
     tar xf master.tar.gz
-    cd minetest-master
+    cd luanti-master
 
 ## Build
 

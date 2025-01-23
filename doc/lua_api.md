@@ -5,10 +5,10 @@ Luanti Lua Modding API Reference
 it's now called `core` due to the renaming of Luanti (formerly Minetest).
 `minetest` will keep existing as an alias, so that old code won't break.
 
-* More information at <http://www.minetest.net/>
-* Developer Wiki: <http://dev.minetest.net/>
+* More information at <http://www.luanti.org/>
+* Developer Wiki: <http://dev.luanti.org/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
-* Modding tools: <https://github.com/minetest/modtools>
+* Modding tools: <https://github.com/luanti-org/modtools>
 
 Introduction
 ------------
@@ -327,7 +327,7 @@ Many glTF features are not supported *yet*, including:
   * Double-sided materials don't work
 * Alternative means of supplying data
   * Embedded images. You can use `gltfutil.py` from the
-    [modding tools](https://github.com/minetest/modtools) to strip or extract embedded images.
+    [modding tools](https://github.com/luanti-org/modtools) to strip or extract embedded images.
   * References to files via URIs
 
 Textures are supplied solely via the same means as for the other model file formats:
@@ -1483,8 +1483,6 @@ Node drawtypes
 --------------
 
 There are a bunch of different looking node types.
-
-Look for examples in `games/devtest` or `games/minetest_game`.
 
 * `normal`
     * A node-sized cube.
@@ -4370,7 +4368,7 @@ Hello @1, how are you today?=Hallo @1, wie geht es dir heute?
 ```
 
 For old translation files, consider using the script `mod_translation_updater.py`
-in the Luanti [modtools](https://github.com/minetest/modtools) repository to
+in the Luanti [modtools](https://github.com/luanti-org/modtools) repository to
 generate and update translation files automatically from the Lua sources.
 
 Gettext translation file format

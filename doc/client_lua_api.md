@@ -23,7 +23,7 @@ Transferring client-sided mods from the server to the client is planned, but not
 
 If you see a deficiency in the API, feel free to attempt to add the
 functionality in the engine and API. You can send such improvements as
-source code patches on GitHub (https://github.com/minetest/minetest).
+source code patches on GitHub.
 
 Programming in Lua
 ------------------

@@ -1,4 +1,4 @@
-CORE_GIT=https://github.com/minetest/minetest
+CORE_GIT=https://github.com/luanti-org/luanti
 CORE_BRANCH=master
 CORE_NAME=minetest
 
