@@ -5718,9 +5718,10 @@ Utilities
       avg_jitter = 0.03,         -- average packet time jitter
 
       -- The version information is provided by the client and may be spoofed or
-      -- inconsistent in engine forks. You should use the protocol_version value
-      -- instead for checking feature availability of clients.
-      -- Use this ONLY as a last resort!
+      -- inconsistent in engine forks. You must not use this for checking
+      -- feature availability of clients, please use protocol_version whenever
+      -- it is possible.
+      -- Use this ONLY as a last resort!!!
       major = 0,                      -- major version number
       minor = 4,                      -- minor version number
       patch = 10,                     -- patch version number
