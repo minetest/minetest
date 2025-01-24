@@ -33,6 +33,11 @@ static constexpr f32 CAMERA_OFFSET_STEP = 200;
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
+static const char *setting_names[] = {
+	"fall_bobbing_amount", "view_bobbing_amount", "fov", "arm_inertia",
+	"show_nametag_backgrounds",
+};
+
 Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
 	m_client(client),
@@ -54,11 +59,21 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 	m_wieldnode->setItem(ItemStack(), m_client);
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 
-	/* TODO: Add a callback function so these can be updated when a setting
-	 *       changes.  At this point in time it doesn't matter (e.g. /set
-	 *       is documented to change server settings only)
-	 *
-	 * TODO: Local caching of settings is not optimal and should at some stage
+	m_nametags.clear();
+
+	readSettings();
+	for (auto name : setting_names)
+		g_settings->registerChangedCallback(name, settingChangedCallback, this);
+}
+
+void Camera::settingChangedCallback(const std::string &name, void *data)
+{
+	static_cast<Camera *>(data)->readSettings();
+}
+
+void Camera::readSettings()
+{
+	/* TODO: Local caching of settings is not optimal and should at some stage
 	 *       be updated to use a global settings object for getting thse values
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
@@ -69,12 +84,12 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 	// as a zoom FOV and load world beyond the set server limits.
 	m_cache_fov                 = g_settings->getFloat("fov", 45.0f, 160.0f);
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
-	m_nametags.clear();
 	m_show_nametag_backgrounds  = g_settings->getBool("show_nametag_backgrounds");
 }
 
 Camera::~Camera()
 {
+	g_settings->deregisterAllChangedCallbacks(this);
 	m_wieldmgr->drop();
 }
 

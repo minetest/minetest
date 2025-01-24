@@ -820,6 +820,8 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("touch_use_crosshair",
+			&settingChangedCallback, this);
 
 	readSettings();
 }
@@ -895,8 +897,6 @@ bool Game::startup(bool *kill,
 	}
 
 	m_first_loop_after_window_activation = true;
-
-	m_touch_use_crosshair = g_settings->getBool("touch_use_crosshair");
 
 	g_client_translations->clear();
 
@@ -4111,6 +4111,10 @@ void Game::readSettings()
 	m_invert_hotbar_mouse_wheel = g_settings->getBool("invert_hotbar_mouse_wheel");
 
 	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
+
+	m_touch_use_crosshair = g_settings->getBool("touch_use_crosshair");
+	if (g_touchcontrols)
+		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
 }
 
 /****************************************************************************/
