@@ -5716,7 +5716,7 @@ Utilities
       min_jitter = 0.01,         -- minimum packet time jitter
       max_jitter = 0.5,          -- maximum packet time jitter
       avg_jitter = 0.03,         -- average packet time jitter
-      
+
       -- The version information is provided by the client and may be spoofed or
       -- inconsistent in engine forks. Only use if other information isn't enough.
       major = 0,                      -- major version number
