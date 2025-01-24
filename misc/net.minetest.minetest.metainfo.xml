@@ -131,14 +131,14 @@
         <keyword>roleplaying</keyword>
     </keywords>
 
-    <url type="homepage">https://www.minetest.net</url>
-    <url type="bugtracker">https://www.minetest.net/get-involved/#reporting-issues</url>
-    <url type="translate">https://dev.minetest.net/Translation</url>
-    <url type="donation">https://www.minetest.net/get-involved/#donate</url>
+    <url type="homepage">https://www.luanti.org</url>
+    <url type="bugtracker">https://www.luanti.org/get-involved/#reporting-issues</url>
+    <url type="translate">https://dev.luanti.org/Translation/</url>
+    <url type="donation">https://www.luanti.org/get-involved/#donate</url>
     <url type="faq">https://wiki.luanti.org/FAQ</url>
     <url type="help">https://wiki.luanti.org</url>
-    <url type="vcs-browser">https://github.com/minetest/minetest</url>
-    <url type="contribute">https://www.minetest.net/get-involved</url>
+    <url type="vcs-browser">https://github.com/luanti-org/luanti</url>
+    <url type="contribute">https://www.luanti.org/get-involved</url>
 
     <provides>
         <binary>luanti</binary>

@@ -148,7 +148,7 @@ void set_default_settings()
 	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
 
-	// See https://github.com/minetest/minetest/issues/12792
+	// see <https://github.com/luanti-org/luanti/issues/12792>
 	settings->setDefault("keymap_rangeselect", has_touch ? "KEY_KEY_R" : "");
 
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");

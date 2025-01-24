@@ -51,8 +51,8 @@ extern "C" {
 #endif
 
 #if defined(__MINGW32__) && !defined(__clang__)
-// see https://github.com/minetest/minetest/issues/14140 or
-// https://github.com/minetest/minetest/issues/10137 for one of the various issues we had
+// see <https://github.com/luanti-org/luanti/issues/14140> or
+// <https://github.com/luanti-org/luanti/issues/10137> for some of the issues we had
 #error ==================================
 #error MinGW gcc has a broken TLS implementation and is not supported for building \
 	Luanti. Look at testTLS() in test_threading.cpp and see for yourself. \
