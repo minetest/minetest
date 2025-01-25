@@ -23,6 +23,7 @@
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
+#include "script/common/c_types.h" // LuaError
 #include <atomic>
 #include <string>
 #include <list>

@@ -18,7 +18,6 @@ extern "C" {
 }
 
 #include "irrlichttypes.h"
-#include "common/c_types.h"
 #include "common/c_internal.h"
 #include "debug.h"
 #include "config.h"

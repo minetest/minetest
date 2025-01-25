@@ -15,6 +15,7 @@
 #include "porting.h"
 #include "convert_json.h"
 #include "script/common/c_internal.h"
+#include "exceptions.h"
 
 void ModSpec::checkAndLog() const
 {

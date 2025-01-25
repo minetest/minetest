@@ -25,7 +25,6 @@ extern "C" {
 #include "itemgroup.h"
 #include "itemdef.h"
 #include "util/pointabilities.h"
-#include "c_types.h"
 // We do an explicit path include because by default c_content.h include src/client/hud.h
 // prior to the src/hud.h, which is not good on server only build
 #include "../../hud.h"
@@ -58,6 +57,8 @@ struct collisionMoveResult;
 namespace treegen { struct TreeDef; }
 
 extern struct EnumString es_TileAnimationType[];
+extern struct EnumString es_ItemType[];
+extern struct EnumString es_TouchInteractionMode[];
 
 
 extern const std::array<const char *, 33> object_property_keys;
