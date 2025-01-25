@@ -506,15 +506,10 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 	// fallback to normal copy, but no need to reopen the files
 	sourcefile.reset(fdopen(srcfd, "rb"));
 	targetfile.reset(fdopen(tgtfd, "wb"));
-	goto fallback;
-
-#endif
-
+#else
 	sourcefile.reset(fopen(source.c_str(), "rb"));
 	targetfile.reset(fopen(target.c_str(), "wb"));
-
-fallback:
-
+#endif
 	if (!sourcefile) {
 		errorstream << source << ": can't open for reading: "
 			<< strerror(errno) << std::endl;
