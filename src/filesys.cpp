@@ -507,8 +507,8 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 	sourcefile.reset(fdopen(srcfd, "rb"));
 	targetfile.reset(fdopen(tgtfd, "wb"));
 #else
-    sourcefile.reset(fopen(source.c_str(), "rb"));
-    targetfile.reset(fopen(target.c_str(), "wb"));
+	sourcefile.reset(fopen(source.c_str(), "rb"));
+	targetfile.reset(fopen(target.c_str(), "wb"));
 #endif
 	if (!sourcefile) {
 		errorstream << source << ": can't open for reading: "
