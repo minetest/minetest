@@ -9236,7 +9236,7 @@ Player properties need to be saved manually.
     -- Deprecated usage of "wielditem" expects 'textures = {itemname}' (see 'visual' above).
 
     colors = {},
-    -- Number of required colors depends on visual
+    -- Currently unused.
 
     use_texture_alpha = false,
     -- Use texture's alpha channel.
