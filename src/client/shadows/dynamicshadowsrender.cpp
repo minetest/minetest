@@ -256,11 +256,14 @@ void ShadowRenderer::updateSMTextures()
 
 		// detect if SM should be regenerated
 		for (DirectionalLight &light : m_light_list) {
-			if (light.should_update_map_shadow || m_force_update_shadow_map) {
-				light.should_update_map_shadow = false;
-				m_current_frame = 0;
-				reset_sm_texture = true;
-			}
+			if (light.should_update_map_shadow)
+				m_force_update_shadow_map = true;
+			light.should_update_map_shadow = false;
+		}
+
+		if (m_force_update_shadow_map) {
+			m_current_frame = 0;
+			reset_sm_texture = true;
 		}
 
 		video::ITexture* shadowMapTargetTexture = shadowMapClientMapFuture;
