@@ -31,10 +31,10 @@ Contributions are welcome! Here's how you can help:
 3. Start coding!
     - Refer to the
       [Lua API](https://github.com/luanti-org/luanti/blob/master/doc/lua_api.md),
-      [Developer Wiki](http://dev.luanti.org/Main_Page) and other
+      [Developer Wiki](https://dev.luanti.org/Main_Page) and other
       [documentation](https://github.com/luanti-org/luanti/tree/master/doc).
-    - Follow the [C/C++](http://dev.luanti.org/Code_style_guidelines) and
-      [Lua](http://dev.luanti.org/Lua_code_style_guidelines) code style guidelines.
+    - Follow the [C/C++](https://dev.luanti.org/Code_style_guidelines) and
+      [Lua](https://dev.luanti.org/Lua_code_style_guidelines) code style guidelines.
     - Check your code works as expected and document any changes to the Lua API.
     - To avoid conflicting changes between contributions, do not do the following manually. They will be done before each release.
       - Run `updatepo.sh` or update `luanti.po{,t}` even if your code adds new translatable strings.
@@ -64,8 +64,8 @@ Contributions are welcome! Here's how you can help:
    picture of the project.
 2. It works.
 3. It follows the code style for
-   [C/C++](http://dev.luanti.org/Code_style_guidelines) or
-   [Lua](http://dev.luanti.org/Lua_code_style_guidelines).
+   [C/C++](https://dev.luanti.org/Code_style_guidelines) or
+   [Lua](https://dev.luanti.org/Lua_code_style_guidelines).
 4. The code's interfaces are well designed, regardless of other aspects that
    might need more work in the future.
 5. It uses protocols and formats which include the required compatibility.
@@ -116,11 +116,11 @@ methods on [our website](http://www.minetest.net/development/#donate).
 # Maintaining
 
 * This is a concise version of the
-  [Rules & Guidelines](http://dev.luanti.org/Category:Rules_and_Guidelines) on the developer wiki.*
+  [Rules & Guidelines](https://dev.luanti.org/Category:Rules_and_Guidelines) on the developer wiki.*
 
 These notes are for those who have push access Luanti (core developers / maintainers).
 
-- See the [project organisation](http://dev.luanti.org/Organisation) for the people involved.
+- See the [project organisation](https://dev.luanti.org/Organisation) for the people involved.
 
 ## Concept approvals and roadmaps
 
