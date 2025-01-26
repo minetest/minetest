@@ -31,7 +31,7 @@ Contributions are welcome! Here's how you can help:
 3. Start coding!
     - Refer to the
       [Lua API](https://github.com/luanti-org/luanti/blob/master/doc/lua_api.md),
-      [Developer Wiki](https://dev.luanti.org/Main_Page) and other
+      [Developer Wiki](https://dev.luanti.org/) and other
       [documentation](https://github.com/luanti-org/luanti/tree/master/doc).
     - Follow the [C/C++](https://dev.luanti.org/Code_style_guidelines) and
       [Lua](https://dev.luanti.org/Lua_code_style_guidelines) code style guidelines.
