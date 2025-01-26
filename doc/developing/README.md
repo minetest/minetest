@@ -6,7 +6,7 @@ Some important development docs are found in the wiki: https://dev.luanti.org/
 
 Notable pages:
 
-- [Releasing Luanti](https://dev.luanti.org/Releasing_Minetest)
+- [Releasing Luanti](https://dev.luanti.org/Releasing_Luanti)
 - [Engine translations](https://dev.luanti.org/Translation#Maintaining_engine_translations)
 - [Changelog](https://dev.luanti.org/Changelog)
 - [Organisation](https://dev.luanti.org/Organisation)
