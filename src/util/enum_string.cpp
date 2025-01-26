@@ -26,5 +26,6 @@ const char *enum_to_string(const EnumString *spec, int num)
 	// assume array order matches enum order
 	auto *p = &spec[num];
 	assert(p->num == num);
+	assert(p->str);
 	return p->str;
 }
