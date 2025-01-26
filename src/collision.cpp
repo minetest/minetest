@@ -214,12 +214,28 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 	thread_local std::vector<aabb3f> nodeboxes;
 	Map *map = &env->getMap();
 
+	v3s16 last_bp(S16_MAX);
+	MapBlock *last_block = nullptr;
+
+	// Note: as the area used here is usually small, iterating entire blocks
+	// would actually be slower by factor of 10.
+
 	v3s16 p;
 	for (p.Z = min.Z; p.Z <= max.Z; p.Z++)
 	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
 	for (p.X = min.X; p.X <= max.X; p.X++) {
-		bool is_position_valid;
-		MapNode n = map->getNode(p, &is_position_valid);
+		v3s16 bp, relpos;
+		getNodeBlockPosWithOffset(p, bp, relpos);
+		MapBlock *block;
+		if (bp != last_bp) {
+			last_block = block = map->getBlockNoCreateNoEx(bp);
+			last_bp = bp;
+		} else {
+			block = last_block;
+		}
+
+		bool is_position_valid = !!block;
+		MapNode n = block ? block->getNodeNoCheck(relpos) : MapNode(CONTENT_IGNORE);
 
 		if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
 			// Object collides into walkable nodes
