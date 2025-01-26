@@ -27,6 +27,7 @@
 #include <IGUIStaticText.h>
 #include "client/imagefilters.h"
 #include "util/tracy_wrapper.h"
+#include "script/common/c_types.h" // LuaError
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
