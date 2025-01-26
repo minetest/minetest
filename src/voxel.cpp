@@ -38,7 +38,7 @@ void VoxelManipulator::clear()
 void VoxelManipulator::print(std::ostream &o, const NodeDefManager *ndef,
 	VoxelPrintMode mode) const
 {
-	const v3s16 &em = m_area.getExtent();
+	auto &em = m_area.getExtent();
 	v3s16 of = m_area.MinEdge;
 	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z
 	 <<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
@@ -113,6 +113,18 @@ void VoxelManipulator::print(std::ostream &o, const NodeDefManager *ndef,
 	}
 }
 
+static inline void checkArea(const VoxelArea &a)
+{
+	// won't overflow since cbrt(2^64) > 2^16
+	u64 real_volume = static_cast<u64>(a.getExtent().X) * a.getExtent().Y * a.getExtent().Z;
+
+	static_assert(MAX_WORKING_VOLUME < S32_MAX); // hard limit is somewhere here
+	if (real_volume > MAX_WORKING_VOLUME) {
+		throw BaseException("VoxelManipulator: "
+			"Area volume exceeds allowed value of " + std::to_string(MAX_WORKING_VOLUME));
+	}
+}
+
 void VoxelManipulator::addArea(const VoxelArea &area)
 {
 	// Cancel if requested area has zero volume
@@ -124,20 +136,12 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 		return;
 
 	// Calculate new area
-	VoxelArea new_area;
-	// New area is the requested area if m_area has zero volume
-	if(m_area.hasEmptyExtent())
-	{
-		new_area = area;
-	}
-	// Else add requested area to m_area
-	else
-	{
-		new_area = m_area;
-		new_area.addArea(area);
-	}
+	VoxelArea new_area = m_area;
+	new_area.addArea(area);
 
-	s32 new_size = new_area.getVolume();
+	checkArea(new_area);
+
+	u32 new_size = new_area.getVolume();
 
 	// Allocate new data and clear flags
 	MapNode *new_data = new MapNode[new_size];
@@ -147,7 +151,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	memset(new_flags, VOXELFLAG_NO_DATA, new_size);
 
 	// Copy old data
-	s32 old_x_width = m_area.MaxEdge.X - m_area.MinEdge.X + 1;
+	u32 old_x_width = m_area.getExtent().X;
 	for(s32 z=m_area.MinEdge.Z; z<=m_area.MaxEdge.Z; z++)
 	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
 	{

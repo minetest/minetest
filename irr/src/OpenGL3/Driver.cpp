@@ -62,14 +62,19 @@ void COpenGL3Driver::initFeatures()
 	TextureFormats[ECF_R8G8] = {GL_RG8, GL_RG, GL_UNSIGNED_BYTE};
 	TextureFormats[ECF_R16] = {GL_R16, GL_RED, GL_UNSIGNED_SHORT};
 	TextureFormats[ECF_R16G16] = {GL_RG16, GL_RG, GL_UNSIGNED_SHORT};
+	TextureFormats[ECF_A2R10G10B10] = {GL_RGB10_A2, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV};
 	TextureFormats[ECF_D16] = {GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT};
 	TextureFormats[ECF_D24] = {GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT};
 	TextureFormats[ECF_D32] = {GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT}; // WARNING: may not be renderable (?!)
 	TextureFormats[ECF_D24S8] = {GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8};
 
 	AnisotropicFilterSupported = isVersionAtLeast(4, 6) || queryExtension("GL_ARB_texture_filter_anisotropic") || queryExtension("GL_EXT_texture_filter_anisotropic");
+	LODBiasSupported = true;
 	BlendMinMaxSupported = true;
 	TextureMultisampleSupported = true;
+	KHRDebugSupported = isVersionAtLeast(4, 6) || queryExtension("GL_KHR_debug");
+	if (KHRDebugSupported)
+		MaxLabelLength = GetInteger(GL.MAX_LABEL_LENGTH);
 
 	// COGLESCoreExtensionHandler::Feature
 	static_assert(MATERIAL_MAX_TEXTURES <= 16, "Only up to 16 textures are guaranteed");

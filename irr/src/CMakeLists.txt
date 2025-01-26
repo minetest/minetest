@@ -308,7 +308,7 @@ set(IRRMESHLOADER
 )
 
 add_library(IRRMESHOBJ OBJECT
-	CSkinnedMesh.cpp
+	SkinnedMesh.cpp
 	CBoneSceneNode.cpp
 	CMeshSceneNode.cpp
 	CAnimatedMeshSceneNode.cpp
@@ -348,6 +348,7 @@ if(ENABLE_OPENGL3 OR ENABLE_GLES2)
 		OpenGL/FixedPipelineRenderer.cpp
 		OpenGL/MaterialRenderer.cpp
 		OpenGL/Renderer2D.cpp
+		OpenGL/VBO.cpp
 	)
 endif()
 

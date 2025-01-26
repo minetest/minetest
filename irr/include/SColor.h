@@ -72,6 +72,9 @@ enum ECOLOR_FORMAT
 	//! 32 bit format using 16 bits for the red and green channels.
 	ECF_R16G16,
 
+	//! 32 bit format using 10 bits for R, G, B and 2 for alpha.
+	ECF_A2R10G10B10,
+
 	/** Depth and stencil formats. */
 
 	//! 16 bit format using 16 bits for depth.
@@ -91,7 +94,7 @@ enum ECOLOR_FORMAT
 };
 
 //! Names for ECOLOR_FORMAT types
-const c8 *const ColorFormatNames[ECF_UNKNOWN + 2] = {
+const c8 *const ColorFormatNames[] = {
 		"A1R5G5B5",
 		"R5G6B5",
 		"R8G8B8",
@@ -106,6 +109,7 @@ const c8 *const ColorFormatNames[ECF_UNKNOWN + 2] = {
 		"R8G8",
 		"R16",
 		"R16G16",
+		"A2R10G10B10",
 		"D16",
 		"D24",
 		"D32",
@@ -113,6 +117,9 @@ const c8 *const ColorFormatNames[ECF_UNKNOWN + 2] = {
 		"UNKNOWN",
 		0,
 	};
+
+static_assert(sizeof(ColorFormatNames) / sizeof(ColorFormatNames[0])
+	== ECF_UNKNOWN + 2, "name table size mismatch");
 
 //! Creates a 16 bit A1R5G5B5 color
 inline u16 RGBA16(u32 r, u32 g, u32 b, u32 a = 0xFF)

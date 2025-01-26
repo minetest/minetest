@@ -22,6 +22,8 @@
 #include "settings.h"
 #include "profiler.h"
 
+#include "SMeshBuffer.h"
+
 using BlendMode = ParticleParamTypes::BlendMode;
 
 ClientParticleTexture::ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc)
@@ -390,7 +392,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 			}
 
 			case ParticleParamTypes::AttractorKind::line: {
-				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				// <https://github.com/luanti-org/luanti/issues/11505#issuecomment-915612700>
 				const auto& lorigin = attractor_origin;
 				v3f ldir = attractor_direction;
 				ldir.normalize();
@@ -406,7 +408,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 			}
 
 			case ParticleParamTypes::AttractorKind::plane: {
-				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				// <https://github.com/luanti-org/luanti/issues/11505#issuecomment-915612700>
 				const v3f& porigin = attractor_origin;
 				v3f normal = attractor_direction;
 				normal.normalize();
@@ -619,15 +621,22 @@ const core::aabbox3df &ParticleBuffer::getBoundingBox() const
 	if (!m_bounding_box_dirty)
 		return m_mesh_buffer->BoundingBox;
 
-	core::aabbox3df box;
+	core::aabbox3df box{{0, 0, 0}};
+	bool first = true;
 	for (u16 i = 0; i < m_count; i++) {
 		// check if this index is used
 		static_assert(quad_indices[1] != 0);
 		if (m_mesh_buffer->getIndices()[6 * i + 1] == 0)
 			continue;
 
-		for (u16 j = 0; j < 4; j++)
-			box.addInternalPoint(m_mesh_buffer->getPosition(i * 4 + j));
+		for (u16 j = 0; j < 4; j++) {
+			const auto pos = m_mesh_buffer->getPosition(i * 4 + j);
+			if (first)
+				box.reset(pos);
+			else
+				box.addInternalPoint(pos);
+			first = false;
+		}
 	}
 
 	m_mesh_buffer->BoundingBox = box;

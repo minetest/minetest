@@ -777,7 +777,7 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 										std::max(f.margin, p.margin);
 
 						} else if (f.rect.UpperLeftCorner.X - f.margin <= left &&
-							 	f.rect.LowerRightCorner.X + f.margin >= right) {
+								f.rect.LowerRightCorner.X + f.margin >= right) {
 							// float taking all space
 							left = right;
 						}
@@ -1014,10 +1014,6 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 		m_tsrc(tsrc), m_vscrollbar(nullptr),
 		m_drawer(text, client, environment, tsrc), m_text_scrollpos(0, 0)
 {
-
-#ifdef _DEBUG
-	setDebugName("GUIHyperText");
-#endif
 
 	IGUISkin *skin = 0;
 	if (Environment)

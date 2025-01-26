@@ -194,7 +194,9 @@ public:
 	void Receive(float min_time);
 	void yieldToOtherThreads(float dtime);
 
-	PlayerSAO* StageTwoClientInit(session_t peer_id);
+	// Full player initialization after they processed all static media
+	// This is a helper function for TOSERVER_CLIENT_READY
+	PlayerSAO *StageTwoClientInit(session_t peer_id);
 
 	/*
 	 * Command Handlers
@@ -342,8 +344,7 @@ public:
 	void setStepSettings(StepSettings spdata) { m_step_settings.store(spdata); }
 	StepSettings getStepSettings() { return m_step_settings.load(); }
 
-	inline void setAsyncFatalError(const std::string &error)
-			{ m_async_fatal_error.set(error); }
+	void setAsyncFatalError(const std::string &error);
 	inline void setAsyncFatalError(const LuaError &e)
 	{
 		setAsyncFatalError(std::string("Lua: ") + e.what());
@@ -626,7 +627,8 @@ private:
 
 		Call with env and con locked.
 	*/
-	PlayerSAO *emergePlayer(const char *name, session_t peer_id, u16 proto_version);
+	std::unique_ptr<PlayerSAO> emergePlayer(const char *name, session_t peer_id,
+		u16 proto_version);
 
 	/*
 		Variables

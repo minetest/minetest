@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "irr_v2d.h"
 #include "network/connection.h"
+#include "network/networkpacket.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "server/ban.h"
@@ -44,7 +45,7 @@
 #include "defaultsettings.h"
 #include "server/mods.h"
 #include "util/base64.h"
-#include "util/sha1.h"
+#include "util/hashing.h"
 #include "util/hex.h"
 #include "database/database.h"
 #include "chatmessage.h"
@@ -624,6 +625,11 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	ZoneScoped;
 	auto framemarker = FrameMarker("Server::AsyncRunStep()-frame").started();
 
+	if (!m_async_fatal_error.get().empty()) {
+		infostream << "Refusing server step in error state" << std::endl;
+		return;
+	}
+
 	{
 		// Send blocks to clients
 		SendBlocks(dtime);
@@ -649,9 +655,10 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Send to clients at constant intervals
 	*/
 
+	static const float time_send_interval = 5.0f;
 	m_time_of_day_send_timer -= dtime;
-	if (m_time_of_day_send_timer < 0.0) {
-		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
+	if (m_time_of_day_send_timer < 0) {
+		m_time_of_day_send_timer = time_send_interval;
 		u16 time = m_env->getTimeOfDay();
 		float time_speed = g_settings->getFloat("time_speed");
 		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
@@ -1168,24 +1175,25 @@ void Server::yieldToOtherThreads(float dtime)
 	g_profiler->avg("Server::yieldTo...() progress [#]", qs_initial - qs);
 }
 
-PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
+PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
-	PlayerSAO *playersao = NULL;
+	std::unique_ptr<PlayerSAO> sao;
 	{
 		ClientInterface::AutoLock clientlock(m_clients);
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client) {
 			playername = client->getName();
-			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
+			sao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
 		}
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername.c_str(), true);
+	RemotePlayer *player = sao ? sao->getPlayer() : nullptr;
 
 	// If failed, cancel
-	if (!playersao || !player) {
-		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
+	if (!player) {
+		RemotePlayer *joined = m_env->getPlayer(playername.c_str());
+		if (joined && joined->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to another client)" << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
@@ -1196,6 +1204,19 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		}
 		return nullptr;
 	}
+
+	// Add player to environment
+	m_env->addPlayer(player);
+
+	/* Clean up old HUD elements from previous sessions */
+	player->clearHud();
+
+	/* Add object to environment */
+	PlayerSAO *playersao = sao.get();
+	m_env->addActiveObject(std::move(sao));
+
+	if (playersao->isNewPlayer())
+		m_script->on_newplayer(playersao);
 
 	/*
 		Send complete position information
@@ -2527,6 +2548,8 @@ bool Server::addMediaFile(const std::string &filename,
 		".x", ".b3d", ".obj", ".gltf", ".glb",
 		// Translation file formats
 		".tr", ".po", ".mo",
+		// Fonts
+		".ttf", ".woff",
 		NULL
 	};
 	if (removeStringEnd(filename, supported_ext).empty()) {
@@ -2548,14 +2571,11 @@ bool Server::addMediaFile(const std::string &filename,
 		return false;
 	}
 
-	SHA1 sha1;
-	sha1.addBytes(filedata);
-
-	std::string digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest);
-	std::string sha1_hex = hex_encode(digest);
+	std::string sha1 = hashing::sha1(filedata);
+	std::string sha1_base64 = base64_encode(sha1);
+	std::string sha1_hex = hex_encode(sha1);
 	if (digest_to)
-		*digest_to = digest;
+		*digest_to = sha1;
 
 	// Put in list
 	m_media[filename] = MediaInfo(filepath, sha1_base64);
@@ -2606,9 +2626,9 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	std::string lang_suffixes[3];
 	for (size_t i = 0; i < 3; i++) {
 		lang_suffixes[i].append(".").append(lang_code).append(translation_formats[i]);
-  }
+	}
 
-  auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
+	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
 		for (size_t j = 0; j < 3; j++) {
@@ -3232,9 +3252,7 @@ void Server::reportPrivsModified(const std::string &name)
 		PlayerSAO *sao = player->getPlayerSAO();
 		if(!sao)
 			return;
-		sao->updatePrivileges(
-				getPlayerEffectivePrivs(name),
-				isSingleplayer());
+		sao->updatePrivileges(getPlayerEffectivePrivs(name));
 	}
 }
 
@@ -3843,6 +3861,14 @@ std::string Server::getBuiltinLuaPath()
 	return porting::path_share + DIR_DELIM + "builtin";
 }
 
+void Server::setAsyncFatalError(const std::string &error)
+{
+	m_async_fatal_error.set(error);
+	// make sure server steps stop happening immediately
+	if (m_thread)
+		m_thread->stop();
+}
+
 // Not thread-safe.
 void Server::addShutdownError(const ModError &e)
 {
@@ -3863,9 +3889,14 @@ void Server::addShutdownError(const ModError &e)
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
+
+	std::optional<v3f> staticSpawnPoint;
+	if (g_settings->getV3FNoEx("static_spawnpoint", staticSpawnPoint) && staticSpawnPoint.has_value())
+	{
+		return *staticSpawnPoint * BS;
+	}
+
 	v3f nodeposf;
-	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposf))
-		return nodeposf * BS;
 
 	bool is_good = false;
 	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
@@ -3963,7 +3994,8 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 	m_shutdown_state.trigger(delay, msg, reconnect);
 }
 
-PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)
+std::unique_ptr<PlayerSAO> Server::emergePlayer(const char *name, session_t peer_id,
+	u16 proto_version)
 {
 	/*
 		Try to get an existing player
@@ -4006,19 +4038,12 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 		player = new RemotePlayer(name, idef());
 	}
 
-	bool newplayer = false;
-
 	// Load player
-	PlayerSAO *playersao = m_env->loadPlayer(player, &newplayer, peer_id, isSingleplayer());
+	auto playersao = m_env->loadPlayer(player, peer_id);
 
 	// Complete init with server parts
 	playersao->finalize(player, getPlayerEffectivePrivs(player->getName()));
 	player->protocol_version = proto_version;
-
-	/* Run scripts */
-	if (newplayer) {
-		m_script->on_newplayer(playersao);
-	}
 
 	return playersao;
 }

@@ -48,7 +48,7 @@ endif()
 # - win32/gcc: fails to link
 # - win32/clang: works
 # - macOS on x86: seems to be fine
-# - macOS on ARM: crashes, see <https://github.com/minetest/minetest/issues/14397>
+# - macOS on ARM: crashes, see <https://github.com/luanti-org/luanti/issues/14397>
 # Note: since CMake has no easy architecture detection disabling for Mac entirely
 #### ####
 if((WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU") OR APPLE)

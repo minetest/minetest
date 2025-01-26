@@ -43,8 +43,6 @@ void COpenGLES2Driver::initFeatures()
 	}
 	initExtensions();
 
-	static const GLenum BGRA8_EXT = 0x93A1;
-
 	if (Version.Major >= 3) {
 		// NOTE floating-point formats may not be suitable for render targets.
 		TextureFormats[ECF_A1R5G5B5] = {GL_RGB5_A1, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, CColorConverter::convert_A1R5G5B5toR5G5B5A1};
@@ -59,14 +57,16 @@ void COpenGLES2Driver::initFeatures()
 		TextureFormats[ECF_A32B32G32R32F] = {GL_RGBA32F, GL_RGBA, GL_FLOAT};
 		TextureFormats[ECF_R8] = {GL_R8, GL_RED, GL_UNSIGNED_BYTE};
 		TextureFormats[ECF_R8G8] = {GL_RG8, GL_RG, GL_UNSIGNED_BYTE};
+		TextureFormats[ECF_A2R10G10B10] = {GL_RGB10_A2, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV};
 		TextureFormats[ECF_D16] = {GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT};
 		TextureFormats[ECF_D24] = {GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT};
 		TextureFormats[ECF_D24S8] = {GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8};
 
-		if (FeatureAvailable[IRR_GL_EXT_texture_format_BGRA8888])
+		// NOTE a recent (2024) revision of EXT_texture_format_BGRA8888 also
+		// adds a sized format GL_BGRA8_EXT. We have a workaround in place to
+		// fix up the InternalFormat in case of render targets.
+		if (FeatureAvailable[IRR_GL_EXT_texture_format_BGRA8888] || FeatureAvailable[IRR_GL_APPLE_texture_format_BGRA8888])
 			TextureFormats[ECF_A8R8G8B8] = {GL_BGRA, GL_BGRA, GL_UNSIGNED_BYTE};
-		else if (FeatureAvailable[IRR_GL_APPLE_texture_format_BGRA8888])
-			TextureFormats[ECF_A8R8G8B8] = {BGRA8_EXT, GL_BGRA, GL_UNSIGNED_BYTE};
 
 		// OpenGL ES 3 doesn't include a GL_DEPTH_COMPONENT32, so still use
 		// OES_depth_texture for 32-bit depth texture support.
@@ -86,10 +86,8 @@ void COpenGLES2Driver::initFeatures()
 		TextureFormats[ECF_R8G8B8] = {GL_RGB, GL_RGB, GL_UNSIGNED_BYTE};
 		TextureFormats[ECF_A8R8G8B8] = {GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, CColorConverter::convert_A8R8G8B8toA8B8G8R8};
 
-		if (FeatureAvailable[IRR_GL_EXT_texture_format_BGRA8888])
+		if (FeatureAvailable[IRR_GL_EXT_texture_format_BGRA8888] || FeatureAvailable[IRR_GL_APPLE_texture_format_BGRA8888])
 			TextureFormats[ECF_A8R8G8B8] = {GL_BGRA, GL_BGRA, GL_UNSIGNED_BYTE};
-		else if (FeatureAvailable[IRR_GL_APPLE_texture_format_BGRA8888])
-			TextureFormats[ECF_A8R8G8B8] = {BGRA8_EXT, GL_BGRA, GL_UNSIGNED_BYTE};
 
 		if (FeatureAvailable[IRR_GL_OES_texture_half_float]) {
 			TextureFormats[ECF_A16B16G16R16F] = {GL_RGBA, GL_RGBA, HALF_FLOAT_OES};
@@ -122,10 +120,13 @@ void COpenGLES2Driver::initFeatures()
 	}
 
 	const bool MRTSupported = Version.Major >= 3 || queryExtension("GL_EXT_draw_buffers");
+	LODBiasSupported = queryExtension("GL_EXT_texture_lod_bias");
 	AnisotropicFilterSupported = queryExtension("GL_EXT_texture_filter_anisotropic");
 	BlendMinMaxSupported = (Version.Major >= 3) || FeatureAvailable[IRR_GL_EXT_blend_minmax];
 	TextureMultisampleSupported = isVersionAtLeast(3, 1);
-	const bool TextureLODBiasSupported = queryExtension("GL_EXT_texture_lod_bias");
+	KHRDebugSupported = queryExtension("GL_KHR_debug");
+	if (KHRDebugSupported)
+		MaxLabelLength = GetInteger(GL.MAX_LABEL_LENGTH);
 
 	// COGLESCoreExtensionHandler::Feature
 	static_assert(MATERIAL_MAX_TEXTURES <= 8, "Only up to 8 textures are guaranteed");
@@ -143,7 +144,7 @@ void COpenGLES2Driver::initFeatures()
 	if (Version.Major >= 3 || queryExtension("GL_EXT_draw_range_elements"))
 		MaxIndices = GetInteger(GL_MAX_ELEMENTS_INDICES);
 	MaxTextureSize = GetInteger(GL_MAX_TEXTURE_SIZE);
-	if (TextureLODBiasSupported)
+	if (LODBiasSupported)
 		GL.GetFloatv(GL_MAX_TEXTURE_LOD_BIAS, &MaxTextureLODBias);
 	GL.GetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine); // NOTE: this is not in the OpenGL ES 2.0 spec...
 	GL.GetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);

@@ -27,7 +27,7 @@ static video::SMaterial baseMaterial()
 	video::SMaterial mat;
 	mat.ZBuffer = video::ECFN_DISABLED;
 	mat.ZWriteEnable = video::EZW_OFF;
-	mat.AntiAliasing = 0;
+	mat.AntiAliasing = video::EAAM_OFF;
 	mat.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	mat.BackfaceCulling = false;
@@ -50,8 +50,6 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	m_seed = (u64)myrand() << 32 | myrand();
 
 	setAutomaticCulling(scene::EAC_OFF);
-	m_box.MaxEdge.set(0, 0, 0);
-	m_box.MinEdge.set(0, 0, 0);
 
 	m_sky_params = SkyboxDefaults::getSkyDefaults();
 	m_sun_params = SkyboxDefaults::getSunDefaults();
@@ -62,7 +60,7 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 
 	m_materials[0] = baseMaterial();
 	m_materials[0].MaterialType =
-			ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
+			ssrc->getShaderInfo(ssrc->getShaderRaw("stars_shader", true)).material;
 
 	m_materials[1] = baseMaterial();
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -661,7 +659,9 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 		return;
 	m_materials[0].ColorParam = color.toSColor();
 
-	auto sky_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
+	auto day_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
+	auto orbit_rotation = core::matrix4().setRotationAxisRadians(m_sky_params.body_orbit_tilt * M_PI / 180.0, v3f(1.0f, 0.0f, 0.0f));
+	auto sky_rotation = orbit_rotation * day_rotation;
 	auto world_matrix = driver->getTransform(video::ETS_WORLD);
 	driver->setTransform(video::ETS_WORLD, world_matrix * sky_rotation);
 	driver->setMaterial(m_materials[0]);
@@ -695,13 +695,11 @@ void Sky::place_sky_body(
 	* day_position: turn the body around the Z axis, to place it depending of the time of the day
 	*/
 {
-	v3f centrum = getSkyBodyPosition(horizon_position, day_position, m_sky_params.body_orbit_tilt);
-	v3f untilted_centrum = getSkyBodyPosition(horizon_position, day_position, 0.f);
 	for (video::S3DVertex &vertex : vertices) {
 		// Body is directed to -Z (south) by default
 		vertex.Pos.rotateXZBy(horizon_position);
 		vertex.Pos.rotateXYBy(day_position);
-		vertex.Pos += centrum - untilted_centrum;
+		vertex.Pos.rotateYZBy(m_sky_params.body_orbit_tilt);
 	}
 }
 

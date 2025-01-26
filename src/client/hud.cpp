@@ -55,14 +55,14 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	tsrc = client->getTextureSource();
 
-	v3f crosshair_color = g_settings->getV3F("crosshair_color");
+	v3f crosshair_color = g_settings->getV3F("crosshair_color").value_or(v3f());
 	u32 cross_r = rangelim(myround(crosshair_color.X), 0, 255);
 	u32 cross_g = rangelim(myround(crosshair_color.Y), 0, 255);
 	u32 cross_b = rangelim(myround(crosshair_color.Z), 0, 255);
 	u32 cross_a = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
 	crosshair_argb = video::SColor(cross_a, cross_r, cross_g, cross_b);
 
-	v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
+	v3f selectionbox_color = g_settings->getV3F("selectionbox_color").value_or(v3f());
 	u32 sbox_r = rangelim(myround(selectionbox_color.X), 0, 255);
 	u32 sbox_g = rangelim(myround(selectionbox_color.Y), 0, 255);
 	u32 sbox_b = rangelim(myround(selectionbox_color.Z), 0, 255);
@@ -86,10 +86,11 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	// Initialize m_selection_material
 	IShaderSource *shdrsrc = client->getShaderSource();
-	{
-		auto shader_id = shdrsrc->getShader(
-			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", TILE_MATERIAL_ALPHA);
+	if (m_mode == HIGHLIGHT_HALO) {
+		auto shader_id = shdrsrc->getShaderRaw("selection_shader", true);
 		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
+	} else {
+		m_selection_material.MaterialType = video::EMT_SOLID;
 	}
 
 	if (m_mode == HIGHLIGHT_BOX) {
@@ -103,10 +104,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	}
 
 	// Initialize m_block_bounds_material
-	{
-		auto shader_id = shdrsrc->getShader("default_shader", TILE_MATERIAL_ALPHA);
-		m_block_bounds_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
-	}
+	m_block_bounds_material.MaterialType = video::EMT_SOLID;
 	m_block_bounds_material.Thickness =
 			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
 
@@ -876,7 +874,6 @@ void Hud::drawSelectionMesh()
 {
 	if (m_mode == HIGHLIGHT_NONE || (m_mode == HIGHLIGHT_HALO && !m_selection_mesh))
 		return;
-	const video::SMaterial oldmaterial = driver->getMaterial2D();
 	driver->setMaterial(m_selection_material);
 	const core::matrix4 oldtransform = driver->getTransform(video::ETS_WORLD);
 
@@ -912,7 +909,6 @@ void Hud::drawSelectionMesh()
 			driver->drawMeshBuffer(buf);
 		}
 	}
-	driver->setMaterial(oldmaterial);
 	driver->setTransform(video::ETS_WORLD, oldtransform);
 }
 
@@ -937,17 +933,11 @@ void Hud::drawBlockBounds()
 		return;
 	}
 
-	video::SMaterial old_material = driver->getMaterial2D();
 	driver->setMaterial(m_block_bounds_material);
 
 	u16 mesh_chunk_size = std::max<u16>(1, g_settings->getU16("client_mesh_chunk"));
 
-	v3s16 pos = player->getStandingNodePos();
-	v3s16 block_pos(
-		floorf((float) pos.X / MAP_BLOCKSIZE),
-		floorf((float) pos.Y / MAP_BLOCKSIZE),
-		floorf((float) pos.Z / MAP_BLOCKSIZE)
-	);
+	v3s16 block_pos = getContainerPos(player->getStandingNodePos(), MAP_BLOCKSIZE);
 
 	v3f cam_offset = intToFloat(client->getCamera()->getOffset(), BS);
 
@@ -990,8 +980,6 @@ void Hud::drawBlockBounds()
 			choose_color(block_pos.Y, block_pos.Z)
 		);
 	}
-
-	driver->setMaterial(old_material);
 }
 
 void Hud::updateSelectionMesh(const v3s16 &camera_offset)

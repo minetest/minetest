@@ -27,8 +27,7 @@
 #include "config.h"
 #include "version.h"
 #include "util/hex.h"
-#include "util/sha1.h"
-#include "my_sha256.h"
+#include "util/hashing.h"
 #include "util/png.h"
 #include "player.h"
 #include "daynightratio.h"
@@ -540,12 +539,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
 
 	// Compute actual checksum of data
-	std::string data_sha1;
-	{
-		SHA1 ctx;
-		ctx.addBytes(data);
-		data_sha1 = ctx.getDigest();
-	}
+	std::string data_sha1 = hashing::sha1(data);
 
 	if (hex) {
 		std::string sha1_hex = hex_encode(data_sha1);
@@ -564,10 +558,7 @@ int ModApiUtil::l_sha256(lua_State *L)
 	auto data = readParam<std::string_view>(L, 1);
 	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
 
-	std::string data_sha256;
-	data_sha256.resize(SHA256_DIGEST_LENGTH);
-	SHA256(reinterpret_cast<const unsigned char*>(data.data()), data.size(),
-		reinterpret_cast<unsigned char *>(data_sha256.data()));
+	std::string data_sha256 = hashing::sha256(data);
 
 	if (hex) {
 		lua_pushstring(L, hex_encode(data_sha256).c_str());

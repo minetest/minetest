@@ -9,7 +9,7 @@ body:
 
         1. **Please update Luanti to the latest stable or dev version** before submitting bug reports. Make sure the bug is still reproducible on the latest version.
         2. This page is for reporting the bugs of **the engine itself**. For bugs in a particular game, please [search for the game in the ContentDB](https://content.luanti.org/packages/?type=game) and submit a bug report in their issue trackers.
-            * For example, you can submit issues about the Minetest Game [in its own repository](https://github.com/minetest/minetest_game/issues).
+            * For example, you can submit issues about the Minetest Game [in its own repository](https://github.com/luanti-org/minetest_game/issues).
         3. Please provide as many details as possible for us to spot the problem quicker.
   - type: textarea
     attributes:
@@ -34,13 +34,6 @@ body:
       render: "true"
     validations:
       required: true
-  - type: input
-    attributes:
-      label: Irrlicht device
-      description:
-      placeholder: "Example: X11"
-    validations:
-      required: false
   - type: input
     attributes:
       label: Operating system and version
@@ -69,7 +62,7 @@ body:
     attributes:
       label: Active renderer
       description: You can find this in the "About" tab in the main menu.
-      placeholder: "Example: OpenGL 4.6.0"
+      placeholder: "Example: ES 3.2 / ogles2 / X11"
     validations:
       required: false
   - type: textarea

@@ -20,6 +20,7 @@ enum MaterialType{
 	TILE_MATERIAL_WAVING_LIQUID_BASIC,
 	TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT,
 	TILE_MATERIAL_WAVING_LIQUID_OPAQUE,
+	// Note: PLAIN isn't a material actually used by tiles, rather just entities.
 	TILE_MATERIAL_PLAIN,
 	TILE_MATERIAL_PLAIN_ALPHA
 };
@@ -49,6 +50,11 @@ struct FrameSpec
 	video::ITexture *texture = nullptr;
 };
 
+/**
+ * We have two tile layers:
+ * layer 0 = base
+ * layer 1 = overlay
+ */
 #define MAX_TILE_LAYERS 2
 
 //! Defines a layer of a tile.
@@ -82,10 +88,13 @@ struct TileLayer
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const;
 
+	/// @return is this layer semi-transparent?
 	bool isTransparent() const
 	{
+		// see also: the mapping in ShaderSource::generateShader()
 		switch (material_type) {
 		case TILE_MATERIAL_ALPHA:
+		case TILE_MATERIAL_PLAIN_ALPHA:
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 			return true;
@@ -111,9 +120,6 @@ struct TileLayer
 		MATERIAL_FLAG_TILEABLE_HORIZONTAL|
 		MATERIAL_FLAG_TILEABLE_VERTICAL;
 
-	//! If true, the tile has its own color.
-	bool has_color = false;
-
 	std::vector<FrameSpec> *frames = nullptr;
 
 	/*!
@@ -121,6 +127,9 @@ struct TileLayer
 	 * a color then the color of the node owning this tile.
 	 */
 	video::SColor color = video::SColor(0, 0, 0, 0);
+
+	//! If true, the tile has its own color.
+	bool has_color = false;
 
 	u8 scale = 1;
 };

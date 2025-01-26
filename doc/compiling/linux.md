@@ -18,6 +18,7 @@
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 | Curl       | 7.56.0+ | Optional   |
 | gettext    | -       | Optional   |
+| OpenSSL    | 3.0+    | Optional (only libcrypto used) |
 
 For Debian/Ubuntu users:
 
@@ -69,14 +70,14 @@ For Void users:
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-    git clone --depth 1 https://github.com/minetest/minetest.git
+    git clone --depth 1 https://github.com/luanti-org/luanti
     cd minetest
 
 Download source, without using Git:
 
-    wget https://github.com/minetest/minetest/archive/master.tar.gz
+    wget https://github.com/luanti-org/luanti/archive/master.tar.gz
     tar xf master.tar.gz
-    cd minetest-master
+    cd luanti-master
 
 ## Build
 

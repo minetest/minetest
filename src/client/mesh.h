@@ -4,9 +4,19 @@
 
 #pragma once
 
+#include "SColor.h"
 #include "SMaterialLayer.h"
-#include "irrlichttypes_extrabloated.h"
 #include "nodedef.h"
+
+namespace irr {
+	namespace scene {
+		class IAnimatedMesh;
+		class IMesh;
+		class IMeshBuffer;
+	}
+}
+
+using namespace irr;
 
 /*!
  * Applies shading to a color based on the surface's
@@ -68,7 +78,7 @@ void setMeshColorByNormal(scene::IMesh *mesh, const v3f &normal,
 	Rotate the mesh by 6d facedir value.
 	Method only for meshnodes, not suitable for entities.
 */
-void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir);
+void rotateMeshBy6dFacedir(scene::IMesh *mesh, u8 facedir);
 
 /*
 	Rotate the mesh around the axis and given angle in degrees.

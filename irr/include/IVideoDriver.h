@@ -61,8 +61,8 @@ struct SFrameStats {
 	u32 PrimitivesDrawn = 0;
 	//! Number of hardware buffers uploaded (new or updated)
 	u32 HWBuffersUploaded = 0;
-	//! Sum of uploaded hardware buffer size
-	u32 HWBuffersUploadedSize = 0;
+	//! Number of active hardware buffers
+	u32 HWBuffersActive = 0;
 };
 
 //! Interface to driver which is able to perform 2d and 3d graphics functions.
@@ -131,7 +131,6 @@ public:
 	/** The following names can be queried for the given types:
 	MaxTextures (int) The maximum number of simultaneous textures supported by the driver. This can be less than the supported number of textures of the driver. Use _IRR_MATERIAL_MAX_TEXTURES_ to adapt the number.
 	MaxSupportedTextures (int) The maximum number of simultaneous textures supported by the fixed function pipeline of the (hw) driver. The actual supported number of textures supported by the engine can be lower.
-	MaxLights (int) Number of hardware lights supported in the fixed function pipeline of the driver, typically 6-8. Use light manager or deferred shading for more.
 	MaxAnisotropy (int) Number of anisotropy levels supported for filtering. At least 1, max is typically at 16 or 32.
 	MaxAuxBuffers (int) Special render buffers, which are currently not really usable inside Irrlicht. Only supported by OpenGL
 	MaxMultipleRenderTargets (int) Number of render targets which can be bound simultaneously. Rendering to MRTs is done via shaders.
@@ -310,6 +309,18 @@ public:
 	good idea to set all materials which are using this texture to
 	0 or another texture first. */
 	virtual void removeAllTextures() = 0;
+
+	//! Eagerly upload buffer to hardware
+	/** This can be a good idea if you have a newly created or modified buffer,
+	which you know you will draw in the near future (e.g. end of same frame,
+	or next frame), because it gives the GPU driver to copy the contents. */
+	virtual void updateHardwareBuffer(const scene::IVertexBuffer *vb) = 0;
+
+	//! Eagerly upload buffer to hardware
+	/** This can be a good idea if you have a newly created or modified buffer,
+	which you know you will draw in the near future (e.g. end of same frame,
+	or next frame), because it gives the GPU driver to copy the contents. */
+	virtual void updateHardwareBuffer(const scene::IIndexBuffer *ib) = 0;
 
 	//! Remove hardware buffer
 	virtual void removeHardwareBuffer(const scene::IVertexBuffer *vb) = 0;
@@ -1111,15 +1122,6 @@ public:
 	virtual core::stringc getVendorInfo() = 0;
 
 	//! Only used by the engine internally.
-	/** The ambient color is set in the scene manager, see
-	scene::ISceneManager::setAmbientLight().
-	\param color New color of the ambient light. */
-	virtual void setAmbientLight(const SColorf &color) = 0;
-
-	//! Get the global ambient light currently used by the driver
-	virtual const SColorf &getAmbientLight() const = 0;
-
-	//! Only used by the engine internally.
 	/** Passes the global material flag AllowZWriteOnTransparent.
 	Use the SceneManager attribute to set this value from your app.
 	\param flag Default behavior is to disable ZWrite, i.e. false. */
@@ -1127,19 +1129,6 @@ public:
 
 	//! Get the maximum texture size supported.
 	virtual core::dimension2du getMaxTextureSize() const = 0;
-
-	//! Color conversion convenience function
-	/** Convert an image (as array of pixels) from source to destination
-	array, thereby converting the color format. The pixel size is
-	determined by the color formats.
-	\param sP Pointer to source
-	\param sF Color format of source
-	\param sN Number of pixels to convert, both array must be large enough
-	\param dP Pointer to destination
-	\param dF Color format of destination
-	*/
-	virtual void convertColor(const void *sP, ECOLOR_FORMAT sF, s32 sN,
-			void *dP, ECOLOR_FORMAT dF) const = 0;
 
 	//! Check if the driver supports creating textures with the given color format
 	/**	\return True if the format is available, false if not. */

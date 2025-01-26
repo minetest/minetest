@@ -28,10 +28,6 @@ public:
 			AssignedDepth(false), AssignedStencil(false), RequestTextureUpdate(false), RequestDepthStencilUpdate(false),
 			BufferID(0), ColorAttachment(0), MultipleRenderTarget(0), Driver(driver)
 	{
-#ifdef _DEBUG
-		setDebugName("COpenGLCoreRenderTarget");
-#endif
-
 		DriverType = Driver->getDriverType();
 
 		Size = Driver->getScreenSize();

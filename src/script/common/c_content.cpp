@@ -902,7 +902,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	lua_getfield(L, index, "selection_box");
 	if(lua_istable(L, -1))
 		f.selection_box = read_nodebox(L, -1);
- 	lua_pop(L, 1);
+	lua_pop(L, 1);
 
 	lua_getfield(L, index, "collision_box");
 	if(lua_istable(L, -1))
@@ -1594,7 +1594,7 @@ ToolCapabilities read_tool_capabilities(
 						// key at index -2 and value at index -1
 						int rating = luaL_checkinteger(L, -2);
 						float time = luaL_checknumber(L, -1);
-						groupcap.times[rating] = time;
+						groupcap.times.emplace_back(rating, time);
 						// removes value, keeps key for next iteration
 						lua_pop(L, 1);
 					}
@@ -2032,12 +2032,11 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 	getstringfield(L, idx, "trunk_type", tree_def.trunk_type);
 	getboolfield(L, idx, "thin_branches", tree_def.thin_branches);
 	tree_def.fruit_chance = 0;
+	fruit = "air";
 	getstringfield(L, idx, "fruit", fruit);
-	if (!fruit.empty()) {
+	if (!fruit.empty())
 		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
-		if (tree_def.fruit_chance)
-			tree_def.m_nodenames.push_back(fruit);
-	}
+	tree_def.m_nodenames.push_back(fruit);
 	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
 
 	// Resolves the node IDs for trunk, leaves, leaves2 and fruit at runtime,

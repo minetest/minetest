@@ -38,7 +38,7 @@ Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 	m_material.FogEnable = true;
 	m_material.AntiAliasing = video::EAAM_SIMPLE;
 	{
-		auto sid = ssrc->getShader("cloud_shader", TILE_MATERIAL_ALPHA);
+		auto sid = ssrc->getShaderRaw("cloud_shader", true);
 		m_material.MaterialType = ssrc->getShaderInfo(sid).material;
 	}
 
@@ -445,8 +445,8 @@ void Clouds::readSettings()
 	// chosen to avoid exactly that.
 	// refer to vertex_count in updateMesh()
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
-	const u16 maximum = m_enable_3d ? 62 : 25;
-	m_cloud_radius_i = rangelim(g_settings->getU16("cloud_radius"), 1, maximum);
+	const u16 maximum = !m_enable_3d ? 62 : 25;
+	m_cloud_radius_i = rangelim(g_settings->getU16("cloud_radius"), 8, maximum);
 
 	invalidateMesh();
 }
