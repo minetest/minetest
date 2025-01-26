@@ -234,6 +234,15 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 			block = last_block;
 		}
 
+		if (!block) {
+			aabb3f box = getNodeBox(p, BS);
+			v3s16 p2(bp.X * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1, p.Y, p.Z);
+			box.addInternalBox(getNodeBox(p2, BS));
+			cinfo.emplace_back(true, 0, p, box);
+			p.X = p2.X; // skip ahead
+			continue;
+		}
+
 		bool is_position_valid = !!block;
 		MapNode n = block ? block->getNodeNoCheck(relpos) : MapNode(CONTENT_IGNORE);
 
@@ -268,6 +277,7 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 			cinfo.emplace_back(true, 0, p, box);
 		}
 	}
+
 	return any_position_valid;
 }
 
