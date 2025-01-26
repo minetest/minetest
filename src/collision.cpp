@@ -243,10 +243,16 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 			continue;
 		}
 
-		bool is_position_valid = !!block;
-		MapNode n = block ? block->getNodeNoCheck(relpos) : MapNode(CONTENT_IGNORE);
+		if (block->isAir() && !nodedef->get(CONTENT_AIR).walkable) {
+			any_position_valid = true;
+			v3s16 p2(bp.X * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1, p.Y, p.Z);
+			p.X = p2.X; // skip ahead
+			continue;
+		}
 
-		if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
+		MapNode n = block->getNodeNoCheck(relpos);
+
+		if (n.getContent() != CONTENT_IGNORE) {
 			// Object collides into walkable nodes
 
 			any_position_valid = true;
