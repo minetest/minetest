@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <string>
+#include <string_view>
 
 struct EnumString
 {
@@ -12,6 +12,6 @@ struct EnumString
 	const char *str;
 };
 
-bool string_to_enum(const EnumString *spec, int &result, const std::string &str);
+bool string_to_enum(const EnumString *spec, int &result, std::string_view str);
 
 const char *enum_to_string(const EnumString *spec, int num);

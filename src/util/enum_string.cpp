@@ -3,14 +3,14 @@
 // Copyright (C) 2025 cx384
 
 #include "util/enum_string.h"
-#include <cstring>
 #include <cassert>
 
-bool string_to_enum(const EnumString *spec, int &result, const std::string &str)
+bool string_to_enum(const EnumString *spec, int &result, std::string_view str)
 {
 	const EnumString *esp = spec;
-	while(esp->str){
-		if (!strcmp(str.c_str(), esp->str)) {
+	while (esp->str) {
+		if (str == esp->str) {
+			assert(esp->num >= 0);
 			result = esp->num;
 			return true;
 		}

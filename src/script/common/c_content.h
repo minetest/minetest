@@ -142,9 +142,6 @@ std::vector<ItemStack> read_items(lua_State *L, int index, IGameDef* gdef);
 
 void push_simplesoundspec(lua_State *L, const SoundSpec &spec);
 
-bool string_to_enum(const EnumString *spec,
-		int &result, const std::string &str);
-
 bool read_noiseparams(lua_State *L, int index, NoiseParams *np);
 void push_noiseparams(lua_State *L, NoiseParams *np);
 
