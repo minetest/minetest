@@ -232,7 +232,7 @@ public:
 #endif
 			GLint max_samples = 0;
 			GL.GetIntegerv(GL_MAX_SAMPLES, &max_samples);
-			MSAA = std::min(MSAA, (u8)max_samples);
+			MSAA = core::min_(MSAA, (u8)max_samples);
 
 			if (use_gl_impl)
 				GL.TexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, MSAA, InternalFormat, Size.Width, Size.Height, GL_TRUE);
