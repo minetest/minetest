@@ -116,7 +116,7 @@ methods on [our website](http://www.minetest.net/development/#donate).
 # Maintaining
 
 * This is a concise version of the
-  [Rules & Guidelines](https://dev.luanti.org/engine-dev-process/all-rules-regarding-development/) on the developer wiki.*
+  [Rules & Guidelines](https://dev.luanti.org/engine-dev-process/) on the developer wiki.*
 
 These notes are for those who have push access Luanti (core developers / maintainers).
 
