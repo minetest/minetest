@@ -262,11 +262,11 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 
 		SDL_SetHint(SDL_HINT_ANDROID_TRAP_BACK_BUTTON, "1");
 
-		// Minetest does its own screen keyboard handling.
+		// Luanti does its own screen keyboard handling.
 		SDL_SetHint(SDL_HINT_ENABLE_SCREEN_KEYBOARD, "0");
 #endif
 
-		// Minetest has its own signal handler
+		// Luanti has its own signal handler
 		SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
 
 		// Disabling the compositor is not a good idea in windowed mode.
@@ -284,7 +284,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		SDL_SetHint(SDL_HINT_WINDOWS_DPI_SCALING, "1");
 #endif
 
-		// Minetest has its own code to synthesize mouse events from touch events,
+		// Luanti has its own code to synthesize mouse events from touch events,
 		// so we prevent SDL from doing it.
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
@@ -748,7 +748,7 @@ bool CIrrDeviceSDL::run()
 			// According to some web searches I did, this is probably
 			// vendor/device-specific.
 			// Since a working right mouse button is very important for
-			// Minetest, we have this little hack.
+			// Luanti, we have this little hack.
 			if (button == SDL_BUTTON_X2)
 				button = SDL_BUTTON_RIGHT;
 #endif

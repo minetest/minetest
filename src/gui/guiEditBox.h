@@ -1,6 +1,6 @@
 // Luanti
 // SPDX-License-Identifier: LGPL-2.1-or-later
-// Copyright (C) 2021 Minetest
+// Copyright (C) 2021 Luanti
 
 #pragma once
 

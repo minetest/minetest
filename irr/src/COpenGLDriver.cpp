@@ -2137,7 +2137,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial &material, bool reset
 		if (tmpTexture) {
 			CacheHandler->setActiveTexture(GL_TEXTURE0 + i);
 
-			// Minetest uses the first texture matrix even with the programmable pipeline
+			// Luanti uses the first texture matrix even with the programmable pipeline
 			if (fixedPipeline || i == 0) {
 				const bool isRTT = tmpTexture->isRenderTarget();
 

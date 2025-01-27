@@ -86,7 +86,7 @@ public:
 	mesh buffer. */
 	virtual IMeshBuffer *getMeshBuffer(const video::SMaterial &material) const = 0;
 
-	//! Minetest binds textures (node tiles, object textures) to models.
+	//! Luanti binds textures (node tiles, object textures) to models.
 	// glTF allows multiple primitives (mesh buffers) to reference the same texture.
 	// This is reflected here: This function gets the texture slot for a mesh buffer.
 	/** \param meshbufNr: Zero based index of the mesh buffer. The maximum value is
