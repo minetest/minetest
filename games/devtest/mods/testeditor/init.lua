@@ -1,5 +1,5 @@
-local S = luanti.get_translator("testeditor")
-local F = luanti.formspec_escape
+local S = core.get_translator("testeditor")
+local F = core.formspec_escape
 
 local function editor_to_string(editor)
 	if type(editor) == "string" then
@@ -50,7 +50,7 @@ local function editor_formspec(playername)
 	if not formspec.actual then
 		title = S("@1 - NOT APPLIED CHANGES", title)
 	end
-	luanti.show_formspec(playername, "testeditor:editor",
+	core.show_formspec(playername, "testeditor:editor",
 		"size[11,9]"..
 		"label[0,0;"..F(title).."]"..
 		"textlist[0,0.5;11,6.5;editor_data;"..formspec.list..";"..sel..";false]"..
@@ -64,7 +64,7 @@ local function editor_formspec(playername)
 end
 
 local function editor_formspec_create(playername, wrapper)
-	local data = read_cb(playername)
+	local data = wrapper.read_cb(playername)
 	editor_formspecs[playername] = {
 		title = wrapper.title,
 		read_cb = wrapper.read_cb,
@@ -81,7 +81,7 @@ end
 local function use_loadstring(param, player)
 	-- For security reasons, require 'server' priv, just in case
 	-- someone is actually crazy enough to run this on a public server.
-	local privs = luanti.get_player_privs(player:get_player_name())
+	local privs = core.get_player_privs(player:get_player_name())
 	if not privs.server then
 		return false, "You need 'server' privilege to change object properties!"
 	end
@@ -109,7 +109,7 @@ local function use_loadstring(param, player)
 	return true, errOrResult
 end
 
-luanti.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if not (player and player:is_player()) then
 		return
 	end
@@ -120,7 +120,7 @@ luanti.register_on_player_receive_fields(function(player, formname, fields)
 			return
 		end
 		if fields.editor_data then
-			local expl = luanti.explode_textlist_event(fields.editor_data)
+			local expl = core.explode_textlist_event(fields.editor_data)
 			if expl.type == "DCL" or expl.type == "CHG" then
 				formspec.selindex = expl.index
 				formspec.key = formspec.index_to_key[expl.index]
@@ -136,7 +136,7 @@ luanti.register_on_player_receive_fields(function(player, formname, fields)
 				formspec.list = get_object_properties_form(formspec.data, name)
 				formspec.actual = false
 			else
-				luanti.chat_send_player(name, str)
+				core.chat_send_player(name, str)
 				return
 			end
 			editor_formspec(name)
@@ -153,7 +153,7 @@ luanti.register_on_player_receive_fields(function(player, formname, fields)
 				formspec.list = get_object_properties_form(formspec.data, name)
 				formspec.actual = false
 			else
-				luanti.chat_send_player(name, str)
+				core.chat_send_player(name, str)
 				return
 			end
 			editor_formspec(name)
@@ -171,9 +171,9 @@ end)
 local function create_read_cb(func)
 	return
 		function(name)
-			local player = luanti.get_player_by_name(name)
+			local player = core.get_player_by_name(name)
 			if player then
-				return player[func]()
+				return player[func](player)
 			end
 			return {}
 		end
@@ -181,9 +181,9 @@ end
 local function create_write_cb(func)
 	return
 		function(name, data)
-			local player = luanti.get_player_by_name(name)
+			local player = core.get_player_by_name(name)
 			if player then
-				return player[func](data)
+				return player[func](player, data)
 			end
 		end
 end
@@ -212,8 +212,8 @@ local wrappers = {
 	sky = {
 		title = S("Properties editor of sky (get_sky/set_sky)"),
 		read_cb =
-			function read_sky(name)
-				local player = luanti.get_player_by_name(name)
+			function(name)
+				local player = core.get_player_by_name(name)
 				if player then
 					return player:get_sky(true)
 				end
@@ -261,11 +261,11 @@ for key, _ in pairs(wrappers) do
 	sep = "|"
 end
 
-luanti.register_chatcommand("player_editor", {
+core.register_chatcommand("player_editor", {
 	params = "<"..editor_params..">",
 	description = "Open editor for some player data",
 	func = function(name, param)
-		local player = luanti.get_player_by_name(name)
+		local player = core.get_player_by_name(name)
 		if not player then
 			return false, "No player."
 		end
