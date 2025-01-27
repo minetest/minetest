@@ -5726,11 +5726,11 @@ Utilities
 
       -- the following information is available in a debug build only!!!
       -- DO NOT USE IN MODS
-      serialization_version = 26,     -- serialization version used by client
-      major = 0,                      -- major version number
-      minor = 4,                      -- minor version number
-      patch = 10,                     -- patch version number
-      state = "Active"                -- current client state
+      --serialization_version = 26,     -- serialization version used by client
+      --major = 0,                      -- major version number
+      --minor = 4,                      -- minor version number
+      --patch = 10,                     -- patch version number
+      --state = "Active"                -- current client state
   }
   ```
 
