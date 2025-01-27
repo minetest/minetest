@@ -31,7 +31,7 @@ SerializedSSCSMAnswer SSCSMEnvironment::exchange(SerializedSSCSMRequest req)
 std::unique_ptr<ISSCSMEvent> SSCSMEnvironment::cmdPollNextEvent()
 {
 	auto request = SSCSMRequestPollNextEvent{};
-	auto answer = deserializeSSCSMAnswer<SSCSMAnswerPollNextEvent>(
+	auto answer = deserializeSSCSMAnswer<SSCSMRequestPollNextEvent::Answer>(
 			exchange(serializeSSCSMRequest(request))
 		);
 	return std::move(answer.next_event);
@@ -40,7 +40,7 @@ std::unique_ptr<ISSCSMEvent> SSCSMEnvironment::cmdPollNextEvent()
 MapNode SSCSMEnvironment::cmdGetNode(v3s16 pos)
 {
 	auto request = SSCSMRequestGetNode{pos};
-	auto answer = deserializeSSCSMAnswer<SSCSMAnswerGetNode>(
+	auto answer = deserializeSSCSMAnswer<SSCSMRequestGetNode::Answer>(
 			exchange(serializeSSCSMRequest(request))
 		);
 	return answer.node;

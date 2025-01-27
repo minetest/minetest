@@ -31,7 +31,7 @@ SSCSMController::SSCSMController(std::unique_ptr<SSCSMEnvironment> thread,
 SSCSMController::~SSCSMController()
 {
 	// send tear-down
-	m_channel->sendB(serializeSSCSMAnswer(SSCSMAnswerPollNextEvent{
+	m_channel->sendB(serializeSSCSMAnswer(SSCSMRequestPollNextEvent::Answer{
 			std::make_unique<SSCSMEventTearDown>()
 		}));
 	// wait for death
@@ -46,7 +46,7 @@ SerializedSSCSMAnswer SSCSMController::handleRequest(Client *client, ISSCSMReque
 
 void SSCSMController::runEvent(Client *client, std::unique_ptr<ISSCSMEvent> event)
 {
-	auto answer = serializeSSCSMAnswer(SSCSMAnswerPollNextEvent{std::move(event)});
+	auto answer = serializeSSCSMAnswer(SSCSMRequestPollNextEvent::Answer{std::move(event)});
 
 	while (true) {
 		auto request = deserializeSSCSMRequest(m_channel->exchangeB(std::move(answer)));
