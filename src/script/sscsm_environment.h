@@ -27,6 +27,6 @@ public:
 	{
 	}
 
-	std::unique_ptr<ISSCSMEvent> cmdPollNextEvent();
-	MapNode cmdGetNode(v3s16 pos);
+	std::unique_ptr<ISSCSMEvent> requestPollNextEvent();
+	MapNode requestGetNode(v3s16 pos);
 };

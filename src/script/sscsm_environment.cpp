@@ -11,7 +11,7 @@
 void *SSCSMEnvironment::run()
 {
 	while (true) {
-		auto next_event = cmdPollNextEvent();
+		auto next_event = requestPollNextEvent();
 
 		if (dynamic_cast<SSCSMEventTearDown *>(next_event.get())) {
 			break;
@@ -28,7 +28,7 @@ SerializedSSCSMAnswer SSCSMEnvironment::exchange(SerializedSSCSMRequest req)
 	return m_channel->exchangeA(std::move(req));
 }
 
-std::unique_ptr<ISSCSMEvent> SSCSMEnvironment::cmdPollNextEvent()
+std::unique_ptr<ISSCSMEvent> SSCSMEnvironment::requestPollNextEvent()
 {
 	auto request = SSCSMRequestPollNextEvent{};
 	auto answer = deserializeSSCSMAnswer<SSCSMRequestPollNextEvent::Answer>(
@@ -37,7 +37,7 @@ std::unique_ptr<ISSCSMEvent> SSCSMEnvironment::cmdPollNextEvent()
 	return std::move(answer.next_event);
 }
 
-MapNode SSCSMEnvironment::cmdGetNode(v3s16 pos)
+MapNode SSCSMEnvironment::requestGetNode(v3s16 pos)
 {
 	auto request = SSCSMRequestGetNode{pos};
 	auto answer = deserializeSSCSMAnswer<SSCSMRequestGetNode::Answer>(

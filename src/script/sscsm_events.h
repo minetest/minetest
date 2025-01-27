@@ -28,7 +28,7 @@ struct SSCSMEventOnStep : public ISSCSMEvent
 	void exec(SSCSMEnvironment *env) override
 	{
 		// example
-		env->cmdGetNode(v3s16(0, 0, 0));
+		env->requestGetNode(v3s16(0, 0, 0));
 	}
 };
 
