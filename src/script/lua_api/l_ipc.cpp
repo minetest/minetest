@@ -1,4 +1,4 @@
-// Luanti
+// Minetest
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 #include "lua_api/l_ipc.h"
