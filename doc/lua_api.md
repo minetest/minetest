@@ -5719,9 +5719,9 @@ Utilities
 
       -- The version information is provided by the client and may be spoofed or
       -- inconsistent in engine forks. You must not use this for checking
-      -- feature availability of clients, please use protocol_version whenever
-      -- it is possible.
-      -- Use this ONLY as a last resort!!!
+      -- feature availability of clients. Instead, do use the fields
+      -- `protocol_version` and `formspec_version` where it matters.
+      -- These version fields may only be used for analysis purposes.
       major = 0,                      -- major version number
       minor = 4,                      -- minor version number
       patch = 10,                     -- patch version number
