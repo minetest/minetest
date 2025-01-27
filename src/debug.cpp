@@ -3,16 +3,11 @@
 // Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 
-#include "porting.h"
 #include "debug.h"
-#include "exceptions.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <map>
-#include <sstream>
 #include <thread>
-#include "threading/mutex_auto_lock.h"
 #include "config.h"
 
 #ifdef _MSC_VER
