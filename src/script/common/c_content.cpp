@@ -357,8 +357,12 @@ void read_object_properties(lua_State *L, int index,
 	std::string visual;
 	if (getstringfield(L, -1, "visual", visual)) {
 		int result;
-		prop->visual = string_to_enum(es_ObjectVisual, result, visual) ?
-			static_cast<ObjectVisual>(result) : OBJECTVISUAL_UNKNOWN;
+		if (string_to_enum(es_ObjectVisual, result, visual))
+			prop->visual = static_cast<ObjectVisual>(result);
+		else {
+			script_log_unique(L, "Unsupported ObjectVisual: " + visual, warningstream);
+			prop->visual = OBJECTVISUAL_UNKNOWN;
+		}
 	}
 
 	getstringfield(L, -1, "mesh", prop->mesh);
