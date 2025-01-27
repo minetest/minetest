@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iterator>
 #include "shader.h"
-#include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
 #include "debug.h"
 #include "filesys.h"
