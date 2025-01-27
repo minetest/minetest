@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-07-27 04:09+0000\n"
-"Last-Translator: AlexTECPlayz <alextec70@outlook.com>\n"
+"PO-Revision-Date: 2025-01-27 15:28+0000\n"
+"Last-Translator: Negoitescu <negoitescumario@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
 "Language: ro\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -158,7 +158,7 @@ msgstr "$1 se descarcă..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All"
-msgstr ""
+msgstr "Tot"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_package.lua
@@ -167,9 +167,8 @@ msgid "Back"
 msgstr "Înapoi"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "ContentDB is not available when Luanti was compiled without cURL"
-msgstr "ContentDB nu este disponibil când Minetest e compilat fără cURL"
+msgstr "ContentDB nu este disponibil când Luanti este compilat fără cURL"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Downloading..."
@@ -177,7 +176,7 @@ msgstr "Descărcare..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Featured"
-msgstr ""
+msgstr "Recomandat"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -267,9 +266,8 @@ msgid "Dependencies:"
 msgstr "Dependențe:"
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Error getting dependencies for package $1"
-msgstr "Eroare la obținerea dependențelor pentru pachet"
+msgstr "Eroare la obținerea dependențelor pentru pachet „$1”"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Install"
@@ -309,39 +307,37 @@ msgid "ContentDB page"
 msgstr "URL-ul ContentDB"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Description"
-msgstr "Descrierea serverului"
+msgstr "Descriere"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Donează"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Subiect forum"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Information"
-msgstr "Informații:"
+msgstr "Informații"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Install [$1]"
+msgstr "Instalează [$1]"
 
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
-msgid "Install [$1]"
-msgstr "Instalează $1"
-
-#: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Tracker de probleme"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr ""
+msgstr "Sursă"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
-msgstr ""
+msgstr "Traduce"
 
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -357,8 +353,9 @@ msgid "Website"
 msgstr "Vizitează saitul"
 
 #: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
-msgstr ""
+msgstr "de $1  —  $2 descărcări  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -718,13 +715,12 @@ msgid "Dismiss"
 msgstr "Respinge"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid ""
 "For a long time, Luanti shipped with a default game called \"Minetest "
 "Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
-"Pentru mult timp, motorul Minetest a venit cu un joc implicit pe nume "
-"„Minetest Game”. Din Minetest 5.8.0, Minetest nu mai vine cu un joc implicit."
+"Pentru mult timp, Luanti a venit cu un joc implicit pe nume „Minetest Game”. "
+"Din versiunea 5.8.0, Luanti nu mai vine cu un joc implicit."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -886,19 +882,16 @@ msgid "eased"
 msgstr "uşura"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable automatic exposure as well)"
-msgstr "(Jocul va trebui să activeze și umbrele)"
+msgstr "(Jocul va trebui să activeze și expunerea automată)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable bloom as well)"
-msgstr "(Jocul va trebui să activeze și umbrele)"
+msgstr "(Jocul va trebui să activeze și bloom)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable volumetric lighting as well)"
-msgstr "(Jocul va trebui să activeze și umbrele)"
+msgstr "(Jocul va trebui să activeze și lumina volumetrică)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
@@ -910,7 +903,7 @@ msgstr "Accesibilitate"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Auto"
-msgstr ""
+msgstr "Automat"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
@@ -976,18 +969,16 @@ msgid "Content: Mods"
 msgstr "Conținut: Modificări"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Enable"
-msgstr "Activat"
+msgstr "Activează"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Shaders are disabled."
-msgstr "Actualizarea camerei este dezactivată"
+msgstr "Shaderele sunt dezactivate."
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
 msgid "This is not a recommended configuration."
-msgstr ""
+msgstr "Aceasta nu este o opțiune recomandată."
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -1147,18 +1138,16 @@ msgid "Install games from ContentDB"
 msgstr "Instalarea jocurilor din ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Luanti doesn't come with a game by default."
-msgstr "Minetest nu vine cu un joc preinstalat."
+msgstr "Luanti nu vine cu un joc preinstalat."
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid ""
 "Luanti is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
-"Minetest este o platformă de creare de jocuri care vă permite să jucați "
-"multe jocuri diferite."
+"Luanti este o platformă de creare de jocuri care vă permite să jucați multe "
+"jocuri diferite."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -2260,35 +2249,36 @@ msgstr "Volum sunet: %d%%"
 
 #: src/gui/touchcontrols.cpp
 msgid "Joystick"
-msgstr ""
+msgstr "Manetă"
 
 #: src/gui/touchcontrols.cpp
 msgid "Overflow menu"
 msgstr ""
 
 #: src/gui/touchcontrols.cpp
-#, fuzzy
 msgid "Toggle debug"
-msgstr "Comutați ceața"
+msgstr "Informații debug"
 
 #: src/network/clientpackethandler.cpp
+#, fuzzy
 msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr ""
+"Un alt client este conectat sub acest nume. Dacă clientul dvs. s-a oprit "
+"neașteptat, reîncercați într-un minut."
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
+msgstr "Parolele goale nu sunt permise.  Setați o parolă și reîncercați."
 
 #: src/network/clientpackethandler.cpp
 msgid "Internal server error"
-msgstr ""
+msgstr "Eroare internă server"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Invalid password"
-msgstr "Vechea parolă"
+msgstr "Parolă invalidă"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2311,46 +2301,48 @@ msgstr "Numele este folosit. Vă rugăm să alegeți altul"
 
 #: src/network/clientpackethandler.cpp
 msgid "Player name contains disallowed characters"
-msgstr ""
+msgstr "Numele jucătorului conține caractere neautorizate"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Player name not allowed"
-msgstr "Numele jucătorului prea lung."
+msgstr "Numele jucătorului prea lung"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Server shutting down"
-msgstr "Se închide..."
+msgstr "Serverul se închide"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
+msgstr "Serverul a avut o eroare internă.  Veți fi deconectat."
 
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
-msgstr ""
+msgstr "Serverul funcționează în modul solo.  Nu vă puteți conecta."
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr ""
+msgstr "Prea mulți jucători"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "Motiv de deconectare necunoscut."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr ""
+"Clientul dvs. a trimis ceva neașteptat serverului.  Încercați să vă "
+"reconectați sau să actualizați serverul."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
 msgstr ""
+"Versiunea clientului dvs. nu este susținută.\n"
+"Vă rugăm contactați administratorul serverului."
 
 #: src/server.cpp
 #, c-format
@@ -2485,7 +2477,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Zgomot 3D care determină numărul de temnițe pe bucată de hartă."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2499,7 +2490,7 @@ msgid ""
 msgstr ""
 "Suport 3D.\n"
 "În prezent, suportate:\n"
-"-    Niciunul: nicio ieșire 3D.\n"
+"-    niciunul: nicio ieșire 3D.\n"
 "-    anaglyph: culoare 3D turcoaz/magenta.\n"
 "-    întrețesut: suport pentru polarizare pe linii impare/pare.\n"
 "-    partea de sus: ecran împărțit sus/jos.\n"
@@ -2643,22 +2634,20 @@ msgid "Announce to this serverlist."
 msgstr "Anunțați pe această listă de servere."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Antialiasing:"
+msgstr "Antialiasing"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Antialiasing:"
+msgstr "Metodă de antialiasing"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat flags"
-msgstr ""
+msgstr "Opțiuni anti-trișare"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat movement tolerance"
-msgstr ""
+msgstr "Toleranță mișcare anti-trișare"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
