@@ -472,6 +472,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (pkt->getRemainingBytes() >= 8) {
 		f32 movement_speed;
 		*pkt >> movement_speed;
+		if (movement_speed != movement_speed) // NaN
+			movement_speed = 0.0f;
 		player->control.movement_speed = std::clamp(movement_speed, 0.0f, 1.0f);
 		*pkt >> player->control.movement_direction;
 	} else {
