@@ -39,7 +39,8 @@ std::unique_ptr<ISSCSMEvent> SSCSMEnvironment::requestPollNextEvent()
 
 MapNode SSCSMEnvironment::requestGetNode(v3s16 pos)
 {
-	auto request = SSCSMRequestGetNode{pos};
+	auto request = SSCSMRequestGetNode{};
+	request.pos = pos;
 	auto answer = deserializeSSCSMAnswer<SSCSMRequestGetNode::Answer>(
 			exchange(serializeSSCSMRequest(request))
 		);

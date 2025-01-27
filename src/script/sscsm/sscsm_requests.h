@@ -15,11 +15,6 @@ struct SSCSMRequestPollNextEvent : public ISSCSMRequest
 	struct Answer : public ISSCSMAnswer
 	{
 		std::unique_ptr<ISSCSMEvent> next_event;
-
-		Answer(std::unique_ptr<ISSCSMEvent> next_event_) :
-			next_event(std::move(next_event_))
-		{
-		}
 	};
 
 	SerializedSSCSMAnswer exec(Client *client) override
@@ -33,18 +28,16 @@ struct SSCSMRequestGetNode : public ISSCSMRequest
 	struct Answer : public ISSCSMAnswer
 	{
 		MapNode node;
-
-		Answer(MapNode node_) : node(node_) {}
 	};
 
 	v3s16 pos;
-
-	SSCSMRequestGetNode(v3s16 pos_) : pos(pos_) {}
 
 	SerializedSSCSMAnswer exec(Client *client) override
 	{
 		MapNode node = client->getEnv().getMap().getNode(pos);
 
-		return serializeSSCSMAnswer(Answer{node});
+		Answer answer{};
+		answer.node = node;
+		return serializeSSCSMAnswer(std::move(answer));
 	}
 };

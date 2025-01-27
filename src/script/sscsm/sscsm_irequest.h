@@ -52,7 +52,7 @@ inline T deserializeSSCSMAnswer(SerializedSSCSMAnswer answer_serialized)
 }
 
 template <typename T>
-inline SerializedSSCSMAnswer serializeSSCSMAnswer(T answer)
+inline SerializedSSCSMAnswer serializeSSCSMAnswer(T &&answer)
 {
 	static_assert(std::is_base_of_v<ISSCSMAnswer, T>);
 

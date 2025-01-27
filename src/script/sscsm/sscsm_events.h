@@ -19,11 +19,9 @@ struct SSCSMEventTearDown : public ISSCSMEvent
 	}
 };
 
-struct SSCSMEventOnStep : public ISSCSMEvent
+struct SSCSMEventOnStep final : public ISSCSMEvent
 {
 	f32 dtime;
-
-	SSCSMEventOnStep(f32 dtime_) : dtime(dtime_) {}
 
 	void exec(SSCSMEnvironment *env) override
 	{
