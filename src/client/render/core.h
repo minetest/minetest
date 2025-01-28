@@ -4,13 +4,9 @@
 // Copyright (C) 2017 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
 
 #pragma once
+
 #include "irr_v2d.h"
-#include <SMesh.h>
-#include <ISceneManager.h>
-#include <IMeshBuffer.h>
-#include <SMeshBuffer.h>
-#include <IGUIElement.h>
-#include <IGUIEnvironment.h>
+#include <SColor.h>
 
 namespace irr
 {
