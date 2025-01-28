@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include <cctype>
+#include <sstream>
 
+#include "config.h"
 #include "debug.h"
 #include "settings.h"
 #include "util/strfnd.h"
