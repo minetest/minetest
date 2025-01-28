@@ -63,7 +63,7 @@ You can install dependencies via CLI or via CMake GUI, whichever your prefer.
 To install dependencies via CLI, you can run this program in PowerShell:
 
 ```powershell
-# Run this while in `path/to/minetest`
+# Run this while in `path/to/luanti`
 $vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", whatever matches your machine
 $toolchain_file="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" # or wherever you installed vcpkg.cmake manually
 mkdir build
