@@ -20,6 +20,9 @@
 #include <map>
 #include <IMeshManipulator.h>
 #include "client/renderingengine.h"
+#include <SMesh.h>
+#include <IMeshBuffer.h>
+#include <SMeshBuffer.h>
 
 #define WIELD_SCALE_FACTOR 30.0f
 #define WIELD_SCALE_FACTOR_EXTRUDED 40.0f

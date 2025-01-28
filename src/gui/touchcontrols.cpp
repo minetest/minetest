@@ -23,6 +23,8 @@
 #include "IGUIFont.h"
 #include <IrrlichtDevice.h>
 #include <ISceneCollisionManager.h>
+#include <IGUIElement.h>
+#include <IGUIEnvironment.h>
 
 #include <iostream>
 #include <algorithm>

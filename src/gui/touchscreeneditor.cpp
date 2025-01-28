@@ -15,6 +15,8 @@
 #include "IGUIFont.h"
 #include "IGUIImage.h"
 #include "IGUIStaticText.h"
+#include <IGUIElement.h>
+#include <IGUIEnvironment.h>
 
 GUITouchscreenLayout::GUITouchscreenLayout(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
