@@ -1,0 +1,5 @@
+#!/bin/bash
+touch src/version.cpp
+git update-index --refresh
+cmake -B build -DRUN_IN_PLACE=TRUE -DUSE_SDL2=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja #-DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld"
+cmake --build build --parallel $(($(nproc) + 1))
