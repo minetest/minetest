@@ -419,20 +419,37 @@ local function search_server_list(input)
 		return
 	end
 
+	local current_server = find_selected_server()
+
 	table.sort(search_result, function(a, b)
 		return a.points > b.points
 	end)
 	menudata.search_result = search_result
 
-	-- Find first compatible server (favorite or public)
-	for _, server in ipairs(search_result) do
-		if is_server_protocol_compat(server.proto_min, server.proto_max) then
-			set_selected_server(server)
-			return
-		end
-	end
-	-- If no compatible server found, clear selection
-	set_selected_server(nil)
+	-- Keep current selection if it's in search results
+    local found_current = false
+    if current_server then
+        for _, server in ipairs(search_result) do
+            if server.address == current_server.address and
+               server.port == current_server.port then
+                found_current = true
+                break
+            end
+        end
+    end
+
+    -- If current selection isn't in results, select first compatible server
+    if not found_current then
+        -- Find first compatible server (favorite or public)
+        for _, server in ipairs(search_result) do
+            if is_server_protocol_compat(server.proto_min, server.proto_max) then
+                set_selected_server(server)
+                return
+            end
+        end
+        -- If no compatible server found, clear selection
+        set_selected_server(nil)
+    end
 end
 local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.te_name then
