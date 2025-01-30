@@ -2466,6 +2466,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	);
 
 	// Enable sneak lock
+	// Check g_settings as to not create a new instance of a Settings object every tick
 	if (g_settings->getBool("sneak_lock")) {
 		if (control.sneak)
 			toggleSneakLock();
