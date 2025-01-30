@@ -3239,9 +3239,10 @@ PointedThing Game::updatePointedThing(
 			hud->setSelectionPos(pos, camera_offset);
 			GenericCAO* gcao = dynamic_cast<GenericCAO*>(runData.selected_object);
 			if (gcao != nullptr && gcao->getProperties().rotate_selectionbox)
-				hud->setSelectionRotation(gcao->getSceneNode()->getAbsoluteTransformation().getRotationDegrees());
+				hud->setSelectionRotationRadians(gcao->getSceneNode()
+						->getAbsoluteTransformation().getRotationRadians());
 			else
-				hud->setSelectionRotation(v3f());
+				hud->setSelectionRotationRadians(v3f());
 		}
 		hud->setSelectedFaceNormal(result.raw_intersection_normal);
 	} else if (result.type == POINTEDTHING_NODE) {
@@ -3261,7 +3262,7 @@ PointedThing Game::updatePointedThing(
 		}
 		hud->setSelectionPos(intToFloat(result.node_undersurface, BS),
 			camera_offset);
-		hud->setSelectionRotation(v3f());
+		hud->setSelectionRotationRadians(v3f());
 		hud->setSelectedFaceNormal(result.intersection_normal);
 	}
 
