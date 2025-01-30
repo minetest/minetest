@@ -85,28 +85,38 @@ SECTION("getScale") {
 }
 
 SECTION("getRotationDegrees") {
-    auto test_rotation_degrees = [](v3f deg) {
-        matrix4 S;
-        Catch::Generators::RandomFloatingGenerator<f32> gen(0.1f, 10, Catch::getSeed());
-        S.setScale({gen.get(), gen.get(), gen.get()});
-
-        matrix4 R;
-        R.setRotationDegrees(deg);
-        v3f rot = (R * S).getRotationDegrees();
-        matrix4 B;
-        B.setRotationDegrees(rot);
-        CHECK(matrix_equals(R, B));
-    };
-    SECTION("returns a rotation equivalent to the original rotation") {
-        test_rotation_degrees({100, 200, 300});
-        Catch::Generators::RandomFloatingGenerator<f32> gen(0, 360, Catch::getSeed());
-        for (int i = 0; i < 1000; ++i)
-            test_rotation_degrees(v3f{gen.get(), gen.get(), gen.get()});
-        for (f32 i = 0; i < 360; i += 90)
-        for (f32 j = 0; j < 360; j += 90)
-        for (f32 k = 0; k < 360; k += 90)
-            test_rotation_degrees({i, j, k});
-    }
+	auto test_rotation_degrees = [](v3f deg, v3f scale) {
+		matrix4 S;
+		S.setScale(scale);
+		matrix4 R;
+		R.setRotationDegrees(deg);
+		v3f rot = (R * S).getRotationDegrees();
+		matrix4 B;
+		B.setRotationDegrees(rot);
+		CHECK(matrix_equals(R, B));
+	};
+	SECTION("returns a rotation equivalent to the original rotation") {
+		test_rotation_degrees({100, 200, 300}, v3f(1));
+		Catch::Generators::RandomFloatingGenerator<f32> gen_angle(0, 360, Catch::getSeed());
+		Catch::Generators::RandomFloatingGenerator<f32> gen_scale(0.1f, 10, Catch::getSeed());
+		auto draw = [](auto gen) {
+			f32 f = gen.get();
+			gen.next();
+			return f;
+		};
+		auto draw_v3f = [&](auto gen) {
+			return v3f{draw(gen), draw(gen), draw(gen)};
+		};
+		for (int i = 0; i < 1000; ++i)
+			test_rotation_degrees(draw_v3f(gen_angle), draw_v3f(gen_scale));
+		for (f32 i = 0; i < 360; i += 90)
+		for (f32 j = 0; j < 360; j += 90)
+		for (f32 k = 0; k < 360; k += 90) {
+			for (int l = 0; l < 100; ++l) {
+				test_rotation_degrees({i, j, k}, draw_v3f(gen_scale));
+			}
+		}
+	}
 }
 
 }
