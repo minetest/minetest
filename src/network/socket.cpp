@@ -128,7 +128,8 @@ void UDPSocket::Bind(Address addr)
 		if (setsockopt(m_handle, IPPROTO_IPV6, IPV6_V6ONLY,
 				reinterpret_cast<char *>(&value), sizeof(value)) != 0) {
 			auto errmsg = SOCKET_ERR_STR(LAST_SOCKET_ERR());
-			errorstream << "Failed to disable V6ONLY: " << errmsg << std::endl;
+			errorstream << "Failed to disable V6ONLY: " << errmsg
+				<< "\nTry disabling ipv6_server to fix this." << std::endl;
 			throw SocketException(errmsg);
 		}
 	}
