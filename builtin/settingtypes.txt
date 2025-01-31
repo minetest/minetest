@@ -835,11 +835,12 @@ protocol_version_min (Protocol version minimum) int 1 1 65535
 #    Files that are not present will be fetched the usual way.
 remote_media (Remote media) string
 
-#    Enable/disable running an IPv6 server.
+#    Enable IPv6 support for server.
+#    Note that clients will be able to connect with both IPv4 and IPv6.
 #    Ignored if bind_address is set.
 #
 #    Requires: enable_ipv6
-ipv6_server (IPv6 server) bool false
+ipv6_server (IPv6 server) bool true
 
 [*Server Security]
 
