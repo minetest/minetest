@@ -607,6 +607,24 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		where the client made a bad prediction.
 	*/
 
+	auto mark_player_inv_list_dirty = [this](const InventoryLocation &loc,
+			const std::string &list_name) {
+
+		// Undo the client prediction of the affected list. See `clientApply`.
+		if (loc.type != InventoryLocation::PLAYER)
+			return;
+
+		Inventory *inv = m_inventory_mgr->getInventory(loc);
+		if (!inv)
+			return;
+
+		InventoryList *list = inv->getList(list_name);
+		if (!list)
+			return;
+
+		list->setModified(true);
+	};
+
 	const bool player_has_interact = checkPriv(player->getName(), "interact");
 
 	auto check_inv_access = [player, player_has_interact, this] (
@@ -651,8 +669,12 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		ma->to_inv.applyCurrentPlayer(player->getName());
 
 		m_inventory_mgr->setInventoryModified(ma->from_inv);
-		if (ma->from_inv != ma->to_inv)
+		mark_player_inv_list_dirty(ma->from_inv, ma->from_list);
+		bool inv_different = ma->from_inv != ma->to_inv;
+		if (inv_different)
 			m_inventory_mgr->setInventoryModified(ma->to_inv);
+		if (inv_different || ma->from_list != ma->to_list)
+			mark_player_inv_list_dirty(ma->to_inv, ma->to_list);
 
 		if (!check_inv_access(ma->from_inv) ||
 				!check_inv_access(ma->to_inv))
@@ -689,6 +711,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		da->from_inv.applyCurrentPlayer(player->getName());
 
 		m_inventory_mgr->setInventoryModified(da->from_inv);
+		mark_player_inv_list_dirty(da->from_inv, da->from_list);
 
 		/*
 			Disable dropping items out of craftpreview
@@ -721,6 +744,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		ca->craft_inv.applyCurrentPlayer(player->getName());
 
 		m_inventory_mgr->setInventoryModified(ca->craft_inv);
+		// Note: `ICraftAction::clientApply` is empty, thus nothing to revert.
 
 		// Disallow crafting if not allowed to interact
 		if (!player_has_interact) {
