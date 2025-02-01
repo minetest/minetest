@@ -164,7 +164,7 @@ bool Thread::wait()
 
 
 
-bool Thread::getReturnValue(void **ret)
+bool Thread::getReturnValue(void **ret) const
 {
 	if (m_running)
 		return false;
@@ -202,7 +202,7 @@ void Thread::threadProc(Thread *thr)
 }
 
 
-Thread *Thread::getCurrentThread()
+Thread const *Thread::getCurrentThread()
 {
 	return current_thread;
 }
@@ -326,7 +326,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 }
 
 
-bool Thread::setPriority(int prio)
+bool Thread::setPriority(int prio) const
 {
 #ifdef _WIN32
 
