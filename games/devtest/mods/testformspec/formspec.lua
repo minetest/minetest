@@ -518,6 +518,85 @@ mouse control = true]
 			background9[0,0;0,0;testformspec_bg_9slice.png;true;4,6]
 			background[1,1;0,0;testformspec_bg.png;true]
 		]],
+
+	-- Tooltip
+		[[
+			formspec_version[7]
+			size[12,13]
+			label[1,0.5;Hover a red box or a button for a tooltip.]
+
+			box[1,1;1,1;#ff000080]
+			tooltip[1,1;1,1;Normal tooltip in an area]
+
+			button[2.5,1;3,1;tt_btn;HOVERME]
+			tooltip[tt_btn;Normal tooltip on a button]
+
+			box[1,3;1,1;#ff000080]
+			box[2.4,3.4;0.2,0.2;#ffffff80]
+			supertip[1,3;1,1;2.5,3.5;18;supertip_static;<big>Simple supertip (<i>static</i>)</big>
+This one should always appear at the tiny white square.]
+
+			box[1,5;1,1;#ff000080]
+			supertip[1,5;1,1;;18;supertip_dynamic;<big>Simple supertip (<i>dynamic</i>)</big>
+This should appear at the cursor.]
+
+			button[2.5,5;3,1;st_btn;HOVERME]
+			supertip[st_btn;;18;supertip_dynamic_btn;<big>Simple supertip (<i>dynamic</i>)</big>
+This should appear at the cursor when hovering the button.]
+
+			box[1,7;1,1;#ff000080]
+			supertip[1,7;1,1;;18;supertip_dynamic_complex;]]..minetest.formspec_escape([[<big>Complex supertip (<i>dynamic</i>)</big>
+<img name=testformspec_node.png float=right width=64 height=64>
+<left>Left align</left>
+<center>Right align</center>
+<right>Right align</right>
+<b>Bold</b> <i>Italic</i> <u>Underline</u> <mono>Mono</mono>
+Item:
+<item name=testformspec:node>]]).."]"..
+[[
+			box[1,9;1,1;#ff000080]
+			supertip[1,9;1,1;;18;supertip_stone;]]..minetest.formspec_escape([[<global color=#333 background=#aaa margin=20>
+<item name=testformspec:node float=left width=64 height=64>
+<big><b><center>Formspec Test Node</center></b></big>
+The <b>Formspec Test Node</b> is a dummy node to display an item in the <mono>testformspec</mono> mod.
+
+• <b>Max. stack size:</b> 99
+• <b>Drops:</b> <i>itself</i> <item name=testformspec:node width=32 height=32>]]).."]"..
+[[
+
+			box[3,9;1,1;#ff000080]
+			supertip[3,9;1,1;;5;supertip_bgimg;This supertip has a width of 5em!]
+
+			box[4.5,9;1,1;#ff000080]
+			supertip[4.5,9;1,1;;10;supertip_bgimg;This supertip has a width of 10em!]
+
+			box[6,9;1,1;#ff000080]
+			supertip[6,9;1,1;;20;supertip_bgimg;This supertip has a width of 20em!]
+
+			box[7.5,9;1,1;#ff000080]
+			supertip[7.5,9;1,1;;50;supertip_bgimg;This supertip has a width of 50em!]
+
+
+			box[1,11;1,1;#ff000080]
+			style[supertip_bgimg;bgimg=testformspec_tooltip_style_bg.png;bgimg_middle=8]
+			supertip[1,11;1,1;;8;supertip_bgimg;This supertip is styled (bgimg)!]
+
+			box[2.5,11;1,1;#ff000080]
+			style[supertip_bgcolor;bgcolor=#444488]
+			supertip[2.5,11;1,1;;8;supertip_bgcolor;This supertip is styled (bgcolor)!]
+
+			box[4,11;1,1;#ff000080]
+			style[supertip_bgimgcolor;bgimg=testformspec_tooltip_style_bg.png;bgimg_middle=8;bgcolor=#444488]
+			supertip[4,11;1,1;;8;supertip_bgimgcolor;This supertip is styled (bgimg + bgcolor)!]
+
+			box[5.5,11;1,1;#ff000080]
+			style[supertip_noborder;border=false]
+			supertip[5.5,11;1,1;;8;supertip_noborder;This supertip is styled (no border)!]
+
+			box[7,11;1,1;#ff000080]
+			style[supertip_combined;bgimg=testformspec_tooltip_style_bg.png;bgimg_middle=8;bgcolor=#00000000;border=false]
+			supertip[7,11;1,1;;8;supertip_combined;This supertip is styled (bgimage, transparent bgcolor, no border)!]
+]]
 }
 
 local page_id = 2
@@ -527,7 +606,7 @@ local function show_test_formspec(pname)
 		page = page()
 	end
 
-	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Table,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized;" .. page_id .. ";false;false]"
+	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Table,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized,Tooltip;" .. page_id .. ";false;false]"
 
 	core.show_formspec(pname, "testformspec:formspec", fs)
 end
