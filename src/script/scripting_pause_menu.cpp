@@ -50,7 +50,7 @@ void PauseMenuScripting::initializeModApi(lua_State *L, int top)
 
 void PauseMenuScripting::loadBuiltin()
 {
-	loadMod(Client::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	loadScript(Client::getBuiltinLuaPath() + DIR_DELIM "init.lua");
 	checkSetByBuiltin();
 }
 
