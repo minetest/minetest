@@ -29,6 +29,7 @@
 #include "threading/mutex_auto_lock.h"
 #include "common/c_converter.h"
 #include "gui/guiOpenURL.h"
+#include "gettext.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, const std::string &name)
