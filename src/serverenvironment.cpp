@@ -43,7 +43,7 @@
 // A number that is much smaller than the timeout for particle spawners should/could ever be
 #define PARTICLE_SPAWNER_NO_EXPIRY -1024.f
 
-#define ACTIVE_OBJECT_RESAVE_DISTANCE_SQ 2 * 2
+static constexpr s16 ACTIVE_OBJECT_RESAVE_DISTANCE_SQ = 3 * 3;
 
 /*
 	ABMWithState
