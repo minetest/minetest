@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "irrlichttypes_bloated.h"
 #include "map.h"
 #include "camera.h"
 #include <set>
