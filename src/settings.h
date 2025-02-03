@@ -6,6 +6,7 @@
 
 #include "util/string.h"
 #include "util/basic_macros.h"
+#include "irr_v2d.h"
 #include <string>
 #include <set>
 #include <map>
