@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "irrlichttypes_bloated.h"
 #include "util/string.h"
 #include "util/basic_macros.h"
 #include <string>
