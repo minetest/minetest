@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2025-01-08 20:00+0000\n"
-"Last-Translator: mineplayer <realmineplayer@users.noreply.hosted.weblate.org>"
-"\n"
+"PO-Revision-Date: 2025-02-05 11:03+0000\n"
+"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -33,7 +32,7 @@ msgstr "Ungültiger Befehl: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "Gegebener Befehl: "
+msgstr "Befehl gegeben: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
@@ -1736,7 +1735,7 @@ msgstr "Untbr-Taste"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
-msgstr "Feststellt."
+msgstr "Feststell"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
