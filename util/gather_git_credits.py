@@ -6,7 +6,7 @@ from collections import defaultdict
 codefiles = r"(\.[ch](pp)?|\.lua|\.md|\.cmake|\.java|\.gradle|Makefile|CMakeLists\.txt)$"
 
 # two minor versions back, for "Active Contributors"
-REVS_ACTIVE = "5.8.0..HEAD"
+REVS_ACTIVE = "5.9.0..HEAD"
 # all time, for "Previous Contributors"
 REVS_PREVIOUS = "HEAD"
 
@@ -27,7 +27,7 @@ def load(revs):
 		p2 = subprocess.Popen(["git", "show", "--numstat", "--pretty=format:", hash],
 			stdout=subprocess.PIPE, universal_newlines=True)
 		for line in p2.stdout:
-			added, deleted, filename = re.split(r"\s+", line.strip(), 2)
+			added, deleted, filename = re.split(r"\s+", line.strip(), maxsplit=2)
 			if re.search(codefiles, filename) and added != "-":
 				n += int(added)
 		p2.wait()
