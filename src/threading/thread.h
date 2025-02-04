@@ -123,7 +123,7 @@ public:
 	/*
 	 * Returns the thread object of the current thread if it exists.
 	 */
-	static const Thread *getCurrentThread();
+	static Thread *getCurrentThread();
 
 	/*
 	 * Sets the currently executing thread's name to where supported; useful

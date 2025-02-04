@@ -202,7 +202,7 @@ void Thread::threadProc(Thread *thr)
 }
 
 
-Thread const *Thread::getCurrentThread()
+Thread *Thread::getCurrentThread()
 {
 	return current_thread;
 }
