@@ -458,15 +458,28 @@ do
 end
 
 --------------------------------------------------------------------------------
-function table.copy(t, seen)
-	local n = {}
-	seen = seen or {}
-	seen[t] = n
-	for k, v in pairs(t) do
-		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
-			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
+
+function table.copy(t, preserve_metatables)
+	local seen = {}
+	local function copy(value)
+		if type(value) ~= "table" then
+			return value
+		end
+		local t = value
+		if seen[t] then
+			return seen[t]
+		end
+		local res = {}
+		seen[t] = res
+		for k, v in pairs(t) do
+			res[copy(k)] = copy(v)
+		end
+		if preserve_metatables then
+			setmetatable(res, getmetatable(t))
+		end
+		return res
 	end
-	return n
+	return copy(t)
 end
 
 

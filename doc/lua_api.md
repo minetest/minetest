@@ -4140,8 +4140,10 @@ Helper functions
     * returns true when the passed number represents NaN.
 * `core.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
-* `table.copy(table)`: returns a table
+* `table.copy(table, preserve_metatables)`: returns a table
     * returns a deep copy of `table`
+    * `preserve_metatables`: whether to preserve metatables as they are,
+      currently `false` by default, but this may change in the future.
 * `table.indexof(list, val)`: returns the smallest numerical index containing
       the value `val` in the table `list`. Non-numerical indices are ignored.
       If `val` could not be found, `-1` is returned. `list` must not have

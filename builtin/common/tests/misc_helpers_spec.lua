@@ -178,6 +178,29 @@ describe("table", function()
 		assert.equal(2, table.keyof({[2] = "foo", [3] = "bar"}, "foo"))
 		assert.equal(3, table.keyof({[1] = "foo", [3] = "bar"}, "bar"))
 	end)
+
+	describe("copy", function()
+		local v = vector.new(1, 2, 3)
+		it("strips metatables by default", function()
+			local w = table.copy(v)
+			assert.are_not.equal(v, w)
+			assert.same(v, w)
+			assert.equal(nil, getmetatable(w))
+		end)
+		it("preserves metatables if asked to", function()
+			local w = table.copy(v, true)
+			assert.equal(getmetatable(v), getmetatable(w))
+			assert(vector.check(w))
+			assert.equal(v, w) -- vector overrides ==
+		end)
+		it("preserves referential structure", function()
+			local t = {{}, {}}
+			t[1][1] = t[2]
+			t[2][1] = t[1]
+			local copy = table.copy(t)
+			assert.same(t, copy)
+		end)
+	end)
 end)
 
 describe("formspec_escape", function()
