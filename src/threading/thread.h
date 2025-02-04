@@ -118,7 +118,7 @@ public:
 	 * scheduling algorithm to one that supports thread priorities if not
 	 * supported by default, otherwise this call will have no effect.
 	 */
-	bool setPriority(int prio) const;
+	bool setPriority(int prio);
 
 	/*
 	 * Returns the thread object of the current thread if it exists.

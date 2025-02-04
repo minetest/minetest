@@ -326,7 +326,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 }
 
 
-bool Thread::setPriority(int prio) const
+bool Thread::setPriority(int prio)
 {
 #ifdef _WIN32
 
