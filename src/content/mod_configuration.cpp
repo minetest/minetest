@@ -154,7 +154,7 @@ void ModConfiguration::addModsFromConfig(
 					candidates[pair->first].emplace_back(mod.virtual_path);
 				}
 			} else {
-				conf.setBool("load_mod_" + mod.name, false);
+				conf.remove("load_mod_" + mod.name);
 			}
 		}
 	}
