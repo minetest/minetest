@@ -109,7 +109,7 @@ local function load()
 	local change_keys = {
 		query_text = "Controls",
 		requires = {
-			touch_controls = false,
+			keyboard_mouse = true,
 		},
 		get_formspec = function(self, avail_w)
 			local btn_w = math.min(avail_w, 3)
@@ -377,6 +377,9 @@ local function check_requirements(name, requires)
 			local required_setting = get_setting_info(req_key)
 			if required_setting == nil then
 				core.log("warning", "Unknown setting " .. req_key .. " required by " .. (name or "???"))
+			elseif required_setting.type ~= "bool" then
+				core.log("warning", "Setting " .. req_key .. " of type " .. required_setting.type ..
+					" used as requirement by " .. (name or "???") .. ", only bool is allowed")
 			end
 			local actual_value = core.settings:get_bool(req_key,
 				required_setting and core.is_yes(required_setting.default))
