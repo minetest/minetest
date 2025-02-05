@@ -158,7 +158,7 @@ void set_default_settings()
 	USEKEY2("keymap_minimap", "<25>", "KEY_KEY_V");
 	USEKEY2("keymap_console", "<67>", "KEY_F10");
 
-	// See https://github.com/minetest/minetest/issues/12792
+	// see <https://github.com/luanti-org/luanti/issues/12792>
 	USEKEY2("keymap_rangeselect", has_touch ? "<21>" : "", has_touch ? "KEY_KEY_R" : "");
 
 	USEKEY2("keymap_freemove", "<14>", "KEY_KEY_K");
@@ -232,7 +232,6 @@ void set_default_settings()
 	settings->setDefault("keymap_quicktune_dec", "");
 	settings->setDefault("keymap_quicktune_inc", "");
 #endif
-#undef USEKEY
 #undef USEKEY2
 
 	// Visuals
