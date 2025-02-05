@@ -457,15 +457,14 @@ do
 	end
 end
 
---------------------------------------------------------------------------------
 
-function table.copy(t, preserve_metatables)
+function table.copy(value, preserve_metatables)
 	local seen = {}
-	local function copy(value)
-		if type(value) ~= "table" then
-			return value
+	local function copy(val)
+		if type(val) ~= "table" then
+			return val
 		end
-		local t = value
+		local t = val
 		if seen[t] then
 			return seen[t]
 		end
@@ -479,7 +478,7 @@ function table.copy(t, preserve_metatables)
 		end
 		return res
 	end
-	return copy(t)
+	return copy(value)
 end
 
 
