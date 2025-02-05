@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2025-01-15 05:00+0000\n"
-"Last-Translator: Yof <Yof@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2025-02-05 11:03+0000\n"
+"Last-Translator: Тарас Арт <fromkaniv@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -178,7 +178,7 @@ msgstr "Завантаження..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Featured"
-msgstr "Рекомендоване"
+msgstr "Рекомендовано"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -693,7 +693,7 @@ msgstr "Назва відсутня"
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr "Ім'я"
+msgstr "Назва"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -706,7 +706,7 @@ msgstr "Паролі не збігаються"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr "Реєстрація"
+msgstr "Зареєструватися"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
@@ -4501,7 +4501,7 @@ msgstr "Поріг озер"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr "Мова"
+msgstr "Мови"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
