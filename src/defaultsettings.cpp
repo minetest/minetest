@@ -404,7 +404,7 @@ void set_default_settings()
 #endif
 
 #if ENABLE_UPDATE_CHECKER
-	settings->setDefault("update_information_url", "https://www.minetest.net/release_info.json");
+	settings->setDefault("update_information_url", "https://www.luanti.org/release_info.json");
 #else
 	settings->setDefault("update_information_url", "");
 #endif

@@ -751,7 +751,7 @@
 #    URL to JSON file which provides information about the newest Luanti release.
 #    If this is empty the engine will never check for updates.
 #    type: string
-# update_information_url = https://www.minetest.net/release_info.json
+# update_information_url = https://www.luanti.org/release_info.json
 
 ## Server
 

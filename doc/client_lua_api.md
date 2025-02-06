@@ -5,7 +5,7 @@ Luanti Lua Client Modding API Reference 5.11.0
 it's now called `core` due to the renaming of Luanti (formerly Minetest).
 `minetest` will keep existing as an alias, so that old code won't break.
 
-* More information at <http://www.minetest.net/>
+* More information at <http://www.luanti.org/>
 * Developer Wiki: <https://dev.luanti.org/>
 
 Introduction
