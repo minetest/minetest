@@ -70,7 +70,7 @@ local old_get_all_craft_recipes = core.get_all_craft_recipes
 function core.get_all_craft_recipes(...)
 	core.log("deprecated", "core.get_all_craft_recipes " ..
 		"is deprecated, use core.registered_crafts instead.")
-	old_get_all_craft_recipes(...)
+	return old_get_all_craft_recipes(...)
 end
 
 --
@@ -81,7 +81,7 @@ local old_get_craft_recipe = core.get_craft_recipe
 function core.get_craft_recipe(...)
 	core.log("deprecated", "core.get_craft_recipe " ..
 		"is deprecated, use core.registered_crafts instead.")
-	old_get_craft_recipe(...)
+	return old_get_craft_recipe(...)
 end
 
 --
@@ -92,5 +92,5 @@ local old_get_craft_result = core.get_craft_result
 function core.get_craft_result(...)
 	core.log("deprecated", "core.get_craft_result " ..
 		"is deprecated, use core.registered_crafts instead.")
-	old_get_craft_result(...)
+	return old_get_craft_result(...)
 end
