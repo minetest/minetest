@@ -26,6 +26,7 @@ core.registered_nodes = {}
 core.registered_craftitems = {}
 core.registered_tools = {}
 core.registered_aliases = {}
+core.registered_crafts = {}
 
 -- For tables that are indexed by item name:
 -- If table[X] does not exist, default to table[core.registered_aliases[X]]
@@ -318,6 +319,12 @@ function core.register_alias_force(name, convert_to)
 	--core.log("Registering alias: " .. name .. " -> " .. convert_to)
 	core.registered_aliases[name] = convert_to
 	register_alias_raw(name, convert_to)
+end
+
+local old_register_craft = core.register_craft
+function core.register_craft(recipe)
+    table.insert(core.registered_crafts, recipe)
+    old_register_craft(recipe)
 end
 
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
