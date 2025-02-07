@@ -323,8 +323,8 @@ end
 
 local old_register_craft = core.register_craft
 function core.register_craft(recipe)
-    table.insert(core.registered_crafts, recipe)
-    old_register_craft(recipe)
+	table.insert(core.registered_crafts, recipe)
+	old_register_craft(recipe)
 end
 
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
