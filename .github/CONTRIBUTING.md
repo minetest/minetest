@@ -76,7 +76,7 @@ If you experience an issue, we would like to know the details - especially when
 a stable release is on the way.
 
 1. Do a quick search on GitHub to check if the issue has already been reported.
-2. Is it an issue with the Minetest *engine*? If not, report it
+2. Is it an issue with the Luanti *engine*? If not, report it
    [elsewhere](http://www.luanti.org/development/#reporting-issues).
 3. [Open an issue](https://github.com/luanti-org/luanti/issues/new) and describe
    the issue you are having - you could include:
