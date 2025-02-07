@@ -323,7 +323,20 @@ end
 
 local old_register_craft = core.register_craft
 function core.register_craft(recipe)
-	table.insert(core.registered_crafts, recipe)
+	local name = recipe.output
+	if not name then
+		if recipe.type ~= "fuel" then
+			name = recipe.type
+		else
+			name = recipe.recipe
+		end
+	else
+		name = ItemStack(name):get_name()
+	end
+	if not core.registered_crafts[name] then
+		core.registered_crafts[name] = {}
+	end
+	table.insert(core.registered_crafts[name], recipe)
 	old_register_craft(recipe)
 end
 
