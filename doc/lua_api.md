@@ -5690,7 +5690,7 @@ Utilities
       -- Particles can specify a "clip" blend mode (5.11.0)
       particle_blend_clip = true,
       -- objects have get_guid method (5.12.0)
-      have_guids = true,
+      object_guids = true,
   }
   ```
 
@@ -7671,8 +7671,6 @@ Global tables
     * Values in this table may be modified directly.
       Note: changes to initial properties will only affect entities spawned afterwards,
       as they are only read when spawning.
-* `core.object_refs`
-    * Map of object references, indexed by active object id
 * `core.objects_by_guid`
     * Map of object references, indexed by active object GUID
 * `core.luaentities`
