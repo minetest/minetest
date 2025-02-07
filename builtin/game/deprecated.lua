@@ -61,3 +61,36 @@ function core.register_on_auth_fail(func)
 		end
 	end)
 end
+
+--
+-- core.get_all_craft_recipes
+--
+
+local old_get_all_craft_recipes = core.get_all_craft_recipes
+function core.get_all_craft_recipes(...)
+	core.log("deprecated", "core.get_all_craft_recipes " ..
+		"is deprecated, use core.registered_crafts instead.")
+	old_get_all_craft_recipes(...)
+end
+
+--
+-- core.get_craft_recipe
+--
+
+local old_get_craft_recipe = core.get_craft_recipe
+function core.get_craft_recipe(...)
+	core.log("deprecated", "core.get_craft_recipe " ..
+		"is deprecated, use core.registered_crafts instead.")
+	old_get_craft_recipe(...)
+end
+
+--
+-- core.get_craft_result
+--
+
+local old_get_craft_result = core.get_craft_result
+function core.get_craft_result(...)
+	core.log("deprecated", "core.get_craft_result " ..
+		"is deprecated, use core.registered_crafts instead.")
+	old_get_craft_result(...)
+end
