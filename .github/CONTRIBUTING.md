@@ -25,7 +25,7 @@ Contributions are welcome! Here's how you can help:
    the work, to avoid disappointment.
 
    You may also benefit from discussing on our IRC development channel
-   [#minetest-dev](http://www.luanti.org/irc/). Note that a proper IRC client
+   [#luanti-dev](http://www.luanti.org/irc/). Note that a proper IRC client
    is required to speak on this channel.
 
 3. Start coding!
