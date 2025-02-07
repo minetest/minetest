@@ -487,6 +487,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			end
 			if event.type == "CHG" then
 				set_selected_server(server)
+				pre_search_selection = nil
 				return true
 			end
 		end
