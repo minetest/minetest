@@ -340,6 +340,24 @@ function core.register_craft(recipe)
 	old_register_craft(recipe)
 end
 
+local old_clear_craft = core.clear_craft
+function core.clear_craft(recipe)
+	local name = recipe.output
+	local pos
+	for i, def in pairs(core.registered_crafts[name]) do
+		if dump(def) == dump(recipe) or ((def.output and recipe.output and def.output == recipe.output) and def.recipe == recipe.recipe) then
+			pos = i
+		end
+	end
+	if pos then
+		core.registered_crafts[name][pos] = nil
+		if #core.registered_crafts[name] == 0 then
+			core.registered_crafts[name] = nil
+		end
+	end
+	old_clear_craft(recipe)
+end
+
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
 		-- cast to ItemStack since func() could return a string
