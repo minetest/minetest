@@ -30,6 +30,12 @@ protected:
 	// Open and initialize the database if needed (not thread-safe)
 	void verifyDatabase();
 
+	// Check if a specific table exists
+	bool checkTable(const char *table);
+
+	// Check if a table has a specific column
+	bool checkColumn(const char *table, const char *column);
+
 	/* Value conversion helpers */
 
 	inline void str_to_sqlite(sqlite3_stmt *s, int iCol, std::string_view str) const
@@ -172,9 +178,12 @@ protected:
 	virtual void initStatements();
 
 private:
-	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index = 1);
+	/// @brief Bind block position into statement at column index
+	/// @return index of next column after position
+	int bindPos(sqlite3_stmt *stmt, v3s16 pos, int index = 1);
 
-	// Map
+	bool m_new_format = false;
+
 	sqlite3_stmt *m_stmt_read = nullptr;
 	sqlite3_stmt *m_stmt_write = nullptr;
 	sqlite3_stmt *m_stmt_list = nullptr;
