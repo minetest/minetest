@@ -342,7 +342,11 @@ end
 
 local old_clear_craft = core.clear_craft
 function core.clear_craft(recipe)
-	local name = recipe.output
+	local name = recipe.output or ""
+	if not core.registered_crafts[name] then
+		old_clear_craft(recipe)
+		return
+	end
 	local pos
 	for i, def in pairs(core.registered_crafts[name]) do
 		if dump(def) == dump(recipe) or
