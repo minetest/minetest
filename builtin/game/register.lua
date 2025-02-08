@@ -345,7 +345,9 @@ function core.clear_craft(recipe)
 	local name = recipe.output
 	local pos
 	for i, def in pairs(core.registered_crafts[name]) do
-		if dump(def) == dump(recipe) or ((def.output and recipe.output and def.output == recipe.output) and def.recipe == recipe.recipe) then
+		if dump(def) == dump(recipe) or
+				((def.output and recipe.output and def.output == recipe.output)
+				and def.recipe == recipe.recipe) then
 			pos = i
 		end
 	end
