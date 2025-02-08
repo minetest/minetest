@@ -852,6 +852,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 			m_sound->playSoundAt(client_id, spec, pos, vel);
 			break;
 		}
+		[[fallthrough]];
 	}
 	default:
 		// Unknown SoundLocation, instantly remove sound
