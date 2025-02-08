@@ -2,14 +2,6 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
-/*
-SQLite format specification:
-	blocks:
-		(PK) INT id
-		BLOB data
-*/
-
-
 #include "database-sqlite3.h"
 
 #include "log.h"
@@ -167,6 +159,43 @@ void Database_SQLite3::verifyDatabase()
 	m_initialized = true;
 }
 
+bool Database_SQLite3::checkTable(const char *table)
+{
+	assert(m_database);
+
+	// PRAGMA table_list would be cleaner here but it was only introduced in
+	// sqlite 3.37.0 (2021-11-27).
+	// So let's do this: https://stackoverflow.com/a/83195
+
+	sqlite3_stmt *m_stmt_tmp = nullptr;
+	PREPARE_STATEMENT(tmp, "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?;");
+	str_to_sqlite(m_stmt_tmp, 1, table);
+
+	bool ret = (sqlite3_step(m_stmt_tmp) == SQLITE_ROW);
+
+	FINALIZE_STATEMENT(tmp)
+	return ret;
+}
+
+bool Database_SQLite3::checkColumn(const char *table, const char *column)
+{
+	assert(m_database);
+
+	sqlite3_stmt *m_stmt_tmp = nullptr;
+	auto query_str = std::string("PRAGMA table_info(").append(table).append(");");
+	PREPARE_STATEMENT(tmp, query_str.c_str());
+
+	bool ret = false;
+	while (sqlite3_step(m_stmt_tmp) == SQLITE_ROW) {
+		ret |= sqlite_to_string_view(m_stmt_tmp, 1) == column;
+		if (ret)
+			break;
+	}
+
+	FINALIZE_STATEMENT(tmp)
+	return ret;
+}
+
 Database_SQLite3::~Database_SQLite3()
 {
 	FINALIZE_STATEMENT(begin)
@@ -198,26 +227,57 @@ void MapDatabaseSQLite3::createDatabase()
 {
 	assert(m_database);
 
-	SQLOK(sqlite3_exec(m_database,
+	// Note: before 5.12.0 the format was blocks(pos INT, data BLOB).
+	// This function only runs for newly created databases.
+
+	const char *schema =
 		"CREATE TABLE IF NOT EXISTS `blocks` (\n"
-			"	`pos` INT PRIMARY KEY,\n"
-			"	`data` BLOB\n"
-			");\n",
-		NULL, NULL, NULL),
+			"`x` INTEGER,"
+			"`y` INTEGER,"
+			"`z` INTEGER,"
+			"`data` BLOB NOT NULL,"
+			// Declaring a primary key automatically creates an index and the
+			// order largely dictates which range operations can be sped up.
+			// see also: <https://www.sqlite.org/optoverview.html#skipscan>
+			// Putting XZ before Y matches our MapSector abstraction.
+			"PRIMARY KEY (`x`, `z`, `y`)"
+		");\n"
+	;
+	SQLOK(sqlite3_exec(m_database, schema, NULL, NULL, NULL),
 		"Failed to create database table");
 }
 
 void MapDatabaseSQLite3::initStatements()
 {
-	PREPARE_STATEMENT(read, "SELECT `data` FROM `blocks` WHERE `pos` = ? LIMIT 1");
-	PREPARE_STATEMENT(write, "REPLACE INTO `blocks` (`pos`, `data`) VALUES (?, ?)");
-	PREPARE_STATEMENT(delete, "DELETE FROM `blocks` WHERE `pos` = ?");
-	PREPARE_STATEMENT(list, "SELECT `pos` FROM `blocks`");
+	assert(checkTable("blocks"));
+	m_new_format = checkColumn("blocks", "z");
+	infostream << "MapDatabaseSQLite3: split column format = "
+		<< (m_new_format ? "yes" : "no") << std::endl;
+
+	if (m_new_format) {
+		PREPARE_STATEMENT(read, "SELECT `data` FROM `blocks` WHERE `x` = ? AND `y` = ? AND `z` = ? LIMIT 1");
+		PREPARE_STATEMENT(write, "REPLACE INTO `blocks` (`x`, `y`, `z`, `data`) VALUES (?, ?, ?, ?)");
+		PREPARE_STATEMENT(delete, "DELETE FROM `blocks` WHERE `x` = ? AND `y` = ? AND `z` = ?");
+		PREPARE_STATEMENT(list, "SELECT `x`, `y`, `z` FROM `blocks`");
+	} else {
+		PREPARE_STATEMENT(read, "SELECT `data` FROM `blocks` WHERE `pos` = ? LIMIT 1");
+		PREPARE_STATEMENT(write, "REPLACE INTO `blocks` (`pos`, `data`) VALUES (?, ?)");
+		PREPARE_STATEMENT(delete, "DELETE FROM `blocks` WHERE `pos` = ?");
+		PREPARE_STATEMENT(list, "SELECT `pos` FROM `blocks`");
+	}
 }
 
-inline void MapDatabaseSQLite3::bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index)
+inline int MapDatabaseSQLite3::bindPos(sqlite3_stmt *stmt, v3s16 pos, int index)
 {
-	int64_to_sqlite(stmt, index, getBlockAsInteger(pos));
+	if (m_new_format) {
+		int_to_sqlite(stmt, index, pos.X);
+		int_to_sqlite(stmt, index + 1, pos.Y);
+		int_to_sqlite(stmt, index + 2, pos.Z);
+		return index + 3;
+	} else {
+		int64_to_sqlite(stmt, index, getBlockAsInteger(pos));
+		return index + 1;
+	}
 }
 
 bool MapDatabaseSQLite3::deleteBlock(const v3s16 &pos)
@@ -240,8 +300,8 @@ bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, std::string_view data)
 {
 	verifyDatabase();
 
-	bindPos(m_stmt_write, pos);
-	blob_to_sqlite(m_stmt_write, 2, data);
+	int col = bindPos(m_stmt_write, pos);
+	blob_to_sqlite(m_stmt_write, col, data);
 
 	SQLRES(sqlite3_step(m_stmt_write), SQLITE_DONE, "Failed to save block")
 	sqlite3_reset(m_stmt_write);
@@ -271,8 +331,17 @@ void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
 	verifyDatabase();
 
-	while (sqlite3_step(m_stmt_list) == SQLITE_ROW)
-		dst.push_back(getIntegerAsBlock(sqlite3_column_int64(m_stmt_list, 0)));
+	v3s16 p;
+	while (sqlite3_step(m_stmt_list) == SQLITE_ROW) {
+		if (m_new_format) {
+			p.X = sqlite_to_int(m_stmt_list, 0);
+			p.Y = sqlite_to_int(m_stmt_list, 1);
+			p.Z = sqlite_to_int(m_stmt_list, 2);
+		} else {
+			p = getIntegerAsBlock(sqlite_to_int64(m_stmt_list, 0));
+		}
+		dst.push_back(p);
+	}
 
 	sqlite3_reset(m_stmt_list);
 }
