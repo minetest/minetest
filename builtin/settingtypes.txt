@@ -538,8 +538,8 @@ shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
 #    Requires: enable_dynamic_shadows, opengl
 shadow_filters (Shadow filter quality) enum 1 0,1,2
 
-#    Enable colored shadows.
-#    On true translucent nodes cast colored shadows. This is expensive.
+#    Enable colored shadows for transculent nodes.
+#    This is expensive.
 #
 #    Requires: enable_dynamic_shadows, opengl
 shadow_map_color (Colored shadows) bool false
@@ -760,8 +760,8 @@ enable_local_map_saving (Saving map received from server) bool false
 #    URL to the server list displayed in the Multiplayer Tab.
 serverlist_url (Serverlist URL) string https://servers.luanti.org
 
-#    If enabled, account registration is separate from login in the UI.
-#    If disabled, new accounts will be registered automatically when logging in.
+#    If enabled, server account registration is separate from login in the UI.
+#    If disabled, connecting to a server will automatically register a new account.
 enable_split_login_register (Enable split login/register) bool true
 
 #    URL to JSON file which provides information about the newest Luanti release.
@@ -771,7 +771,7 @@ update_information_url (Update information URL) string https://www.luanti.org/re
 [*Server]
 
 #    Name of the player.
-#    When running a server, clients connecting with this name are admins.
+#    When running a server, a client connecting with this name is admin.
 #    When starting from the main menu, this is overridden.
 name (Admin name) string
 
@@ -837,7 +837,8 @@ remote_media (Remote media) string
 
 #    Enable/disable running an IPv6 server.
 #    Ignored if bind_address is set.
-#    Needs enable_ipv6 to be enabled.
+#
+#    Requires: enable_ipv6
 ipv6_server (IPv6 server) bool false
 
 [*Server Security]
@@ -1881,8 +1882,8 @@ texture_min_size (Base texture size) int 64 1 32768
 client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
 #    Decide the color depth of the texture used for the post-processing pipeline.
-#    Reducing this can improve performance, but might cause some effects (e.g. bloom)
-#    to not work.
+#    Reducing this can improve performance, but some effects (e.g. debanding)
+#    require more than 8 bits to work.
 #
 #    Requires: enable_post_processing
 post_processing_texture_bits (Color depth for post-processing texture) enum 16 8,10,16
@@ -1893,10 +1894,9 @@ post_processing_texture_bits (Color depth for post-processing texture) enum 16 8
 #    Requires: enable_dynamic_shadows, opengl
 shadow_poisson_filter (Poisson filtering) bool true
 
-#    Spread a complete update of shadow map over given number of frames.
+#    Spread a complete update of the shadow map over a given number of frames.
 #    Higher values might make shadows laggy, lower values
 #    will consume more resources.
-#    Minimum value: 1; maximum value: 16
 #
 #    Requires: enable_dynamic_shadows, opengl
 shadow_update_frames (Map shadows update frames) int 16 1 32
