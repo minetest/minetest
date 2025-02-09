@@ -5580,7 +5580,7 @@ Utilities
     * It's possible that multiple Luanti instances are running at the same
       time, which may lead to corruption if you are not careful.
 * `core.is_singleplayer()`
-* `core.features`: Table containing API feature flags
+* `core.features`: Table containing *server-side* API feature flags
 
   ```lua
   {
@@ -5695,6 +5695,7 @@ Utilities
   ```
 
 * `core.has_feature(arg)`: returns `boolean, missing_features`
+    * checks for *server-side* feature availability
     * `arg`: string or table in format `{foo=true, bar=true}`
     * `missing_features`: `{foo=true, bar=true}`
 * `core.get_player_information(player_name)`: Table containing information
