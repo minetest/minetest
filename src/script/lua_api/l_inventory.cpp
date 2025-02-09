@@ -330,7 +330,7 @@ int InvRef::l_contains_item(lua_State *L)
 	return 1;
 }
 
-// remove_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
+// remove_item(self, listname, itemstack or itemstring or table or nil, [match_meta]) -> itemstack
 // Returns the items that were actually removed
 int InvRef::l_remove_item(lua_State *L)
 {
@@ -339,8 +339,11 @@ int InvRef::l_remove_item(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	ItemStack item = read_item(L, 3, getServer(L)->idef());
 	InventoryList *list = getlist(L, ref, listname);
+	bool match_meta = false;
+	if (lua_isboolean(L, 4))
+		match_meta = readParam<bool>(L, 4);
 	if(list){
-		ItemStack removed = list->removeItem(item);
+		ItemStack removed = list->removeItem(item, match_meta);
 		if(!removed.empty())
 			reportInventoryChange(L, ref);
 		LuaItemStack::create(L, removed);
