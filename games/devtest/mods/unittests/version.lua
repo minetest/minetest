@@ -14,8 +14,25 @@ unittests.register("test_get_version", function()
 	end
 end)
 
-unittests.register("test_protocol_versions", function(player)
+unittests.register("test_protocol_version", function(player)
 	local info = core.get_player_information(player:get_player_name())
-	-- Newest protocol version should be in mapping of protocol versions
-	assert(table.key_value_swap(core.protocol_versions)[info.protocol_version])
+
+	local maxver = 0
+	for _, v in pairs(core.protocol_versions) do
+		maxver = math.max(maxver, v)
+	end
+	assert(maxver > 0) -- table must contain something valid
+
+	-- If the client is older than a known version then it's pointless.
+	if info.protocol_version < maxver then
+		core.log("warning", "test_protocol_version: client is outdated, skipping test!")
+		return
+	elseif info.version_string ~= core.get_version().string then
+		core.log("warning", "test_protocol_version: client is not the same version. False-positive possible.")
+	end
+
+	-- The protocol version the client and server agreed on must exist in the table.
+	local match = table.key_value_swap(core.protocol_versions)[info.protocol_version]
+	assert(match ~= nil)
+	print(string.format("client proto matched: %s sent: %s", match, info.version_string))
 end, {player = true})
