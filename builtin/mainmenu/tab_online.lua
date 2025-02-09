@@ -190,10 +190,10 @@ local function get_formspec(tabview, name, tabdata)
 			local max_clients = 5
 			if #clients_list > max_clients then
 				retval = retval .. "tooltip[btn_view_clients;" ..
-						fgettext("Clients:\n$1", table.concat(clients_list, "\n", 1, max_clients)) .. "\n..." .. "]"
+						fgettext("Players:\n$1", table.concat(clients_list, "\n", 1, max_clients)) .. "\n..." .. "]"
 			else
 				retval = retval .. "tooltip[btn_view_clients;" ..
-						fgettext("Clients:\n$1", table.concat(clients_list, "\n")) .. "]"
+						fgettext("Players:\n$1", table.concat(clients_list, "\n")) .. "]"
 			end
 			retval = retval .. "style[btn_view_clients;padding=6]"
 			retval = retval .. "image_button[4.5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
