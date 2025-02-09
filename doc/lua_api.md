@@ -5722,8 +5722,8 @@ Utilities
       -- or inconsistent in engine forks. You must not use this for checking
       -- feature availability of clients. Instead, do use the fields
       -- `protocol_version` and `formspec_version` where it matters.
-      -- You can use `core.protocol_versions` to map Luanti versions to protocol versions.
-      -- This version string may only be used for analysis purposes.
+      -- Use `core.protocol_versions` to map Luanti versions to protocol versions.
+      -- This version string is only suitable for analysis purposes.
       version_string = "0.4.9-git",   -- full version string
 
       -- the following information is available in a debug build only!!!
@@ -5737,12 +5737,11 @@ Utilities
   ```
 
 * `core.protocol_versions`:
-  * Table mapping minor Luanti 5.x versions to
-    corresponding protocol versions for modder convenience.
+  * Table mapping Luanti versions to corresponding protocol versions for modder convenience.
   * For example, to check whether a client has at least the feature set
     of Luanti 5.8.0 or newer, you could do:
     `core.get_player_information(player_name).protocol_version >= core.protocol_versions["5.8.0"]`
-  * Available since 5.11
+  * (available since 5.11)
 
   ```lua
   {

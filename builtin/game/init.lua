@@ -8,7 +8,6 @@ local gamepath   = scriptpath .. "game".. DIR_DELIM
 local builtin_shared = {}
 
 dofile(gamepath .. "constants.lua")
-dofile(gamepath .. "protocol_versions.lua")
 assert(loadfile(commonpath .. "item_s.lua"))(builtin_shared)
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)
 assert(loadfile(commonpath .. "register.lua"))(builtin_shared)

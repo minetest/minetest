@@ -239,7 +239,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushstring(L, info.lang_code.c_str());
 	lua_settable(L, table);
 
-	lua_pushstring(L,"version_string");
+	lua_pushstring(L, "version_string");
 	lua_pushstring(L, info.vers_string.c_str());
 	lua_settable(L, table);
 
