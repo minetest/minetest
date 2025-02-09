@@ -27,7 +27,9 @@ unittests.register("test_protocol_version", function(player)
 	if info.protocol_version < maxver then
 		core.log("warning", "test_protocol_version: client is outdated, skipping test!")
 		return
-	elseif info.version_string ~= core.get_version().string then
+	end
+	local info_server = core.get_version()
+	if info.version_string ~= (info_server.hash or info_server.string) then
 		core.log("warning", "test_protocol_version: client is not the same version. False-positive possible.")
 	end
 
