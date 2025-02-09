@@ -339,9 +339,7 @@ int InvRef::l_remove_item(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	ItemStack item = read_item(L, 3, getServer(L)->idef());
 	InventoryList *list = getlist(L, ref, listname);
-	bool match_meta = false;
-	if (lua_isboolean(L, 4))
-		match_meta = readParam<bool>(L, 4);
+	bool match_meta = readParam<bool>(L, 4, false);
 	if(list){
 		ItemStack removed = list->removeItem(item, match_meta);
 		if(!removed.empty())
