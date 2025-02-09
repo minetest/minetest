@@ -5740,9 +5740,18 @@ Utilities
   * Table mapping minor Luanti 5.x versions to
     corresponding protocol versions for modder convenience.
   * For example, to check whether a client has at least the feature set
-    of Luanti 5.8 or newer, you could do:
-    `core.get_player_information(player_name).protocol_version >= core.protocol_versions["5.8"]`
+    of Luanti 5.8.0 or newer, you could do:
+    `core.get_player_information(player_name).protocol_version >= core.protocol_versions["5.8.0"]`
   * Available since 5.11
+
+  ```lua
+  {
+      [version string] = protocol version at time of release
+      -- every major and minor version has an entry
+      -- patch versions only for the first release whose protocol version is not already present in the table
+  }
+  ```
+
 * `core.get_player_window_information(player_name)`:
 
   ```lua
