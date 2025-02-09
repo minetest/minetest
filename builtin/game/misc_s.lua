@@ -131,4 +131,6 @@ core.protocol_versions = {
 	["5.11.0"] = 47,
 }
 
-setmetatable(core.protocol_versions, {__newindex = function() end})
+setmetatable(core.protocol_versions, {__newindex = function()
+	error("core.protocol_versions is read-only")
+end})
