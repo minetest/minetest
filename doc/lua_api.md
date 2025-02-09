@@ -7852,8 +7852,8 @@ An `InvRef` is a reference to an inventory.
   (default: `false`).
 * `remove_item(listname, stack, [match_meta])`: take as many items as specified from the
   list, returns the items that were actually removed (as an `ItemStack`).
-  If `match_meta` is `true`, the function also takes metadata into account
-  (since version `5.11.0`).
+  If `match_meta` is `true`, an item is only taken when the metadata also matches
+  (since version `5.12.0`).
 * `get_location()`: returns a location compatible to
   `core.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
