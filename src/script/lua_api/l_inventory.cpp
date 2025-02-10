@@ -319,9 +319,7 @@ int InvRef::l_contains_item(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	ItemStack item = read_item(L, 3, getServer(L)->idef());
 	InventoryList *list = getlist(L, ref, listname);
-	bool match_meta = false;
-	if (lua_isboolean(L, 4))
-		match_meta = readParam<bool>(L, 4);
+	bool match_meta = readParam<bool>(L, 4, false);
 	if (list) {
 		lua_pushboolean(L, list->containsItem(item, match_meta));
 	} else {
