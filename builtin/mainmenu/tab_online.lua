@@ -391,15 +391,14 @@ local function matches_query(server, query)
 	return name_matches and 50 or description_matches and 0
 end
 
-local pre_search_selection = nil
-
-local function search_server_list(input)
+local function search_server_list(input, tabdata)
 	menudata.search_result = nil
 	if #serverlistmgr.servers < 2 then
 		return
 	end
 
-	pre_search_selection = pre_search_selection or find_selected_server()
+
+	tabdata.pre_search_selection = tabdata.pre_search_selection or find_selected_server()
 
 	-- setup the search query
 	local query = parse_search_input(input)
@@ -450,6 +449,7 @@ local function search_server_list(input)
 	-- If no compatible server found, clear selection
 	set_selected_server(nil)
 end
+
 local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.te_name then
 		gamedata.playername = fields.te_name
@@ -487,7 +487,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			end
 			if event.type == "CHG" then
 				set_selected_server(server)
-				pre_search_selection = nil
+				tabdata.pre_search_selection = nil
 				return true
 			end
 		end
@@ -531,16 +531,16 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.btn_mp_clear then
 		tabdata.search_for = ""
 		menudata.search_result = nil
-		if pre_search_selection then
-			set_selected_server(pre_search_selection)
-			pre_search_selection = nil
+		if tabdata.pre_search_selection then
+			set_selected_server(tabdata.pre_search_selection)
+			tabdata.pre_search_selection = nil
 		end
 		return true
 	end
 
 	if fields.btn_mp_search or fields.key_enter_field == "te_search" then
 		tabdata.search_for = fields.te_search
-		search_server_list(fields.te_search)
+		search_server_list(fields.te_search, tabdata)
 		return true
 	end
 
