@@ -256,8 +256,8 @@ fps_max (Maximum FPS) int 60 1 4294967295
 #    Vertical screen synchronization. Your system may still force VSync on even if this is disabled.
 vsync (VSync) bool false
 
-#    Maximum FPS when the window is not focused, or when the game is paused.
-fps_max_unfocused (FPS when unfocused or paused) int 20 1 4294967295
+#    Maximum FPS when the window is not focused.
+fps_max_unfocused (FPS when unfocused) int 20 1 4294967295
 
 #    View distance in nodes.
 viewing_range (Viewing range) int 190 20 4000
