@@ -5689,6 +5689,8 @@ Utilities
       biome_weights = true,
       -- Particles can specify a "clip" blend mode (5.11.0)
       particle_blend_clip = true,
+      -- The `match_meta` optional parameter is available for `InvRef:remove_item()` (5.12.0)
+      remove_item_match_meta = true,
   }
   ```
 
@@ -7853,7 +7855,7 @@ An `InvRef` is a reference to an inventory.
 * `remove_item(listname, stack, [match_meta])`: take as many items as specified from the
   list, returns the items that were actually removed (as an `ItemStack`).
   If `match_meta` is `true`, an item is only taken when the metadata also matches
-  (since version `5.12.0`).
+  (available since feature `remove_item_match_meta`).
 * `get_location()`: returns a location compatible to
   `core.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
