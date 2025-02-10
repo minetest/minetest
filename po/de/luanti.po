@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-09 13:23+0100\n"
-"PO-Revision-Date: 2025-02-05 11:03+0000\n"
-"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
+"PO-Revision-Date: 2025-02-10 01:36+0000\n"
+"Last-Translator: mineplayer <realmineplayer@users.noreply.hosted.weblate.org>"
+"\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -436,7 +437,7 @@ msgstr "Mods"
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "No packages could be retrieved"
-msgstr "Es konnten keine Pakete abgerufen werden"
+msgstr "Es konnten keine Pakete empfangen werden"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "No updates"
