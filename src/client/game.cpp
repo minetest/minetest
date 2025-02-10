@@ -2504,7 +2504,7 @@ inline void Game::step(f32 dtime)
 	ZoneScoped;
 
 	if (server) {
-		float fps_max = !device->isWindowFocused() ?
+		float fps_max = !device->isWindowFocused() && simple_singleplayer_mode ?
 				g_settings->getFloat("fps_max_unfocused") :
 				g_settings->getFloat("fps_max");
 		fps_max = std::max(fps_max, 1.0f);
