@@ -340,6 +340,20 @@ function core.register_craft(recipe)
 	old_register_craft(recipe)
 end
 
+-- Helper function to compare tables
+local function compare(def, recipe)
+	local correct = 0
+	for key, value in pairs(def) do
+		if value == recipe[key] then
+			correct = correct + 1
+		end
+	end
+	if correct == #recipe then
+		return true
+	end
+	return false
+end
+
 local old_clear_craft = core.clear_craft
 function core.clear_craft(recipe)
 	local name = recipe.output or ""
@@ -349,9 +363,8 @@ function core.clear_craft(recipe)
 	end
 	local pos
 	for i, def in pairs(core.registered_crafts[name]) do
-		if dump(def) == dump(recipe) or
-				((def.output and recipe.output and def.output == recipe.output)
-				and def.recipe == recipe.recipe) then
+		if compare(def, recipe) or
+				(def.type == recipe.type and def.output == recipe.output or def.recipe == recipe.recipe) then
 			pos = i
 		end
 	end
