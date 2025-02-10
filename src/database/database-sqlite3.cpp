@@ -316,6 +316,7 @@ void MapDatabaseSQLite3::loadBlock(const v3s16 &pos, std::string *block)
 	bindPos(m_stmt_read, pos);
 
 	if (sqlite3_step(m_stmt_read) != SQLITE_ROW) {
+		block->clear();
 		sqlite3_reset(m_stmt_read);
 		return;
 	}

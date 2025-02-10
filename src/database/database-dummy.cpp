@@ -30,8 +30,7 @@ void Database_Dummy::loadBlock(const v3s16 &pos, std::string *block)
 
 bool Database_Dummy::deleteBlock(const v3s16 &pos)
 {
-	m_database.erase(getBlockAsInteger(pos));
-	return true;
+	return m_database.erase(getBlockAsInteger(pos)) > 0;
 }
 
 void Database_Dummy::listAllLoadableBlocks(std::vector<v3s16> &dst)
