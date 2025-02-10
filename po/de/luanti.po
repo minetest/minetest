@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-09 13:23+0100\n"
-"PO-Revision-Date: 2025-02-10 01:36+0000\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2025-02-11 02:02+0000\n"
+"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -263,14 +263,12 @@ msgid "Show technical names"
 msgstr "Technische Namen zeigen"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Touchscreen layout"
-msgstr "Touchscreen"
+msgstr "Touchscreen-Layout"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "pause_menu"
-msgstr "Bildwiederholrate im Pausenmenü"
+msgstr "pause_menu"
 
 #: builtin/common/settings/settingtypes.lua
 msgid "Client Mods"
@@ -610,6 +608,8 @@ msgid ""
 "This is the list of clients connected to\n"
 "$1"
 msgstr ""
+"Dies ist die Liste der Clients, die zu\n"
+"$1 verbunden sind"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
@@ -980,7 +980,7 @@ msgstr "Alle ausklappen"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "Group by prefix"
-msgstr "Nach Prefix gruppieren"
+msgstr "Nach Präfix gruppieren"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses a game called $2 and the following mods:"
@@ -992,7 +992,7 @@ msgstr "Der Server $1 nutzt folgende Mods:"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
-msgstr "Eine neue $1-Version ist verfügbar"
+msgstr "Eine neue Version von $1 ist verfügbar"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid ""
@@ -1265,6 +1265,10 @@ msgid ""
 "mod:<name>\n"
 "player:<name>"
 msgstr ""
+"Mögliche Filter\n"
+"game:<Name>\n"
+"mod:<Name>\n"
+"player:<Name>"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
@@ -1385,7 +1389,7 @@ msgstr "Blockgrenzen für Blöcke in Nähe angezeigt"
 
 #: src/client/game.cpp
 msgid "Bounding boxes shown"
-msgstr ""
+msgstr "Grenzboxen angezeigt"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -2299,9 +2303,8 @@ msgid "Sound Volume: %d%%"
 msgstr "Tonlautstärke: %d%%"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Add button"
-msgstr "Mittlere Taste"
+msgstr "Button hinzufügen"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Done"
@@ -2317,15 +2320,15 @@ msgstr "Zurücksetzen"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Start dragging a button to add. Tap outside to cancel."
-msgstr ""
+msgstr "Button ziehen zum Hinzufügen. Außerhalb antippen zum Abbrechen."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap a button to select it. Drag a button to move it."
-msgstr ""
+msgstr "Button antippen zum Auswählen. Button ziehen zum Verschieben."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap outside to deselect."
-msgstr ""
+msgstr "Außerhalb antippen zum Abwählen."
 
 #: src/gui/touchscreenlayout.cpp
 msgid "Joystick"
@@ -2680,11 +2683,13 @@ msgid ""
 "All mesh buffers with less than this number of vertices will be merged\n"
 "during map rendering. This improves rendering performance."
 msgstr ""
+"Alle Mesh-Puffer, die weniger als diese Anzahl Punkte haben, werden während\n"
+"des Renderns der Karte zusammengeführt. Dies verbessert die Performanz\n"
+"des Renderns."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Allow clouds to look 3D instead of flat."
-msgstr "Wolken blockförmig statt flach aussehen lassen."
+msgstr "Erlaubt, dass Wolken ein 3-D-Aussehen statt ein flaches Aussehen haben."
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
@@ -3095,7 +3100,7 @@ msgstr "Wolken im Menü"
 
 #: src/settings_translation_file.cpp
 msgid "Color depth for post-processing texture"
-msgstr ""
+msgstr "Farbtiefe für Nachbearbeitungstextur"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -3115,7 +3120,6 @@ msgstr ""
 "für Details."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
@@ -3133,7 +3137,7 @@ msgstr ""
 "Sie können auch Inhaltseinstufungen festlegen.\n"
 "Diese Flags sind von Luanti-Versionen unabhängig,\n"
 "für eine vollständige Liste gehen Sie auf:\n"
-"https://content.minetest.net/help/content_flags/"
+"https://content.luanti.org/help/content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3304,6 +3308,11 @@ msgid ""
 "Reducing this can improve performance, but some effects (e.g. debanding)\n"
 "require more than 8 bits to work."
 msgstr ""
+"Die Farbtiefe der Textur, die für die Nachbearbeitungs-Pipeline benutzt "
+"wird, festlegen.\n"
+"Wird der Wert verringert, kann dies die Performanz verbessern, aber einige "
+"Effekte (z.B. Debanding)\n"
+"brauchen mehr als 8 Bit, um zu funktionieren."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3532,6 +3541,10 @@ msgid ""
 "situations\n"
 "where transparency sorting would be very slow otherwise."
 msgstr ""
+"Transparenzsortierte Dreiecke nach ihren Meshpuffern gruppiert zeichnen.\n"
+"Dies macht die Transparenzsortierung zwischen Meshpuffern kaputt, aber "
+"vermeidet\n"
+"Situationen, wo die Transparenzsortierung sonst sehr langsam wäre."
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
@@ -4383,15 +4396,15 @@ msgstr ""
 "ihr Passwort zu ein leeres Passwort ändern."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, server account registration is separate from login in the UI.\n"
 "If disabled, connecting to a server will automatically register a new "
 "account."
 msgstr ""
-"Falls aktiviert, wird die Kontoregistrierung vom Einloggen in der "
-"Benutzeroberfläche getrennt behandelt.\n"
-"Falls deaktiviert, werden neue Konten beim Einloggen automatisch registriert."
+"Falls aktiviert, wird die Serverkontoregistrierung in der Benutzeroberfläche "
+"getrennt vom Einloggen behandelt.\n"
+"Falls deaktiviert, werden neue Konten beim Verbindungsaufbau zu einem Server "
+"automatisch registriert."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5297,7 +5310,7 @@ msgstr "Untergrenze der zufälligen Anzahl kleiner Höhlen je Mapchunk."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum vertex count for mesh buffers"
-msgstr ""
+msgstr "Minimale Punktanzahl für Meshpuffer"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
@@ -5921,7 +5934,6 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "Siehe https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
@@ -5948,20 +5960,22 @@ msgstr ""
 "\n"
 "* None – Keine Kantenglättung (Standard)\n"
 "\n"
-"* FSAA – Von der Hardware bereitgestellte Vollbildkantenglättung (nicht\n"
-"kompatibel mit Nachbearbeitung und Unterabtastung), auch bekannt\n"
-"als Multi-Sample Antialiasing (MSAA). Glättet Blockkanten aus, "
-"beeinträchtigt\n"
-"aber nicht die Innenseiten der Texturen.\n"
-"Um diese Option zu ändern, ist ein Neustart erforderlich.\n"
+"* FSAA – Von der Hardware bereitgestellte Vollbildkantenglättung\n"
+"Auch bekannt als „Multi-Sample Antialiasing“ (MSAA)\n"
+"Glättet Blockkanten, aber hat keine Auswirkung auf das Innere von Texturen.\n"
 "\n"
-"* FXAA – Schnelle annähende Kantenglättung (benötigt Shader).\n"
+"Wenn die Nachbearbeitung deaktiviert ist, benötigt das Ändern von FSAA\n"
+"einen Neustart. Außerdem wird, wenn die Nachbearbeitung deaktiviert ist,\n"
+"FSAA nicht zusammen mit einer Unterabtastung oder einer\n"
+"Nicht-Standard-„3d_mode“-Einstellung funktionieren.\n"
+"\n"
+"* FXAA – Schnelle annähende Kantenglättung\n"
 "Wendet einen Nachbearbeitungsfilter an, um kontrastreiche Kanten zu "
 "erkennen\n"
 "und zu glätten. Bietet eine Balance zwischen Geschwindigkeit und "
 "Bildqualität.\n"
 "\n"
-"* SSAA – Super-Sampling-Kantenglättung (benötigt Shader).\n"
+"* SSAA – Super-Sampling-Kantenglättung\n"
 "Rendert ein hochauflösendes Bild der Szene, dann skaliert es herunter, um\n"
 "die Aliasing-Effekte zu reduzieren. Dies ist die langsamste und genaueste "
 "Methode."
@@ -6857,9 +6871,8 @@ msgid "Transparency Sorting Distance"
 msgstr "Transparenzsortierungsdistanz"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Transparency Sorting Group by Buffers"
-msgstr "Transparenzsortierungsdistanz"
+msgstr "Transparenzsortierung nach Puffer gruppieren"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6923,7 +6936,6 @@ msgid "Undersampling"
 msgstr "Unterabtastung"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6935,11 +6947,14 @@ msgid ""
 "to a non-default value."
 msgstr ""
 "Unterabtastung ist ähnlich der Verwendung einer niedrigeren "
-"Bildschirmauflösung, aber sie wird nur auf die Spielwelt angewandt, während "
-"die GUI intakt bleibt.\n"
+"Bildschirmauflösung,\n"
+"aber sie wird nur auf die Spielwelt angewandt, während die GUI intakt bleibt."
+"\n"
 "Dies sollte einen beträchtlichen Performanzschub auf Kosten einer weniger "
 "detaillierten Grafik geben.\n"
-"Hohe Werte führen zu einer weniger detaillierten Grafik."
+"Hohe Werte führen zu einer weniger detaillierten Grafik.\n"
+"Anmerkung: Unterabtastung wird im Moment nicht unterstützt, falls die\n"
+"„3d_mode“-Einstellung auf einen Nicht-Standardwert gesetzt ist."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6966,13 +6981,14 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "Eine Wolkenanimation für den Hintergrund im Hauptmenü benutzen."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use anisotropic filtering when looking at textures from an angle.\n"
 "This provides a significant improvement when used together with mipmapping."
 msgstr ""
 "Anisotrope Filterung verwenden, wenn auf Texturen aus einem gewissen Winkel "
-"heraus geschaut wird."
+"heraus geschaut wird.\n"
+"Dies bietet eine signifikante Verbesserung, wenn es gemeinsam mit Mipmapping "
+"verwendet wird."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
@@ -7249,7 +7265,6 @@ msgstr ""
 "die Inventarbilder von Blöcken)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear filtering, low-resolution textures\n"
 "can be blurred, so this option automatically upscales them to preserve\n"
@@ -7260,14 +7275,14 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
-"Wenn bilineare, trilineare oder anisotrope Filter benutzt werden, können\n"
+"Wenn bilineare/trilineare Filter benutzt werden, können\n"
 "niedrigauflösende Texturen verschwommen sein, also werden sie automatisch\n"
 "mit Pixelwiederholung vergrößert, um scharfe Pixel zu behalten. Dies setzt "
 "die\n"
 "minimale Texturengröße für die vergrößerten Texturen; höhere Werte führen\n"
-"zu einem schärferen Aussehen, aber erfordern mehr Speicher. Zweierpotenzen\n"
-"werden empfohlen. Diese Einstellung trifft NUR dann in Kraft, falls\n"
-"der bilineare/trilineare/anisotrope Filter aktiviert ist.\n"
+"zu einem schärferen Aussehen, aber erfordern mehr Speicher.\n"
+"Diese Einstellung trifft NUR dann in Kraft, falls\n"
+"einer der genannten Filter aktiviert ist.\n"
 "Dies wird außerdem verwendet als die Basisblocktexturengröße für\n"
 "welt-ausgerichtete automatische Texturenskalierung."
 
