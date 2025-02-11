@@ -380,14 +380,17 @@ void PlayerDatabaseSQLite3::createDatabase()
 {
 	assert(m_database);
 
+	// When designing the schema remember that SQLite only has 5 basic data types
+	// and ignores length-limited types like "VARCHAR(32)".
+
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE IF NOT EXISTS `player` ("
-			"`name` VARCHAR(50) NOT NULL,"
-			"`pitch` NUMERIC(11, 4) NOT NULL,"
-			"`yaw` NUMERIC(11, 4) NOT NULL,"
-			"`posX` NUMERIC(11, 4) NOT NULL,"
-			"`posY` NUMERIC(11, 4) NOT NULL,"
-			"`posZ` NUMERIC(11, 4) NOT NULL,"
+			"`name` TEXT NOT NULL,"
+			"`pitch` NUMERIC NOT NULL,"
+			"`yaw` NUMERIC NOT NULL,"
+			"`posX` NUMERIC NOT NULL,"
+			"`posY` NUMERIC NOT NULL,"
+			"`posZ` NUMERIC NOT NULL,"
 			"`hp` INT NOT NULL,"
 			"`breath` INT NOT NULL,"
 			"`creation_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
@@ -398,9 +401,9 @@ void PlayerDatabaseSQLite3::createDatabase()
 
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE IF NOT EXISTS `player_metadata` ("
-			"    `player` VARCHAR(50) NOT NULL,"
-			"    `metadata` VARCHAR(256) NOT NULL,"
-			"    `value` TEXT,"
+			"    `player` TEXT NOT NULL,"
+			"    `metadata` TEXT NOT NULL,"
+			"    `value` TEXT NOT NULL,"
 			"    PRIMARY KEY(`player`, `metadata`),"
 			"    FOREIGN KEY (`player`) REFERENCES player (`name`) ON DELETE CASCADE );",
 		NULL, NULL, NULL),
@@ -408,7 +411,7 @@ void PlayerDatabaseSQLite3::createDatabase()
 
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE IF NOT EXISTS `player_inventories` ("
-			"   `player` VARCHAR(50) NOT NULL,"
+			"   `player` TEXT NOT NULL,"
 			"	`inv_id` INT NOT NULL,"
 			"	`inv_width` INT NOT NULL,"
 			"	`inv_name` TEXT NOT NULL DEFAULT '',"
@@ -420,7 +423,7 @@ void PlayerDatabaseSQLite3::createDatabase()
 
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE `player_inventory_items` ("
-			"   `player` VARCHAR(50) NOT NULL,"
+			"   `player` TEXT NOT NULL,"
 			"	`inv_id` INT NOT NULL,"
 			"	`slot_id` INT NOT NULL,"
 			"	`item` TEXT NOT NULL DEFAULT '',"
@@ -666,9 +669,9 @@ void AuthDatabaseSQLite3::createDatabase()
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE IF NOT EXISTS `auth` ("
 			"`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
-			"`name` VARCHAR(32) UNIQUE,"
-			"`password` VARCHAR(512),"
-			"`last_login` INTEGER"
+			"`name` TEXT UNIQUE NOT NULL,"
+			"`password` TEXT NOT NULL,"
+			"`last_login` INTEGER NOT NULL DEFAULT 0"
 		");",
 		NULL, NULL, NULL),
 		"Failed to create auth table");
@@ -676,7 +679,7 @@ void AuthDatabaseSQLite3::createDatabase()
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE IF NOT EXISTS `user_privileges` ("
 			"`id` INTEGER,"
-			"`privilege` VARCHAR(32),"
+			"`privilege` TEXT,"
 			"PRIMARY KEY (id, privilege)"
 			"CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE"
 		");",
