@@ -257,7 +257,7 @@ fps_max (Maximum FPS) int 60 1 4294967295
 vsync (VSync) bool false
 
 #    Maximum FPS when the window is not focused.
-fps_max_unfocused (FPS when unfocused) int 20 1 4294967295
+fps_max_unfocused (FPS when unfocused) int 10 1 4294967295
 
 #    View distance in nodes.
 viewing_range (Viewing range) int 190 20 4000
