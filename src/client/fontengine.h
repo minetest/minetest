@@ -22,6 +22,17 @@ namespace irr {
 
 #define FONT_SIZE_UNSPECIFIED 0xFFFFFFFF
 
+using namespace irr;
+
+enum class FontModifier {
+	Mono,
+	Unmono,
+	Bold,
+	Unbold,
+	Italic,
+	Unitalic,
+};
+
 enum FontMode : u8 {
 	FM_Standard = 0,
 	FM_Mono,
@@ -40,6 +51,31 @@ struct FontSpec {
 	u16 getHash() const
 	{
 		return (mode << 2) | (static_cast<u8>(bold) << 1) | static_cast<u8>(italic);
+	}
+
+	void applyFontModifier(FontModifier modifier) {
+		switch(modifier) {
+			case FontModifier::Mono :
+				mode = FM_Mono;
+				break;
+			case FontModifier::Unmono :
+				mode = FM_Standard;
+				break;
+			case FontModifier::Bold :
+				bold = true;
+				break;
+			case FontModifier::Unbold :
+				bold = false;
+				break;
+			case FontModifier::Italic :
+				italic = true;
+				break;
+			case FontModifier::Unitalic :
+				italic = false;
+				break;
+			default:
+				break;
+		}
 	}
 
 	unsigned int size;
