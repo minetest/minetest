@@ -34,6 +34,76 @@ public:
 extern gui::IGUIEnvironment *guienv;
 extern gui::IGUIStaticText *guiroot;
 
+class MainGameCallback : public IGameCallback
+{
+public:
+	MainGameCallback() = default;
+	virtual ~MainGameCallback() = default;
+
+	void exitToOS() override
+	{
+		shutdown_requested = true;
+	}
+
+	void openSettings() override
+	{
+		settings_requested = true;
+	}
+
+	void disconnect() override
+	{
+		disconnect_requested = true;
+	}
+
+	void changePassword() override
+	{
+		changepassword_requested = true;
+	}
+
+	void changeVolume() override
+	{
+		changevolume_requested = true;
+	}
+
+	void keyConfig() override
+	{
+		keyconfig_requested = true;
+	}
+
+	void signalKeyConfigChange() override
+	{
+		keyconfig_changed = true;
+	}
+
+	void touchscreenLayout() override
+	{
+		touchscreenlayout_requested = true;
+	}
+
+	void showOpenURLDialog(const std::string &url) override
+	{
+		show_open_url_dialog = url;
+	}
+
+	void unpause()
+	{
+		paused = false;
+	}
+
+	bool disconnect_requested = false;
+	bool settings_requested = false;
+	bool changepassword_requested = false;
+	bool changevolume_requested = false;
+	bool keyconfig_requested = false;
+	bool touchscreenlayout_requested = false;
+	bool shutdown_requested = false;
+	bool keyconfig_changed = false;
+	std::string show_open_url_dialog = "";
+	bool paused = false;
+};
+
+extern MainGameCallback *g_gamecallback;
+
 // Handler for the modal menus
 
 class MainMenuManager : public IMenuManager
@@ -91,6 +161,9 @@ public:
 			if (mm && mm->pausesGame())
 				return true;
 		}
+		// FIXME: hotfix for #15779
+		if (g_gamecallback && g_gamecallback->paused)
+			return true;
 		return false;
 	}
 
@@ -104,67 +177,3 @@ static inline bool isMenuActive()
 {
 	return g_menumgr.menuCount() != 0;
 }
-
-class MainGameCallback : public IGameCallback
-{
-public:
-	MainGameCallback() = default;
-	virtual ~MainGameCallback() = default;
-
-	void exitToOS() override
-	{
-		shutdown_requested = true;
-	}
-
-	void openSettings() override
-	{
-		settings_requested = true;
-	}
-
-	void disconnect() override
-	{
-		disconnect_requested = true;
-	}
-
-	void changePassword() override
-	{
-		changepassword_requested = true;
-	}
-
-	void changeVolume() override
-	{
-		changevolume_requested = true;
-	}
-
-	void keyConfig() override
-	{
-		keyconfig_requested = true;
-	}
-
-	void signalKeyConfigChange() override
-	{
-		keyconfig_changed = true;
-	}
-
-	void touchscreenLayout() override
-	{
-		touchscreenlayout_requested = true;
-	}
-
-	void showOpenURLDialog(const std::string &url) override
-	{
-		show_open_url_dialog = url;
-	}
-
-	bool disconnect_requested = false;
-	bool settings_requested = false;
-	bool changepassword_requested = false;
-	bool changevolume_requested = false;
-	bool keyconfig_requested = false;
-	bool touchscreenlayout_requested = false;
-	bool shutdown_requested = false;
-	bool keyconfig_changed = false;
-	std::string show_open_url_dialog = "";
-};
-
-extern MainGameCallback *g_gamecallback;

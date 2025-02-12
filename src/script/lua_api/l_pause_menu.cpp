@@ -20,9 +20,16 @@ int ModApiPauseMenu::l_show_touchscreen_layout(lua_State *L)
 	return 0;
 }
 
+// FIXME: hotfix for #15779
+int ModApiPauseMenu::l_delete_settings_menu(lua_State *L)
+{
+	g_gamecallback->unpause();
+	return 0;
+}
 
 void ModApiPauseMenu::Initialize(lua_State *L, int top)
 {
 	API_FCT(show_keys_menu);
 	API_FCT(show_touchscreen_layout);
+	API_FCT(delete_settings_menu);
 }

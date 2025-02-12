@@ -522,6 +522,8 @@ bool GameFormSpec::handleCallbacks()
 
 	if (g_gamecallback->settings_requested) {
 		m_pause_script->open_settings();
+		// FIXME: hotfix for #15779
+		g_gamecallback->paused = true;
 		g_gamecallback->settings_requested = false;
 	}
 

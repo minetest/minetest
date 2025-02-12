@@ -806,6 +806,8 @@ else
 			-- only needed for the "fields.back" case, in the "fields.quit"
 			-- case it's a no-op
 			core.show_formspec("__builtin:settings", "")
+			-- FIXME: hotfix for #15779
+			core.delete_settings_menu()
 		end
 
 		core.show_formspec("__builtin:settings", get_formspec(dialog.data))
