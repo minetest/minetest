@@ -117,9 +117,12 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on Luanti calling the
 registered callbacks.
 
-**NOTE**: Client mods currently can't provide textures, sounds, or models by
+**NOTE**: Client mods currently can't provide textures, or models by
 themselves. Any media referenced in function calls must already be loaded
 (provided by mods that exist on the server).
+
+However, sounds can be provided and used on a client machine if they are copied
+in a `sounds/` directory at the same level than the `clientmods/`directory.
 
 Naming convention for registered textual names
 ----------------------------------------------
@@ -770,7 +773,7 @@ Methods:
         ```
 
 * `get_last_look_horizontal()`:
-    * returns last look horizontal angle
+    * returns last look horizontal angle in radians (can be lower than 0 or higher than 2*pi if the player has made whole turns on himself, increases counterclockwise and 0° is East)
 * `get_last_look_vertical()`:
     * returns last look vertical angle
 * `get_control()`:
