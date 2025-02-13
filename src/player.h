@@ -96,6 +96,14 @@ struct PlayerControl
 	float yaw = 0.0f;
 	float movement_speed = 0.0f;
 	float movement_direction = 0.0f;
+
+	// Used to change toggle-states only on key-down.
+	bool is_sneak_released = false;
+	bool is_aux1_released  = false;
+
+	// The following settings are cached on player creation, for (unmeasured) performance.
+	bool cachedsetting_toggle_aux1_key  = !g_settings->getBool("toggle_aux1_key")
+	bool cachedsetting_toggle_sneak_key = !g_settings->getBool("toggle_sneak_key")
 };
 
 struct PlayerPhysicsOverride

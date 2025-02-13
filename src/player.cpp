@@ -249,12 +249,34 @@ u32 PlayerControl::getKeysPressed() const
 void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 {
 	direction_keys = keypress_bits & 0xf;
-	jump  = keypress_bits & (1 << 4);
-	aux1  = keypress_bits & (1 << 5);
-	sneak = keypress_bits & (1 << 6);
-	dig   = keypress_bits & (1 << 7);
-	place = keypress_bits & (1 << 8);
-	zoom  = keypress_bits & (1 << 9);
+	jump           = keypress_bits & (1 << 4);
+	bool aux1_key  = keypress_bits & (1 << 5);
+	bool sneak_key = keypress_bits & (1 << 6);
+	dig            = keypress_bits & (1 << 7);
+	place          = keypress_bits & (1 << 8);
+	zoom           = keypress_bits & (1 << 9);
+
+	if (cachedsetting_toggle_aux1_key){
+		aux1 = aux1_key;
+	} else {
+		if (!aux1_key){
+			is_aux1_released = true;
+		} else if (is_aux1_released) {
+			aux1 = !aux1;
+			is_aux1_released = false;
+		}
+	}
+
+	if (cachedsetting_toggle_sneak_key){
+		sneak = sneak_key;
+	} else {
+		if (!sneak_key){
+			is_sneak_released = true;
+		} else if (is_sneak_released) {
+			sneak = !sneak;
+			is_sneak_released = false;
+		}
+	}
 }
 
 v2f PlayerControl::getMovement() const
