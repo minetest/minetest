@@ -2444,6 +2444,26 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
+	
+	bool sneak_state = false;
+	if (!g_settings->getBool("toggle_sneak_key")){
+		sneak_state = isKeyDown(KeyType::SNEAK);
+	} else {
+		sneak_state =  player->control.sneak;
+		if (wasKeyReleased(KeyType::SNEAK)) {
+			sneak_state = !sneak_state;
+		}
+	}
+	bool aux1_state = false;
+	if (!g_settings->getBool("toggle_aux1_key")){
+		aux1_state = isKeyDown(KeyType::SNEAK);
+	} else {
+		aux1_state = player->control.aux1;
+		if (wasKeyReleased(KeyType::SNEAK)) {
+			aux1_state = !aux1_state;
+		}
+	}
+
 
 	PlayerControl control(
 		isKeyDown(KeyType::FORWARD),
@@ -2451,8 +2471,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::LEFT),
 		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
-		isKeyDown(KeyType::AUX1),
-		isKeyDown(KeyType::SNEAK),
+		aux1_state,  //isKeyDown(KeyType::AUX1),
+		sneak_state, //isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
