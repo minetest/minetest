@@ -15,18 +15,24 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local last_visited_collapsed = false
 local function get_sorted_servers()
 	local servers = {
 		fav = {},
+		visited = {},
 		public = {},
 		incompatible = {}
 	}
 
 	local favs = serverlistmgr.get_favorites()
 	local taken_favs = {}
+	local visited_list = serverlistmgr.get_last_visited()
+	local taken_visited = {}
+
 	local result = menudata.search_result or serverlistmgr.servers
 	for _, server in ipairs(result) do
 		server.is_favorite = false
+		server.is_visited = false
 		for index, fav in ipairs(favs) do
 			if server.address == fav.address and server.port == fav.port then
 				taken_favs[index] = true
@@ -34,9 +40,20 @@ local function get_sorted_servers()
 				break
 			end
 		end
+
+		for index, visited in ipairs(visited_list) do
+			if server.address == visited.address and server.port == visited.port then
+				taken_visited[index] = true
+				server.is_visited = true
+				break
+			end
+		end
+
 		server.is_compatible = is_server_protocol_compat(server.proto_min, server.proto_max)
 		if server.is_favorite then
 			table.insert(servers.fav, server)
+		elseif server.is_visited and not last_visited_collapsed then
+			table.insert(servers.visited, server)
 		elseif server.is_compatible then
 			table.insert(servers.public, server)
 		else
@@ -50,6 +67,20 @@ local function get_sorted_servers()
 				table.insert(servers.fav, fav)
 			end
 		end
+		for index, visited in ipairs(visited_list) do
+            if not taken_visited[index] then
+                table.insert(servers.visited, visited)
+                if #servers.visited >= 5 then
+                    break -- Limit to 5 visited servers
+                end
+                else
+		            if visited.is_compatible ~= false then  -- Only add if not explicitly incompatible
+		                table.insert(servers.public, visited)
+					else
+						table.insert(servers.incompatible, visited)
+                end
+            end
+        end
 	end
 
 	return servers
@@ -239,8 +270,9 @@ local function get_formspec(tabview, name, tabdata)
 		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
 		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png") .. "," ..
 		"5=" .. core.formspec_escape(defaulttexturedir .. "server_favorite.png") .. "," ..
-		"6=" .. core.formspec_escape(defaulttexturedir .. "server_public.png") .. "," ..
-		"7=" .. core.formspec_escape(defaulttexturedir .. "server_incompatible.png") .. ";" ..
+		"6=" .. core.formspec_escape(defaulttexturedir .. "server_visited.png") .. "," ..
+		"7=" .. core.formspec_escape(defaulttexturedir .. "server_public.png") .. "," ..
+		"8=" .. core.formspec_escape(defaulttexturedir .. "server_incompatible.png") .. ";" ..
 		"color,span=1;" ..
 		"text,align=inline;"..
 		"color,span=1;" ..
@@ -263,23 +295,36 @@ local function get_formspec(tabview, name, tabdata)
 
 	local dividers = {
 		fav = "5,#ffff00," .. fgettext("Favorites") .. ",,,0,0,,",
-		public = "6,#4bdd42," .. fgettext("Public Servers") .. ",,,0,0,,",
-		incompatible = "7,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
+		visited = "6,#ff9900," .. fgettext("Last Visited") .. (last_visited_collapsed and " ►" or " ▼") .. ",,,0,0,,",
+		public = "7,#4bdd42," .. fgettext("Public Servers") .. ",,,0,0,,",
+		incompatible = "8,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
 	}
-	local order = {"fav", "public", "incompatible"}
+	local order = {"fav", "visited", "public", "incompatible"}
 
 	tabdata.lookup = {} -- maps row number to server
 	local rows = {}
 	for _, section in ipairs(order) do
-		local section_servers = servers[section]
-		if next(section_servers) ~= nil then
-			rows[#rows + 1] = dividers[section]
-			for _, server in ipairs(section_servers) do
-				tabdata.lookup[#rows + 1] = server
-				rows[#rows + 1] = render_serverlist_row(server)
-			end
-		end
-	end
+	    local section_servers = servers[section]
+	    if section == "visited" then
+	        -- Always show the visited divider, even when collapsed
+	        tabdata.lookup[#rows + 1] = "last_visited_divider"
+	        rows[#rows + 1] = dividers[section]
+
+	        -- Only add the servers if not collapsed and there are servers to show
+	        if not last_visited_collapsed and next(section_servers) ~= nil then
+	            for _, server in ipairs(section_servers) do
+	                tabdata.lookup[#rows + 1] = server
+	                rows[#rows + 1] = render_serverlist_row(server)
+	            end
+	        end
+	    elseif next(section_servers) ~= nil then
+	        rows[#rows + 1] = dividers[section]
+	        for _, server in ipairs(section_servers) do
+	            tabdata.lookup[#rows + 1] = server
+	            rows[#rows + 1] = render_serverlist_row(server)
+	        end
+	    end
+end
 
 	retval = retval .. table.concat(rows, ",")
 
@@ -451,6 +496,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					return true
 				end
 
+				if tabdata.lookup[event.row] == "last_visited_divider" then
+					last_visited_collapsed = not last_visited_collapsed
+					return true
+				end
+
 				gamedata.address    = server.address
 				gamedata.port       = server.port
 				gamedata.playername = fields.te_name
@@ -483,12 +533,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.btn_delete_favorite then
 		local idx = core.get_table_index("servers")
-		if not idx then return end
-		local server = tabdata.lookup[idx]
-		if not server then return end
+		local server = find_selected_server()
 
 		serverlistmgr.delete_favorite(server)
-		set_selected_server(server)
+		set_selected_server(tabdata.lookup[idx+1])
 		return true
 	end
 
@@ -550,7 +598,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if server and server.address == gamedata.address and
 				server.port == gamedata.port then
 
-			serverlistmgr.add_favorite(server)
+			serverlistmgr.add_last_visited(server)
 
 			gamedata.servername        = server.name
 			gamedata.serverdescription = server.description
