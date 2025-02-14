@@ -517,7 +517,7 @@ local function get_formspec(dialogdata)
 
 		("button[0,%f;%f,0.8;back;%s]"):format(
 				tabsize.height + 0.2, back_w,
-				fgettext(INIT == "pause_menu" and "Exit" or "Back")),
+				INIT == "pause_menu" and fgettext("Exit") or fgettext("Back")),
 
 		("box[%f,%f;%f,0.8;#0000008C]"):format(
 			back_w + 0.2, tabsize.height + 0.2, checkbox_w),
