@@ -96,7 +96,6 @@ struct PlayerControl
 	float yaw = 0.0f;
 	float movement_speed = 0.0f;
 	float movement_direction = 0.0f;
-
 };
 
 struct PlayerPhysicsOverride

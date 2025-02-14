@@ -2449,7 +2449,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	//TimeTaker tt("update player control", NULL, PRECISION_NANO
+	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
 	bool sneak_state = false;
 	if (!m_cache_toggle_sneak_key){
 		sneak_state = isKeyDown(KeyType::SNEAK);
