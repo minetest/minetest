@@ -5,6 +5,7 @@
       "features": ["winssl"]
     },
     "freetype",
+    "gettext",
     "gmp",
     "jsoncpp",
     "libjpeg-turbo",
