@@ -63,7 +63,7 @@ You can install dependencies via CLI or via CMake GUI, whichever your prefer.
 To install dependencies via CLI, run the following commands in PowerShell:
 
 ```powershell
-# Run this while in `path/to/minetest`
+# Run this while in `path/to/luanti`
 $vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", whatever matches your machine
 $toolchain_file="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" # or wherever you installed vcpkg.cmake manually
 cmake build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
@@ -105,13 +105,13 @@ Once the dependencies are installed, there are two ways to compile Luanti: via V
 Run the following command:
 
 ```powershell
-# Run this while in `path/to/minetest`
+# Run this while in `path/to/luanti`
 cmake --build build --config Release
 ```
 
 ## 4. Running Luanti
 
-Once Luanti is compiled, you should be able to run `path/to/minetest/bin/Release/luanti.exe` and start up the Development Test game :)
+Once Luanti is compiled, you should be able to run `path/to/luanti/bin/Release/luanti.exe` and start up the Development Test game :)
 
 ## 5. Making changes
 
