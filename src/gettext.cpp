@@ -172,8 +172,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 #if CHECK_CLIENT_BUILD()
 #if NDEBUG
 		// Hack to force gettext to see the right environment
-		// Disabled during debug as it can break debugging 
-
+		// Disabled during debug as it can break debugging
 		if (current_language != configured_language)
 			MSVC_LocaleWorkaround(argc, argv);
 #endif
