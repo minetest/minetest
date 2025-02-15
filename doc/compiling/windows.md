@@ -28,7 +28,7 @@ Install from [cmake.org/download](https://cmake.org/download/). Once installed, 
 
 Installing CMake this way also adds it to your PATH environment variable, and you should be able to run `(Get-Command cmake).Path` in PowerShell or `which cmake` in Bash and get a result.
 
-If you don't install CMake manually, and are relying on the version that comes bundled with Visual Studio, you can follow these steps:
+If you don't install CMake manually and are relying on the version that comes bundled with Visual Studio, you can follow these steps:
 
 1. Find the `/path/to/bin/CMake.exe`. It should be at or around `C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe`.
 1. Edit your PATH environment variable to include the `/path/to/bin` (but not `cmake.exe`).
@@ -70,7 +70,12 @@ $toolchain_file="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpk
 if (-Not (Test-Path -Path "build")) {
     mkdir build
 }
-cmake -S . -B build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
+cmake -S . -B build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" `
+    -DCMAKE_BUILD_TYPE=Release  `
+    -DENABLE_POSTGRESQL=OFF  `
+    -DENABLE_LUAJIT=TRUE  `
+    -DREQUIRE_LUAJIT=TRUE  `
+    -DRUN_IN_PLACE=TRUE
 ```
 
 The above steps may take about 10-30 minutes, depending on your device.
