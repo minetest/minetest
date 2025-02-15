@@ -687,28 +687,16 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data):
 
 			// Create material
 			video::SMaterial material;
-			material.BackfaceCulling = true;
 			material.FogEnable = true;
-			material.setTexture(0, p.layer.texture);
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
-			/*
-			 * The second layer is for overlays, but uses the same vertex positions
-			 * as the first, which quickly leads to z-fighting.
-			 * To fix this we can offset the polygons in the direction of the camera.
-			 * This only affects the depth buffer and leads to no visual gaps in geometry.
-			 */
-			if (layer == 1) {
-				material.PolygonOffsetSlopeScale = -1;
-				material.PolygonOffsetDepthBias = -1;
-			}
 
 			{
 				material.MaterialType = m_shdrsrc->getShaderInfo(
 						p.layer.shader_id).material;
-				p.layer.applyMaterialOptionsWithShaders(material);
+				p.layer.applyMaterialOptions(material, layer);
 			}
 
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();

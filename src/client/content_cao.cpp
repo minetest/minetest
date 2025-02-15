@@ -220,14 +220,9 @@ static scene::SMesh *generateNodeMesh(Client *client, MapNode n,
 
 			// Set up material
 			auto &mat = buf->Material;
-			mat.setTexture(0, p.layer.texture);
 			u32 shader_id = shdsrc->getShader("object_shader", p.layer.material_type, NDT_NORMAL);
 			mat.MaterialType = shdsrc->getShaderInfo(shader_id).material;
-			if (layer == 1) {
-				mat.PolygonOffsetSlopeScale = -1;
-				mat.PolygonOffsetDepthBias = -1;
-			}
-			p.layer.applyMaterialOptionsWithShaders(mat);
+			p.layer.applyMaterialOptions(mat, layer);
 
 			mesh->addMeshBuffer(buf.get());
 		}
