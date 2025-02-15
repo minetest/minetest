@@ -224,16 +224,50 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 	thread_local std::vector<aabb3f> nodeboxes;
 	Map *map = &env->getMap();
 
+	const bool air_walkable = nodedef->get(CONTENT_AIR).walkable;
+
+	v3s16 last_bp(S16_MAX);
+	MapBlock *last_block = nullptr;
+
+	// Note: as the area used here is usually small, iterating entire blocks
+	// would actually be slower by factor of 10.
+
 	v3s16 p;
 	for (p.Z = min.Z; p.Z <= max.Z; p.Z++)
 	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
 	for (p.X = min.X; p.X <= max.X; p.X++) {
-		bool is_position_valid;
-		MapNode n = map->getNode(p, &is_position_valid);
+		v3s16 bp, relp;
+		getNodeBlockPosWithOffset(p, bp, relp);
+		if (bp != last_bp) {
+			last_block = map->getBlockNoCreateNoEx(bp);
+			last_bp = bp;
+		}
+		MapBlock *const block = last_block;
 
-		if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
-			// Object collides into walkable nodes
+		if (!block) {
+			// Since we iterate with node precision we can only safely skip
+			// ahead in the "innermost" axis of the MapBlock (X).
+			// This still worth it as it reduces the number of nodes to look at
+			// and entries in `cinfo`.
+			v3s16 rowend(bp.X * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1, p.Y, p.Z);
+			aabb3f box = getNodeBox(p, BS);
+			box.addInternalBox(getNodeBox(rowend, BS));
+			// Collide with unloaded block
+			cinfo.emplace_back(true, 0, p, box);
+			p.X = rowend.X;
+			continue;
+		}
 
+		if (!air_walkable && block->isAir()) {
+			// Skip ahead if air, like above
+			any_position_valid = true;
+			p.X = bp.X * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1;
+			continue;
+		}
+
+		const MapNode n = block->getNodeNoCheck(relp);
+
+		if (n.getContent() != CONTENT_IGNORE) {
 			any_position_valid = true;
 			const ContentFeatures &f = nodedef->get(n);
 
@@ -248,7 +282,6 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 			nodeboxes.clear();
 			n.getCollisionBoxes(nodedef, &nodeboxes, neighbors);
 
-			// Calculate float position only once
 			v3f posf = intToFloat(p, BS);
 			for (auto box : nodeboxes) {
 				box.MinEdge += posf;
@@ -256,12 +289,12 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 				cinfo.emplace_back(false, n_bouncy_value, p, box);
 			}
 		} else {
-			// Collide with unloaded nodes (position invalid) and loaded
-			// CONTENT_IGNORE nodes (position valid)
+			// Collide with loaded CONTENT_IGNORE nodes
 			aabb3f box = getNodeBox(p, BS);
 			cinfo.emplace_back(true, 0, p, box);
 		}
 	}
+
 	return any_position_valid;
 }
 
