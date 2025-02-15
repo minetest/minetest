@@ -84,9 +84,13 @@ struct TileLayer
 		return !(*this == other);
 	}
 
-	void applyMaterialOptions(video::SMaterial &material) const;
-
-	void applyMaterialOptionsWithShaders(video::SMaterial &material) const;
+	/**
+	 * Set some material parameters accordingly.
+	 * @note does not set `MaterialType`
+	 * @param material material to mody
+	 * @param layer index of this layer in the `TileSpec`
+	 */
+	void applyMaterialOptions(video::SMaterial &material, int layer) const;
 
 	/// @return is this layer semi-transparent?
 	bool isTransparent() const
