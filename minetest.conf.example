@@ -3324,371 +3324,371 @@
 # show_advanced = false
 
 #    Key for moving the player forward.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_forward = KEY_KEY_W
 
 #    Key for moving the player backward.
 #    Will also disable autoforward, when active.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_backward = KEY_KEY_S
 
 #    Key for moving the player left.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_left = KEY_KEY_A
 
 #    Key for moving the player right.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_right = KEY_KEY_D
 
 #    Key for jumping.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_jump = KEY_SPACE
 
 #    Key for sneaking.
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_sneak = KEY_LSHIFT
 
 #    Key for digging, punching or using something.
 #    (Note: The actual meaning might vary on a per-game basis.)
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_dig = KEY_LBUTTON
 
 #    Key for placing an item/block or for using something.
 #    (Note: The actual meaning might vary on a per-game basis.)
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_place = KEY_RBUTTON
 
 #    Key for opening the inventory.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_inventory = KEY_KEY_I
 
 #    Key for moving fast in fast mode.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_aux1 = KEY_KEY_E
 
 #    Key for opening the chat window.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_chat = KEY_KEY_T
 
 #    Key for opening the chat window to type commands.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_cmd = /
 
 #    Key for opening the chat window to type local commands.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_cmd_local = .
 
 #    Key for toggling unlimited view range.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_rangeselect =
 
 #    Key for toggling flying.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_freemove = KEY_KEY_K
 
 #    Key for toggling pitch move mode.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_pitchmove =
 
 #    Key for toggling fast mode.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_fastmove = KEY_KEY_J
 
 #    Key for toggling noclip mode.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_noclip = KEY_KEY_H
 
 #    Key for selecting the next item in the hotbar.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_hotbar_next = KEY_KEY_N
 
 #    Key for selecting the previous item in the hotbar.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_hotbar_previous = KEY_KEY_B
 
 #    Key for muting the game.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_mute = KEY_KEY_M
 
 #    Key for increasing the volume.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_increase_volume =
 
 #    Key for decreasing the volume.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_volume =
 
 #    Key for toggling autoforward.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_autoforward =
 
 #    Key for toggling cinematic mode.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_cinematic =
 
 #    Key for toggling display of minimap.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_minimap = KEY_KEY_V
 
 #    Key for taking screenshots.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_screenshot = KEY_F12
 
 #    Key for toggling fullscreen mode.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_fullscreen = KEY_F11
 
 #    Key for dropping the currently selected item.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_drop = KEY_KEY_Q
 
 #    Key to use view zoom when possible.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_zoom = KEY_KEY_Z
 
 #    Key for selecting the first hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot1 = KEY_KEY_1
 
 #    Key for selecting the second hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot2 = KEY_KEY_2
 
 #    Key for selecting the third hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot3 = KEY_KEY_3
 
 #    Key for selecting the fourth hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot4 = KEY_KEY_4
 
 #    Key for selecting the fifth hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot5 = KEY_KEY_5
 
 #    Key for selecting the sixth hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot6 = KEY_KEY_6
 
 #    Key for selecting the seventh hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot7 = KEY_KEY_7
 
 #    Key for selecting the eighth hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot8 = KEY_KEY_8
 
 #    Key for selecting the ninth hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot9 = KEY_KEY_9
 
 #    Key for selecting the tenth hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot10 = KEY_KEY_0
 
 #    Key for selecting the 11th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot11 =
 
 #    Key for selecting the 12th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot12 =
 
 #    Key for selecting the 13th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot13 =
 
 #    Key for selecting the 14th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot14 =
 
 #    Key for selecting the 15th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot15 =
 
 #    Key for selecting the 16th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot16 =
 
 #    Key for selecting the 17th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot17 =
 
 #    Key for selecting the 18th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot18 =
 
 #    Key for selecting the 19th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot19 =
 
 #    Key for selecting the 20th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot20 =
 
 #    Key for selecting the 21st hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot21 =
 
 #    Key for selecting the 22nd hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot22 =
 
 #    Key for selecting the 23rd hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot23 =
 
 #    Key for selecting the 24th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot24 =
 
 #    Key for selecting the 25th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot25 =
 
 #    Key for selecting the 26th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot26 =
 
 #    Key for selecting the 27th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot27 =
 
 #    Key for selecting the 28th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot28 =
 
 #    Key for selecting the 29th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot29 =
 
 #    Key for selecting the 30th hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot30 =
 
 #    Key for selecting the 31st hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot31 =
 
 #    Key for selecting the 32nd hotbar slot.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot32 =
 
 #    Key for toggling the display of the HUD.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_hud = KEY_F1
 
 #    Key for toggling the display of chat.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_chat = KEY_F2
 
 #    Key for toggling the display of the large chat console.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_console = KEY_F10
 
 #    Key for toggling the display of fog.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_fog = KEY_F3
 
 #    Key for toggling the camera update. Only usable with 'debug' privilege.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_update_camera =
 
 #    Key for toggling the display of debug info.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_debug = KEY_F5
 
 #    Key for toggling the display of the profiler. Used for development.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_profiler = KEY_F6
 
 #    Key for toggling the display of mapblock boundaries.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_block_bounds =
 
 #    Key for switching between first- and third-person camera.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_camera_mode = KEY_KEY_C
 
 #    Key for increasing the viewing range.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_increase_viewing_range_min = +
 
 #    Key for decreasing the viewing range.
-#    See https://github.com/luanti-org/luanti/blob/master/irr/include/Keycodes.h
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_viewing_range_min = -
 
