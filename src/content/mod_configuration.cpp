@@ -140,8 +140,6 @@ void ModConfiguration::addModsFromConfig(
 	 *
 	 * Alternative candidates for a modname are stored in `candidates`,
 	 * and used in an error message later.
-	 *
-	 * If not enabled, add `load_mod_modname = false` to world.mt
 	 */
 	for (const auto &modPath : modPaths) {
 		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(modPath.second, modPath.first));
@@ -154,7 +152,7 @@ void ModConfiguration::addModsFromConfig(
 					candidates[pair->first].emplace_back(mod.virtual_path);
 				}
 			} else {
-				conf.setBool("load_mod_" + mod.name, false);
+				conf.remove("load_mod_" + mod.name);
 			}
 		}
 	}

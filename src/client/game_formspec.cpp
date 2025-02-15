@@ -283,9 +283,7 @@ void GameFormSpec::showPauseMenuFormSpec(const std::string &formspec, const std:
 			&m_input->joystick, fs_src, txt_dst, "",
 			m_client->getSoundManager());
 
-	// FIXME: can't enable this for now because "fps_max_unfocused" also applies
-	// when the game is paused, making the settings menu much less enjoyable.
-	// m_formspec->doPause = true;
+	m_formspec->doPause = true;
 }
 
 void GameFormSpec::showNodeFormspec(const std::string &formspec, const v3s16 &nodepos)
@@ -376,18 +374,18 @@ void GameFormSpec::showPauseMenu()
 		<< strgettext("Continue") << "]";
 
 	if (!simple_singleplayer_mode) {
-		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
+		os << "button[4," << (ypos++) << ";3,0.5;btn_change_password;"
 			<< strgettext("Change Password") << "]";
 	} else {
 		os << "field[4.95,0;5,1.5;;" << strgettext("Game paused") << ";]";
 	}
 
-	os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_settings;"
+	os	<< "button[4," << (ypos++) << ";3,0.5;btn_settings;"
 		<< strgettext("Settings") << "]";
 
 #ifndef __ANDROID__
 #if USE_SOUND
-	os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+	os << "button[4," << (ypos++) << ";3,0.5;btn_sound;"
 		<< strgettext("Sound Volume") << "]";
 #endif
 #endif

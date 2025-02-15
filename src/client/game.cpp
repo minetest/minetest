@@ -901,8 +901,12 @@ bool Game::startup(bool *kill,
 
 	// In principle we could always enable relative mouse mode, but it causes weird
 	// bugs on some setups (e.g. #14932), so we enable it only when it's required.
-	// That is: on Wayland, because it does not support mouse repositioning
+	// That is: on Wayland or Android, because it does not support mouse repositioning
+#ifdef __ANDROID__
+	m_enable_relative_mode = true;
+#else
 	m_enable_relative_mode = device->isUsingWayland();
+#endif
 
 	g_client_translations->clear();
 

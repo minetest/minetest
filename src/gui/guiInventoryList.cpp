@@ -85,6 +85,10 @@ void GUIInventoryList::draw()
 		v2s32 p((i % m_geom.X) * m_slot_spacing.X,
 				(i / m_geom.X) * m_slot_spacing.Y);
 		core::rect<s32> rect = imgrect + base_pos + p;
+
+		if (!getAbsoluteClippingRect().isRectCollided(rect))
+			continue; // out of (parent) clip area
+
 		const ItemStack &orig_item = ilist->getItem(item_i);
 		ItemStack item = orig_item;
 

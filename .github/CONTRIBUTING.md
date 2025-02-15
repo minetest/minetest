@@ -25,7 +25,7 @@ Contributions are welcome! Here's how you can help:
    the work, to avoid disappointment.
 
    You may also benefit from discussing on our IRC development channel
-   [#minetest-dev](http://www.minetest.net/irc/). Note that a proper IRC client
+   [#luanti-dev](http://www.luanti.org/irc/). Note that a proper IRC client
    is required to speak on this channel.
 
 3. Start coding!
@@ -76,8 +76,8 @@ If you experience an issue, we would like to know the details - especially when
 a stable release is on the way.
 
 1. Do a quick search on GitHub to check if the issue has already been reported.
-2. Is it an issue with the Minetest *engine*? If not, report it
-   [elsewhere](http://www.minetest.net/development/#reporting-issues).
+2. Is it an issue with the Luanti *engine*? If not, report it
+   [elsewhere](http://www.luanti.org/development/#reporting-issues).
 3. [Open an issue](https://github.com/luanti-org/luanti/issues/new) and describe
    the issue you are having - you could include:
      - Error logs (check the bottom of the `debug.txt` file).
@@ -111,7 +111,7 @@ translated by editing a `.tr` text file. See
 ## Donations
 
 If you'd like to monetarily support Luanti development, you can find donation
-methods on [our website](http://www.minetest.net/development/#donate).
+methods on [our website](http://www.luanti.org/development/#donate).
 
 # Maintaining
 

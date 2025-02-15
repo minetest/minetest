@@ -17,6 +17,8 @@
 #include "client/renderingengine.h"
 #include "client.h"
 #include "noise.h"
+#include <SMesh.h>
+#include <IMeshBuffer.h>
 
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant

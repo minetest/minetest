@@ -21,6 +21,9 @@
 #include <algorithm>
 #include <cmath>
 #include "client/texturesource.h"
+#include <SMesh.h>
+#include <IMeshBuffer.h>
+#include <SMeshBuffer.h>
 
 /*
 	MeshMakeData
