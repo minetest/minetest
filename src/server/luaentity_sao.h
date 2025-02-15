@@ -77,6 +77,7 @@ protected:
 
 private:
 	std::string getPropertyPacket();
+	std::string getPropertyPacket(const ObjectProperties::ChangedProperties &change);
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 	std::string generateSetTextureModCommand() const;
 	static std::string generateSetSpriteCommand(v2s16 p, u16 num_frames,

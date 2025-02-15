@@ -76,7 +76,7 @@ public:
 
 	// Object properties
 	ObjectProperties *accessObjectProperties() override;
-	void notifyObjectPropertiesModified() override;
+	void notifyObjectPropertiesModified(const ObjectProperties::ChangedProperties &change) override;
 	void sendOutdatedData();
 
 	// Update packets
@@ -88,6 +88,8 @@ public:
 			const v3f &velocity, const v3f &acceleration, const v3f &rotation,
 			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
+	std::string generateUpdatePropertiesCommand(const ObjectProperties &prop,
+			const ObjectProperties::ChangedProperties &change) const;
 	static std::string generateUpdateBoneOverrideCommand(
 			const std::string &bone, const BoneOverride &props);
 	void sendPunchCommand();
@@ -101,7 +103,7 @@ protected:
 	ItemGroupList m_armor_groups;
 
 	// Object properties
-	bool m_properties_sent = true;
+	ObjectProperties::ChangedProperties m_properties_to_send{0};
 	ObjectProperties m_prop;
 
 	// Stores position and rotation for each bone name

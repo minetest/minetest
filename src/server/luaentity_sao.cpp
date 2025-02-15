@@ -119,9 +119,9 @@ void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
-	if (!m_properties_sent) {
-		m_properties_sent = true;
-		std::string str = getPropertyPacket();
+	if (m_properties_to_send.any()) {
+		std::string str = getPropertyPacket(m_properties_to_send);
+		m_properties_to_send.reset();
 		// create message and add to list
 		m_messages_out.emplace(getId(), true, std::move(str));
 	}
@@ -492,6 +492,11 @@ std::string LuaEntitySAO::getName()
 std::string LuaEntitySAO::getPropertyPacket()
 {
 	return generateSetPropertiesCommand(m_prop);
+}
+
+std::string LuaEntitySAO::getPropertyPacket(const ObjectProperties::ChangedProperties &change)
+{
+	return generateUpdatePropertiesCommand(m_prop, change);
 }
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)

@@ -178,6 +178,7 @@ public:
 
 private:
 	std::string getPropertyPacket();
+	std::string getPropertyPacket(const ObjectProperties::ChangedProperties &change);
 	void unlinkPlayerSessionAndSave();
 	std::string generateUpdatePhysicsOverrideCommand() const;
 

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include "util/pointabilities.h"
+#include <bitset>
 
 struct ObjectProperties
 {
@@ -74,4 +75,15 @@ struct ObjectProperties
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
+
+	using ChangedProperties = std::bitset<27>;
+	ChangedProperties getChange(const ObjectProperties &other);
+	static constexpr ChangedProperties nametag_change{0b1100010000000ul};
+	static constexpr ChangedProperties full_change{~0ul};
+
+	// Those only change values if the corresponding bit is set,
+	// presumably a little slower to parse, but much more space efficient.
+	// (Even if all bits are set, they are not compatible with serialize and deSerialize.)
+	void serializeChanges(std::ostream &os, const ChangedProperties &fields) const;
+	void deSerializeChanges(std::istream &is);
 };

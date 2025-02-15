@@ -252,3 +252,249 @@ void ObjectProperties::deSerialize(std::istream &is)
 		rotate_selectionbox = tmp;
 	} catch (SerializationError &e) {}
 }
+
+ObjectProperties::ChangedProperties ObjectProperties::getChange(const ObjectProperties &other)
+{
+	ChangedProperties change;
+
+	change[0] = textures != other.textures;
+	change[1] = colors != other.colors;
+	change[2] = collisionbox != other.collisionbox;
+	change[3] = selectionbox != other.selectionbox;
+	change[4] = visual != other.visual;
+	change[5] = mesh != other.mesh;
+	change[6] = damage_texture_modifier != other.damage_texture_modifier;
+	change[7] = nametag != other.nametag;
+	change[8] = infotext != other.infotext;
+	change[9] = wield_item != other.wield_item;
+	change[10] = visual_size != other.visual_size;
+	change[11] = nametag_color != other.nametag_color;
+	change[12] = nametag_bgcolor != other.nametag_bgcolor;
+	change[13] = spritediv != other.spritediv;
+	change[14] = initial_sprite_basepos != other.initial_sprite_basepos;
+	change[15] = stepheight != other.stepheight;
+	change[16] = automatic_rotate != other.automatic_rotate;
+	change[17] = automatic_face_movement_dir_offset != other.automatic_face_movement_dir_offset;
+	change[18] = automatic_face_movement_max_rotation_per_sec !=
+		other.automatic_face_movement_max_rotation_per_sec;
+	change[19] = eye_height != other.eye_height;
+	change[20] = zoom_fov != other.zoom_fov;
+	change[21] = hp_max != other.hp_max;
+	change[22] = breath_max != other.breath_max;
+	change[23] = glow != other.glow;
+	change[24] = pointable != other.pointable;
+	change[25] = physical != other.physical ||
+		collideWithObjects != other.collideWithObjects ||
+		rotate_selectionbox != other.rotate_selectionbox ||
+		is_visible != other.is_visible ||
+		makes_footstep_sound != other.makes_footstep_sound ||
+		automatic_face_movement_dir != other.automatic_face_movement_dir ||
+		backface_culling != other.backface_culling ||
+		use_texture_alpha != other.use_texture_alpha;
+	change[26] = shaded != other.shaded || show_on_minimap != other.show_on_minimap;
+
+	return change;
+}
+
+void ObjectProperties::serializeChanges(std::ostream &os, const ChangedProperties &fields) const
+{
+	writeU8(os, 0); // Version 0 uses 27 bits (actually only a quarter of the last bit :-)
+
+	writeU32(os, fields.to_ulong());
+
+	if (fields[0]) {
+		writeU16(os, textures.size());
+		for (const std::string &texture : textures) {
+			os << serializeString16(texture);
+		}
+	}
+	if (fields[1]) {
+		writeU16(os, colors.size());
+		for (video::SColor color : colors) {
+			writeARGB8(os, color);
+		}
+	}
+	if (fields[2]) {
+		writeV3F32(os, collisionbox.MinEdge);
+		writeV3F32(os, collisionbox.MaxEdge);
+	}
+	if (fields[3]) {
+		writeV3F32(os, selectionbox.MinEdge);
+		writeV3F32(os, selectionbox.MaxEdge);
+	}
+	if (fields[4])
+		os << serializeString16(visual);
+	if (fields[5])
+		os << serializeString16(mesh);
+	if (fields[6])
+		os << serializeString16(damage_texture_modifier);
+	if (fields[7])
+		os << serializeString16(nametag);
+	if (fields[8])
+		os << serializeString16(infotext);
+	if (fields[9])
+		os << serializeString16(wield_item);
+	if (fields[10])
+		writeV3F32(os, visual_size);
+	if (fields[11])
+		writeARGB8(os, nametag_color);
+	if (fields[12]) {
+		if (!nametag_bgcolor)
+			writeARGB8(os, NULL_BGCOLOR);
+		else if (nametag_bgcolor.value().getAlpha() == 0)
+			writeARGB8(os, video::SColor(0, 0, 0, 0));
+		else
+			writeARGB8(os, nametag_bgcolor.value());
+	}
+	if (fields[13])
+		writeV2S16(os, spritediv);
+	if (fields[14])
+		writeV2S16(os, initial_sprite_basepos);
+	if (fields[15])
+		writeF32(os, stepheight);
+	if (fields[16])
+		writeF32(os, automatic_rotate);
+	if (fields[17])
+		writeF32(os, automatic_face_movement_dir_offset);
+	if (fields[18])
+		writeF32(os, automatic_face_movement_max_rotation_per_sec);
+	if (fields[19])
+		writeF32(os, eye_height);
+	if (fields[20])
+		writeF32(os, zoom_fov);
+	if (fields[21])
+		writeU16(os, hp_max);
+	if (fields[22])
+		writeU16(os, breath_max);
+	if (fields[23])
+		writeS8(os, glow);
+	if (fields[24])
+		Pointabilities::serializePointabilityType(os, pointable);
+
+	if (fields[25]) {
+		u8 bits = 0;
+		if (physical)
+			bits |= 0b00000001;
+		if (collideWithObjects)
+			bits |= 0b00000010;
+		if (rotate_selectionbox)
+			bits |= 0b00000100;
+		if (is_visible)
+			bits |= 0b00001000;
+		if (makes_footstep_sound)
+			bits |= 0b00010000;
+		if (automatic_face_movement_dir)
+			bits |= 0b00100000;
+		if (backface_culling)
+			bits |= 0b01000000;
+		if (use_texture_alpha)
+			bits |= 0b10000000;
+		writeU8(os, bits);
+	}
+
+	if (fields[26]) {
+		u8 bits = 0;
+		if (shaded)
+			bits |= 0b00000001;
+		if (show_on_minimap)
+			bits |= 0b00000010;
+		writeU8(os, bits);
+	}
+}
+
+void ObjectProperties::deSerializeChanges(std::istream &is)
+{
+	u8 version = readU8(is);
+	if (version != 0)
+		throw SerializationError("unsupported ObjectProperties serializeChanges version");
+
+	ChangedProperties fields(readU32(is));
+
+	if (fields[0]) {
+		textures.clear();
+		u16 texture_count = readU16(is);
+		for (u16 i = 0; i < texture_count; i++){
+			textures.push_back(deSerializeString16(is));
+		}
+	}
+	if (fields[1]) {
+		colors.clear();
+		u16 color_count = readU16(is);
+		for (u16 i = 0; i < color_count; i++){
+			colors.push_back(readARGB8(is));
+		}
+	}
+	if (fields[2]) {
+		collisionbox.MinEdge = readV3F32(is);
+		collisionbox.MaxEdge = readV3F32(is);
+	}
+	if (fields[3]) {
+		selectionbox.MinEdge = readV3F32(is);
+		selectionbox.MaxEdge = readV3F32(is);
+	}
+	if (fields[4])
+		visual = deSerializeString16(is);
+	if (fields[5])
+		mesh = deSerializeString16(is);
+	if (fields[6])
+		damage_texture_modifier = deSerializeString16(is);
+	if (fields[7])
+		nametag = deSerializeString16(is);
+	if (fields[8])
+		infotext = deSerializeString16(is);
+	if (fields[9])
+		wield_item = deSerializeString16(is);
+	if (fields[10])
+		visual_size = readV3F32(is);
+	if (fields[11])
+		nametag_color = readARGB8(is);
+	if (fields[12]) {
+		auto bgcolor = readARGB8(is);
+		if (bgcolor != NULL_BGCOLOR)
+			nametag_bgcolor = bgcolor;
+		else
+			nametag_bgcolor = std::nullopt;
+	}
+	if (fields[13])
+		spritediv = readV2S16(is);
+	if (fields[14])
+		initial_sprite_basepos = readV2S16(is);
+	if (fields[15])
+		stepheight = readF32(is);
+	if (fields[16])
+		automatic_rotate = readF32(is);
+	if (fields[17])
+		automatic_face_movement_dir_offset = readF32(is);
+	if (fields[18])
+		automatic_face_movement_max_rotation_per_sec = readF32(is);
+	if (fields[19])
+		eye_height = readF32(is);
+	if (fields[20])
+		zoom_fov = readF32(is);
+	if (fields[21])
+		hp_max = readU16(is);
+	if (fields[22])
+		breath_max = readU16(is);
+	if (fields[23])
+		glow = readS8(is);
+	if (fields[24])
+		pointable = Pointabilities::deSerializePointabilityType(is);
+
+	if (fields[25]) {
+		u8 bits = readU8(is);
+		physical = bits & 0b00000001;
+		collideWithObjects = bits & 0b00000010;
+		rotate_selectionbox = bits & 0b00000100;
+		is_visible = bits & 0b00001000;
+		makes_footstep_sound = bits & 0b00010000;
+		automatic_face_movement_dir = bits & 0b00100000;
+		backface_culling = bits & 0b01000000;
+		use_texture_alpha = bits & 0b10000000;
+	}
+
+	if (fields[26]) {
+		u8 bits = readU8(is);
+		shaded = bits & 0b00000001;
+		show_on_minimap = bits & 0b00000010;
+	}
+}
