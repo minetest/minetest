@@ -14,7 +14,7 @@ Luanti is compiled via Visual Studio and CMake, and version control is managed w
 1. Install VS from [visualstudio.microsoft.com](https://visualstudio.microsoft.com)
 1. In the VS installer, select "Desktop development with C++":
 
-    ![VS installer showing desktop development with C++ selected](assets/vs-installer.png)
+    ![VS installer showing "desktop development with C++" selected](assets/vs-installer.png)
 
 1. Confirm the installation.
 
@@ -48,7 +48,7 @@ Once VS and CMake are ready to use, you can install Luanti's dependencies. Luant
 
 ### 2.1. Optional dependencies
 
-Some optional dependencies are recommended for advanced development. You can add them to `vcpkg.json` to install them along with the required dependencies.
+Some optional dependencies are recommended for advanced development. You can remove them from `vcpkg.json` to create a minimal working version of Luanti.
 
 -   `curl[winssl]` is highly recommended, as it's required to use the server list and content store.
 -   `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
