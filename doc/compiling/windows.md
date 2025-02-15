@@ -66,7 +66,11 @@ To install dependencies via CLI, run the following commands in PowerShell:
 # Run this while in `path/to/luanti`
 $vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", whatever matches your machine
 $toolchain_file="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" # or wherever you installed vcpkg.cmake manually
-cmake build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
+# Create the build directory if it doesn't exist
+if (-Not (Test-Path -Path "build")) {
+    mkdir build
+}
+cmake -S . -B build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
 ```
 
 The above steps may take about 10-30 minutes, depending on your device.

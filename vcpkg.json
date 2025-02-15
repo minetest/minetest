@@ -1,7 +1,9 @@
 {
   "dependencies": [
-    "curl",
-    "curl[winssl]",
+    {
+      "name": "curl",
+      "features": ["winssl"]
+    },
     "freetype",
     "gettext",
     "gmp",
