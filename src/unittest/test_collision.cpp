@@ -226,7 +226,7 @@ void TestCollision::testCollisionMoveSimple(IGameDef *gamedef)
 
 	UASSERT(!res.touching_ground && !res.collides && !res.standing_on_object);
 	UASSERT(res.collisions.empty());
-	UASSERTEQ_V3F(pos, fpos(4, 1.5, 4));
+	UASSERTEQ_V3F(pos, fpos(4, 1.5f, 4));
 	UASSERTEQ_V3F(speed, fpos(0, 1, 0));
 
 	/* standing on ground */
