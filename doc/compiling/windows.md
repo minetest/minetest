@@ -60,7 +60,7 @@ Some optional dependencies are recommended for advanced development. You can add
 
 You can install dependencies via CLI or via CMake GUI, whichever your prefer.
 
-To install dependencies via CLI, you can run this program in PowerShell:
+To install dependencies via CLI, run the following commands in PowerShell:
 
 ```powershell
 # Run this while in `path/to/minetest`
