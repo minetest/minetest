@@ -27,8 +27,7 @@ _luanti() {
   elif [[ "$prev" == "--worldlist" ]]; then
     COMPREPLY=($(compgen -W "$worldlist_values" -- "$cur"))
   elif [[ "$prev" == "--gameid" ]]; then
-    # FIXME: Why luanti --gameid list returns list into stderr?
-    COMPREPLY=($(compgen -W "list $(luanti --gameid list 2>&1)" -- "$cur"))
+    COMPREPLY=($(compgen -W "list $(luanti --gameid list)" -- "$cur"))
   elif [[ "$prev" == "--worldname" ]]; then
     COMPREPLY=($(compgen -W "$(__worldname_list)" -- "$cur"))
   elif [[ " ${file_opts[*]} " == *" ${prev} "* ]]; then
