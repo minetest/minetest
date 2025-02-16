@@ -458,7 +458,7 @@ do
 end
 
 
-function table.copy(value, preserve_metatables)
+local function table_copy(value, preserve_metatables)
 	local seen = {}
 	local function copy(val)
 		if type(val) ~= "table" then
@@ -481,6 +481,13 @@ function table.copy(value, preserve_metatables)
 	return copy(value)
 end
 
+function table.copy(value)
+	return table_copy(value, false)
+end
+
+function table.copy_with_metatables(value)
+	return table_copy(value, true)
+end
 
 function table.insert_all(t, other)
 	if table.move then -- LuaJIT
