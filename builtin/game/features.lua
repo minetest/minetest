@@ -45,6 +45,7 @@ core.features = {
 	abm_without_neighbors = true,
 	biome_weights = true,
 	particle_blend_clip = true,
+	texture_variants = true,
 }
 
 function core.has_feature(arg)

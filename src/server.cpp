@@ -1944,6 +1944,17 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 	Send(&pkt);
 }
 
+void Server::SendSetNodeVisual(session_t peer_id, const std::string &node_name, const NodeVisual &node_visual)
+{
+	NetworkPacket pkt(TOCLIENT_SET_NODE_VISUAL,
+			4, peer_id);
+
+	pkt << node_name;
+	pkt << node_visual.variant_offset;
+
+	Send(&pkt);
+}
+
 void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 {
 	NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
@@ -3516,6 +3527,13 @@ void Server::setLighting(RemotePlayer *player, const Lighting &lighting)
 	SendSetLighting(player->getPeerId(), lighting);
 }
 
+void Server::setNodeVisual(RemotePlayer *player, const std::string &node_name, const NodeVisual &node_visual)
+{
+	sanity_check(player);
+	player->setNodeVisual(node_name, node_visual);
+	SendSetNodeVisual(player->getPeerId(), node_name, node_visual);
+}
+
 void Server::notifyPlayers(const std::wstring &msg)
 {
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(msg));
@@ -4035,7 +4053,7 @@ std::unique_ptr<PlayerSAO> Server::emergePlayer(const char *name, session_t peer
 	*/
 
 	if (!player) {
-		player = new RemotePlayer(name, idef());
+		player = new RemotePlayer(name, idef(), m_nodedef);
 	}
 
 	// Load player
