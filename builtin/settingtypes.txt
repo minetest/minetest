@@ -1980,6 +1980,10 @@ lighting_boost_spread (Light curve boost spread) float 0.2 0.0 0.4
 
 [**Networking]
 
+#    Enable IPv6 support (for both client and server).
+#    Required for IPv6 connections to work at all.
+enable_ipv6 (IPv6) bool true
+
 #    Prometheus listener address.
 #    If Luanti is compiled with ENABLE_PROMETHEUS option enabled,
 #    enable metrics listener for Prometheus on that address.
@@ -2184,10 +2188,6 @@ curl_file_download_timeout (cURL file download timeout) int 300000 5000 21474836
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
 clickable_chat_weblinks (Chat weblinks) bool true
-
-#    Enable IPv6 support (for both client and server).
-#    Required for IPv6 connections to work at all.
-enable_ipv6 (IPv6) bool true
 
 #    If enabled, invalid world data won't cause the server to shut down.
 #    Only enable this if you know what you are doing.
