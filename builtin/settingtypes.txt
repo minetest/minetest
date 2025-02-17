@@ -717,9 +717,6 @@ console_color (Console color) string (0,0,0)
 #    In-game chat console background alpha (opaqueness, between 0 and 255).
 console_alpha (Console alpha) int 200 0 255
 
-#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
-clickable_chat_weblinks (Chat weblinks) bool true
-
 #    Optional override for chat weblink color.
 chat_weblink_color (Weblink color) string #8888FF
 
@@ -2192,6 +2189,9 @@ curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 curl_file_download_timeout (cURL file download timeout) int 300000 5000 2147483647
 
 [**Miscellaneous]
+
+#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
+clickable_chat_weblinks (Chat weblinks) bool true
 
 #    Adjust the detected display density, used for scaling UI elements.
 display_density_factor (Display Density Scaling Factor) float 1 0.5 5.0
