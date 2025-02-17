@@ -772,9 +772,10 @@ private:
 	bool m_is_paused = false;
 
 	bool m_touch_simulate_aux1 = false;
-	bool m_touch_use_crosshair;
-	inline bool isTouchCrosshairDisabled() {
-		return !m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST;
+	inline bool isTouchShootlineUsed()
+	{
+		return g_touchcontrols && g_touchcontrols->isShootlineAvailable() &&
+				camera->getCameraMode() == CAMERA_MODE_FIRST;
 	}
 #ifdef __ANDROID__
 	bool m_android_chat_open;
@@ -823,8 +824,6 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("touch_use_crosshair",
-			&settingChangedCallback, this);
 
 	readSettings();
 }
@@ -1380,10 +1379,8 @@ bool Game::initGui()
 	gui_chat_console = make_irr<GUIChatConsole>(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-	if (shouldShowTouchControls()) {
+	if (shouldShowTouchControls())
 		g_touchcontrols = new TouchControls(device, texture_src);
-		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
-	}
 
 	return true;
 }
@@ -2980,9 +2977,6 @@ void Game::updateCameraMode()
 	if (player->allowed_camera_mode != CAMERA_MODE_ANY)
 		camera->setCameraMode(player->allowed_camera_mode);
 
-	if (g_touchcontrols)
-		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
-
 	GenericCAO *playercao = player->getCAO();
 	if (playercao) {
 		// Make the player visible depending on camera mode.
@@ -3086,7 +3080,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	}
 	shootline.end = shootline.start + camera_direction * BS * d;
 
-	if (g_touchcontrols && isTouchCrosshairDisabled()) {
+	if (isTouchShootlineUsed()) {
 		shootline = g_touchcontrols->getShootline();
 		// Scale shootline to the acual distance the player can reach
 		shootline.end = shootline.start +
@@ -4059,7 +4053,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 
-	if (g_touchcontrols && isTouchCrosshairDisabled())
+	if (isTouchShootlineUsed())
 		draw_crosshair = false;
 
 	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
@@ -4139,10 +4133,6 @@ void Game::readSettings()
 	m_invert_hotbar_mouse_wheel = g_settings->getBool("invert_hotbar_mouse_wheel");
 
 	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
-
-	m_touch_use_crosshair = g_settings->getBool("touch_use_crosshair");
-	if (g_touchcontrols)
-		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
 }
 
 /****************************************************************************/

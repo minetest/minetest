@@ -22,7 +22,11 @@ namespace irr::video
 
 enum touch_gui_button_id : u8
 {
-	jump_id = 0,
+	// these two are no actual buttons ... yet
+	dig_id = 0,
+	place_id,
+
+	jump_id,
 	sneak_id,
 	zoom_id,
 	aux1_id,
