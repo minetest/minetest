@@ -116,7 +116,7 @@ automatically. Or you can create a `local.properties` file and specify
   > key.alias=Minetest
 
 * To build on Windows, you might need the external unix dependency [gettext](https://www.gnu.org/software/gettext/) (Also available through [scoop](https://scoop.sh/),
-  for easier installation). Additionally, the `gradle` command can be used instead of `gradlew`.
+  for easier installation). Additionally, if the `gradlew` command is missing, `gradle wrapper` or `gradle` can be used.
 
 
   
