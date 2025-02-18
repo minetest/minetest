@@ -50,7 +50,7 @@ local function pair(x, y)
 	return setmetatable({x, y}, pair_mt)
 end
 -- Use our own serialization functions to avoid incorrectly passing test related to references.
-core.register_metatable("pair", pair_mt)
+core.register_portable_metatable("pair", pair_mt)
 assert.equals(pair(1, 2), pair(1, 2))
 assert.not_equals(pair(1, 2), pair(3, 4))
 
@@ -165,7 +165,7 @@ describe("serialize", function()
 				return x[1] == y[1]
 			end,
 		}
-		core.register_metatable("test_recursive_typed", mt)
+		core.register_portable_metatable("test_recursive_typed", mt)
 		local t = setmetatable({1}, mt)
 		t[2] = t
 		assert_strictly_preserves(t)
