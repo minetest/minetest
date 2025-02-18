@@ -93,6 +93,8 @@ build system, as the Android build will download some source packages.
 
 ## Build
 
+_The following is a summary, the full compilation documentation can be found in the Luanti Documentation article, [Compiling Luanti for Android](https://docs.luanti.org/compiling/android/)._
+
 The new build system Luanti Android is fully functional and is designed to
 speed up and simplify the work, as well as adding the possibility of
 cross-platform build.
