@@ -142,6 +142,12 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 
 	std::string key = "";
 	switch (id) {
+		case dig_id:
+			key = "dig";
+			break;
+		case place_id:
+			key = "place";
+			break;
 		case jump_id:
 			key = "jump";
 			break;
@@ -204,6 +210,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 
 
 static const char *setting_names[] = {
+	"touch_use_crosshair",
 	"touchscreen_threshold", "touch_long_tap_delay",
 	"fixed_virtual_joystick", "virtual_joystick_triggers_aux1",
 	"touch_layout",
@@ -230,6 +237,7 @@ void TouchControls::settingChangedCallback(const std::string &name, void *data)
 
 void TouchControls::readSettings()
 {
+	m_use_crosshair = g_settings->getBool("touch_use_crosshair");
 	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
 	m_long_tap_delay = g_settings->getU16("touch_long_tap_delay");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
@@ -542,10 +550,11 @@ void TouchControls::translateEvent(const SEvent &event)
 				m_move_has_really_moved    = false;
 				m_move_downtime            = porting::getTimeMs();
 				m_move_pos                 = touch_pos;
-				// DON'T reset m_tap_state here, otherwise many short taps
-				// will be ignored if you tap very fast.
 				m_had_move_id              = true;
 				m_move_prevent_short_tap   = prevent_short_tap;
+
+				// DON'T reset m_tap_state here, otherwise many short taps
+				// will be ignored if you tap very fast.
 			}
 		}
 	}
@@ -663,15 +672,13 @@ void TouchControls::step(float dtime)
 	// Since not only the pointer position, but also the player position and
 	// thus the camera position can change, it doesn't suffice to update the
 	// shootline when a touch event occurs.
-	// Note that the shootline isn't used if touch_use_crosshair is enabled.
 	// Only updating when m_has_move_id means that the shootline will stay at
 	// it's last in-world position when the player doesn't need it.
-	if (!m_draw_crosshair && (m_has_move_id || m_had_move_id)) {
-		v2s32 pointer_pos = getPointerPos();
+	if (!m_use_crosshair && (m_has_move_id || m_had_move_id)) {
 		m_shootline = m_device
 				->getSceneManager()
 				->getSceneCollisionManager()
-				->getRayFromScreenCoordinates(pointer_pos);
+				->getRayFromScreenCoordinates(m_move_pos);
 	}
 	m_had_move_id = false;
 }
@@ -734,11 +741,11 @@ void TouchControls::releaseAll()
 	// Release those manually too since the change initiated by
 	// handleReleaseEvent will only be applied later by applyContextControls.
 	if (m_dig_pressed) {
-		emitMouseEvent(EMIE_LMOUSE_LEFT_UP);
+		emitKeyboardEvent(id_to_keycode(dig_id), false);
 		m_dig_pressed = false;
 	}
 	if (m_place_pressed) {
-		emitMouseEvent(EMIE_RMOUSE_LEFT_UP);
+		emitKeyboardEvent(id_to_keycode(place_id), false);
 		m_place_pressed = false;
 	}
 }
@@ -751,31 +758,6 @@ void TouchControls::hide()
 void TouchControls::show()
 {
 	setVisible(true);
-}
-
-v2s32 TouchControls::getPointerPos()
-{
-	if (m_draw_crosshair)
-		return v2s32(m_screensize.X / 2, m_screensize.Y / 2);
-	// We can't just use m_pointer_pos[m_move_id] because applyContextControls
-	// may emit release events after m_pointer_pos[m_move_id] is erased.
-	return m_move_pos;
-}
-
-void TouchControls::emitMouseEvent(EMOUSE_INPUT_EVENT type)
-{
-	v2s32 pointer_pos = getPointerPos();
-
-	SEvent event{};
-	event.EventType               = EET_MOUSE_INPUT_EVENT;
-	event.MouseInput.X            = pointer_pos.X;
-	event.MouseInput.Y            = pointer_pos.Y;
-	event.MouseInput.Shift        = false;
-	event.MouseInput.Control      = false;
-	event.MouseInput.ButtonStates = 0;
-	event.MouseInput.Event        = type;
-	event.MouseInput.Simulated    = true;
-	m_receiver->OnEvent(event);
 }
 
 void TouchControls::applyContextControls(const TouchInteractionMode &mode)
@@ -844,20 +826,20 @@ void TouchControls::applyContextControls(const TouchInteractionMode &mode)
 	target_place_pressed |= now < m_place_pressed_until;
 
 	if (target_dig_pressed && !m_dig_pressed) {
-		emitMouseEvent(EMIE_LMOUSE_PRESSED_DOWN);
+		emitKeyboardEvent(id_to_keycode(dig_id), true);
 		m_dig_pressed = true;
 
 	} else if (!target_dig_pressed && m_dig_pressed) {
-		emitMouseEvent(EMIE_LMOUSE_LEFT_UP);
+		emitKeyboardEvent(id_to_keycode(dig_id), false);
 		m_dig_pressed = false;
 	}
 
 	if (target_place_pressed && !m_place_pressed) {
-		emitMouseEvent(EMIE_RMOUSE_PRESSED_DOWN);
+		emitKeyboardEvent(id_to_keycode(place_id), true);
 		m_place_pressed = true;
 
 	} else if (!target_place_pressed && m_place_pressed) {
-		emitMouseEvent(EMIE_RMOUSE_LEFT_UP);
+		emitKeyboardEvent(id_to_keycode(place_id), false);
 		m_place_pressed = false;
 	}
 }

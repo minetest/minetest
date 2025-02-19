@@ -14,6 +14,9 @@
 #include "IGUIStaticText.h"
 
 const char *button_names[] = {
+	"dig",
+	"place",
+
 	"jump",
 	"sneak",
 	"zoom",
@@ -41,6 +44,9 @@ const char *button_names[] = {
 
 // compare with GUIKeyChangeMenu::init_keys
 const char *button_titles[] = {
+	N_("Dig/punch/use"),
+	N_("Place/use"),
+
 	N_("Jump"),
 	N_("Sneak"),
 	N_("Zoom"),
@@ -67,6 +73,9 @@ const char *button_titles[] = {
 };
 
 const char *button_image_names[] = {
+	"",
+	"",
+
 	"jump_btn.png",
 	"down.png",
 	"zoom.png",
@@ -123,7 +132,8 @@ void ButtonMeta::setPos(v2s32 pos, v2u32 screensize, s32 button_size)
 
 bool ButtonLayout::isButtonAllowed(touch_gui_button_id id)
 {
-	return id != joystick_off_id && id != joystick_bg_id && id != joystick_center_id &&
+	return id != dig_id && id != place_id &&
+			id != joystick_off_id && id != joystick_bg_id && id != joystick_center_id &&
 			id != touch_gui_button_id_END;
 }
 
