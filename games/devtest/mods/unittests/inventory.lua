@@ -68,6 +68,7 @@ local function test_inventory()
 	inv:set_stack("test", 1, "air 3")
 	assert(inv:remove_item("test", get_stack_with_meta(3), true) == get_stack_with_meta(2))
 	assert(inv:remove_item("test", "air 3", true) == ItemStack("air 3"))
+	assert(inv:is_empty("test"))
 
 	-- Failure of set_list(s) should not change inventory
 	local before = inv:get_list("test")
