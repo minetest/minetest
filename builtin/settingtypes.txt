@@ -717,9 +717,6 @@ console_color (Console color) string (0,0,0)
 #    In-game chat console background alpha (opaqueness, between 0 and 255).
 console_alpha (Console alpha) int 200 0 255
 
-#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
-clickable_chat_weblinks (Chat weblinks) bool true
-
 #    Optional override for chat weblink color.
 chat_weblink_color (Weblink color) string #8888FF
 
@@ -1798,14 +1795,6 @@ profiler_print_interval (Engine profiling data print interval) int 0 0
 
 [*Advanced]
 
-#    Enable IPv6 support (for both client and server).
-#    Required for IPv6 connections to work at all.
-enable_ipv6 (IPv6) bool true
-
-#    If enabled, invalid world data won't cause the server to shut down.
-#    Only enable this if you know what you are doing.
-ignore_world_load_errors (Ignore world errors) bool false
-
 [**Graphics]
 
 #    Enables debug and error-checking in the OpenGL driver.
@@ -1990,6 +1979,10 @@ lighting_boost_center (Light curve boost center) float 0.5 0.0 1.0
 lighting_boost_spread (Light curve boost spread) float 0.2 0.0 0.4
 
 [**Networking]
+
+#    Enable IPv6 support (for both client and server).
+#    Required for IPv6 connections to work at all.
+enable_ipv6 (IPv6) bool true
 
 #    Prometheus listener address.
 #    If Luanti is compiled with ENABLE_PROMETHEUS option enabled,
@@ -2192,6 +2185,13 @@ curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 curl_file_download_timeout (cURL file download timeout) int 300000 5000 2147483647
 
 [**Miscellaneous]
+
+#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
+clickable_chat_weblinks (Chat weblinks) bool true
+
+#    If enabled, invalid world data won't cause the server to shut down.
+#    Only enable this if you know what you are doing.
+ignore_world_load_errors (Ignore world errors) bool false
 
 #    Adjust the detected display density, used for scaling UI elements.
 display_density_factor (Display Density Scaling Factor) float 1 0.5 5.0
