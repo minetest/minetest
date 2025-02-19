@@ -100,7 +100,7 @@ speed up and simplify the work, as well as adding the possibility of
 cross-platform build.
 
 You can use `./gradlew assemblerelease` or `./gradlew assembledebug` from the
-command line or use Android Studio and click the build button. 
+command line or use Android Studio and click the build button.
 
 When using gradlew, the newest NDK will be downloaded and installed
 automatically. Or you can create a `local.properties` file and specify
@@ -118,7 +118,3 @@ automatically. Or you can create a `local.properties` file and specify
   > key.alias=Minetest
 
 * If you're compiling on Windows, you can use the `gradle` command, so long as you install the additional Unix dependency [gettext](https://www.gnu.org/software/gettext/). Both of these are verified to work when installed by [Scoop](https://scoop.sh).
-
-
-
-  
