@@ -442,6 +442,11 @@ enum ToClientCommand : u16
 
 	*/
 
+	TOCLIENT_CAMERA = 0x48,
+	/*
+		u8 allowed_camera_mode
+	*/
+
 	TOCLIENT_HUDADD = 0x49,
 	/*
 		u32 id

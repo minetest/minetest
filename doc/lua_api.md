@@ -8827,6 +8827,14 @@ child will follow movement and rotation of that bone.
       Same limits as for `thirdperson_back` apply.
       Defaults to `thirdperson_back` if unspecified.
 * `get_eye_offset()`: Returns camera offset vectors as set via `set_eye_offset`.
+* `set_camera(params)`: Sets camera parameters.
+    * `mode`: Defines the camera mode used
+      - `any`: free choice between all modes (default)
+      - `first`: first-person camera
+      - `third`: third-person camera
+      - `third_front`: third-person camera, looking opposite of movement direction
+    * Supported by client since 5.12.0.
+* `get_camera()`: Returns the camera parameters as a table as above.
 * `send_mapblock(blockpos)`:
     * Sends an already loaded mapblock to the player.
     * Returns `false` if nothing was sent (note that this can also mean that

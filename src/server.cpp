@@ -1944,6 +1944,15 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 	Send(&pkt);
 }
 
+void Server::SendCamera(session_t peer_id, Player *player)
+{
+	NetworkPacket pkt(TOCLIENT_CAMERA, 1, peer_id);
+
+	pkt << static_cast<u8>(player->allowed_camera_mode);
+
+	Send(&pkt);
+}
+
 void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 {
 	NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);

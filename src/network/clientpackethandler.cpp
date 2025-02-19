@@ -1530,7 +1530,19 @@ void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 		*pkt >> player->eye_offset_third_front;
 	} catch (PacketError &e) {
 		player->eye_offset_third_front = player->eye_offset_third;
-	};
+	}
+}
+
+void Client::handleCommand_Camera(NetworkPacket* pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player);
+
+	u8 tmp;
+	*pkt >> tmp;
+	player->allowed_camera_mode = static_cast<CameraMode>(tmp);
+
+	m_client_event_queue.push(new ClientEvent(CE_UPDATE_CAMERA));
 }
 
 void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)

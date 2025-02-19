@@ -564,6 +564,7 @@ protected:
 	void updatePauseState();
 	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
+	void updateCameraMode(); // call after changing it
 	void updateCameraOffset();
 	void updateCamera(f32 dtime);
 	void updateSound(f32 dtime);
@@ -665,6 +666,7 @@ private:
 	void handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 		CameraOrientation *cam);
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_UpdateCamera(ClientEvent *event, CameraOrientation *cam);
 
 	void updateChat(f32 dtime);
 
@@ -1921,6 +1923,9 @@ void Game::processKeyInput()
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera();
+	} else if (wasKeyPressed(KeyType::CAMERA_MODE)) {
+		camera->toggleCameraMode();
+		updateCameraMode();
 	} else if (wasKeyPressed(KeyType::TOGGLE_DEBUG)) {
 		toggleDebug();
 	} else if (wasKeyPressed(KeyType::TOGGLE_PROFILER)) {
@@ -2575,6 +2580,7 @@ const ClientEventHandler Game::clientEventHandler[CLIENTEVENT_MAX] = {
 	{&Game::handleClientEvent_SetStars},
 	{&Game::handleClientEvent_OverrideDayNigthRatio},
 	{&Game::handleClientEvent_CloudParams},
+	{&Game::handleClientEvent_UpdateCamera},
 };
 
 void Game::handleClientEvent_None(ClientEvent *event, CameraOrientation *cam)
@@ -2879,6 +2885,13 @@ void Game::handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *
 	clouds->setSpeed(v2f(event->cloud_params.speed_x, event->cloud_params.speed_y));
 }
 
+void Game::handleClientEvent_UpdateCamera(ClientEvent *event, CameraOrientation *cam)
+{
+	// no parameters to update here, this just makes sure the camera is in the
+	// state it should be after something was changed.
+	updateCameraMode();
+}
+
 void Game::processClientEvents(CameraOrientation *cam)
 {
 	while (client->hasClientEvents()) {
@@ -2935,12 +2948,7 @@ void Game::updateCamera(f32 dtime)
 	ClientEnvironment &env = client->getEnv();
 	LocalPlayer *player = env.getLocalPlayer();
 
-	/*
-		For interaction purposes, get info about the held item
-		- What item is it?
-		- Is it a usable item?
-		- Can it point to liquids?
-	*/
+	// For interaction purposes, get info about the held item
 	ItemStack playeritem;
 	{
 		ItemStack selected, hand;
@@ -2949,23 +2957,6 @@ void Game::updateCamera(f32 dtime)
 
 	ToolCapabilities playeritem_toolcap =
 		playeritem.getToolCapabilities(itemdef_manager);
-
-	if (wasKeyPressed(KeyType::CAMERA_MODE)) {
-		GenericCAO *playercao = player->getCAO();
-
-		// If playercao not loaded, don't change camera
-		if (!playercao)
-			return;
-
-		camera->toggleCameraMode();
-
-		if (g_touchcontrols)
-			g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
-
-		// Make the player visible depending on camera mode.
-		playercao->updateMeshCulling();
-		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
-	}
 
 	float full_punch_interval = playeritem_toolcap.full_punch_interval;
 	float tool_reload_ratio = runData.time_from_last_punch / full_punch_interval;
@@ -2978,6 +2969,25 @@ void Game::updateCamera(f32 dtime)
 		client->getEnv().getClientMap().updateCamera(camera->getPosition(),
 			camera->getDirection(), camera->getFovMax(), camera->getOffset(),
 			player->light_color);
+	}
+}
+
+void Game::updateCameraMode()
+{
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// Obey server choice
+	if (player->allowed_camera_mode != CAMERA_MODE_ANY)
+		camera->setCameraMode(player->allowed_camera_mode);
+
+	if (g_touchcontrols)
+		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
+
+	GenericCAO *playercao = player->getCAO();
+	if (playercao) {
+		// Make the player visible depending on camera mode.
+		playercao->updateMeshCulling();
+		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	}
 }
 
@@ -3057,6 +3067,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	core::line3d<f32> shootline;
 
 	switch (camera->getCameraMode()) {
+	case CAMERA_MODE_ANY:
+		assert(false);
+		break;
 	case CAMERA_MODE_FIRST:
 		// Shoot from camera position, with bobbing
 		shootline.start = camera->getPosition();
