@@ -234,3 +234,16 @@ local function test_get_bone_rot(_, pos)
 	end
 end
 unittests.register("test_get_bone_rot", test_get_bone_rot, {map=true})
+
+unittests.register("test_entity_guid", function(_, pos)
+	log = {}
+
+	local obj = core.add_entity(pos, "unittests:callbacks")
+	check_log({"on_activate(0)"})
+
+	assert(obj:get_guid()~="")
+	assert(core.objects_by_guid[obj:get_guid()]~=nil)
+
+	obj:remove()
+	check_log({"on_deactivate(true)"})
+end, {map=true})
