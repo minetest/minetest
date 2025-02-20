@@ -62,6 +62,7 @@ local function test_inventory()
 	assert(inv:remove_item("test", "air 2") == get_stack_with_meta(2))
 	assert(inv:remove_item("test", "air") == ItemStack("air"))
 	assert(inv:is_empty("test"))
+
 	inv:set_stack("test", 1, "air 3")
 	inv:set_stack("test", 3, get_stack_with_meta(2))
 	assert(inv:remove_item("test", "air 4", true) == ItemStack("air 3"))
