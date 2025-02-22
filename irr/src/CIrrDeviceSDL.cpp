@@ -706,6 +706,10 @@ bool CIrrDeviceSDL::run()
 			irrevent.MouseInput.X = MouseX;
 			irrevent.MouseInput.Y = MouseY;
 
+			// wheel y can be 0 if scrolling sideways
+			if (irrevent.MouseInput.Wheel == 0.0f)
+				break;
+
 			postEventFromUser(irrevent);
 			break;
 		}
