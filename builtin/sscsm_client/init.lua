@@ -7,6 +7,15 @@ local mypath     = scriptpath .. "sscsm_client".. DIR_DELIM
 -- not exposed to outer context
 local builtin_shared = {}
 
+-- Workaround for bug https://www.lua.org/bugs.html#5.2.3-1
+-- (fixed in our bundled lua, but users might use system wide lua with bug)
+local actual_unpack = unpack
+function unpack(t, a, b)
+	assert(not b or b < 2^30)
+	return actual_unpack(t, a, b)
+end
+table.unpack = unpack
+
 -- placeholders
 -- FIXME: send actual content defs to sscsm env
 function core.get_content_id(name)
