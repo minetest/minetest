@@ -10,6 +10,11 @@
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 #include <SDL_video.h>
 #include <SDL_opengl.h>
+#ifdef __IPHONEOS__
+//#include <OpenGLES/ES3/gl.h>
+//#include <OpenGLES/ES3/glext.h>
+#include "vendor/gl.h"
+#endif
 #else
 #include "vendor/gl.h"
 #endif
