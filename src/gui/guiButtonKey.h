@@ -72,6 +72,8 @@ public:
 	}
 
 private:
+	void sendKey();
+
 	bool capturing = false;
 	KeyPress key_value = {};
 	std::wstring keysym;
