@@ -691,26 +691,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		node->forEachMaterial(setMaterial);
 	};
 
-	if (m_prop.visual == "sprite") {
-		m_spritenode = m_smgr->addBillboardSceneNode(
-				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
-		m_spritenode->grab();
-		video::ITexture *tex = tsrc->getTextureForMesh("no_texture.png");
-		m_spritenode->forEachMaterial([tex] (auto &mat) {
-			mat.setTexture(0, tex);
-		});
-
-		setSceneNodeMaterials(m_spritenode);
-
-		m_spritenode->setSize(v2f(m_prop.visual_size.X,
-				m_prop.visual_size.Y) * BS);
-		{
-			const float txs = 1.0 / 1;
-			const float tys = 1.0 / 1;
-			setBillboardTextureMatrix(m_spritenode,
-					txs, tys, 0, 0);
-		}
-	} else if (m_prop.visual == "upright_sprite") {
+	if (m_prop.visual == "upright_sprite") {
 		auto mesh = make_irr<scene::SMesh>();
 		f32 dx = BS * m_prop.visual_size.X / 2;
 		f32 dy = BS * m_prop.visual_size.Y / 2;
@@ -823,8 +804,22 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 		setSceneNodeMaterials(m_meshnode);
 	} else {
-		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
-				<<"\" not supported"<<std::endl;
+		m_spritenode = m_smgr->addBillboardSceneNode(m_matrixnode);
+		m_spritenode->grab();
+
+		setSceneNodeMaterials(m_spritenode);
+
+		m_spritenode->setSize(v2f(m_prop.visual_size.X,
+				m_prop.visual_size.Y) * BS);
+		setBillboardTextureMatrix(m_spritenode, 1, 1, 0, 0);
+
+		// This also serves as fallback for unknown visual types
+		if (m_prop.visual != "sprite") {
+			infostream << "GenericCAO::addToScene(): \"" << m_prop.visual
+				<< "\" not supported" << std::endl;
+			m_spritenode->getMaterial(0).setTexture(0,
+				tsrc->getTextureForMesh("unknown_object.png"));
+		}
 	}
 
 	/* Set VBO hint */
