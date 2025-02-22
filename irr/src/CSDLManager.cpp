@@ -35,7 +35,8 @@ bool CSDLManager::activateContext(const SExposedVideoData &videoData, bool resto
 
 void *CSDLManager::getProcAddress(const std::string &procName)
 {
-	return SDL_GL_GetProcAddress(procName.c_str());
+	//return SDL_GL_GetProcAddress(procName.c_str());
+	return (void *)eglGetProcAddress(procName.c_str());
 }
 
 bool CSDLManager::swapBuffers()

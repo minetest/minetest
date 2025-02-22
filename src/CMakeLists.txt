@@ -702,8 +702,9 @@ if(BUILD_CLIENT)
 		# on Android, Luanti depends on SDL2 directly
 		# on other platforms, only IrrlichtMt depends on SDL2
 		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
-		#"$<$<PLATFORM_ID:iOS>:-framework UIKit -framework Foundation -framework CoreGraphics -framework QuartzCore -framework OpenGLES -framework AudioToolbox -framework AVFoundation -framework CoreAudio -framework CoreMotion -framework Security>"
+		#"$<$<PLATFORM_ID:iOS>:-framework UIKit -framework Foundation -framework CoreGraphics -framework QuartzCore -framework AudioToolbox -framework AVFoundation -framework CoreAudio -framework CoreMotion -framework Security>"
 		"$<$<PLATFORM_ID:iOS>:-framework Security -framework CoreHaptics -framework CoreBluetooth -framework GameController -framework Metal -framework Foundation>"
+		"$<$<PLATFORM_ID:iOS>:${OPENGLES2_LIBRARY}>"
 	)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE "MT_BUILDTARGET=1")
 	if(NOT USE_LUAJIT)
