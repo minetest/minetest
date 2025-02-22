@@ -26,29 +26,29 @@ local function prepare_objects(value)
 		-- Early return for nil; tables can't contain nil
 		return counts, type_lookup
 	end
-	local function count_values(val)
+	local function count_values(val, recount)
 		local type_ = type(val)
 		if type_ == "boolean" or type_ == "number" then
 			return
 		end
-		local count = counts[val]
-		counts[val] = (count or 0) + 1
-		local mt = getmetatable(val)
-		if type_ == "table" then
-			if not count then
-				for k, v in pairs(val) do
-					count_values(k)
-					count_values(v)
-				end
-				if mt then
-					type_lookup[val] = core.known_metatables[mt]
-				end
+		if not recount then
+			local count = counts[val]
+			counts[val] = (count or 0) + 1
+		end
+		local mt = (not recount) and (type_ == "table" or type_ == "userdata") and getmetatable(val)
+		if mt and core.known_metatables[mt] then
+			type_lookup[val] = core.known_metatables[mt]
+			count_values(val, true)
+		elseif type_ == "table" then
+			for k, v in pairs(val) do
+				count_values(k)
+				count_values(v)
 			end
-		elseif type_ ~= "string" and type_ ~= "function" and not is_itemstack(val) then
+		elseif type_ ~= "string" then
 			error("unsupported type: " .. type_)
 		end
 	end
-	count_values(value, {})
+	count_values(value, false)
 	return counts, type_lookup
 end
 
