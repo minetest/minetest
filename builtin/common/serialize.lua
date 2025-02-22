@@ -109,7 +109,7 @@ local function serialize(value, write)
 			end
 			write(";")
 			references[object] = reference
-			if type_ ~= "string" then
+			if type_ == "table" then
 				to_fill[object] = reference
 			end
 			refnum = refnum + 1
@@ -269,7 +269,6 @@ function core.deserialize(str, safe)
 	local env = {
 		inf = math_huge,
 		nan = 0/0,
-		ItemStack = ItemStack or function(str) return str end,
 		core = {
 			known_metatables = core.known_metatables,
 			serializable_metatables = core.serializable_metatables,
