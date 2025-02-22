@@ -7851,13 +7851,13 @@ An `InvRef` is a reference to an inventory.
 * `contains_item(listname, stack, [match_meta])`: returns `true` if
   the stack of items can be fully taken from the list.
     * If `match_meta` is `true`, item metadata is also considered when comparing
-      items. Otherwise, only the items' names are compared. Default: `false`
+      items. Otherwise, only the items names are compared. Default: `false`
     * The method ignores wear.
 * `remove_item(listname, stack, [match_meta])`: take as many items as specified from the
   list, returns the items that were actually removed (as an `ItemStack`).
     * If `match_meta` is `true` (available since feature `remove_item_match_meta`),
       item metadata is also considered when comparing items. Otherwise, only the
-      items' names are compared. Default: `false`
+      items names are compared. Default: `false`
     * The method ignores wear.
 * `get_location()`: returns a location compatible to
   `core.get_inventory(location)`.
