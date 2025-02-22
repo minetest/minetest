@@ -8,14 +8,6 @@ local next, rawget, pairs, pcall, error, type, setfenv, loadstring
 local table_concat, string_dump, string_format, string_match, math_huge
 	= table.concat, string.dump, string.format, string.match, math.huge
 
-local itemstack_mt
-if ItemStack then
-	itemstack_mt = getmetatable(ItemStack())
-end
-local function is_itemstack(x)
-	return itemstack_mt and getmetatable(x) == itemstack_mt
-end
-
 local function pack_args(...)
 	return {n = select("#", ...), ...}
 end
@@ -82,10 +74,6 @@ local function dump_func(func)
 	return string_format("loadstring(%q)", string_dump(func))
 end
 
-local function dump_itemstack(item)
-	return string_format("ItemStack(%q)", item:to_string())
-end
-
 -- Serializes Lua nil, booleans, numbers, strings, tables and even functions
 -- Tables are referenced by reference, strings are referenced by value. Supports circular tables.
 local function serialize(value, write)
@@ -118,12 +106,10 @@ local function serialize(value, write)
 				write(dump_func(object))
 			elseif type_ == "string" then
 				write(quote(object))
-			elseif is_itemstack(object) then
-				write(dump_itemstack(object))
 			end
 			write(";")
 			references[object] = reference
-			if type_ ~= "string" and not is_itemstack(object) then
+			if type_ ~= "string" then
 				to_fill[object] = reference
 			end
 			refnum = refnum + 1
@@ -188,9 +174,6 @@ local function serialize(value, write)
 		end
 		if type_ == "function" then
 			return write(dump_func(value))
-		end
-		if is_itemstack(value) then
-			return write(dump_itemstack(value))
 		end
 		if type_ == "table" then
 			write("{")

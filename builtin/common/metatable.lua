@@ -31,3 +31,9 @@ function core.register_async_metatable(...)
 end
 
 core.register_portable_metatable("__builtin:vector", vector.metatable)
+
+if ItemStack then
+	local item = ItemStack()
+	local itemstack_mt = getmetatable(item)
+	core.register_portable_metatable("__itemstack", itemstack_mt, item.to_table, ItemStack)
+end
