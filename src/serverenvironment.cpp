@@ -43,6 +43,8 @@
 // A number that is much smaller than the timeout for particle spawners should/could ever be
 #define PARTICLE_SPAWNER_NO_EXPIRY -1024.f
 
+static constexpr s16 ACTIVE_OBJECT_RESAVE_DISTANCE_SQ = 3 * 3;
+
 /*
 	ABMWithState
 */
@@ -2160,12 +2162,14 @@ void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
 
-		// If object's static data is stored in a deactivated block and object
-		// is actually located in an active block, re-save to the block in
-		// which the object is actually located in.
+		// If object's static data is stored in a deactivated block or it has moved a bunch
+		// then re-save to the block in which the object is now located in.
+		// This only applies if the object is in a currently active block, since deactivating
+		// is handled by the code further below.
 		if (!force_delete && obj->isStaticAllowed() && obj->m_static_exists &&
-		   !m_active_blocks.contains(obj->m_static_block) &&
-		   m_active_blocks.contains(blockpos_o)) {
+		   m_active_blocks.contains(blockpos_o) &&
+		   (!m_active_blocks.contains(obj->m_static_block) ||
+		   blockpos_o.getDistanceFromSQ(obj->m_static_block) >= ACTIVE_OBJECT_RESAVE_DISTANCE_SQ)) {
 
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
