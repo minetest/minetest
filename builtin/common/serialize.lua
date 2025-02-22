@@ -16,6 +16,10 @@ local function is_itemstack(x)
 	return itemstack_mt and getmetatable(x) == itemstack_mt
 end
 
+local function pack_args(...)
+	return {n = select("#", ...), ...}
+end
+
 -- Recursively
 -- (1) reads metatables from tables;
 -- (2) counts occurrences of objects (non-primitives including strings) in a table.
@@ -36,9 +40,12 @@ local function prepare_objects(value)
 			counts[val] = (count or 0) + 1
 		end
 		local mt = (not count) and (type_ == "table" or type_ == "userdata") and getmetatable(val)
-		if mt and core.known_metatables[mt] then
-			type_lookup[val] = core.known_metatables[mt]
-			count_values(val, true)
+		if mt and core.serializable_metatables[mt] then
+			local args = pack_args(core.known_metatables[mt], core.serializable_metatables[mt](val))
+			type_lookup[val] = args
+			for _, v in ipairs(args) do
+				count_values(v, rawequal(v, val))
+			end
 		elseif type_ == "table" then
 			if recount or not count then
 				for k, v in pairs(val) do
@@ -87,9 +94,13 @@ local function serialize(value, write)
 	local references = {}
 	-- Circular tables that must be filled using `table[key] = value` statements
 	local to_fill = {}
-	local counts, typenames = prepare_objects(value)
-	if next(typenames) then
-		write "if not setmetatable then core={known_metatables={}}; setmetatable = function(x) return x end; end;"
+	local counts, typeinfo = prepare_objects(value)
+	if next(typeinfo) then
+		write [[
+		if not (core and core.serializable_metatables) then
+			core = { known_metatables = {}, serializable_metatables = {}}
+		end;
+		]]
 	end
 	for object, count in pairs(counts) do
 		local type_ = type(object)
@@ -123,7 +134,22 @@ local function serialize(value, write)
 	local function use_short_key(key)
 		return not references[key] and type(key) == "string" and (not keywords[key]) and string_match(key, "^[%a_][%a%d_]*$")
 	end
-	local function dump(value, skip_mt)
+	local dump
+	local function dump_serialized(value)
+		local serialized = assert(typeinfo[value])
+		write "(core.serializable_metatables["
+		dump(serialized[1])
+		write "])("
+		for k = 2, serialized.n do
+			if k ~= 2 then
+				write ","
+			end
+			local v = serialized[k]
+			dump(v, rawequal(v, value))
+		end
+		write ")"
+	end
+	dump = function(value, skip_mt)
 		-- Primitive types
 		if value == nil then
 			return write("nil")
@@ -153,12 +179,8 @@ local function serialize(value, write)
 			write(ref)
 			return write"]"
 		end
-		if (not skip_mt) and typenames[value] then
-			write "setmetatable("
-			dump(value, true)
-			write ",core.known_metatables["
-			dump(typenames[value])
-			write "] or {})"
+		if (not skip_mt) and typeinfo[value] then
+			dump_serialized(value)
 			return
 		end
 		if type_ == "string" then
@@ -206,9 +228,8 @@ local function serialize(value, write)
 		end
 	end
 	-- Write the statements to fill circular tables
-	for table, ref in pairs(to_fill) do
-		local typename = typenames[table]
-		for k, v in pairs(table) do
+	for tbl, ref in pairs(to_fill) do
+		for k, v in pairs(tbl) do
 			write("_[")
 			write(ref)
 			write("]")
@@ -224,12 +245,12 @@ local function serialize(value, write)
 			dump(v)
 			write(";")
 		end
-		if typename then
-			write("setmetatable(_[")
+		if typeinfo[tbl] then
+			write("_[")
 			write(ref)
-			write("],core.known_metatables[")
-			dump(typename)
-			write("] or {})")
+			write("]=")
+			dump_serialized(tbl)
+			write(";")
 		end
 	end
 	write("return ")
@@ -266,8 +287,10 @@ function core.deserialize(str, safe)
 		inf = math_huge,
 		nan = 0/0,
 		ItemStack = ItemStack or function(str) return str end,
-		setmetatable = setmetatable,
-		core = { known_metatables = core.known_metatables }
+		core = {
+			known_metatables = core.known_metatables,
+			serializable_metatables = core.serializable_metatables,
+		},
 	}
 	if safe then
 		env.loadstring = dummy_func
