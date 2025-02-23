@@ -595,14 +595,14 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 	}
-	
+
 	SDL_GL_ResetAttributes();
-	
+
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	//SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
-	
+
 #ifndef _IRR_COMPILE_WITH_ANGLE_
 	if (!SDL_GL_LoadLibrary(NULL)) {
 	os::Printer::log("Could not load OpenGL ES library", SDL_GetError(), ELL_WARNING);
@@ -640,26 +640,26 @@ bool CIrrDeviceSDL::createWindowWithContext()
 #else
 	auto metal_view = SDL_Metal_CreateView(Window);
 	auto metal_layer = SDL_Metal_GetLayer(metal_view);
-	
+
 	EGLAttrib egl_display_attribs[] = {
 		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE,
 		EGL_POWER_PREFERENCE_ANGLE, EGL_HIGH_POWER_ANGLE,
 		EGL_NONE
 	};
-	
+
 	Display = eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE, (void*) EGL_DEFAULT_DISPLAY, egl_display_attribs);
 	if (Display == EGL_NO_DISPLAY)
 	{
 		os::Printer::log("Failed to get EGL display");
 		return false;
 	}
-	
+
 	if (eglInitialize(Display, NULL, NULL) == false)
 	{
 		os::Printer::log("Failed to initialize EGL");
 		return false;
 	}
-	
+
 	EGLint egl_config_attribs[] = {
 		EGL_RED_SIZE, 8,
 		EGL_GREEN_SIZE, 8,
@@ -672,7 +672,7 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
 		EGL_NONE
 	};
-	
+
 	EGLConfig config;
 	EGLint configs_count;
 	if (!eglChooseConfig(Display, egl_config_attribs, &config, 1, &configs_count))
@@ -680,7 +680,7 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		os::Printer::log("Failed to choose EGL config");
 		return false;
 	}
-	
+
 	EGLint egl_context_attribs[] = {
 		EGL_CONTEXT_CLIENT_VERSION, 3,
 		EGL_NONE
@@ -690,14 +690,14 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		os::Printer::log("Failed to create EGL context");
 		return false;
 	}
-	
+
 	Surface = eglCreateWindowSurface(Display, config, metal_layer, NULL);
 	if (Surface == EGL_NO_SURFACE)
 	{
 		os::Printer::log("Failed to create EGL surface");
 		return false;
 	}
-	
+
 	if (!eglMakeCurrent(Display, Surface, Surface, Context))
 	{
 		os::Printer::log("Failed to make EGL context current");

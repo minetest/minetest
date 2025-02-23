@@ -23,7 +23,9 @@
 #undef SDL_VIDEO_DRIVER_DIRECTFB
 #include <SDL_syswm.h>
 
+#ifdef _IRR_COMPILE_WITH_ANGLE_
 #include <EGL/egl.h>
+#endif
 
 #include <memory>
 

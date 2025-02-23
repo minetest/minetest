@@ -38,9 +38,6 @@
 #elif !defined(BYTE_ORDER) && defined(__BYTE_ORDER)
 	#define BYTE_ORDER __BYTE_ORDER
 #endif
-#ifndef TARGET_OS_IPHONE
-	
-#endif
 #undef HAVE_ENDIAN_H
 
 #define FIXEDPOINT_FACTOR 1000.0f
