@@ -617,7 +617,7 @@ endif()
 
 if(APPLE)
 	# Configure the Info.plist file
-	if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+	if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
 		configure_file(
 			"${CMAKE_SOURCE_DIR}/misc/macos/Info.plist.in"
 			"${CMAKE_BINARY_DIR}/Info.plist"

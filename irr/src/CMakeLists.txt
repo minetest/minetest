@@ -3,7 +3,7 @@
 if(NOT APPLE)
 	set(DEFAULT_SDL2 ON)
 endif()
-if(APPLE AND ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+if(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
 	set(DEFAULT_SDL2 ON)
 	set(DEFAULT_ANGLE ON)
 endif()
@@ -62,10 +62,10 @@ if(WIN32)
 	add_compile_definitions(_IRR_WINDOWS_ _IRR_WINDOWS_API_)
 	set(DEVICE "WINDOWS")
 elseif(APPLE)
-	if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 		add_compile_definitions(-D_IRR_OSX_PLATFORM_)
 		set(DEVICE "OSX")
-	elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+	elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
 		add_compile_definitions(-D_IRR_IOS_PLATFORM_)
 		if(NOT USE_SDL2)
 			message(FATAL_ERROR "The iOS build requires SDL2")
@@ -150,7 +150,7 @@ else()
 	option(ENABLE_OPENGL "Enable OpenGL" TRUE)
 endif()
 
-if(APPLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+if(APPLE AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
 	set(ENABLE_GLES2 FALSE)
 	set(ENABLE_WEBGL1 FALSE)
 else()
@@ -287,7 +287,7 @@ endif()
 
 if(ANDROID)
 	enable_language(C)
-elseif(APPLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+elseif(APPLE AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
 	find_library(COCOA_LIB Cocoa REQUIRED)
 	find_library(IOKIT_LIB IOKit REQUIRED)
 
@@ -528,7 +528,7 @@ target_link_libraries(IrrlichtMt PRIVATE
 	"$<$<BOOL:${USE_X11}>:${X11_Xi_LIB}>"
 )
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
 	target_link_libraries(IrrlichtMt PRIVATE
 		"-framework UIKit"
 		"-framework Foundation"
@@ -540,7 +540,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
 		"-framework CoreMotion"
 		${OPENGLES2_LIBRARY}
 		SDL2::SDL2-static
-		SDL2::SDL2main
+		"$<$<PLATFORM_ID:iOS>:SDL2::SDL2main>"
 	)
 else()
 	target_link_libraries(IrrlichtMt PRIVATE

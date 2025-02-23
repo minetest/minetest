@@ -28,10 +28,12 @@
 
 #include "CSDLManager.h"
 
+#ifdef _IRR_COMPILE_WITH_ANGLE_
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <GLES2/gl2.h>
 #include <GLES3/gl3.h>
+#endif
 
 static int SDLDeviceInstances = 0;
 

@@ -7,14 +7,9 @@
 
 #include "irrTypes.h"
 // even though we have mt_opengl.h our driver code still uses GL_* constants
-#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_) && !defined(_IRR_COMPILE_WITH_ANGLE_)
 #include <SDL_video.h>
 #include <SDL_opengl.h>
-#ifdef __IPHONEOS__
-//#include <OpenGLES/ES3/gl.h>
-//#include <OpenGLES/ES3/glext.h>
-#include "vendor/gl.h"
-#endif
 #else
 #include "vendor/gl.h"
 #endif
