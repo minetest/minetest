@@ -626,7 +626,7 @@ bool CIrrDeviceSDL::createWindowWithContext()
 		Window = nullptr;
 		return false;
 	}
-	
+
 	int major, minor;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
