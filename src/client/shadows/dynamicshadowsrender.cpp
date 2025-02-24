@@ -254,17 +254,14 @@ void ShadowRenderer::updateSMTextures()
 	if (!m_shadow_node_array.empty()) {
 		bool reset_sm_texture = false;
 
-		// detect if SM should be regenerated
+		// clear texture if requested
 		for (DirectionalLight &light : m_light_list) {
-			if (light.should_update_map_shadow)
-				m_force_update_shadow_map = true;
+			reset_sm_texture |= light.should_update_map_shadow;
 			light.should_update_map_shadow = false;
 		}
 
-		if (m_force_update_shadow_map) {
+		if (reset_sm_texture || m_force_update_shadow_map)
 			m_current_frame = 0;
-			reset_sm_texture = true;
-		}
 
 		video::ITexture* shadowMapTargetTexture = shadowMapClientMapFuture;
 		if (shadowMapTargetTexture == nullptr)
@@ -273,7 +270,7 @@ void ShadowRenderer::updateSMTextures()
 		// Update SM incrementally:
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values.
-			for (auto cb : {m_shadow_depth_cb, m_shadow_depth_entity_cb, m_shadow_depth_trans_cb})
+			for (auto cb : {m_shadow_depth_cb, m_shadow_depth_entity_cb, m_shadow_depth_trans_cb}) {
 				if (cb) {
 					cb->MapRes = (f32)m_shadow_map_texture_size;
 					cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
@@ -281,12 +278,9 @@ void ShadowRenderer::updateSMTextures()
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
 					cb->CameraPos = light.getFuturePlayerPos();
 				}
+			}
 
-			// set the Render Target
-			// right now we can only render in usual RTT, not
-			// Depth texture is available in irrlicth maybe we
-			// should put some gl* fn here
-
+			// Note that force_update means we're drawing everything one go.
 
 			if (m_current_frame < m_map_shadow_update_frames || m_force_update_shadow_map) {
 				m_driver->setRenderTarget(shadowMapTargetTexture, reset_sm_texture, true,
