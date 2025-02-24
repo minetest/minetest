@@ -21,12 +21,19 @@ public:
 
 	KeyPress(const irr::SEvent::SKeyInput &in);
 
+	// Get a string representation that is suitable for use in minetest.conf
 	std::string sym() const;
+
+	// Get a human-readable string representation
 	std::string name() const;
 
+	// Get the corresponding keycode or KEY_UNKNOWN if one is not available
 	irr::EKEY_CODE getKeycode() const;
+
+	// Get the corresponding keychar or '\0' if one is not available
 	wchar_t getKeychar() const;
 
+	// Get the scancode or 0 is one is not available
 	u32 getScancode() const
 	{
 		if (auto pv = std::get_if<u32>(&scancode))
@@ -41,6 +48,7 @@ public:
 		return !(*this == o);
 	}
 
+	// Check whether the keypress is valid
 	operator bool() const
 	{
 		return std::holds_alternative<irr::EKEY_CODE>(scancode) ?
