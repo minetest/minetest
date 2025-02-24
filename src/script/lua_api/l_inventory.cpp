@@ -310,6 +310,8 @@ int InvRef::l_room_for_item(lua_State *L)
 	return 1;
 }
 
+// room_for_items(self, listname, array of itemstacks) -> true/false
+// Returns true if the items completely fit into the list
 int InvRef::l_room_for_items(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -343,6 +345,8 @@ int InvRef::l_contains_item(lua_State *L)
 	return 1;
 }
 
+// contains_items(self, listname, array of itemstacks, [match_meta]) -> true/false
+// Returns true if the list contains the given count of the given items
 int InvRef::l_contains_items(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
