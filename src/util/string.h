@@ -640,7 +640,7 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 	return tokens;
 }
 
-std::wstring translate_string(std::wstring_view s, Translations *translations);
+std::wstring translate_string(std::wstring_view s, const std::vector<std::wstring> &lang,  Translations *translations);
 
 std::wstring translate_string(std::wstring_view s);
 
