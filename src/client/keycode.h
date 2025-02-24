@@ -5,7 +5,6 @@
 #pragma once
 
 #include "irrlichttypes.h"
-#include "cmake_config.h" // USE_SDL2
 #include <Keycodes.h>
 #include <IEventReceiver.h>
 #include <string>
