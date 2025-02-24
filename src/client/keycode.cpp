@@ -275,7 +275,11 @@ static const table_key &lookup_keyname(std::string_view name)
 
 static const table_key &lookup_scancode(const u32 scancode)
 {
-	auto key = RenderingEngine::get_raw_device()->getKeyFromScancode(scancode);
+	auto device = RenderingEngine::get_raw_device();
+	if (!device)
+		return invalid_key;
+
+	auto key = device->getKeyFromScancode(scancode);
 	return std::holds_alternative<EKEY_CODE>(key) ?
 		lookup_keykey(std::get<irr::EKEY_CODE>(key)) :
 		lookup_keychar(std::get<wchar_t>(key));
@@ -288,13 +292,22 @@ static const table_key &lookup_scancode(const std::variant<u32, irr::EKEY_CODE> 
 		lookup_scancode(std::get<u32>(scancode));
 }
 
+void KeyPress::loadFromKey(irr::EKEY_CODE keycode, wchar_t keychar)
+{
+	if (auto device = RenderingEngine::get_raw_device())
+		scancode = device->getScancodeFromKey(Keycode(keycode, keychar));
+	else if (Keycode::isValid(keycode))
+		scancode = keycode;
+	else
+		scancode = (u32) keychar;
+}
+
 KeyPress::KeyPress(std::string_view name)
 {
 	if (loadFromScancode(name))
 		return;
 	const auto &key = lookup_keyname(name);
-	Keycode keycode(key.Key, key.Char);
-	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
+	loadFromKey(key.Key, key.Char);
 }
 
 KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
@@ -305,8 +318,7 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
 	else
 		scancode.emplace<irr::EKEY_CODE>(in.Key);
 #else
-	Keycode keycode(in.Key, in.Char);
-	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
+	loadFromKey(in.Key, in.Char);
 #endif
 }
 

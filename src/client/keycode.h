@@ -53,6 +53,7 @@ public:
 
 private:
 	bool loadFromScancode(std::string_view name);
+	void loadFromKey(irr::EKEY_CODE keycode, wchar_t keychar);
 	std::string formatScancode() const;
 
 	std::variant<u32, irr::EKEY_CODE> scancode = irr::KEY_UNKNOWN;
