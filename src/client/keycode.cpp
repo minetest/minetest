@@ -385,7 +385,7 @@ const KeyPress &getKeySetting(const std::string &settingname)
 		return n->second;
 
 	auto &ref = g_key_setting_cache[settingname];
-	ref = std::string_view(g_settings->get(settingname));
+	ref = KeyPress(g_settings->get(settingname));
 	return ref;
 }
 

@@ -35,9 +35,11 @@ public:
 		return 0;
 	}
 
-	bool operator==(const KeyPress &o) const
-	{
+	bool operator==(const KeyPress &o) const {
 		return scancode == o.scancode;
+	}
+	bool operator!=(const KeyPress &o) const {
+		return !(*this == o);
 	}
 
 	operator bool() const
