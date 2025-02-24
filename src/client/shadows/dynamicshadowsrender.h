@@ -68,6 +68,7 @@ public:
 	void removeNodeFromShadowList(scene::ISceneNode *node);
 
 	void update(video::ITexture *outputTarget = nullptr);
+	/// Force shadow map to be re-drawn in one go next frame
 	void setForceUpdateShadowMap() { m_force_update_shadow_map = true; }
 	void drawDebug();
 
