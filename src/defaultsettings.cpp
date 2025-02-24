@@ -243,7 +243,7 @@ void set_default_settings()
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("tooltip_append_itemname", "false");
 	settings->setDefault("fps_max", "60");
-	settings->setDefault("fps_max_unfocused", "20");
+	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("viewing_range", "190");
 	settings->setDefault("client_mesh_chunk", "1");
 	settings->setDefault("screen_w", "1024");
@@ -422,7 +422,7 @@ void set_default_settings()
 
 	// Network
 	settings->setDefault("enable_ipv6", "true");
-	settings->setDefault("ipv6_server", "false");
+	settings->setDefault("ipv6_server", "true");
 	settings->setDefault("max_packets_per_iteration", "1024");
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");

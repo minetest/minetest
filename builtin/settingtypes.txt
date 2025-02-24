@@ -256,8 +256,8 @@ fps_max (Maximum FPS) int 60 1 4294967295
 #    Vertical screen synchronization. Your system may still force VSync on even if this is disabled.
 vsync (VSync) bool false
 
-#    Maximum FPS when the window is not focused, or when the game is paused.
-fps_max_unfocused (FPS when unfocused or paused) int 20 1 4294967295
+#    Maximum FPS when the window is not focused.
+fps_max_unfocused (FPS when unfocused) int 10 1 4294967295
 
 #    View distance in nodes.
 viewing_range (Viewing range) int 190 20 4000
@@ -717,9 +717,6 @@ console_color (Console color) string (0,0,0)
 #    In-game chat console background alpha (opaqueness, between 0 and 255).
 console_alpha (Console alpha) int 200 0 255
 
-#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
-clickable_chat_weblinks (Chat weblinks) bool true
-
 #    Optional override for chat weblink color.
 chat_weblink_color (Weblink color) string #8888FF
 
@@ -835,11 +832,12 @@ protocol_version_min (Protocol version minimum) int 1 1 65535
 #    Files that are not present will be fetched the usual way.
 remote_media (Remote media) string
 
-#    Enable/disable running an IPv6 server.
+#    Enable IPv6 support for server.
+#    Note that clients will be able to connect with both IPv4 and IPv6.
 #    Ignored if bind_address is set.
 #
 #    Requires: enable_ipv6
-ipv6_server (IPv6 server) bool false
+ipv6_server (IPv6 server) bool true
 
 [*Server Security]
 
@@ -1797,14 +1795,6 @@ profiler_print_interval (Engine profiling data print interval) int 0 0
 
 [*Advanced]
 
-#    Enable IPv6 support (for both client and server).
-#    Required for IPv6 connections to work at all.
-enable_ipv6 (IPv6) bool true
-
-#    If enabled, invalid world data won't cause the server to shut down.
-#    Only enable this if you know what you are doing.
-ignore_world_load_errors (Ignore world errors) bool false
-
 [**Graphics]
 
 #    Enables debug and error-checking in the OpenGL driver.
@@ -1989,6 +1979,10 @@ lighting_boost_center (Light curve boost center) float 0.5 0.0 1.0
 lighting_boost_spread (Light curve boost spread) float 0.2 0.0 0.4
 
 [**Networking]
+
+#    Enable IPv6 support (for both client and server).
+#    Required for IPv6 connections to work at all.
+enable_ipv6 (IPv6) bool true
 
 #    Prometheus listener address.
 #    If Luanti is compiled with ENABLE_PROMETHEUS option enabled,
@@ -2191,6 +2185,13 @@ curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 curl_file_download_timeout (cURL file download timeout) int 300000 5000 2147483647
 
 [**Miscellaneous]
+
+#    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
+clickable_chat_weblinks (Chat weblinks) bool true
+
+#    If enabled, invalid world data won't cause the server to shut down.
+#    Only enable this if you know what you are doing.
+ignore_world_load_errors (Ignore world errors) bool false
 
 #    Adjust the detected display density, used for scaling UI elements.
 display_density_factor (Display Density Scaling Factor) float 1 0.5 5.0

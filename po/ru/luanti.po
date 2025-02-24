@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-09 13:23+0100\n"
-"PO-Revision-Date: 2025-01-27 06:02+0000\n"
+"PO-Revision-Date: 2025-02-12 12:18+0000\n"
 "Last-Translator: BlackImpostor <SkyBuilderOFFICAL@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -264,14 +264,12 @@ msgid "Show technical names"
 msgstr "Показывать технические названия"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Touchscreen layout"
-msgstr "Сенсорный экран"
+msgstr "Pазложение сенсорного экрана"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "pause_menu"
-msgstr "Кадровая частота во время паузы"
+msgstr "меню_паузы"
 
 #: builtin/common/settings/settingtypes.lua
 msgid "Client Mods"
@@ -609,6 +607,8 @@ msgid ""
 "This is the list of clients connected to\n"
 "$1"
 msgstr ""
+"Это список подключённых клиентов к\n"
+"$1"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
@@ -972,21 +972,21 @@ msgstr ""
 "перезапишет указанное здесь значение."
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
-#, fuzzy
 msgid "Expand all"
-msgstr "Включить всё"
+msgstr "Расширить всё"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "Group by prefix"
-msgstr ""
+msgstr "Сгруппировать по префиксу"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses a game called $2 and the following mods:"
 msgstr ""
+"На сервере $1 используется игра под названием $2 со следующими дополнениями:"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses the following mods:"
-msgstr ""
+msgstr "Сервер $1 использует следующие дополнения:"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -1198,20 +1198,20 @@ msgid "You need to install a game before you can create a world."
 msgstr "Вам требуется установить игру, прежде чем вы сможете создать мир."
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Add favorite"
-msgstr "Удалить избранное"
+msgstr "Добавить избранное"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
 msgstr "Адрес"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid ""
 "Clients:\n"
 "$1"
-msgstr "Клиент"
+msgstr ""
+"Клиенты:\n"
+"$1"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1227,9 +1227,8 @@ msgid "Favorites"
 msgstr "Избранное"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Game: $1"
-msgstr "Игра"
+msgstr "Игра: $1"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
@@ -1244,14 +1243,12 @@ msgid "Login"
 msgstr "Войти"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Number of mods: $1"
-msgstr "Количество потоков подгрузки"
+msgstr "Количество модов: $1"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Open server website"
-msgstr "Шаг выделенного сервера"
+msgstr "Открыть веб-сайт сервера"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1264,6 +1261,10 @@ msgid ""
 "mod:<name>\n"
 "player:<name>"
 msgstr ""
+"Возможные фильтры\n"
+"игра:<имя>\n"
+"дополнение:<имя>\n"
+"игрок:<имя>"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
@@ -1359,9 +1360,8 @@ msgid "Access denied. Reason: %s"
 msgstr "Доступ запрещён. Причина: %s"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "All debug info hidden"
-msgstr "Отладочные сведения отображены"
+msgstr "Все отладочные сведения скрыты"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1385,7 +1385,7 @@ msgstr "Границы показаны для ближайших мапблок
 
 #: src/client/game.cpp
 msgid "Bounding boxes shown"
-msgstr ""
+msgstr "Показаны ограничивающие рамки"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1623,9 +1623,8 @@ msgid "Volume changed to %d%%"
 msgstr "Громкость установлена на %d%%"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Wireframe not supported by video driver"
-msgstr "Шейдеры включены, но GLSL не поддерживается драйвером."
+msgstr "Полигоны не доступны этим видео драйвером"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
@@ -2058,9 +2057,8 @@ msgid "Failed to compile the \"%s\" shader."
 msgstr "Не удалось скомпилировать шейдер «%s»."
 
 #: src/client/shader.cpp
-#, fuzzy
 msgid "GLSL is not supported by the driver"
-msgstr "Шейдеры включены, но GLSL не поддерживается драйвером."
+msgstr "GLSL не поддерживается драйвером"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2296,35 +2294,35 @@ msgid "Sound Volume: %d%%"
 msgstr "Громкость звука: %d%%"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Add button"
-msgstr "Средняя кнопка"
+msgstr "Добавить кнопку"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Done"
-msgstr "Готово!"
+msgstr "Готово"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Remove"
-msgstr "Удалённый сервер"
+msgstr "Убрать"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Reset"
-msgstr ""
+msgstr "Сбросить"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Start dragging a button to add. Tap outside to cancel."
 msgstr ""
+"Начните перетаскивать кнопку, чтобы добавить. Нажмите \"За пределами\", "
+"чтобы отменить."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap a button to select it. Drag a button to move it."
 msgstr ""
+"Нажмите на кнопку, чтобы выбрать её. Перетащите кнопку, чтобы перемещать её."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap outside to deselect."
-msgstr ""
+msgstr "Нажмите \"Снаружи\", чтобы отменить выбор."
 
 #: src/gui/touchscreenlayout.cpp
 msgid "Joystick"
@@ -2555,7 +2553,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-шум, определяющий количество подземелий на мапчанк карты."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2566,15 +2563,14 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d"
 msgstr ""
-"3D-анаглиф.\n"
+"Поддержка 3D.\n"
 "Сейчас поддерживаются:\n"
-"-    none: без 3D.\n"
+"-    none: без 3d выхода.\n"
 "-    anaglyph: для красно/синих очков.\n"
 "-    interlaced: поляризация с чётными/нечётными линиями.\n"
 "-    topbottom: горизонтальное разделение экрана.\n"
 "-    sidebyside: вертикальное разделение экрана.\n"
-"-    crossview: перекрёстная стереопара.\n"
-"Примечание: для режима «interlaced» должны быть включены шейдеры."
+"-    crossview: перекрёстная стереопара 3d"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2663,11 +2659,12 @@ msgid ""
 "All mesh buffers with less than this number of vertices will be merged\n"
 "during map rendering. This improves rendering performance."
 msgstr ""
+"Все буферы мешей с меньшим количеством вершин будут объединены\n"
+"во время рендера карты. Это повышает производительность рендеринга."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Allow clouds to look 3D instead of flat."
-msgstr "Объёмные облака вместо плоских."
+msgstr "Позволяет облакам выглядеть больше 3D, чем плоскими."
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
@@ -3080,7 +3077,7 @@ msgstr "Облака в меню"
 
 #: src/settings_translation_file.cpp
 msgid "Color depth for post-processing texture"
-msgstr ""
+msgstr "Глубина цвета для постобработки текстуры"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -3101,7 +3098,6 @@ msgstr ""
 "[h,cpp]."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
@@ -3112,12 +3108,12 @@ msgid ""
 "so see a full list at https://content.luanti.org/help/content_flags/"
 msgstr ""
 "Список разделенных запятыми флажков для скрытия в хранилище контента.\n"
-"\"nonfree\" может использоваться для скрытия пакетов,\n"
-"которые не подпадают под категорию Free Software Foundation,\n"
-"как это определено Фондом свободного программного обеспечения.\n"
-"Вы также можете указать рейтинг контента. Эти флаги не зависят от версий "
-"Luanti,\n"
-"поэтому смотрите полный список по адресу https://content.minetest.net/help/"
+"«несвободный» может использоваться для скрытия пакетов, которые не подпадают "
+"под категорию «свободного программного обеспечения»,\n"
+"как это определено Фондом Свободного Программного Обеспечения.\n"
+"Вы также можете указать рейтинг контента.\n"
+"Эти флаги не зависят от версий Luanti,\n"
+"поэтому смотрите полный список по адресу https://content.luanti.org/help/"
 "content_flags/"
 
 #: src/settings_translation_file.cpp
@@ -3287,6 +3283,11 @@ msgid ""
 "Reducing this can improve performance, but some effects (e.g. debanding)\n"
 "require more than 8 bits to work."
 msgstr ""
+"Определить глубину цвета текстуры, используемой для конвейера постобработки."
+"\n"
+"Уменьшение этого параметра может повысить производительность, но для работы "
+"некоторых эффектов (например, для удаления пятен)\n"
+"требуется более 8 бит."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3507,6 +3508,11 @@ msgid ""
 "situations\n"
 "where transparency sorting would be very slow otherwise."
 msgstr ""
+"Рисовать треугольники, отсортированные по прозрачности, сгруппированные по "
+"их меш буферам.\n"
+"Это нарушает сортировку по прозрачности между меш буферами, но позволяет "
+"избежать ситуаций,\n"
+"когда в противном случае сортировка по прозрачности была бы очень медленной."
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
@@ -3591,14 +3597,12 @@ msgstr ""
 "имитируя поведение человеческого глаза."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows for transculent nodes.\n"
 "This is expensive."
 msgstr ""
-"Включить цветные тени.\n"
-"Когда включено, прозрачные ноды отбрасывают цветные тени. Это "
-"ресурсозатратно."
+"Включите цветные тени для трансгенных блоков.\n"
+"Это дорого."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3681,14 +3685,12 @@ msgstr ""
 "Например: 0 отключает покачивание, 1.0 для обычного, 2.0 для двойного."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set."
 msgstr ""
-"Включить/отключить запуск IPv6-сервера.\n"
-"Игнорируется, если задан «bind_address».\n"
-"Для включения необходим «enable_ipv6»."
+"Включить/отключить запуск сервера IPv6.\n"
+"Игнорируется, если задан параметр bind_address."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4333,16 +4335,15 @@ msgstr ""
 "Если включено, то новые игроки не смогут подключаться с пустым паролем."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, server account registration is separate from login in the UI.\n"
 "If disabled, connecting to a server will automatically register a new "
 "account."
 msgstr ""
-"Если включено, регистрация аккаунта выполняется в интерфейсе отдельно от "
-"входа.\n"
-"Если отключено, новые учётные записи будут регистрироваться автоматически "
-"при входе."
+"Если этот параметр включен, регистрация учетной записи сервера выполняется "
+"отдельно от входа в пользовательский интерфейс.\n"
+"Если он отключен, при подключении к серверу автоматически регистрируется "
+"новая учетная запись."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5212,7 +5213,7 @@ msgstr "Минимум малых пещер на мапчанк."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum vertex count for mesh buffers"
-msgstr ""
+msgstr "Минимальное количество вершин для меш буферов"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
@@ -5307,15 +5308,15 @@ msgstr ""
 "-    Дополнительные парящие острова из v7 (выключено по умолчанию)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of the player.\n"
 "When running a server, a client connecting with this name is admin.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
 "Имя игрока.\n"
-"При запуске сервера клиенты с этим именем будут администраторами.\n"
-"Будет переопределено при запуске из главного меню."
+"При запуске сервера клиент, подключающийся под этим именем, является "
+"администратором.\n"
+"При запуске из главного меню это значение переопределяется."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5824,7 +5825,6 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "См. http://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
@@ -5849,25 +5849,27 @@ msgid ""
 msgstr ""
 "Выберите метод сглаживания, который необходимо применить.\n"
 "\n"
-"* * Нет - сглаживание отсутствует (по умолчанию).\n"
+"* None - Нет сглаживания (по умолчанию)\n"
 "\n"
-"* FSAA - Аппаратное полноэкранное сглаживание\n"
-"(несовместимое с постобработкой и недостаточной дискретизацией)\n"
-", аналогичное сглаживанию с несколькими выборками (MSAA)\n"
+"* FSAA - Аппаратное полноэкранное сглаживание,\n"
+"аналогичное сглаживанию с несколькими выборками (MSAA).\n"
 "Сглаживает края блоков, но не влияет на внутреннюю часть текстур.\n"
-"Для изменения этого параметра требуется перезагрузка.\n"
 "\n"
-"* FXAA - Быстрое приблизительное сглаживание (требуется использование "
-"шейдеров)\n"
-"Применяется фильтр последующей обработки для обнаружения и сглаживания "
+"Если постобработка отключена, для изменения FSAA требуется перезапуск.\n"
+"Кроме того, если постобработка отключена, FSAA не будет работать в сочетании "
+"с\n"
+"недостаточной дискретизацией или настройкой \"3d_mode\", не используемой по "
+"умолчанию.\n"
+"\n"
+"* FXAA - Быстрое приблизительное сглаживание\n"
+"Применяет фильтр последующей обработки для обнаружения и сглаживания "
 "высококонтрастных краев.\n"
 "Обеспечивает баланс между скоростью и качеством изображения.\n"
 "\n"
-"* SSAA - сглаживание с использованием суперсэмплирования (требуются "
-"шейдеры)\n"
-"Визуализирует изображение сцены с более высоким разрешением, затем уменьшает "
-"масштаб, чтобы уменьшить\n"
-"эффекты наложения. Это самый медленный и точный метод."
+"* SSAA - Сглаживание с использованием суперсэмплирования\n"
+"Позволяет получить изображение сцены с более высоким разрешением, а затем "
+"уменьшить масштаб, чтобы уменьшить\n"
+"эффекты сглаживания. Это самый медленный и точный метод."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -6300,17 +6302,14 @@ msgstr ""
 "(или всех) предметов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of the shadow map over a given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources."
 msgstr ""
-"Распространяет полное обновление карты теней на заданное количество кадров.\n"
-"Более высокие значения могут сделать тени нестабильными, более низкие "
-"значения\n"
-"будут потреблять больше ресурсов.\n"
-"Минимум: 1; максимум: 16"
+"Распространить полное обновление карты теней на заданное количество кадров.\n"
+"Более высокие значения могут привести к запаздыванию теней,\n"
+"более низкие значения потребляют больше ресурсов."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6753,9 +6752,8 @@ msgid "Transparency Sorting Distance"
 msgstr "Дальность сортировки по прозрачности"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Transparency Sorting Group by Buffers"
-msgstr "Дальность сортировки по прозрачности"
+msgstr "Прозрачность Сортировки Групп по Буферам"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6816,7 +6814,6 @@ msgid "Undersampling"
 msgstr "Субдискретизация"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6827,12 +6824,15 @@ msgid ""
 "set\n"
 "to a non-default value."
 msgstr ""
-"Субдискретизация аналогична использованию низкого разрешения экрана,\n"
-"но она применяется только к игровому миру, графический интерфейс не "
-"затрагивается.\n"
-"Значительно увеличивает производительность за счёт вывода менее подробного "
-"изображения.\n"
-"Высокие значения приводят к менее проработанному изображению."
+"Недостаточная дискретизация аналогична использованию более низкого "
+"разрешения экрана, но применяется\n"
+"только к игровому миру, сохраняя графический интерфейс без изменений.\n"
+"Это должно значительно повысить производительность за счет снижения "
+"детализации изображения.\n"
+"Более высокие значения приводят к снижению детализации изображения.\n"
+"Примечание: В настоящее время недостаточная дискретизация не поддерживается, "
+"если для параметра \"3d_mode\" установлено\n"
+"значение, отличное от значения по умолчанию."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6859,12 +6859,13 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "Анимированные облака в главном меню."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use anisotropic filtering when looking at textures from an angle.\n"
 "This provides a significant improvement when used together with mipmapping."
 msgstr ""
-"Использовать анизотропную фильтрацию при взгляде на текстуры под углом."
+"Использовать анизотропную фильтрацию при просмотре текстур под углом.\n"
+"Это обеспечивает значительное улучшение при использовании в сочетании с "
+"мип-картированием."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
@@ -7138,7 +7139,6 @@ msgstr ""
 "аппаратно (прим. render-to-texture для нод в инвентаре)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear filtering, low-resolution textures\n"
 "can be blurred, so this option automatically upscales them to preserve\n"
@@ -7149,17 +7149,17 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
-"Когда используются билинейный/трилинейный/анизотропный фильтры, то текстуры "
-"низкого разрешения\n"
-"могут быть размытыми, поэтому они автоматически увеличиваются ближайшей\n"
-"интерполяцией для сохранения четкости пикселей. Это устанавливает "
-"минимальный размер текстуры\n"
-"для увеличенных текстур; большие значения выглядят чётче, но требуют больше\n"
-"памяти. Рекомендуются степени числа 2. Эта настройки применяется ТОЛЬКО "
-"если\n"
-"билинейный/трилинейный/анизотропный фильтр включен.\n"
-"Это также используется для автомасштабирования как основной размер для\n"
-"повёрнутых по сторонам света текстур блока."
+"При использовании билинейной/трилинейной фильтрации текстуры с низким "
+"разрешением\n"
+"могут быть размыты, поэтому этот параметр автоматически увеличивает их "
+"масштаб, чтобы сохранить\n"
+"четкие пиксели. Это определяет минимальный размер текстуры для текстур в "
+"увеличенном масштабе;\n"
+"более высокие значения выглядят четче, но требуют больше памяти.\n"
+"Этот параметр применяется ТОЛЬКО в том случае, если включен любой из "
+"упомянутых фильтров.\n"
+"Он также используется в качестве базового размера текстуры узла для\n"
+"автоматического масштабирования текстуры, выровненной по окружности."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7194,16 +7194,15 @@ msgid "Whether to fog out the end of the visible area."
 msgstr "Затуманивает конец видимой области."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether to mute sounds. You can unmute sounds at any time.\n"
 "In-game, you can toggle the mute state with the mute key or by using the\n"
 "pause menu."
 msgstr ""
-"Заглушает звуки. Вы можете включить звуки в любое время, если\n"
-"звуковая система не отключена (enable_sound=false).\n"
-"Внутри игры, вы можете включить переключать звуки, нажав на клавишу\n"
-"заглушения звука или используя меню паузы."
+"Следует ли отключать звук. Вы можете включить звук в любое время.\n"
+"В игре вы можете переключать режим отключения звука с помощью клавиши "
+"отключения звука\n"
+"или с помощью меню паузы."
 
 #: src/settings_translation_file.cpp
 msgid ""

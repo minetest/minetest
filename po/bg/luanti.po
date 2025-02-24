@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-09 13:23+0100\n"
-"PO-Revision-Date: 2025-01-27 06:02+0000\n"
-"Last-Translator: 109247019824 "
-"<109247019824@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2025-02-11 02:02+0000\n"
+"Last-Translator: 109247019824 <109247019824@users.noreply.hosted.weblate.org>"
+"\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
 "Language: bg\n"
@@ -264,13 +264,12 @@ msgid "Show technical names"
 msgstr "Технически наименования"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Touchscreen layout"
-msgstr "Сензорен екран"
+msgstr "Подредба на сензорния екран"
 
 #: builtin/common/settings/dlg_settings.lua
 msgid "pause_menu"
-msgstr ""
+msgstr "pause_menu"
 
 #: builtin/common/settings/settingtypes.lua
 msgid "Client Mods"
@@ -612,6 +611,8 @@ msgid ""
 "This is the list of clients connected to\n"
 "$1"
 msgstr ""
+"Това е списък на клиентите свързани с\n"
+"$1"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"

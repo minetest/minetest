@@ -1522,7 +1522,7 @@ There are a bunch of different looking node types.
 * `allfaces`
     * Often used for partially-transparent nodes.
     * External sides of textures, and unlike other drawtypes, the external sides
-      of other blocks, are visible from the inside.
+      of other nodes, are visible from the inside.
 * `allfaces_optional`
     * Often used for leaves nodes.
     * This switches between `normal`, `glasslike` and `allfaces` according to
@@ -5578,7 +5578,7 @@ Utilities
     * It's possible that multiple Luanti instances are running at the same
       time, which may lead to corruption if you are not careful.
 * `core.is_singleplayer()`
-* `core.features`: Table containing API feature flags
+* `core.features`: Table containing *server-side* API feature flags
 
   ```lua
   {
@@ -5689,10 +5689,13 @@ Utilities
       biome_weights = true,
       -- Particles can specify a "clip" blend mode (5.11.0)
       particle_blend_clip = true,
+      -- The `match_meta` optional parameter is available for `InvRef:remove_item()` (5.12.0)
+      remove_item_match_meta = true,
   }
   ```
 
 * `core.has_feature(arg)`: returns `boolean, missing_features`
+    * checks for *server-side* feature availability
     * `arg`: string or table in format `{foo=true, bar=true}`
     * `missing_features`: `{foo=true, bar=true}`
 * `core.get_player_information(player_name)`: Table containing information
@@ -5714,14 +5717,37 @@ Utilities
       min_jitter = 0.01,         -- minimum packet time jitter
       max_jitter = 0.5,          -- maximum packet time jitter
       avg_jitter = 0.03,         -- average packet time jitter
+
+      -- The version information is provided by the client and may be spoofed
+      -- or inconsistent in engine forks. You must not use this for checking
+      -- feature availability of clients. Instead, do use the fields
+      -- `protocol_version` and `formspec_version` where it matters.
+      -- Use `core.protocol_versions` to map Luanti versions to protocol versions.
+      -- This version string is only suitable for analysis purposes.
+      version_string = "0.4.9-git",   -- full version string
+
       -- the following information is available in a debug build only!!!
       -- DO NOT USE IN MODS
       --serialization_version = 26,     -- serialization version used by client
       --major = 0,                      -- major version number
       --minor = 4,                      -- minor version number
       --patch = 10,                     -- patch version number
-      --version_string = "0.4.9-git",   -- full version string
       --state = "Active"                -- current client state
+  }
+  ```
+
+* `core.protocol_versions`:
+  * Table mapping Luanti versions to corresponding protocol versions for modder convenience.
+  * For example, to check whether a client has at least the feature set
+    of Luanti 5.8.0 or newer, you could do:
+    `core.get_player_information(player_name).protocol_version >= core.protocol_versions["5.8.0"]`
+  * (available since 5.11)
+
+  ```lua
+  {
+      [version string] = protocol version at time of release
+      -- every major and minor version has an entry
+      -- patch versions only for the first release whose protocol version is not already present in the table
   }
   ```
 
@@ -7848,13 +7874,15 @@ An `InvRef` is a reference to an inventory.
   can be fully added to the list
 * `contains_item(listname, stack, [match_meta])`: returns `true` if
   the stack of items can be fully taken from the list.
-  If `match_meta` is false, only the items' names are compared
-  (default: `false`).
-* `remove_item(listname, stack)`: take as many items as specified from the
-  list, returns the items that were actually removed (as an `ItemStack`)
-  -- note that any item metadata is ignored, so attempting to remove a specific
-  unique item this way will likely remove the wrong one -- to do that use
-  `set_stack` with an empty `ItemStack`.
+    * If `match_meta` is `true`, item metadata is also considered when comparing
+      items. Otherwise, only the items names are compared. Default: `false`
+    * The method ignores wear.
+* `remove_item(listname, stack, [match_meta])`: take as many items as specified from the
+  list, returns the items that were actually removed (as an `ItemStack`).
+    * If `match_meta` is `true` (available since feature `remove_item_match_meta`),
+      item metadata is also considered when comparing items. Otherwise, only the
+      items names are compared. Default: `false`
+    * The method ignores wear.
 * `get_location()`: returns a location compatible to
   `core.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
@@ -8803,6 +8831,14 @@ child will follow movement and rotation of that bone.
       Same limits as for `thirdperson_back` apply.
       Defaults to `thirdperson_back` if unspecified.
 * `get_eye_offset()`: Returns camera offset vectors as set via `set_eye_offset`.
+* `set_camera(params)`: Sets camera parameters.
+    * `mode`: Defines the camera mode used
+      - `any`: free choice between all modes (default)
+      - `first`: first-person camera
+      - `third`: third-person camera
+      - `third_front`: third-person camera, looking opposite of movement direction
+    * Supported by client since 5.12.0.
+* `get_camera()`: Returns the camera parameters as a table as above.
 * `send_mapblock(blockpos)`:
     * Sends an already loaded mapblock to the player.
     * Returns `false` if nothing was sent (note that this can also mean that
@@ -9197,7 +9233,7 @@ Player properties need to be saved manually.
     -- Clients older than 5.9.0 interpret `pointable = "blocking"` as `pointable = true`.
     -- Can be overridden by the `pointabilities` of the held item.
 
-    visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
+    visual = "",
     -- "cube" is a node-sized cube.
     -- "sprite" is a flat texture always facing the player.
     -- "upright_sprite" is a vertical flat texture.
@@ -9219,6 +9255,8 @@ Player properties need to be saved manually.
     --   Wielditems are scaled a bit. If you want a wielditem to appear
     --   to be as large as a node, use `0.667` in `visual_size`
     -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
+    -- "node" looks exactly like a node in-world (supported since 5.12.0)
+    --   Note that visual effects like waving or liquid reflections will not work.
 
     visual_size = {x = 1, y = 1, z = 1},
     -- Multipliers for the visual size. If `z` is not specified, `x` will be used
@@ -9228,7 +9266,7 @@ Player properties need to be saved manually.
     -- File name of mesh when using "mesh" visual
 
     textures = {},
-    -- Number of required textures depends on visual.
+    -- Number of required textures depends on visual:
     -- "cube" uses 6 textures just like a node, but all 6 must be defined.
     -- "sprite" uses 1 texture.
     -- "upright_sprite" uses 2 textures: {front, back}.
@@ -9238,11 +9276,14 @@ Player properties need to be saved manually.
     colors = {},
     -- Currently unused.
 
+    node = {name = "ignore", param1=0, param2=0},
+    -- Node to show when using the "node" visual
+
     use_texture_alpha = false,
-    -- Use texture's alpha channel.
-    -- Excludes "upright_sprite" and "wielditem".
+    -- Use texture's alpha channel for transparency blending.
     -- Note: currently causes visual issues when viewed through other
     -- semi-transparent materials such as water.
+    -- Note: ignored for "item", "wielditem" and "node" visual.
 
     spritediv = {x = 1, y = 1},
     -- Used with spritesheet textures for animation and/or frame selection
@@ -9259,7 +9300,7 @@ Player properties need to be saved manually.
     -- If false, object is invisible and can't be pointed.
 
     makes_footstep_sound = false,
-    -- If true, is able to make footstep sounds of nodes
+    -- If true, object is able to make footstep sounds of nodes
     -- (see node sound definition for details).
 
     automatic_rotate = 0,
@@ -9282,6 +9323,7 @@ Player properties need to be saved manually.
 
     backface_culling = true,
     -- Set to false to disable backface_culling for model
+    -- Note: only used by "mesh" and "cube" visual
 
     glow = 0,
     -- Add this much extra lighting when calculating texture color.
@@ -9317,6 +9359,7 @@ Player properties need to be saved manually.
 
     shaded = true,
     -- Setting this to 'false' disables diffuse lighting of entity
+    -- Note: ignored for "item", "wielditem" and "node" visual
 
     show_on_minimap = false,
     -- Defaults to true for players, false for other entities.

@@ -57,8 +57,6 @@ struct Nametag
 	}
 };
 
-enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
-
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
 	and performs view bobbing etc. It also displays the wielded tool in front of the
@@ -169,7 +167,8 @@ public:
 	void drawWieldedTool(irr::core::matrix4* translation=NULL);
 
 	// Toggle the current camera mode
-	void toggleCameraMode() {
+	void toggleCameraMode()
+	{
 		if (m_camera_mode == CAMERA_MODE_FIRST)
 			m_camera_mode = CAMERA_MODE_THIRD;
 		else if (m_camera_mode == CAMERA_MODE_THIRD)
@@ -185,7 +184,7 @@ public:
 	}
 
 	//read the current camera mode
-	inline CameraMode getCameraMode()
+	inline CameraMode getCameraMode() const
 	{
 		return m_camera_mode;
 	}

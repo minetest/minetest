@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-09 13:23+0100\n"
-"PO-Revision-Date: 2024-12-22 16:00+0000\n"
+"PO-Revision-Date: 2025-02-11 02:02+0000\n"
 "Last-Translator: Linerly <linerly@proton.me>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
@@ -263,14 +263,12 @@ msgid "Show technical names"
 msgstr "Tampilkan nama teknis"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Touchscreen layout"
-msgstr "Layar Sentuh"
+msgstr "Tata letak layar sentuh"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "pause_menu"
-msgstr "FPS (bingkai per detik) pada menu jeda"
+msgstr "pause_menu"
 
 #: builtin/common/settings/settingtypes.lua
 msgid "Client Mods"
@@ -608,6 +606,8 @@ msgid ""
 "This is the list of clients connected to\n"
 "$1"
 msgstr ""
+"Ini daftar klien yang terhubung ke\n"
+"$1"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
@@ -967,21 +967,20 @@ msgstr ""
 "akan menimpa penggantian nama yang ada."
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
-#, fuzzy
 msgid "Expand all"
-msgstr "Nyalakan semua"
+msgstr "Buka semua"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "Group by prefix"
-msgstr ""
+msgstr "Kelompokkan berdasarkan awalan"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses a game called $2 and the following mods:"
-msgstr ""
+msgstr "Server $1 menggunakan permainan bernama $2 dan mod berikut:"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses the following mods:"
-msgstr ""
+msgstr "Server $1 menggunakan mod berikut:"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -1193,20 +1192,20 @@ msgid "You need to install a game before you can create a world."
 msgstr "Anda perlu pasang sebuah permainan sebelum bisa membuat dunia."
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Add favorite"
-msgstr "Hapus favorit"
+msgstr "Tambahkan favorit"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
 msgstr "Alamat"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid ""
 "Clients:\n"
 "$1"
-msgstr "Klien"
+msgstr ""
+"Klien:\n"
+"$1"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1222,9 +1221,8 @@ msgid "Favorites"
 msgstr "Favorit"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Game: $1"
-msgstr "Permainan"
+msgstr "Permainan: $1"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
@@ -1239,14 +1237,12 @@ msgid "Login"
 msgstr "Masuk"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Number of mods: $1"
-msgstr "Jumlah utas kemunculan"
+msgstr "Jumlah mod: $1"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Open server website"
-msgstr "Langkah server khusus"
+msgstr "Buka situs web server"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1259,6 +1255,10 @@ msgid ""
 "mod:<name>\n"
 "player:<name>"
 msgstr ""
+"Filter yang memungkinkan\n"
+"game:<nama>\n"
+"mod:<nama>\n"
+"player:<name>"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
@@ -1354,9 +1354,8 @@ msgid "Access denied. Reason: %s"
 msgstr "Akses ditolak. Alasan: %s"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "All debug info hidden"
-msgstr "Info awakutu ditampilkan"
+msgstr "Semua info awakutu disembunyikan"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1380,7 +1379,7 @@ msgstr "Batasan blok ditampilkan untuk blok sekitar"
 
 #: src/client/game.cpp
 msgid "Bounding boxes shown"
-msgstr ""
+msgstr "Kotak ikatan ditampilkan"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1623,9 +1622,8 @@ msgid "Volume changed to %d%%"
 msgstr "Volume diubah ke %d%%"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Wireframe not supported by video driver"
-msgstr "Shader dinyalakan, tetapi GLSL tidak didukung oleh pengandar."
+msgstr "Kerangka tidak didukung oleh pengandar video"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
@@ -2058,9 +2056,8 @@ msgid "Failed to compile the \"%s\" shader."
 msgstr "Gagal mengompilasi shader \"%s\"."
 
 #: src/client/shader.cpp
-#, fuzzy
 msgid "GLSL is not supported by the driver"
-msgstr "Shader dinyalakan, tetapi GLSL tidak didukung oleh pengandar."
+msgstr "GLSL tidak didukung oleh pengandar"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2297,35 +2294,33 @@ msgid "Sound Volume: %d%%"
 msgstr "Volume Suara: %d%%"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Add button"
-msgstr "Klik Tengah"
+msgstr "Tambahkan tombol"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Done"
-msgstr "Selesai!"
+msgstr "Selesai"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Remove"
-msgstr "Server jarak jauh"
+msgstr "Hapus"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Reset"
-msgstr ""
+msgstr "Atur ulang"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Start dragging a button to add. Tap outside to cancel."
 msgstr ""
+"Mulai menarik tombol untuk menambahkan. Ketuk di luar untuk membatalkan."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap a button to select it. Drag a button to move it."
-msgstr ""
+msgstr "Ketuk tombol untuk memilih. Tarik tombol untuk memindahkan."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap outside to deselect."
-msgstr ""
+msgstr "Ketuk di luar untuk membatalkan pilihan."
 
 #: src/gui/touchscreenlayout.cpp
 msgid "Joystick"
@@ -2553,7 +2548,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Noise 3D yang mengatur jumlah dungeon per potongan peta."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2571,8 +2565,7 @@ msgstr ""
 "-    interlaced: garis ganjil/genap berdasarkan polarisasi layar.\n"
 "-    topbottom: pisahkan layar atas/bawah.\n"
 "-    sidebyside: pisahkan layar kiri/kanan.\n"
-"-    crossview: 3d dengan pandang silang\n"
-"Catat bahwa mode interlaced memerlukan penggunaan shader."
+"-    crossview: 3d dengan pandang silang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2661,11 +2654,12 @@ msgid ""
 "All mesh buffers with less than this number of vertices will be merged\n"
 "during map rendering. This improves rendering performance."
 msgstr ""
+"Semua penyangga jaring kurang dari jumlah verteks ini akan digabungkan\n"
+"saat perenderan peta. Ini meningkatkan performa perenderan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Allow clouds to look 3D instead of flat."
-msgstr "Gunakan tampilan awan 3D alih-alih datar."
+msgstr "Perbolehkan awan terlihat 3D daripada datar."
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
@@ -3075,7 +3069,7 @@ msgstr "Awan dalam menu"
 
 #: src/settings_translation_file.cpp
 msgid "Color depth for post-processing texture"
-msgstr ""
+msgstr "Kedalaman warna untuk tekstur pasca-pemrosesan"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -3095,7 +3089,6 @@ msgstr ""
 "Berguna untuk pengujian. Lihat al_extensions.[h,cpp] untuk detailnya."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
@@ -3281,6 +3274,11 @@ msgid ""
 "Reducing this can improve performance, but some effects (e.g. debanding)\n"
 "require more than 8 bits to work."
 msgstr ""
+"Tentukan kedalaman warna tekstur yang digunakan untuk alur pasca-pemrosesan."
+"\n"
+"Mengurangi ini dapat meningkatkan performa, tetapi beberapa efek (mis. "
+"debanding)\n"
+"memerlukan lebih dari 8 bit supaya bekerja."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3500,6 +3498,11 @@ msgid ""
 "situations\n"
 "where transparency sorting would be very slow otherwise."
 msgstr ""
+"Gambar segitiga diurutkan berdasarkan transparansi berdasarkan penyangga "
+"jaringnya.\n"
+"Ini merusak pengurutan transparansi antara penyangga jaring, tetapi "
+"menghindari situasi\n"
+"di mana pengurutan transparansi akan menjadi lebih lambat."
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
@@ -3584,14 +3587,12 @@ msgstr ""
 "menyimulasikan perilaku mata manusia."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows for transculent nodes.\n"
 "This is expensive."
 msgstr ""
-"Menyalakan bayangan berwarna.\n"
-"Nilai true berarti nodus agak tembus pandang memiliki bayangan berwarna. Ini "
-"memerlukan sumber daya besar."
+"Aktif kan bayangan berwarna untuk nodus translusen.\n"
+"Ini komputasi mahal."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3670,14 +3671,12 @@ msgstr ""
 "Contoh: 0 untuk tanpa view bobbing; 1.0 untuk normal; 2.0 untuk 2x lipat."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set."
 msgstr ""
-"Nyalakan/matikan server IPv6.\n"
-"Diabaikan jika bind_address telah diatur.\n"
-"Perlu menyalakan enable_ipv6."
+"Aktif kan/nonaktifkan menjalankan server IPv6.\n"
+"Diabaikan jika bind_address telah diatur."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4323,14 +4322,14 @@ msgstr ""
 "menggantinya dengan kata sandi kosong."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, server account registration is separate from login in the UI.\n"
 "If disabled, connecting to a server will automatically register a new "
 "account."
 msgstr ""
-"Jika dinyalakan, tampilan pendaftaran akun dan masuk akan dipisah.\n"
-"Jika dimatikan, akun baru akan didaftarkan secara otomatis saat masuk."
+"Jika diaktifkan, pendaftaran akun server terpisah dari log masuk dalam UI.\n"
+"Jika dinonaktifkan, menghubungkan ke server akan mendaftarkan akun secara "
+"otomatis."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5204,7 +5203,7 @@ msgstr "Batas minimal nilai acak untuk gua kecil per potongan peta."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum vertex count for mesh buffers"
-msgstr ""
+msgstr "Jumlah verteks minimum untuk penyangga jaring"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
@@ -5299,16 +5298,15 @@ msgstr ""
 "- \"floatlands\" pada pembuat peta v7 (dimatikan secara bawaan)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of the player.\n"
 "When running a server, a client connecting with this name is admin.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
-"Nama si pemain.\n"
-"Saat menjalankan server, klien yang tersambung dengan nama ini adalah "
-"pengurus.\n"
-"Saat menjalankan dari menu utama, nilai ini ditimpa."
+"Nama pemain.\n"
+"Saat menjalankan server, klien yang tersambung dengan nama ini adalah admin."
+"\n"
+"Saat memulai dari menu utama, ini ditimpa."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5814,7 +5812,6 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "Lihat https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
@@ -5837,26 +5834,46 @@ msgid ""
 "Renders higher-resolution image of the scene, then scales down to reduce\n"
 "the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
-"Pilih metode antialiasing yang akan diterapkan.\n"
+"Pilih metode antialiasing untuk diterapkan.\n"
 "\n"
-"* Tidak ada - Tidak ada antialiasing (bawaan)\n"
 "\n"
-"* FSAA - Antialiasing layar penuh yang disediakan perangkat keras\n"
-"(tidak kompatibel dengan Post Processing dan Undersampling)\n"
-"Antialiasing multi-sampel (MSAA)\n"
-"Menghaluskan tepi blok, tetapi tidak memengaruhi bagian dalam tekstur.\n"
-"Diperlukan pengaktifan ulang untuk mengubah opsi ini.\n"
 "\n"
-"* FXAA - Antialiasing perkiraan cepat (memerlukan shader)\n"
-"Menerapkan filter pasca-pemrosesan untuk mendeteksi dan memperhalus tepi "
-"yang sangat kontras.\n"
+"* Tidak ada - tidak ada antialiasing (default)\n"
+"\n"
+"\n"
+"\n"
+"* FSAA-Antialiasing layar penuh yang disediakan perangkat keras\n"
+"\n"
+"A.k.a antialiasing multi-sampel (MSAA)\n"
+"\n"
+"Menghancur tepi blok tetapi tidak mempengaruhi bagian dalam tekstur.\n"
+"\n"
+"\n"
+"\n"
+"Jika pemrosesan pos dinonaktifkan, mengubah FSAA memerlukan restart.\n"
+"\n"
+"Juga, jika pemrosesan pos dinonaktifkan, FSAA tidak akan bekerja sama "
+"dengannya\n"
+"\n"
+"pengaturan undersampling atau non-default \"3D_MODE\".\n"
+"\n"
+"\n"
+"\n"
+"* Fxaa - perkiraan cepat antialiasing\n"
+"\n"
+"Menerapkan filter pasca pemrosesan untuk mendeteksi dan menghaluskan tepi "
+"kontras tinggi.\n"
+"\n"
 "Memberikan keseimbangan antara kecepatan dan kualitas gambar.\n"
 "\n"
-"* SSAA - Antialiasing super-sampling (memerlukan shader)\n"
-"Merender gambar pemandangan dengan resolusi lebih tinggi, kemudian "
-"memperkecil skala untuk mengurangi\n"
-"mengurangi efek aliasing. Ini adalah metode yang paling lambat dan paling "
-"akurat."
+"\n"
+"\n"
+"* SSAA - Antialiasing Super -Sampling\n"
+"\n"
+"Membuat gambar resolusi yang lebih tinggi dari pemandangan itu, lalu "
+"berskala ke bawah untuk mengurangi\n"
+"\n"
+"Efek aliasing. Ini adalah metode paling lambat dan paling akurat."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -6283,16 +6300,15 @@ msgstr ""
 "semua) barang."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of the shadow map over a given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources."
 msgstr ""
-"Menyebarkan pembaruan peta bayangan dalam jumlah bingkai yang diberikan.\n"
-"Nilai tinggi bisa membuat bayangan patah-patah, nilai rendah akan perlu\n"
-"sumber daya lebih banyak.\n"
-"Nilai minimum: 1; nilai maksimum: 16"
+"Sebarkan pembaruan lengkap peta bayangan pada sejumlah bingkai tertentu.\n"
+"Nilai yang lebih tinggi mungkin membuat bayangan lambat, nilai yang lebih "
+"rendah\n"
+"akan mengkonsumsi lebih banyak sumber daya."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6721,9 +6737,8 @@ msgid "Transparency Sorting Distance"
 msgstr "Jarak Pengurutan Transparansi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Transparency Sorting Group by Buffers"
-msgstr "Jarak Pengurutan Transparansi"
+msgstr "Jarak Pengurutan Transparansi berdasarkan Penyangga"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6783,7 +6798,6 @@ msgid "Undersampling"
 msgstr "Undersampling(Pengambilan sampel yang terlalu rendah)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6794,10 +6808,13 @@ msgid ""
 "set\n"
 "to a non-default value."
 msgstr ""
-"Undersampling seperti menggunakan resolusi layar yang lebih rendah, tetapi\n"
-"hanya berlaku untuk dunia permainan saja, antarmuka grafis tetap.\n"
-"Seharusnya memberikan dorongan kinerja dengan gambar yang kurang detail.\n"
-"Nilai yang lebih tinggi menghasilkan gambar yang kurang detail."
+"Undersampling hampir mirip seperti menggunakan resolusi layer yang lebih "
+"rendah, tetapi hanya diterapkan ke dunia permainan saja sambil menjaga GUI.\n"
+"Ini seharusnya memberikan peningkatan performa dengan mengurangi detail "
+"gambar.\n"
+"Nilai yang lebih tinggi membuat detail gambar lebih sedikit.\n"
+"Catatan: Undersampling saat ini tidak didukung jika pengaturan \"3d_mode\" "
+"ditetapkan ke nilai non-bawaan."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6824,12 +6841,13 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "Gunakan animasi awan untuk latar belakang menu utama."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use anisotropic filtering when looking at textures from an angle.\n"
 "This provides a significant improvement when used together with mipmapping."
 msgstr ""
-"Gunakan pemfilteran anisotropik saat melihat tekstur pada sudut tertentu."
+"Gunakan pemfilteran anisotropik saat melihat tekstur pada sudut tertentu.\n"
+"Ini menyediakan peningkatan yang lebih baik ketika digunakan bersama dengan "
+"mipmapping."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
@@ -7102,7 +7120,6 @@ msgstr ""
 "perangkat keras (misal gambar ke tekstur untuk nodus dalam inventaris)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear filtering, low-resolution textures\n"
 "can be blurred, so this option automatically upscales them to preserve\n"
@@ -7113,15 +7130,18 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
-"Saat menggunakan filter bilinear/trilinear/anisotropik, tekstur resolusi\n"
-"rendah dapat dikaburkan sehingga diperbesar otomatis dengan interpolasi\n"
-"nearest-neighbor untuk menjaga ketajaman piksel. Ini mengatur ukuran\n"
-"tekstur minimum untuk tekstur yang diperbesar; semakin tinggi semakin\n"
-"tajam, tetapi butuh memori lebih. Perpangkatan dua disarankan. Pengaturan\n"
-"ini HANYA diterapkan jika menggunakan filter bilinear/trilinear/"
-"anisotropik.\n"
-"Ini juga digunakan sebagai ukuran dasar tekstur nodus untuk penyekalaan\n"
-"otomatis tekstur yang sejajar dengan dunia."
+"Saat menggunakan pemfilteran bilinear/trilinear, tekstur resolusi rendah\n"
+"bisa dikaburkan, jadi opsi ini secara otomatis meningkatkannya untuk "
+"menjaga\n"
+"piksel tajam. Ini mendefinisikan ukuran tekstur minimum untuk tekstur yang "
+"ditingkatkan;\n"
+"Nilai yang lebih tinggi terlihat lebih tajam, tetapi membutuhkan lebih "
+"banyak memori.\n"
+"Pengaturan ini hanya diterapkan jika salah satu filter yang disebutkan "
+"diaktifkan.\n"
+"Ini juga digunakan sebagai ukuran tekstur simpul dasar untuk dunia yang "
+"selaras\n"
+"Tekstur Autoscaling."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7156,16 +7176,15 @@ msgid "Whether to fog out the end of the visible area."
 msgstr "Apakah harus memberi kabut pada akhir daerah yang terlihat."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether to mute sounds. You can unmute sounds at any time.\n"
 "In-game, you can toggle the mute state with the mute key or by using the\n"
 "pause menu."
 msgstr ""
-"Apakah akan membisukan suara atau tidak. Anda dapat membunyikan\n"
-"suara kapan pun, kecuali sistem suara dimatikan (enable_sound = false).\n"
-"Dalam permainan, Anda dapat beralih mode bisu dengan tombol bisu\n"
-"atau melalui menu jeda."
+"Apakah suara dibisukan atau tidak. Kamu bisa membunyikan suara kapan pun.\n"
+"Dalam permainan, kamu bisa sakelar keadaan bisu dengan tombol bisikan atau "
+"menggunakan\n"
+"menu jeda."
 
 #: src/settings_translation_file.cpp
 msgid ""

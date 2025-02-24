@@ -281,14 +281,26 @@ storing coordinates separately), but the format has been kept unchanged for
 that part.
 
 ## `map.sqlite`
-`map.sqlite` is a `SQLite3` database, containing a single table, called
+`map.sqlite` is an `SQLite3` database, containing a single table, called
 `blocks`. It looks like this:
+
+```sql
+CREATE TABLE `blocks` (
+    `x` INTEGER, `y` INTEGER, `z` INTEGER,
+    `data` BLOB NOT NULL,
+    PRIMARY KEY (`x`, `z`, `y`)
+);
+```
+
+Before 5.12.0 it looked like this:
 
 ```sql
 CREATE TABLE `blocks` (`pos` INT NOT NULL PRIMARY KEY, `data` BLOB);
 ```
 
 ## Position Hashing
+
+Applies to the pre-5.12.0 schema:
 
 `pos` (a node position hash) is created from the three coordinates of a
 `MapBlock` using this algorithm, defined here in Python:
@@ -335,8 +347,8 @@ See below for description.
 >  * NOTE: Byte order is MSB first (big-endian).
 >  * NOTE: Zlib data is in such a format that Python's `zlib` at least can
 >          directly decompress.
->  * NOTE: Since version 29 zstd is used instead of zlib. In addition, the entire
->          block is first serialized and then compressed (except the version byte).
+>  * NOTE: Since version 29 zstd is used instead of zlib. In addition, the
+>          **entire block** is first serialized and then compressed (except version byte).
 
 `u8` version
 * map format version number, see serialization.h for the latest number

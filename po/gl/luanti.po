@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-09 13:23+0100\n"
-"PO-Revision-Date: 2024-11-24 10:00+0000\n"
+"PO-Revision-Date: 2025-02-13 12:44+0000\n"
 "Last-Translator: ninjum <ninhum@gmx.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/minetest/"
 "minetest/gl/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -263,13 +263,12 @@ msgid "Show technical names"
 msgstr "Mostrar nomes técnicos"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Touchscreen layout"
-msgstr "Pantalla táctil"
+msgstr "Disposición da pantalla táctil"
 
 #: builtin/common/settings/dlg_settings.lua
 msgid "pause_menu"
-msgstr ""
+msgstr "_menú de pausa"
 
 #: builtin/common/settings/settingtypes.lua
 msgid "Client Mods"
@@ -609,6 +608,8 @@ msgid ""
 "This is the list of clients connected to\n"
 "$1"
 msgstr ""
+"Esta é a lista de clientes conectados a\n"
+"$1"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
@@ -882,7 +883,7 @@ msgstr "Desexa eliminar \"$1\"?"
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Borrar"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -971,21 +972,20 @@ msgstr ""
 "non permitirá cambios de nome aquí."
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
-#, fuzzy
 msgid "Expand all"
-msgstr "Activar todo"
+msgstr "Expandir todo"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "Group by prefix"
-msgstr ""
+msgstr "Agrupar por prefixo"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses a game called $2 and the following mods:"
-msgstr ""
+msgstr "O servidor $1 usa un xogo chamado $2 e as seguintes modificacións:"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses the following mods:"
-msgstr ""
+msgstr "O servidor $1 usa as seguintes modificacións:"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -1199,20 +1199,20 @@ msgid "You need to install a game before you can create a world."
 msgstr "Tes que instalar un xogo antes de poder crear un mundo."
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Add favorite"
-msgstr "Favorito remoto"
+msgstr "Engadir aos favoritos"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
 msgstr "Enderezo"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid ""
 "Clients:\n"
 "$1"
-msgstr "Cliente"
+msgstr ""
+"Clientes:\n"
+"$1"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1228,9 +1228,8 @@ msgid "Favorites"
 msgstr "Favoritos"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Game: $1"
-msgstr "Xogo"
+msgstr "Xogo: $1"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
@@ -1245,14 +1244,12 @@ msgid "Login"
 msgstr "Identificarse"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Number of mods: $1"
-msgstr "Número de fíos emerxentes"
+msgstr "Número de modificacións: $1"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Open server website"
-msgstr "Intervalo de servidor dedicado"
+msgstr "Abrir o sitio web do servidor"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1265,6 +1262,10 @@ msgid ""
 "mod:<name>\n"
 "player:<name>"
 msgstr ""
+"Filtros posibles\n"
+"xogo:<nome>\n"
+"mod:<nome>\"\n"
+"xogador:<nome"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
@@ -1360,9 +1361,8 @@ msgid "Access denied. Reason: %s"
 msgstr "Acceso negado. Motivo: %s"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "All debug info hidden"
-msgstr "Info de depuración mostrada"
+msgstr "Toda a información de depuración oculta"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1386,7 +1386,7 @@ msgstr "Límites de bloques mostrados para bloques pretos"
 
 #: src/client/game.cpp
 msgid "Bounding boxes shown"
-msgstr ""
+msgstr "Caixas delimitadoras amosadas"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1627,9 +1627,8 @@ msgid "Volume changed to %d%%"
 msgstr "Volume cambiado a %d%%"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Wireframe not supported by video driver"
-msgstr "Os sombreadores están habilitados pero o controlador non admite GLSL."
+msgstr "O wireframe non é compatible co controlador de vídeo"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
@@ -2062,9 +2061,8 @@ msgid "Failed to compile the \"%s\" shader."
 msgstr "Produciuse un erro ao compilar o sombreador \"%s\"."
 
 #: src/client/shader.cpp
-#, fuzzy
 msgid "GLSL is not supported by the driver"
-msgstr "Os sombreadores están habilitados pero o controlador non admite GLSL."
+msgstr "GLSL non é compatible co controlador"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2301,35 +2299,32 @@ msgid "Sound Volume: %d%%"
 msgstr "Son: %d%%"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Add button"
-msgstr "Botón central"
+msgstr "Engadir botón"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Done"
-msgstr "Feito!"
+msgstr "Feito"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Remove"
-msgstr "Servidor remoto"
+msgstr "Eliminar"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Reset"
-msgstr ""
+msgstr "Restablecer"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Start dragging a button to add. Tap outside to cancel."
-msgstr ""
+msgstr "Comeza a arrastrar un botón para engadir. Toca fóra para cancelar."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap a button to select it. Drag a button to move it."
-msgstr ""
+msgstr "Toca un botón para seccionalo. Arrastra un botón para movelo."
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Tap outside to deselect."
-msgstr ""
+msgstr "Toca fóra para deseleccionar."
 
 #: src/gui/touchscreenlayout.cpp
 msgid "Joystick"
@@ -2565,7 +2560,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Ruído 3D que determina a cantidade de calabozos por chunk."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2578,14 +2572,13 @@ msgid ""
 msgstr ""
 "Soporte 3D.\n"
 "Soportado actualmente:\n"
-"-    none: sen saída 3D.\n"
-"-    anaglyph: 3D en cor ciano/maxenta.\n"
-"-    interlaced: soporte de pantalla polarizada baseada en liñas par/ímpar.\n"
-"-    topbottom: pantalla dividida superior/inferior.\n"
-"-    sidebyside: pantalla dividida lado a lado.\n"
-" -   crossview: 3D para ver cruzado\n"
-"Teña en conta que o modo entrelazado require cos sombreadores estean "
-"activados."
+"-    ningún: sen saída 3D.\n"
+"-    anáglifo: 3D en cor ciano/maxenta.\n"
+"-    entrelazado: soporte de pantalla polarizada baseada en liñas par/ímpar."
+"\n"
+"-    arriba-abaixo: pantalla dividida superior/inferior.\n"
+"-    lado a lado: pantalla dividida lado a lado.\n"
+"-    vista cruzada: 3D para ver cruzado"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2674,11 +2667,13 @@ msgid ""
 "All mesh buffers with less than this number of vertices will be merged\n"
 "during map rendering. This improves rendering performance."
 msgstr ""
+"Todos os buffers de malla con menos de este número de vértices serán "
+"fusionados\n"
+"durante o renderizado do mapa. Isto mellora o rendemento do renderizado."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Allow clouds to look 3D instead of flat."
-msgstr "Activa as nubes 3D en lugar de nubes 2D (planas)."
+msgstr "Permitir que as nubes se vexan en 3D en vez de planas."
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
@@ -3089,7 +3084,7 @@ msgstr "Nubes no menú"
 
 #: src/settings_translation_file.cpp
 msgid "Color depth for post-processing texture"
-msgstr ""
+msgstr "Profundidade de cor para a textura de post-procesamento"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -3108,7 +3103,6 @@ msgstr ""
 "Útil para probas. Vexa al_extensions.[h,cpp] para máis detalles."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
@@ -3294,6 +3288,11 @@ msgid ""
 "Reducing this can improve performance, but some effects (e.g. debanding)\n"
 "require more than 8 bits to work."
 msgstr ""
+"Decide a profundidade de cor da textura utilizada para o proceso de post-"
+"procesamento.\n"
+"Reducir isto pode mellorar o rendemento, pero algúns efectos (por exemplo, "
+"tramado)\n"
+"require máis de 8 bits para funcionar."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3518,6 +3517,11 @@ msgid ""
 "situations\n"
 "where transparency sorting would be very slow otherwise."
 msgstr ""
+"Debuxar triángulos ordenados por transparencia agrupados polos seus buffers "
+"de malla.\n"
+"Isto rompe a orde de transparencia entre os buffers de malla, pero evita "
+"situacións\n"
+"onde a orde de transparencia sería moi lenta noutro caso."
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
@@ -3602,14 +3606,12 @@ msgstr ""
 "simulando o comportamento do ollo humano."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows for transculent nodes.\n"
 "This is expensive."
 msgstr ""
-"Activar sombras coloridas.\n"
-"Se o valor é verdadeiro, os bloques traslúcidos proxectarán sombras "
-"coloridas. Esta opción precisa de moitos recursos."
+"Activar sombras coloreadas para nós translúcidos.\n"
+"Isto é custoso."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3695,14 +3697,12 @@ msgstr ""
 "Por exemplo: 0 para nada de balanceo; 1.0 para o normal; 2.0 para o dobre."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set."
 msgstr ""
-"Activa/desactiva a execución dun servidor IPv6.\n"
-"Ignorado se establécese bind_address.\n"
-"É preciso enable_ipv6 para activalo."
+"Activar/desactivar a execución dun servidor IPv6.\n"
+"Ignorado se está configurada a bind_address."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4364,14 +4364,15 @@ msgstr ""
 "cambiar o seu contrasinal a un contrasinal baleiro."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, server account registration is separate from login in the UI.\n"
 "If disabled, connecting to a server will automatically register a new "
 "account."
 msgstr ""
-"Activar confirmación de rexistro ao se conectar ao servidor\n"
-"Se está desactivado, rexistrarase unha nova conta automáticamente."
+"Se está activado, o rexistro da conta do servidor é separado do inicio de "
+"sesión na interface de usuario.\n"
+"Se está desactivado, conectar a un servidor rexistrará automaticamente unha "
+"nova conta."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5262,7 +5263,7 @@ msgstr "Límite mínimo do número aleatorio de covas pequenas por chunk."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum vertex count for mesh buffers"
-msgstr ""
+msgstr "Contaxe mínima de vértices para os buffers de malla"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
@@ -5357,16 +5358,15 @@ msgstr ""
 "- Os terreos flotantes opcionais de v7 (desactivados por defecto)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of the player.\n"
 "When running a server, a client connecting with this name is admin.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
 "Nome do xogador.\n"
-"Cando se executa un servidor, os clientes que se conectan con este nome son "
-"administradores.\n"
-"Ao comezar desde o menú principal, isto substitúese."
+"Cando se executa un servidor, un cliente que se conecte con este nome será "
+"administrador.\n"
+"Cando se inicie desde o menú principal, isto será substituído."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6356,18 +6356,16 @@ msgstr ""
 "cantidade na que agrupar algúns (ou todos) os obxectos."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of the shadow map over a given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources."
 msgstr ""
-"Distribuír unha actualización completa do mapa de sombras sobre unha "
-"determinada cantidade de fotogramas.\n"
-"Os valores máis altos poden facer cas sombras sexan lentas e os valores máis "
-"baixos\n"
-"consumirán máis recursos.\n"
-"Valor mínimo: 1; Valor máximo 16"
+"Espallar unha actualización completa do mapa de sombras ao longo dun número "
+"determinado de fotogramas.\n"
+"Valores máis altos poden facer que as sombras vaian con retardo, mentres que "
+"valores máis baixos\n"
+"consumirán máis recursos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6650,7 +6648,7 @@ msgid ""
 msgstr ""
 "O backend de renderizado.\n"
 "Nota: É necesario reiniciar despois de cambiar isto!\n"
-"OpenGL é o predeterminado para escritorio, e OGLES2 para Android"
+"OpenGL é o predeterminado para escritorio, e OGLES2 para Android."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6814,9 +6812,8 @@ msgid "Transparency Sorting Distance"
 msgstr "Distancia de ordenación de transparencias"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Transparency Sorting Group by Buffers"
-msgstr "Distancia de ordenación de transparencias"
+msgstr "Grupo de orde de transparencia por buffers"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6876,7 +6873,6 @@ msgid "Undersampling"
 msgstr "Submostraxe"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6892,7 +6888,10 @@ msgstr ""
 "só para o mundo, mantendo a GUI intacta.\n"
 "Debería dar un aumento máis significativo do rendemento a costa dunha imaxe "
 "menos detallada.\n"
-"Os valores máis altos dan como resultado unha imaxe menos detallada."
+"Os valores máis altos dan como resultado unha imaxe menos detallada.\n"
+"Nota: A submostraxe actualmente non está soportada se a configuración "
+"'3d_mode' está establecida\n"
+"cun valor non predeterminado."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6919,11 +6918,13 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "Usa unha animación de nube para o fondo do menú principal."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use anisotropic filtering when looking at textures from an angle.\n"
 "This provides a significant improvement when used together with mipmapping."
-msgstr "Usar filtrado anisotrópico ao observar texturas desde un ángulo."
+msgstr ""
+"Usar filtrado anisotrópico ao observar texturas desde un ángulo.\n"
+"Isto proporciona unha mellora significativa cando se usa xunto con "
+"mipmapping."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
@@ -7195,7 +7196,6 @@ msgstr ""
 "ao hardware (por exemplo, renderizado en textura para nós do inventario)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear filtering, low-resolution textures\n"
 "can be blurred, so this option automatically upscales them to preserve\n"
@@ -7206,17 +7206,16 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
-"Cando se usan filtros bilineais/trilineais/anisótropos, texturas de baixa "
-"resolución\n"
-"poden ser borrosas, polo que amplíaos automaticamente co veciño máis "
-"próximo\n"
-"interpolación para preservar píxeles nítidos. Isto establece o tamaño mínimo "
-"de textura\n"
-"para as texturas mejoradas; valores máis altos parecen máis nítidos, pero "
-"requiren máis\n"
-"memoria. Recoméndase potencias de 2. Esta configuración só se aplica se\n"
-"O filtrado bilineal/trilineal/anisótropo está activado.\n"
-"Tamén se usa como tamaño de textura do nodo base para aliñados ao mundo\n"
+"Cando se usa filtrado bilineal/trilineal, as texturas de baixa resolución\n"
+"poden quedar borrosas, polo que esta opción amplía automaticamente as "
+"texturas para preservar\n"
+"píxeles nítidos. Isto define o tamaño mínimo da textura para as texturas "
+"ampliadas;\n"
+"valores máis altos son máis nítidos, pero requiren máis memoria.\n"
+"Esta configuración APLÍCASE SÓ se algún dos filtros mencionados está "
+"habilitado.\n"
+"Este tamén se usa como tamaño de textura do nodo base para aliñados ao "
+"mundo\n"
 "autoescalado de texturas."
 
 #: src/settings_translation_file.cpp
@@ -7253,17 +7252,16 @@ msgid "Whether to fog out the end of the visible area."
 msgstr "Indica se hai que poñar néboa ao final da zona visible."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether to mute sounds. You can unmute sounds at any time.\n"
 "In-game, you can toggle the mute state with the mute key or by using the\n"
 "pause menu."
 msgstr ""
-"Indica se hai que silenciar os sons. Podes activar o son en calquera "
-"momento, a non ser que\n"
-"esté desactivado (enable_sound=false).\n"
-"No xogo podes cambiar o estado de silencio coa tecla de silencio ou no\n"
-"menú de pausa."
+"Se activar ou desactivar os sons. Pódese reactivar o son en calquera momento."
+"\n"
+"No xogo, podes alternar o estado de silencio coa tecla de silencio ou "
+"utilizando\n"
+"o menú de pausa."
 
 #: src/settings_translation_file.cpp
 msgid ""
