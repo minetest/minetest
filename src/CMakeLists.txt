@@ -486,6 +486,10 @@ if(ANDROID)
 	list(APPEND common_SRCS porting_android.cpp)
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+	list(APPEND common_SRCS porting_ios.mm)
+endif()
+
 if(BUILD_UNITTESTS)
 	add_subdirectory(unittest)
 	list(APPEND common_SRCS ${UNITTEST_SRCS})

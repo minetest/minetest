@@ -44,6 +44,9 @@
 	// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
 	#include <crt_externs.h>
 #endif
+#if defined(TARGET_OS_IPHONE)
+	#include "porting_ios.h"
+#endif
 
 #if defined(__HAIKU__)
 	#include <FindDirectory.h>
@@ -540,6 +543,7 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
+#ifndef TARGET_OS_IPHONE
 	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
 	if (minetest_user_path && minetest_user_path[0] != '\0') {
 		path_user = std::string(minetest_user_path);
@@ -549,6 +553,9 @@ bool setSystemPaths()
 			+ "/Library/Application Support/"
 			+ "minetest";
 	}
+#else
+	path_user = getAppleDocumentsDirectory();
+#endif
 	return true;
 }
 
