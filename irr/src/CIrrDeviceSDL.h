@@ -25,7 +25,7 @@
 
 #include <memory>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 
 namespace irr
 {
@@ -332,7 +332,7 @@ private:
 	s32 CurrentTouchCount;
 	bool IsInBackground;
 
-	std::unordered_set<SDL_Scancode> escapeKeys;
+	std::set<SDL_Scancode> escapeKeys;
 };
 
 } // end namespace irr
