@@ -588,6 +588,7 @@ private:
 	typedef void (APIENTRYP PFNGLGETOBJECTLABELPROC_MT) (GLenum identifier, GLuint name, GLsizei bufSize, GLsizei * length, GLchar * label);
 	typedef void (APIENTRYP PFNGLOBJECTPTRLABELPROC_MT) (const void * ptr, GLsizei length, const GLchar * label);
 	typedef void (APIENTRYP PFNGLGETOBJECTPTRLABELPROC_MT) (const void * ptr, GLsizei bufSize, GLsizei * length, GLchar * label);
+	typedef void (APIENTRYP PFNGLOBJECTLABELKHRPROC_MT) (GLenum type, GLuint object, GLsizei length, const GLchar * label);
 	typedef void (APIENTRYP PFNGLBUFFERSTORAGEPROC_MT) (GLenum target, GLsizeiptr size, const void * data, GLbitfield flags);
 	typedef void (APIENTRYP PFNGLCLEARTEXIMAGEPROC_MT) (GLuint texture, GLint level, GLenum format, GLenum type, const void * data);
 	typedef void (APIENTRYP PFNGLCLEARTEXSUBIMAGEPROC_MT) (GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void * data);
@@ -1320,6 +1321,7 @@ public:
 	PFNGLGETOBJECTLABELPROC_MT GetObjectLabel = NULL;
 	PFNGLOBJECTPTRLABELPROC_MT ObjectPtrLabel = NULL;
 	PFNGLGETOBJECTPTRLABELPROC_MT GetObjectPtrLabel = NULL;
+	PFNGLOBJECTLABELKHRPROC_MT ObjectLabelKHR = NULL;
 	PFNGLBUFFERSTORAGEPROC_MT BufferStorage = NULL;
 	PFNGLCLEARTEXIMAGEPROC_MT ClearTexImage = NULL;
 	PFNGLCLEARTEXSUBIMAGEPROC_MT ClearTexSubImage = NULL;
