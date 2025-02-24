@@ -238,10 +238,10 @@ if(ENABLE_OPENGL)
 	find_package(OpenGL REQUIRED)
 endif()
 if(USE_SDL2)
-	if(NOT ANDROID)
+	if(NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
 		find_package(SDL2 REQUIRED)
 	else()
-		# provided by AndroidLibs.cmake
+		# provided by AndroidLibs.cmake or from cmake call
 	endif()
 	message(STATUS "Found SDL2: ${SDL2_LIBRARIES}")
 
@@ -539,8 +539,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
 		"-framework CoreAudio"
 		"-framework CoreMotion"
 		${OPENGLES2_LIBRARY}
-		SDL2::SDL2-static
-		"$<$<PLATFORM_ID:iOS>:SDL2::SDL2main>"
+		${SDL2_LIBRARIES}
 	)
 else()
 	target_link_libraries(IrrlichtMt PRIVATE
