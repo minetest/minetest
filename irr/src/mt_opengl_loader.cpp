@@ -555,7 +555,6 @@ void OpenGLProcedures::LoadAllProcedures(irr::video::IContextManager *cmgr)
 	if (!GetObjectLabel) GetObjectLabel = (PFNGLGETOBJECTLABELPROC_MT)cmgr->getProcAddress("glGetObjectLabel");
 	if (!ObjectPtrLabel) ObjectPtrLabel = (PFNGLOBJECTPTRLABELPROC_MT)cmgr->getProcAddress("glObjectPtrLabel");
 	if (!GetObjectPtrLabel) GetObjectPtrLabel = (PFNGLGETOBJECTPTRLABELPROC_MT)cmgr->getProcAddress("glGetObjectPtrLabel");
-	if (!ObjectLabelKHR) ObjectLabelKHR = (PFNGLOBJECTLABELKHRPROC_MT)cmgr->getProcAddress("glObjectLabelKHR");
 	if (!BufferStorage) BufferStorage = (PFNGLBUFFERSTORAGEPROC_MT)cmgr->getProcAddress("glBufferStorage");
 	if (!ClearTexImage) ClearTexImage = (PFNGLCLEARTEXIMAGEPROC_MT)cmgr->getProcAddress("glClearTexImage");
 	if (!ClearTexSubImage) ClearTexSubImage = (PFNGLCLEARTEXSUBIMAGEPROC_MT)cmgr->getProcAddress("glClearTexSubImage");

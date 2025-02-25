@@ -163,20 +163,16 @@ public:
 
 	inline void irrGlObjectLabel(GLenum identifier, GLuint name, const char *label)
 	{
+		// KHR_debug implements ObjectLabelKHR in OpenGL ES
+#ifndef _IRR_COMPILE_WITH_OGLES2_
 		if (KHRDebugSupported) {
 			u32 len = strlen(label);
 			// Since our texture strings can get quite long we also truncate
 			// to a hardcoded limit of 82
 			len = std::min(len, std::min(MaxLabelLength, 82U));
-			// According to KHR_debug specification
-			// https://registry.khronos.org/OpenGL/extensions/KHR/KHR_debug.txt
-			// KHR suffix is used for entry point in OpenGL ES.
-#ifndef _IRR_COMPILE_WITH_OGLES2_
 			GL.ObjectLabel(identifier, name, len, label);
-#else
-			GL.ObjectLabelKHR(identifier, name, len, label);
-#endif
 		}
+#endif
 	}
 
 	bool LODBiasSupported = false;

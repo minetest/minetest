@@ -38,14 +38,15 @@
 	#include <android/api-level.h>
 #endif
 #if defined(__APPLE__)
+	#include <TargetConditionals.h>
 	#include <mach-o/dyld.h>
 	#include <CoreFoundation/CoreFoundation.h>
 	// For _NSGetEnviron()
 	// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
 	#include <crt_externs.h>
-#endif
-#if defined(TARGET_OS_IPHONE)
+	#if TARGET_OS_IPHONE
 	#include "porting_ios.h"
+	#endif
 #endif
 
 #if defined(__HAIKU__)
@@ -543,7 +544,7 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-#ifndef TARGET_OS_IPHONE
+#if TARGET_OS_MAC
 	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
 	if (minetest_user_path && minetest_user_path[0] != '\0') {
 		path_user = std::string(minetest_user_path);
@@ -553,8 +554,10 @@ bool setSystemPaths()
 			+ "/Library/Application Support/"
 			+ "minetest";
 	}
-#else
+#elif TARGET_OS_IPHONE
 	path_user = getAppleDocumentsDirectory();
+#else
+	#error "Not supported Apple OS."
 #endif
 	return true;
 }
