@@ -17,7 +17,7 @@ class KeyPress
 public:
 	KeyPress() = default;
 
-	KeyPress(std::string_view name);
+	KeyPress(const std::string &name);
 
 	KeyPress(const irr::SEvent::SKeyInput &in);
 
@@ -59,7 +59,7 @@ public:
 	static const KeyPress &getSpecialKey(const std::string &name);
 
 private:
-	bool loadFromScancode(std::string_view name);
+	bool loadFromScancode(const std::string &name);
 	void loadFromKey(irr::EKEY_CODE keycode, wchar_t keychar);
 	std::string formatScancode() const;
 
