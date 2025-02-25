@@ -309,7 +309,7 @@ void KeyPress::loadFromKey(irr::EKEY_CODE keycode, wchar_t keychar)
 	}
 }
 
-KeyPress::KeyPress(std::string_view name)
+KeyPress::KeyPress(const std::string &name)
 {
 	if (loadFromScancode(name))
 		return;
@@ -365,14 +365,14 @@ wchar_t KeyPress::getKeychar() const
 	return lookup_scancode(scancode).Char;
 }
 
-bool KeyPress::loadFromScancode(std::string_view name)
+bool KeyPress::loadFromScancode(const std::string &name)
 {
 #if USE_SDL2
 	if (name.size() < 2 || name[0] != '<' || name.back() != '>')
 		return false;
 	char *p;
-	const auto code = strtoul(name.data()+1, &p, 10);
-	if (p != name.data() + name.size() - 1)
+	const auto code = strtoul(name.c_str()+1, &p, 10);
+	if (p != name.c_str() + name.size() - 1)
 		return false;
 	scancode.emplace<u32>(code);
 	return true;
