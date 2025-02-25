@@ -327,6 +327,8 @@ private:
 
 	core::rect<s32> lastElemPos;
 
+	// TODO: This is only used for scancode/keycode conversion with EKEY_CODE (among other things, for Luanti
+	// to display keys to users). Drop this along with EKEY_CODE.
 	std::unordered_map<SDL_Keycode, EKEY_CODE> KeyMap;
 
 	s32 CurrentTouchCount;
