@@ -159,7 +159,6 @@ local function load()
 			{ heading = fgettext_ne("Movement") },
 			"arm_inertia",
 			"view_bobbing_amount",
-			"fall_bobbing_amount",
 		},
 	})
 
