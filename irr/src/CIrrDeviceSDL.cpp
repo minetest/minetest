@@ -1256,15 +1256,6 @@ bool CIrrDeviceSDL::supportsTouchEvents() const
 	return true;
 }
 
-//! Checks whether windowing uses the Wayland protocol.
-bool CIrrDeviceSDL::isUsingWayland() const
-{
-	if (!Window)
-		return false;
-	auto *name = SDL_GetCurrentVideoDriver();
-	return name && !strcmp(name, "wayland");
-}
-
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {
