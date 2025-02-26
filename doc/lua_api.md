@@ -7457,8 +7457,7 @@ Misc.
 * `core.hash_node_position(pos)`: returns a 48-bit integer
     * `pos`: table {x=number, y=number, z=number},
     * Gives a unique numeric encoding for a node position (16+16+16=48bit)
-    * Despite the name, this does not have collisions and this is not a mixing
-      hash function, neighboring x positions will have consecutive values.
+    * Despite the name, this is not a hash function (so it doesn't mix or produce collisions).
 * `core.get_position_from_hash(hash)`: returns a position
     * Inverse transform of `core.hash_node_position`
 * `core.get_item_group(name, group)`: returns a rating
