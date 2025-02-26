@@ -756,7 +756,6 @@ private:
 	f32  m_repeat_dig_time;
 	f32  m_cache_cam_smoothing;
 
-	bool m_enable_relative_mode = false;
 	bool m_invert_mouse;
 	bool m_enable_hotbar_mouse_wheel;
 	bool m_invert_hotbar_mouse_wheel;
@@ -899,15 +898,6 @@ bool Game::startup(bool *kill,
 	}
 
 	m_first_loop_after_window_activation = true;
-
-	// In principle we could always enable relative mouse mode, but it causes weird
-	// bugs on some setups (e.g. #14932), so we enable it only when it's required.
-	// That is: on Wayland or Android, because it does not support mouse repositioning
-#ifdef __ANDROID__
-	m_enable_relative_mode = true;
-#else
-	m_enable_relative_mode = device->isUsingWayland();
-#endif
 
 	g_client_translations->clear();
 
@@ -2361,10 +2351,8 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 	Since Minetest has its own code to synthesize mouse events from touch events,
 	this results in duplicated input. To avoid that, we don't enable relative
 	mouse mode if we're in touchscreen mode. */
-	if (cur_control) {
-		cur_control->setRelativeMode(m_enable_relative_mode &&
-			!g_touchcontrols && !isMenuActive());
-	}
+	if (cur_control)
+		cur_control->setRelativeMode(!g_touchcontrols && !isMenuActive());
 
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
