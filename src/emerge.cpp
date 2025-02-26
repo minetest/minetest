@@ -707,6 +707,8 @@ void *EmergeThread::run()
 			{
 				ScopeProfiler sp(g_profiler, "EmergeThread: load block - async (sum)");
 				MutexAutoLock dblock(m_db.mutex);
+				// Note: this can throw an exception, but there isn't really
+				// a good, safe way to handle it.
 				m_db.loadBlock(pos, databuf);
 			}
 			// actually load it, then decide again
