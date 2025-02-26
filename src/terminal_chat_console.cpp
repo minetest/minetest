@@ -333,10 +333,6 @@ void TerminalChatConsole::step(int ch)
 			continue;
 
 		std::wstring error_message = utf8_to_wide(Logger::getLevelLabel(p.first));
-		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message = std::wstring(L"\x1b(c@red)").append(error_message)
-				.append(L"\x1b(c@white)");
-		}
 		m_chat_backend.addMessage(error_message, utf8_to_wide(p.second));
 	}
 
