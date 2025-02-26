@@ -473,8 +473,15 @@ void Server::init()
 	EnvAutoLock envlock(this);
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
-	auto startup_server_map = std::make_unique<ServerMap>(m_path_world, this,
-			m_emerge.get(), m_metrics_backend.get());
+	std::unique_ptr<ServerMap> startup_server_map;
+	try {
+		startup_server_map = std::make_unique<ServerMap>(m_path_world, this,
+				m_emerge.get(), m_metrics_backend.get());
+	} catch (DatabaseException &e) {
+		throw ServerError(std::string(
+			"Failed to initialize the map database. The world may be "
+			"corrupted or in an unsupported format.\n") + e.what());
+	}
 
 	// Initialize scripting
 	infostream << "Server: Initializing Lua" << std::endl;
