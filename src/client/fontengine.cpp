@@ -278,7 +278,7 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	};
 
 	auto it = m_media_faces.find(media_name);
-	if (it != m_media_faces.end()) {
+	if (spec.mode != _FM_Fallback && it != m_media_faces.end()) {
 		auto *face = it->second.get();
 		if (auto *font = createFont(face))
 			return font;
