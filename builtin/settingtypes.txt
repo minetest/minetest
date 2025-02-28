@@ -1998,7 +1998,9 @@ max_out_chat_queue_size (Maximum size of the outgoing chat queue) int 20 -1 3276
 client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
 
 #    Maximum number of mapblocks for client to be kept in memory.
-#    Set to -1 for unlimited amount.
+#    Note that there is an internal dynamic minimum number of blocks that
+#    won't be deleted, depending on the current view range.
+#    Set to -1 for no limit.
 client_mapblock_limit (Mapblock limit) int 7500 -1 2147483647
 
 #    Maximum number of blocks that are simultaneously sent per client.
