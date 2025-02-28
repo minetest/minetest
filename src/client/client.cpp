@@ -446,20 +446,43 @@ void Client::step(float dtime)
 	/*
 		Run Map's timers and unload unused data
 	*/
-	const float map_timer_and_unload_dtime = 5.25;
+	constexpr float map_timer_and_unload_dtime = 5.25f;
+	constexpr s32 mapblock_limit_enforce_distance = 200;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
 		std::vector<v3s16> deleted_blocks;
+
+		// Determine actual block limit to use
+		const s32 configured_limit = g_settings->getS32("client_mapblock_limit");
+		s32 mapblock_limit;
+		if (configured_limit < 0) {
+			mapblock_limit = -1;
+		} else {
+			s32 view_range = g_settings->getS16("viewing_range");
+			// Up to a certain limit we want to guarantee that the client can keep
+			// a full 360° view loaded in memory without blocks vanishing behind
+			// the players back.
+			// We use a sphere volume to approximate this. In practice far less
+			// blocks will be needed due to occlusion/culling.
+			float blocks_range = ceilf(std::min(mapblock_limit_enforce_distance, view_range)
+				/ (float) MAP_BLOCKSIZE);
+			mapblock_limit = (4.f/3.f) * M_PI * powf(blocks_range, 3);
+			assert(mapblock_limit > 0);
+			mapblock_limit = std::max(mapblock_limit, configured_limit);
+			if (mapblock_limit > std::max(configured_limit, m_mapblock_limit_logged)) {
+				infostream << "Client: using block limit of " << mapblock_limit
+					<< " rather than configured " << configured_limit
+					<< " due to view range." << std::endl;
+				m_mapblock_limit_logged = mapblock_limit;
+			}
+		}
+
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 			std::max(g_settings->getFloat("client_unload_unused_data_timeout"), 0.0f),
-			g_settings->getS32("client_mapblock_limit"),
-			&deleted_blocks);
+			mapblock_limit, &deleted_blocks);
 
-		/*
-			Send info to server
-			NOTE: This loop is intentionally iterated the way it is.
-		*/
+		// Send info to server
 
-		std::vector<v3s16>::iterator i = deleted_blocks.begin();
+		auto i = deleted_blocks.begin();
 		std::vector<v3s16> sendlist;
 		for(;;) {
 			if(sendlist.size() == 255 || i == deleted_blocks.end()) {
