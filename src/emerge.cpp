@@ -375,8 +375,7 @@ bool EmergeManager::pushBlockEmergeData(
 		}
 	}
 
-	std::pair<std::map<v3s16, BlockEmergeData>::iterator, bool> findres;
-	findres = m_blocks_enqueued.insert(std::make_pair(pos, BlockEmergeData()));
+	auto findres = m_blocks_enqueued.insert(std::make_pair(pos, BlockEmergeData()));
 
 	BlockEmergeData &bedata = findres.first->second;
 	*entry_already_exists   = !findres.second;

@@ -1986,9 +1986,8 @@ void Server::SendMovePlayer(PlayerSAO *sao)
 	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 
 	{
-		v3f pos = sao->getBasePosition();
 		verbosestream << "Server: Sending TOCLIENT_MOVE_PLAYER"
-				<< " pos=(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
+				<< " pos=" << sao->getBasePosition()
 				<< " pitch=" << sao->getLookPitch()
 				<< " yaw=" << sao->getRotation().Y
 				<< std::endl;
