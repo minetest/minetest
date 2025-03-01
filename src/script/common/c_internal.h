@@ -13,7 +13,6 @@
 
 #include <string>
 #include <string_view>
-#include <string>
 
 extern "C" {
 #include <lua.h>
