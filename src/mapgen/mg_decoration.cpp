@@ -159,7 +159,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 		bool cover = false;
 		// Amount of decorations
 		float nval = (flags & DECO_USE_NOISE) ?
-			NoisePerlin2D(&np, p2d_center.X, p2d_center.Y, mapseed) :
+			NoiseFractal2D(&np, p2d_center.X, p2d_center.Y, mapseed) :
 			fill_ratio;
 		u32 deco_count = 0;
 
