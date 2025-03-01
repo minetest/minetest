@@ -112,7 +112,7 @@ void set_default_settings()
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
-	settings->setDefault("client_mapblock_limit", "7500");
+	settings->setDefault("client_mapblock_limit", "7500"); // about 120 MB
 	settings->setDefault("enable_build_where_you_stand", "false");
 	settings->setDefault("curl_timeout", "20000");
 	settings->setDefault("curl_parallel_limit", "8");
@@ -547,6 +547,7 @@ void set_default_settings()
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("touch_punch_gesture", "short_tap");
 	settings->setDefault("clickable_chat_weblinks", "true");
+
 	// Altered settings for Android
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
@@ -558,9 +559,9 @@ void set_default_settings()
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("server_map_save_interval", "15");
-	settings->setDefault("client_mapblock_limit", "1000");
+	settings->setDefault("client_mapblock_limit", "1500");
 	settings->setDefault("active_block_range", "2");
-	settings->setDefault("viewing_range", "50");
+	settings->setDefault("viewing_range", "70");
 	settings->setDefault("leaves_style", "simple");
 	// Note: OpenGL ES 2.0 is not guaranteed to provide depth textures,
 	// which we would need for PP.
@@ -568,6 +569,7 @@ void set_default_settings()
 	// still set these two settings in case someone wants to enable it
 	settings->setDefault("debanding", "false");
 	settings->setDefault("post_processing_texture_bits", "8");
+	// We don't have working certificate verification...
 	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size
