@@ -3245,10 +3245,8 @@ PointedThing Game::updatePointedThing(
 		n.getSelectionBoxes(nodedef, &boxes,
 			n.getNeighbors(result.node_undersurface, &map));
 
-		f32 d = 0.002 * BS;
-		for (std::vector<aabb3f>::const_iterator i = boxes.begin();
-			i != boxes.end(); ++i) {
-			aabb3f box = *i;
+		f32 d = 0.002f * BS;
+		for (aabb3f box : boxes) {
 			box.MinEdge -= v3f(d, d, d);
 			box.MaxEdge += v3f(d, d, d);
 			selectionboxes->push_back(box);
@@ -3450,9 +3448,8 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			u8 predicted_param2 = dir.Y < 0 ? 1 : 0;
 			if (selected_def.wallmounted_rotate_vertical) {
 				bool rotate90 = false;
-				v3f fnodepos = v3f(neighborpos.X, neighborpos.Y, neighborpos.Z);
 				v3f ppos = client->getEnv().getLocalPlayer()->getPosition() / BS;
-				v3f pdir = fnodepos - ppos;
+				v3f pdir = v3f::from(neighborpos) - ppos;
 				switch (predicted_f.drawtype) {
 					case NDT_TORCHLIKE: {
 						rotate90 = !((pdir.X < 0 && pdir.Z > 0) ||

@@ -177,14 +177,15 @@ void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 	node->forEachMaterial([] (auto &mat) {
 		mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
 	});
-	for (auto it = m_shadow_node_array.begin(); it != m_shadow_node_array.end();) {
-		if (it->node == node) {
-			it = m_shadow_node_array.erase(it);
-			break;
-		} else {
-			++it;
-		}
+
+	auto it = std::find(m_shadow_node_array.begin(), m_shadow_node_array.end(), node);
+	if (it == m_shadow_node_array.end()) {
+		infostream << "removeNodeFromShadowList: " << node << " not found" << std::endl;
+		return;
 	}
+	// swap with last, then remove
+	*it = m_shadow_node_array.back();
+	m_shadow_node_array.pop_back();
 }
 
 void ShadowRenderer::updateSMTextures()
