@@ -2455,7 +2455,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		sneak_state = isKeyDown(KeyType::SNEAK);
 	} else {
 		sneak_state = player->control.sneak;
-		if (wasKeyPressed(KeyType::SNEAK)) 
+		if (wasKeyPressed(KeyType::SNEAK))
 			sneak_state = !sneak_state;
 	}
 	bool aux1_state = false;
@@ -2463,7 +2463,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		aux1_state = isKeyDown(KeyType::AUX1);
 	} else {
 		aux1_state = player->control.aux1;
-		if (wasKeyPressed(KeyType::AUX1)) 
+		if (wasKeyPressed(KeyType::AUX1))
 			aux1_state = !aux1_state;
 	}
 
