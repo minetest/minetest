@@ -5085,7 +5085,7 @@ double GUIFormSpecMenu::calculateImgsize(const parserData &data)
 				((15.0 / 13.0) * (0.85 + data.invsize.Y));
 	}
 
-	double prefer_imgsize = getImgsize(v2u32(padded_screensize.X, padded_screensize.Y),
+	double prefer_imgsize = getImgsize(v2u32::from(padded_screensize),
 			screen_dpi, gui_scaling);
 
 	// Try to use the preferred imgsize, but if that's bigger than the maximum

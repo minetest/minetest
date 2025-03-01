@@ -127,7 +127,7 @@ void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_pla
 			i_start  = sx - 1;
 			i_step_x = zstride;
 			i_step_z = -xstride;
-			SWAP(s16, sx, sz);
+			std::swap(sx, sz);
 			break;
 		case ROTATE_180:
 			i_start  = zstride * (sz - 1) + sx - 1;
@@ -138,7 +138,7 @@ void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_pla
 			i_start  = zstride * (sz - 1);
 			i_step_x = -zstride;
 			i_step_z = xstride;
-			SWAP(s16, sx, sz);
+			std::swap(sx, sz);
 			break;
 		default:
 			i_start  = 0;
