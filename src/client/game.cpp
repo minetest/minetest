@@ -2463,7 +2463,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		aux1_state = isKeyDown(KeyType::AUX1);
 	} else {
 		aux1_state = player->control.aux1;
-		if (wasKeyPressed(KeyType::AUX1)) aux1_state = !aux1_state;
+		if (wasKeyPressed(KeyType::AUX1)) 
+			aux1_state = !aux1_state;
 	}
 
 
