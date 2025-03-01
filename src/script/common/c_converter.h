@@ -14,7 +14,6 @@
 #include <vector>
 #include <string>
 #include <string_view>
-#include <string>
 
 #include "irrlichttypes_bloated.h"
 
