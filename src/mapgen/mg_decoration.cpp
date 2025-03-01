@@ -126,6 +126,10 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 
 void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
+	// Skip if y ranges do not overlap
+	if (nmax.Y < y_min || y_max < nmin.Y)
+		return;
+
 	PcgRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
 
