@@ -241,10 +241,10 @@ void Client::handleCommand_AddNode(NetworkPacket* pkt)
 	MapNode n;
 	n.deSerialize(ptr, m_server_ser_ver);
 
-	bool remove_metadata;
-	*pkt >> remove_metadata;
+	bool keep_metadata;
+	*pkt >> keep_metadata;
 
-	addNode(p, n, remove_metadata);
+	addNode(p, n, !keep_metadata);
 }
 
 void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
