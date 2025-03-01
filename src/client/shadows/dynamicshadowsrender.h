@@ -28,7 +28,8 @@ struct NodeToApply
 			E_SHADOW_MODE m = E_SHADOW_MODE::ESM_BOTH) :
 			node(n),
 			shadowMode(m){};
-	bool operator<(const NodeToApply &other) const { return node < other.node; };
+
+	bool operator==(scene::ISceneNode *n) const { return node == n; }
 
 	scene::ISceneNode *node;
 

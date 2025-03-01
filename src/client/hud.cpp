@@ -965,8 +965,8 @@ void Hud::drawBlockBounds()
 		v3f pmax = v3f(x, y, 1 + radius) * MAP_BLOCKSIZE * BS;
 
 		driver->draw3DLine(
-			base_corner + v3f(pmin.X, pmin.Y, pmin.Z),
-			base_corner + v3f(pmax.X, pmax.Y, pmax.Z),
+			base_corner + pmin,
+			base_corner + pmax,
 			choose_color(block_pos.X, block_pos.Y)
 		);
 		driver->draw3DLine(
