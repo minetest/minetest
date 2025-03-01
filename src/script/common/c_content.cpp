@@ -356,10 +356,7 @@ void read_object_properties(lua_State *L, int index,
 	// Don't set if nil
 	std::string visual;
 	if (getstringfield(L, -1, "visual", visual)) {
-		int result;
-		if (string_to_enum(es_ObjectVisual, result, visual))
-			prop->visual = static_cast<ObjectVisual>(result);
-		else {
+		if (!string_to_enum(es_ObjectVisual, prop->visual, visual)) {
 			script_log_unique(L, "Unsupported ObjectVisual: " + visual, warningstream);
 			prop->visual = OBJECTVISUAL_UNKNOWN;
 		}

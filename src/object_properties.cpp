@@ -240,11 +240,8 @@ void ObjectProperties::deSerialize(std::istream &is)
 	selectionbox.MaxEdge = readV3F32(is);
 	pointable = Pointabilities::deSerializePointabilityType(is);
 
-	int result;
 	std::string visual_string{deSerializeString16(is)};
-	if (string_to_enum(es_ObjectVisual, result, visual_string))
-		visual = static_cast<ObjectVisual>(result);
-	else {
+	if (!string_to_enum(es_ObjectVisual, visual, visual_string)) {
 		infostream << "ObjectProperties::deSerialize() ObjectVisual: \"" << visual_string
 				<< "\" not supported" << std::endl;
 		visual = OBJECTVISUAL_UNKNOWN;
