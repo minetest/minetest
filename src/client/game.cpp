@@ -2989,8 +2989,13 @@ void Game::updateCameraOffset()
 
 	if (!m_flags.disable_camera_update) {
 		auto *shadow = RenderingEngine::get_shadow_renderer();
-		if (shadow)
+		if (shadow) {
 			shadow->getDirectionalLight().updateCameraOffset(camera);
+			// FIXME: I bet we can be smarter about this and don't need to redraw
+			// the shadow map at all, but this is for someone else to figure out.
+			if (!g_settings->getFlag("performance_tradeoffs"))
+				shadow->setForceUpdateShadowMap();
+		}
 
 		env.getClientMap().updateCamera(camera->getPosition(),
 			camera->getDirection(), camera->getFovMax(), camera_offset,
