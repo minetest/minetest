@@ -560,6 +560,7 @@ protected:
 
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
+	bool getKeystateOrTogglestate(const KeyType::T key, const bool should_key_toggle, const bool current_key_state);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void updatePauseState();
 	void step(f32 dtime);
@@ -2445,37 +2446,34 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 }
 
 
+// Get the state of an optionally togglable key
+bool Game::getKeystateOrTogglestate(const KeyType::T key, const bool should_key_toggle, const bool current_key_state)
+{
+	if (!should_key_toggle){
+		return isKeyDown(key);
+	} else {
+		if (wasKeyPressed(key)) {
+			return !current_key_state;
+		} else {
+			return current_key_state;
+		}
+	}
+}
+
+
 void Game::updatePlayerControl(const CameraOrientation &cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
-	bool sneak_state = false;
-	if (!m_cache_toggle_sneak_key){
-		sneak_state = isKeyDown(KeyType::SNEAK);
-	} else {
-		sneak_state = player->control.sneak;
-		if (wasKeyPressed(KeyType::SNEAK))
-			sneak_state = !sneak_state;
-	}
-	bool aux1_state = false;
-	if (!m_cache_toggle_aux1_key){
-		aux1_state = isKeyDown(KeyType::AUX1);
-	} else {
-		aux1_state = player->control.aux1;
-		if (wasKeyPressed(KeyType::AUX1))
-			aux1_state = !aux1_state;
-	}
-
-
 	PlayerControl control(
 		isKeyDown(KeyType::FORWARD),
 		isKeyDown(KeyType::BACKWARD),
 		isKeyDown(KeyType::LEFT),
 		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
-		aux1_state,
-		sneak_state,
+		getKeystateOrTogglestate(KeyType::AUX1,  m_cache_toggle_aux1_key,  player->control.aux1),
+		getKeystateOrTogglestate(KeyType::SNEAK, m_cache_toggle_sneak_key, player->control.sneak),
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
