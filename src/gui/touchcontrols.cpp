@@ -732,11 +732,11 @@ void TouchControls::releaseAll()
 	// Release those manually too since the change initiated by
 	// handleReleaseEvent will only be applied later by applyContextControls.
 	if (m_dig_pressed) {
-		emitKeyboardEvent(id_to_keycode(dig_id), false);
+		emitKeyboardEvent(id_to_keypress(dig_id), false);
 		m_dig_pressed = false;
 	}
 	if (m_place_pressed) {
-		emitKeyboardEvent(id_to_keycode(place_id), false);
+		emitKeyboardEvent(id_to_keypress(place_id), false);
 		m_place_pressed = false;
 	}
 }
@@ -817,20 +817,20 @@ void TouchControls::applyContextControls(const TouchInteractionMode &mode)
 	target_place_pressed |= now < m_place_pressed_until;
 
 	if (target_dig_pressed && !m_dig_pressed) {
-		emitKeyboardEvent(id_to_keycode(dig_id), true);
+		emitKeyboardEvent(id_to_keypress(dig_id), true);
 		m_dig_pressed = true;
 
 	} else if (!target_dig_pressed && m_dig_pressed) {
-		emitKeyboardEvent(id_to_keycode(dig_id), false);
+		emitKeyboardEvent(id_to_keypress(dig_id), false);
 		m_dig_pressed = false;
 	}
 
 	if (target_place_pressed && !m_place_pressed) {
-		emitKeyboardEvent(id_to_keycode(place_id), true);
+		emitKeyboardEvent(id_to_keypress(place_id), true);
 		m_place_pressed = true;
 
 	} else if (!target_place_pressed && m_place_pressed) {
-		emitKeyboardEvent(id_to_keycode(place_id), false);
+		emitKeyboardEvent(id_to_keypress(place_id), false);
 		m_place_pressed = false;
 	}
 }
