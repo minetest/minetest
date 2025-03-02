@@ -560,7 +560,7 @@ protected:
 
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
-	bool getKeyOrToggleState(const KeyType::T key, const bool should_key_toggle, const bool current_key_state);
+	bool getKeyOrToggleState(const GameKeyType key, const bool should_key_toggle, const bool current_key_state);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void updatePauseState();
 	void step(f32 dtime);
@@ -2447,7 +2447,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 
 
 // Get the state of an optionally togglable key
-bool Game::getKeyOrToggleState(const KeyType::T key, const bool should_key_toggle, const bool current_key_state)
+bool Game::getKeyOrToggleState(const GameKeyType key, const bool should_key_toggle, const bool current_key_state)
 {
 	if (!should_key_toggle){
 		return isKeyDown(key);
