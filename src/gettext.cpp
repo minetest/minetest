@@ -171,9 +171,13 @@ void init_gettext(const char *path, const std::string &configured_language,
 
 #if CHECK_CLIENT_BUILD()
 		// Hack to force gettext to see the right environment
-		// Disabled when debugger is present as it can break debugging 
-		if (current_language != configured_language && !IsDebuggerPresent())
-			MSVC_LocaleWorkaround(argc, argv);
+		if (current_language != configured_language) {
+			// Disabled when debugger is present as it can break debugging
+			if (!IsDebuggerPresent())
+				MSVC_LocaleWorkaround(argc, argv);
+			else
+				actionstream << "Debugger detected. Skipping MSVC_LocaleWorkaround." << std::endl;
+		}
 #else
 		errorstream << "*******************************************************" << std::endl;
 		errorstream << "Can't apply locale workaround for server!" << std::endl;
