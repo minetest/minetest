@@ -2452,7 +2452,7 @@ bool Game::getKeyOrToggleState(const KeyType::T key, const bool should_key_toggl
 	if (!should_key_toggle){
 		return isKeyDown(key);
 	} else {
-		return current_key_state ^ wasKeyPressed(key)
+		return current_key_state ^ wasKeyPressed(key);
 	}
 }
 
