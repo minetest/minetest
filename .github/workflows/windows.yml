@@ -93,7 +93,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Restore from cache and run vcpkg
-        uses: lukka/run-vcpkg@v7
+        uses: lukka/run-vcpkg@v11
         with:
           vcpkgDirectory: '${{ github.workspace }}\vcpkg'
           appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
