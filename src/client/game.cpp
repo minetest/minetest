@@ -751,8 +751,8 @@ private:
 	bool m_cache_enable_fog;
 	bool m_cache_enable_noclip;
 	bool m_cache_enable_free_move;
-	bool m_cache_toggle_aux1_key;
 	bool m_cache_toggle_sneak_key;
+	bool m_cache_toggle_aux1_key;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
