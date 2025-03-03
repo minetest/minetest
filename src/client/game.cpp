@@ -560,6 +560,7 @@ protected:
 
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
+	bool getTogglableKeyState(GameKeyType key, bool toggling_enabled, bool prev_key_state);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void updatePauseState();
 	void step(f32 dtime);
@@ -750,6 +751,8 @@ private:
 	bool m_cache_enable_fog;
 	bool m_cache_enable_noclip;
 	bool m_cache_enable_free_move;
+	bool m_cache_toggle_sneak_key;
+	bool m_cache_toggle_aux1_key;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
@@ -791,6 +794,10 @@ Game::Game() :
 	g_settings->registerChangedCallback("chat_log_level",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("doubletap_jump",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("toggle_sneak_key",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("toggle_aux1_key",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_joysticks",
 		&settingChangedCallback, this);
@@ -2439,6 +2446,16 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 }
 
 
+// Get the state of an optionally togglable key
+bool Game::getTogglableKeyState(GameKeyType key, bool toggling_enabled, bool prev_key_state)
+{
+	if (!toggling_enabled)
+		return isKeyDown(key);
+	else
+		return prev_key_state ^ wasKeyPressed(key);
+}
+
+
 void Game::updatePlayerControl(const CameraOrientation &cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
@@ -2451,8 +2468,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::LEFT),
 		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
-		isKeyDown(KeyType::AUX1),
-		isKeyDown(KeyType::SNEAK),
+		getTogglableKeyState(KeyType::AUX1,  m_cache_toggle_aux1_key,  player->control.aux1),
+		getTogglableKeyState(KeyType::SNEAK, m_cache_toggle_sneak_key, player->control.sneak),
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
@@ -4119,6 +4136,8 @@ void Game::readSettings()
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
+	m_cache_toggle_sneak_key             = g_settings->getBool("toggle_sneak_key");
+	m_cache_toggle_aux1_key              = g_settings->getBool("toggle_aux1_key");
 
 	m_cache_cam_smoothing = 0;
 	if (g_settings->getBool("cinematic"))
