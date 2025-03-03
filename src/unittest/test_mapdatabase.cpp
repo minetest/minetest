@@ -72,6 +72,7 @@ public:
 	void testLoad();
 	void testList(int expect);
 	void testRemove();
+	void testPositionEncoding();
 
 private:
 	MapDatabaseProvider *provider = nullptr;
@@ -142,6 +143,7 @@ void TestMapDatabase::runTestsForCurrentDB()
 	TEST(testList, 1);
 	TEST(testRemove);
 	TEST(testList, 0);
+	TEST(testPositionEncoding);
 }
 
 void TestMapDatabase::testSave()
@@ -192,4 +194,32 @@ void TestMapDatabase::testRemove()
 	// failed remove
 	// FIXME: this isn't working consistently, maybe later
 	//UASSERT(!db->deleteBlock({1, 2, 4}));
+}
+
+void TestMapDatabase::testPositionEncoding()
+{
+	auto *db = provider->get();
+
+	// Unit vectors and extremes
+	UASSERT(db->getBlockAsInteger({0, 0, 0}) == 0)
+	UASSERT(db->getBlockAsInteger({1, 0, 0}) == 1)
+	UASSERT(db->getBlockAsInteger({0, 1, 0}) == 0x1000)
+	UASSERT(db->getBlockAsInteger({0, 0, 1}) == 0x1000000)
+	UASSERT(db->getBlockAsInteger({-1, 0, 0}) == -1)
+	UASSERT(db->getBlockAsInteger({0, -1, 0}) == -0x1000)
+	UASSERT(db->getBlockAsInteger({0, 0, -1}) == -0x1000000)
+	UASSERT(db->getBlockAsInteger({2047, 2047, 2047}) == 0x7FF7FF7FF )
+	UASSERT(db->getBlockAsInteger({-2048, -2048, -2048}) == -0x800800800 )
+	UASSERT(db->getBlockAsInteger({-123, 456, -789}) == -0x314e3807b)
+
+	UASSERT(db->getIntegerAsBlock(0) == v3s16(0, 0, 0))
+	UASSERT(db->getIntegerAsBlock(1) == v3s16(1, 0, 0))
+	UASSERT(db->getIntegerAsBlock(0x1000) == v3s16(0, 1, 0))
+	UASSERT(db->getIntegerAsBlock(0x1000000) == v3s16(0, 0, 1))
+	UASSERT(db->getIntegerAsBlock(-1) == v3s16(-1, 0, 0))
+	UASSERT(db->getIntegerAsBlock(-0x1000) == v3s16(0, -1, 0))
+	UASSERT(db->getIntegerAsBlock(-0x1000000) == v3s16(0, 0, -1))
+	UASSERT(db->getIntegerAsBlock(0x7FF7FF7FF) == v3s16(2047, 2047, 2047))
+	UASSERT(db->getIntegerAsBlock(-0x800800800) == v3s16(-2048, -2048, -2048))
+	UASSERT(db->getIntegerAsBlock(-0x314e3807b) == v3s16(-123, 456, -789))
 }
