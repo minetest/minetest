@@ -560,7 +560,7 @@ protected:
 
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
-	bool getKeyOrToggleState(const GameKeyType key, const bool should_key_toggle, const bool current_key_state);
+	bool getTogglableKeyState(GameKeyType key, bool toggling_enabled, bool prev_key_state);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void updatePauseState();
 	void step(f32 dtime);
@@ -2447,13 +2447,12 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 
 
 // Get the state of an optionally togglable key
-bool Game::getKeyOrToggleState(const GameKeyType key, const bool should_key_toggle, const bool current_key_state)
+bool Game::getTogglableKeyState(GameKeyType key, bool toggling_enabled, bool prev_key_state)
 {
-	if (!should_key_toggle){
+	if (!toggling_enabled)
 		return isKeyDown(key);
-	} else {
-		return current_key_state ^ wasKeyPressed(key);
-	}
+	else
+		return prev_key_state ^ wasKeyPressed(key);
 }
 
 
@@ -2469,8 +2468,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::LEFT),
 		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
-		getKeyOrToggleState(KeyType::AUX1,  m_cache_toggle_aux1_key,  player->control.aux1),
-		getKeyOrToggleState(KeyType::SNEAK, m_cache_toggle_sneak_key, player->control.sneak),
+		getTogglableKeyState(KeyType::AUX1,  m_cache_toggle_aux1_key,  player->control.aux1),
+		getTogglableKeyState(KeyType::SNEAK, m_cache_toggle_sneak_key, player->control.sneak),
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
