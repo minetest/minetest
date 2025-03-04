@@ -353,7 +353,14 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 
-	getstringfield(L, -1, "visual", prop->visual);
+	// Don't set if nil
+	std::string visual;
+	if (getstringfield(L, -1, "visual", visual)) {
+		if (!string_to_enum(es_ObjectVisual, prop->visual, visual)) {
+			script_log_unique(L, "Unsupported ObjectVisual: " + visual, warningstream);
+			prop->visual = OBJECTVISUAL_UNKNOWN;
+		}
+	}
 
 	getstringfield(L, -1, "mesh", prop->mesh);
 
@@ -502,7 +509,7 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 	lua_setfield(L, -2, "selectionbox");
 	push_pointability_type(L, prop->pointable);
 	lua_setfield(L, -2, "pointable");
-	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
+	lua_pushstring(L, enum_to_string(es_ObjectVisual, prop->visual));
 	lua_setfield(L, -2, "visual");
 	lua_pushlstring(L, prop->mesh.c_str(), prop->mesh.size());
 	lua_setfield(L, -2, "mesh");
