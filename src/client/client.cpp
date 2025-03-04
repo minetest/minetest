@@ -1041,7 +1041,7 @@ void Client::Send(NetworkPacket* pkt)
 	m_con->Send(PEER_ID_SERVER, scf.channel, pkt, scf.reliable);
 }
 
-// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4 bytes
+// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4 + 8 + 4 + 4 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt, bool camera_inverted)
 {
 	v3s32 position   = v3s32::from(myplayer->getPosition() * 100);
@@ -1055,6 +1055,9 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 			std::ceil(clientMap->getWantedRange() * (1.0f / MAP_BLOCKSIZE)));
 	f32 movement_speed = myplayer->control.movement_speed;
 	f32 movement_dir = myplayer->control.movement_direction;
+	v2f pointer_pos = myplayer->pointer_pos;
+	f32 point_pitch = myplayer->point_pitch;
+	f32 point_yaw = myplayer->point_yaw;
 
 	/*
 		Format:
@@ -1068,11 +1071,16 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12+4+4+4+1+1] u8 camera_inverted (bool)
 		[12+12+4+4+4+1+1+1] f32 movement_speed
 		[12+12+4+4+4+1+1+1+4] f32 movement_direction
+		[12+12+4+4+4+1+1+1+4+4] v2f pointer_pos
+		[12+12+4+4+4+1+1+1+4+4+8] f32 point_pitch
+		[12+12+4+4+4+1+1+1+4+4+8+4] f32 point_yaw
 	*/
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
 	*pkt << camera_inverted;
 	*pkt << movement_speed << movement_dir;
+	*pkt << pointer_pos;
+	*pkt << point_pitch << point_yaw;
 }
 
 void Client::interact(InteractAction action, const PointedThing& pointed)
@@ -1419,7 +1427,10 @@ void Client::sendPlayerPos()
 			player->last_camera_inverted == camera_inverted       &&
 			player->last_wanted_range    == wanted_range          &&
 			player->last_movement_speed  == movement_speed        &&
-			player->last_movement_dir    == movement_dir)
+			player->last_movement_dir    == movement_dir          &&
+			player->last_pointer_pos     == player->pointer_pos   &&
+			player->last_point_pitch     == player->point_pitch   &&
+			player->last_point_yaw       == player->point_yaw)
 		return;
 
 	player->last_position        = player->getPosition();
@@ -1432,8 +1443,11 @@ void Client::sendPlayerPos()
 	player->last_wanted_range    = wanted_range;
 	player->last_movement_speed  = movement_speed;
 	player->last_movement_dir    = movement_dir;
+	player->last_pointer_pos     = player->pointer_pos;
+	player->last_point_pitch     = player->point_pitch;
+	player->last_point_yaw       = player->point_yaw;
 
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4);
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4 + 8 + 4 + 4);
 
 	writePlayerPos(player, &map, &pkt, camera_inverted);
 
