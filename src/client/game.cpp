@@ -747,12 +747,12 @@ private:
 	 *       a later release.
 	 */
 	bool m_cache_doubletap_jump;
+	bool m_cache_toggle_sneak_key;
+	bool m_cache_toggle_aux1_key;
 	bool m_cache_enable_joysticks;
 	bool m_cache_enable_fog;
 	bool m_cache_enable_noclip;
 	bool m_cache_enable_free_move;
-	bool m_cache_toggle_sneak_key;
-	bool m_cache_toggle_aux1_key;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
@@ -4127,6 +4127,8 @@ void Game::readSettings()
 	m_chat_log_buf.setLogLevel(chat_log_level);
 
 	m_cache_doubletap_jump               = g_settings->getBool("doubletap_jump");
+	m_cache_toggle_sneak_key             = g_settings->getBool("toggle_sneak_key");
+	m_cache_toggle_aux1_key              = g_settings->getBool("toggle_aux1_key");
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
@@ -4136,8 +4138,6 @@ void Game::readSettings()
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
-	m_cache_toggle_sneak_key             = g_settings->getBool("toggle_sneak_key");
-	m_cache_toggle_aux1_key              = g_settings->getBool("toggle_aux1_key");
 
 	m_cache_cam_smoothing = 0;
 	if (g_settings->getBool("cinematic"))
