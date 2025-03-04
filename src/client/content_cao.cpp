@@ -826,9 +826,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 		// This also serves as fallback for unknown visual types
 		if (m_prop.visual != OBJECTVISUAL_SPRITE) {
-			infostream << "GenericCAO::addToScene(): \""
-				<< enum_to_string(es_ObjectVisual, m_prop.visual)
-				<< "\" not supported" << std::endl;
 			m_spritenode->getMaterial(0).setTexture(0,
 				tsrc->getTextureForMesh("unknown_object.png"));
 		}
