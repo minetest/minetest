@@ -242,7 +242,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 
 	std::string visual_string{deSerializeString16(is)};
 	if (!string_to_enum(es_ObjectVisual, visual, visual_string)) {
-		infostream << "ObjectProperties::deSerialize() ObjectVisual: \"" << visual_string
+		infostream << "ObjectProperties::deSerialize(): visual \"" << visual_string
 				<< "\" not supported" << std::endl;
 		visual = OBJECTVISUAL_UNKNOWN;
 	}
