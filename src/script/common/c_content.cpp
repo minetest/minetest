@@ -1175,8 +1175,7 @@ void push_palette(lua_State *L, const std::vector<video::SColor> *palette)
 	lua_createtable(L, palette->size(), 0);
 	int newTable = lua_gettop(L);
 	int index = 1;
-	std::vector<video::SColor>::const_iterator iter;
-	for (iter = palette->begin(); iter != palette->end(); ++iter) {
+	for (auto iter = palette->begin(); iter != palette->end(); ++iter) {
 		push_ARGB8(L, (*iter));
 		lua_rawseti(L, newTable, index);
 		index++;
@@ -1829,7 +1828,7 @@ void push_hit_params(lua_State *L,const HitParams &params)
 /******************************************************************************/
 
 bool getflagsfield(lua_State *L, int table, const char *fieldname,
-	FlagDesc *flagdesc, u32 *flags, u32 *flagmask)
+	const FlagDesc *flagdesc, u32 *flags, u32 *flagmask)
 {
 	lua_getfield(L, table, fieldname);
 
@@ -1840,7 +1839,7 @@ bool getflagsfield(lua_State *L, int table, const char *fieldname,
 	return success;
 }
 
-bool read_flags(lua_State *L, int index, FlagDesc *flagdesc,
+bool read_flags(lua_State *L, int index, const FlagDesc *flagdesc,
 	u32 *flags, u32 *flagmask)
 {
 	if (lua_isstring(L, index)) {
@@ -1855,7 +1854,7 @@ bool read_flags(lua_State *L, int index, FlagDesc *flagdesc,
 	return true;
 }
 
-u32 read_flags_table(lua_State *L, int table, FlagDesc *flagdesc, u32 *flagmask)
+u32 read_flags_table(lua_State *L, int table, const FlagDesc *flagdesc, u32 *flagmask)
 {
 	u32 flags = 0, mask = 0;
 	char fnamebuf[64] = "no";
@@ -1880,7 +1879,7 @@ u32 read_flags_table(lua_State *L, int table, FlagDesc *flagdesc, u32 *flagmask)
 	return flags;
 }
 
-void push_flags_string(lua_State *L, FlagDesc *flagdesc, u32 flags, u32 flagmask)
+void push_flags_string(lua_State *L, const FlagDesc *flagdesc, u32 flags, u32 flagmask)
 {
 	std::string flagstring = writeFlagString(flags, flagdesc, flagmask);
 	lua_pushlstring(L, flagstring.c_str(), flagstring.size());

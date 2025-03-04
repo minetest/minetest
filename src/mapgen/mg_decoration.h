@@ -33,7 +33,7 @@ enum DecorationType {
 #define DECO_ALL_FLOORS      0x40
 #define DECO_ALL_CEILINGS    0x80
 
-extern FlagDesc flagdesc_deco[];
+extern const FlagDesc flagdesc_deco[];
 
 
 class Decoration : public ObjDef, public NodeResolver {

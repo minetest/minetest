@@ -375,8 +375,7 @@ bool EmergeManager::pushBlockEmergeData(
 		}
 	}
 
-	std::pair<std::map<v3s16, BlockEmergeData>::iterator, bool> findres;
-	findres = m_blocks_enqueued.insert(std::make_pair(pos, BlockEmergeData()));
+	auto findres = m_blocks_enqueued.insert(std::make_pair(pos, BlockEmergeData()));
 
 	BlockEmergeData &bedata = findres.first->second;
 	*entry_already_exists   = !findres.second;
@@ -707,6 +706,8 @@ void *EmergeThread::run()
 			{
 				ScopeProfiler sp(g_profiler, "EmergeThread: load block - async (sum)");
 				MutexAutoLock dblock(m_db.mutex);
+				// Note: this can throw an exception, but there isn't really
+				// a good, safe way to handle it.
 				m_db.loadBlock(pos, databuf);
 			}
 			// actually load it, then decide again

@@ -15,7 +15,7 @@
 #include "mapgen/treegen.h"
 
 
-FlagDesc flagdesc_deco[] = {
+const FlagDesc flagdesc_deco[] = {
 	{"place_center_x",  DECO_PLACE_CENTER_X},
 	{"place_center_y",  DECO_PLACE_CENTER_Y},
 	{"place_center_z",  DECO_PLACE_CENTER_Z},

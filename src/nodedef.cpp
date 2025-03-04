@@ -1067,8 +1067,7 @@ void NodeDefManager::clear()
 
 bool NodeDefManager::getId(const std::string &name, content_t &result) const
 {
-	std::unordered_map<std::string, content_t>::const_iterator
-		i = m_name_id_mapping_with_aliases.find(name);
+	auto i = m_name_id_mapping_with_aliases.find(name);
 	if(i == m_name_id_mapping_with_aliases.end())
 		return false;
 	result = i->second;
