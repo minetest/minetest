@@ -1587,9 +1587,9 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 {
 	std::string raw_hash, filename, filedata;
 	u32 token;
-	bool cached;
+	bool ephemeral;
 
-	*pkt >> raw_hash >> filename >> cached;
+	*pkt >> raw_hash >> filename >> ephemeral;
 	if (m_proto_ver >= 40)
 		*pkt >> token;
 	else
@@ -1606,7 +1606,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 		verbosestream << "to be fetched ";
 	else
 		verbosestream << "with " << filedata.size() << " bytes ";
-	verbosestream << "(cached=" << cached << ")" << std::endl;
+	verbosestream << "(ephemeral=" << ephemeral << ")" << std::endl;
 
 	if (!filedata.empty()) {
 		// LEGACY CODEPATH
@@ -1621,7 +1621,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 		loadMedia(filedata, filename, true);
 
 		// Cache file for the next time when this client joins the same server
-		if (cached)
+		if (!ephemeral)
 			clientMediaUpdateCache(raw_hash, filedata);
 		return;
 	}
