@@ -6,26 +6,25 @@
 
 #include "irr_v3d.h"                   // for irrlicht datatypes
 
-#include "constants.h"
-#include "serialization.h"             // for SER_FMT_VER_INVALID
-#include "network/networkpacket.h"
-#include "network/networkprotocol.h"
 #include "network/address.h"
+#include "network/networkprotocol.h" // session_t
 #include "porting.h"
 #include "threading/mutex_auto_lock.h"
 #include "clientdynamicinfo.h"
 
 #include <list>
-#include <vector>
-#include <set>
-#include <unordered_map>
-#include <unordered_set>
 #include <memory>
 #include <mutex>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
-class MapBlock;
-class ServerEnvironment;
 class EmergeManager;
+class MapBlock;
+class NetworkPacket;
+class ServerEnvironment;
 
 /*
  * State Transitions
@@ -219,7 +218,7 @@ public:
 	//       Also, the client must be moved to some other container.
 	session_t peer_id = PEER_ID_INEXISTENT;
 	// The serialization version to use with the client
-	u8 serialization_version = SER_FMT_VER_INVALID;
+	u8 serialization_version;
 	//
 	u16 net_proto_version = 0;
 
@@ -333,7 +332,7 @@ public:
 
 private:
 	// Version is stored in here after INIT before INIT2
-	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
+	u8 m_pending_serialization_version;
 
 	/* current state of client */
 	ClientState m_state = CS_Created;

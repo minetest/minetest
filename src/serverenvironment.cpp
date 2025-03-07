@@ -43,6 +43,8 @@
 // A number that is much smaller than the timeout for particle spawners should/could ever be
 #define PARTICLE_SPAWNER_NO_EXPIRY -1024.f
 
+static constexpr s16 ACTIVE_OBJECT_RESAVE_DISTANCE_SQ = sqr(3);
+
 /*
 	ABMWithState
 */
@@ -526,14 +528,14 @@ void ServerEnvironment::init()
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	if (auth_backend_name == "files") {
 		warningstream << "/!\\ You are using old auth file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	m_player_database = openPlayerDatabase(player_backend_name, world_path, conf);
@@ -625,8 +627,7 @@ void ServerEnvironment::addPlayer(RemotePlayer *player)
 
 void ServerEnvironment::removePlayer(RemotePlayer *player)
 {
-	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
-		it != m_players.end(); ++it) {
+	for (auto it = m_players.begin(); it != m_players.end(); ++it) {
 		if ((*it) == player) {
 			delete *it;
 			m_players.erase(it);
@@ -667,13 +668,13 @@ void ServerEnvironment::savePlayer(RemotePlayer *player)
 	}
 }
 
-PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
-	session_t peer_id, bool is_singleplayer)
+std::unique_ptr<PlayerSAO> ServerEnvironment::loadPlayer(RemotePlayer *player, session_t peer_id)
 {
-	auto playersao = std::make_unique<PlayerSAO>(this, player, peer_id, is_singleplayer);
+	auto playersao = std::make_unique<PlayerSAO>(this, player, peer_id, m_server->isSingleplayer());
 	// Create player if it doesn't exist
 	if (!m_player_database->loadPlayer(player, playersao.get())) {
-		*new_player = true;
+		playersao->setNewPlayer();
+
 		// Set player position
 		infostream << "Server: Finding spawn place for player \""
 			<< player->getName() << "\"" << std::endl;
@@ -692,20 +693,10 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 		}
 	}
 
-	// Add player to environment
-	addPlayer(player);
-
-	/* Clean up old HUD elements from previous sessions */
-	player->clearHud();
-
-	/* Add object to environment */
-	PlayerSAO *ret = playersao.get();
-	addActiveObject(std::move(playersao));
-
 	// Update active blocks quickly for a bit so objects in those blocks appear on the client
 	m_fast_active_block_divider = 10;
 
-	return ret;
+	return playersao;
 }
 
 void ServerEnvironment::saveMeta()
@@ -1857,7 +1848,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 	auto process = [&] (ServerActiveObject *obj) -> bool {
 		if (obj->isGone())
 			return false;
-		aabb3f selection_box;
+		aabb3f selection_box{{0.0f, 0.0f, 0.0f}};
 		if (!obj->getSelectionBox(&selection_box))
 			return false;
 
@@ -2170,12 +2161,14 @@ void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
 
-		// If object's static data is stored in a deactivated block and object
-		// is actually located in an active block, re-save to the block in
-		// which the object is actually located in.
+		// If object's static data is stored in a deactivated block or it has moved a bunch
+		// then re-save to the block in which the object is now located in.
+		// This only applies if the object is in a currently active block, since deactivating
+		// is handled by the code further below.
 		if (!force_delete && obj->isStaticAllowed() && obj->m_static_exists &&
-		   !m_active_blocks.contains(obj->m_static_block) &&
-		   m_active_blocks.contains(blockpos_o)) {
+		   m_active_blocks.contains(blockpos_o) &&
+		   (!m_active_blocks.contains(obj->m_static_block) ||
+		   blockpos_o.getDistanceFromSQ(obj->m_static_block) >= ACTIVE_OBJECT_RESAVE_DISTANCE_SQ)) {
 
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
@@ -2418,7 +2411,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 
 		std::vector<std::string> player_list;
 		srcdb->listPlayers(player_list);
-		for (std::vector<std::string>::const_iterator it = player_list.begin();
+		for (auto it = player_list.begin();
 			it != player_list.end(); ++it) {
 			actionstream << "Migrating player " << it->c_str() << std::endl;
 			RemotePlayer player(it->c_str(), NULL);

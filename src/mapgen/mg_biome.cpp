@@ -25,21 +25,7 @@ BiomeManager::BiomeManager(Server *server) :
 
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
-
 	b->name            = "default";
-	b->flags           = 0;
-	b->depth_top       = 0;
-	b->depth_filler    = -MAX_MAP_GENERATION_LIMIT;
-	b->depth_water_top = 0;
-	b->depth_riverbed  = 0;
-	b->min_pos         = v3s16(-MAX_MAP_GENERATION_LIMIT,
-			-MAX_MAP_GENERATION_LIMIT, -MAX_MAP_GENERATION_LIMIT);
-	b->max_pos         = v3s16(MAX_MAP_GENERATION_LIMIT,
-			MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT);
-	b->heat_point      = 0.0;
-	b->humidity_point  = 0.0;
-	b->vertical_blend  = 0;
-	b->weight          = 1.0f;
 
 	b->m_nodenames.emplace_back("mapgen_stone");
 	b->m_nodenames.emplace_back("mapgen_stone");
@@ -64,11 +50,13 @@ void BiomeManager::clear()
 {
 	EmergeManager *emerge = m_server->getEmergeManager();
 
-	// Remove all dangling references in Decorations
-	DecorationManager *decomgr = emerge->getWritableDecorationManager();
-	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
-		Decoration *deco = (Decoration *)decomgr->getRaw(i);
-		deco->biomes.clear();
+	if (emerge) {
+		// Remove all dangling references in Decorations
+		DecorationManager *decomgr = emerge->getWritableDecorationManager();
+		for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
+			Decoration *deco = (Decoration *)decomgr->getRaw(i);
+			deco->biomes.clear();
+		}
 	}
 
 	// Don't delete the first biome
@@ -141,7 +129,10 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 	for (size_t i = 0; i < m_bmgr->getNumObjects(); i++) {
 		Biome *b = (Biome *)m_bmgr->getRaw(i);
 		values.push_back(b->max_pos.Y);
-		values.push_back(b->min_pos.Y);
+		// We scan for biomes from high Y to low Y (top to bottom). Hence,
+		// biomes effectively transition at (min_pos.Y - 1).
+		if (b->min_pos.Y > -MAX_MAP_GENERATION_LIMIT)
+			values.push_back(b->min_pos.Y - 1);
 	}
 
 	std::sort(values.begin(), values.end(), std::greater<>());
@@ -298,8 +289,6 @@ ObjDef *Biome::clone() const
 	auto obj = new Biome();
 	ObjDef::cloneTo(obj);
 	NodeResolver::cloneTo(obj);
-
-	obj->flags = flags;
 
 	obj->c_top = c_top;
 	obj->c_filler = c_filler;

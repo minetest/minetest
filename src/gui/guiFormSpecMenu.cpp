@@ -79,7 +79,7 @@
 */
 static unsigned int font_line_height(gui::IGUIFont *font)
 {
-	return font->getDimension(L"Ay").Height + font->getKerningHeight();
+	return font->getDimension(L"Ay").Height + font->getKerning(L'A').Y;
 }
 
 inline u32 clamp_u8(s32 value)
@@ -3010,7 +3010,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_tabheader_upper_edge = 0;
 
 	{
-		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
+		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color").value_or(v3f());
 		m_fullscreen_bgcolor = video::SColor(
 			(u8) clamp_u8(g_settings->getS32("formspec_fullscreen_bg_opacity")),
 			clamp_u8(myround(formspec_bgcolor.X)),
@@ -3194,7 +3194,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	pos_offset = v2f32();
 
 	// used for formspec versions < 3
-	std::list<IGUIElement *>::iterator legacy_sort_start = std::prev(Children.end()); // last element
+	auto legacy_sort_start = std::prev(Children.end()); // last element
 
 	if (enable_prepends) {
 		// Backup the coordinates so that prepends can use the coordinates of choice.
@@ -3308,7 +3308,7 @@ void GUIFormSpecMenu::legacySortElements(std::list<IGUIElement *>::iterator from
 	else
 		++from;
 
-	std::list<IGUIElement *>::iterator to = Children.end();
+	auto to = Children.end();
 	// 1: Copy into a sortable container
 	std::vector<IGUIElement *> elements(from, to);
 
@@ -3610,10 +3610,25 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 	// Calculate and set the tooltip position
 	s32 tooltip_x = m_pointer.X + tooltip_offset_x;
 	s32 tooltip_y = m_pointer.Y + tooltip_offset_y;
-	if (tooltip_x + tooltip_width > (s32)screenSize.X)
-		tooltip_x = (s32)screenSize.X - tooltip_width  - m_btn_height;
-	if (tooltip_y + tooltip_height > (s32)screenSize.Y)
-		tooltip_y = (s32)screenSize.Y - tooltip_height - m_btn_height;
+	// Bottom/Left limited positions (if the tooltip is too far out)
+	s32 tooltip_x_alt = (s32)screenSize.X - tooltip_width  - m_btn_height;
+	s32 tooltip_y_alt = (s32)screenSize.Y - tooltip_height - m_btn_height;
+
+	int collision = (tooltip_x_alt < tooltip_x) + 2 * (tooltip_y_alt < tooltip_y);
+	switch (collision) {
+	case 1: // x
+		tooltip_x = tooltip_x_alt;
+		break;
+	case 2: // y
+		tooltip_y = tooltip_y_alt;
+		break;
+	case 3: // both
+		tooltip_x = tooltip_x_alt;
+		tooltip_y = (s32)screenSize.Y - 2 * tooltip_height - m_btn_height;
+		break;
+	default: // OK
+		break;
+	}
 
 	m_tooltip_element->setRelativePosition(
 		core::rect<s32>(
@@ -3877,7 +3892,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 							fields[name] = "CHG:" + itos(e->getPos());
 						else
 							fields[name] = "VAL:" + itos(e->getPos());
- 					}
+					}
 				} else if (s.ftype == f_AnimatedImage) {
 					// No dynamic cast possible due to some distributions shipped
 					// without rtti support in Irrlicht
@@ -4884,8 +4899,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					if (s.ftype == f_Unknown &&
 							s.fid == event.GUIEvent.Caller->getID()) {
 						current_field_enter_pending = s.fname;
-						std::unordered_map<std::string, bool>::const_iterator it =
-							field_close_on_enter.find(s.fname);
+						auto it = field_close_on_enter.find(s.fname);
 						if (it != field_close_on_enter.end())
 							close_on_enter = (*it).second;
 
@@ -5041,7 +5055,7 @@ double GUIFormSpecMenu::calculateImgsize(const parserData &data)
 {
 	// must stay in sync with ClientDynamicInfo::calculateMaxFSSize
 
-    const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
+	const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 	const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
 
 	// Fixed-size mode
@@ -5070,7 +5084,7 @@ double GUIFormSpecMenu::calculateImgsize(const parserData &data)
 				((15.0 / 13.0) * (0.85 + data.invsize.Y));
 	}
 
-	double prefer_imgsize = getImgsize(v2u32(padded_screensize.X, padded_screensize.Y),
+	double prefer_imgsize = getImgsize(v2u32::from(padded_screensize),
 			screen_dpi, gui_scaling);
 
 	// Try to use the preferred imgsize, but if that's bigger than the maximum

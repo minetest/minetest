@@ -20,6 +20,7 @@
 #include <cctype>
 #include <cwctype>
 #include <unordered_map>
+#include <optional>
 
 class Translations;
 
@@ -752,9 +753,9 @@ inline std::string stringw_to_utf8(const irr::core::stringw &input)
 	return wide_to_utf8(sv);
 }
 
- /**
-  * Create an irr::core:stringw from a UTF8 std::string.
-  */
+/**
+ * Create an irr::core:stringw from a UTF8 std::string.
+ */
 inline irr::core::stringw utf8_to_stringw(std::string_view input)
 {
 	std::wstring str = utf8_to_wide(input);
@@ -789,9 +790,9 @@ std::string sanitize_untrusted(std::string_view str, bool keep_escapes = true);
 void safe_print_string(std::ostream &os, std::string_view str);
 
 /**
- * Parses a string of form `(1, 2, 3)` to a v3f
+ * Parses a string of form `(1, 2, 3)` or `1, 2, 4` to a v3f
  *
  * @param str string
  * @return float vector
  */
-v3f str_to_v3f(std::string_view str);
+std::optional<v3f> str_to_v3f(std::string_view str);

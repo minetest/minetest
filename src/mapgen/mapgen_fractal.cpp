@@ -24,7 +24,7 @@
 #include "mapgen_fractal.h"
 
 
-FlagDesc flagdesc_mapgen_fractal[] = {
+const FlagDesc flagdesc_mapgen_fractal[] = {
 	{"terrain", MGFRACTAL_TERRAIN},
 	{NULL,      0}
 };
@@ -103,8 +103,17 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getS16NoEx("mgfractal_dungeon_ymax",         dungeon_ymax);
 	settings->getU16NoEx("mgfractal_fractal",              fractal);
 	settings->getU16NoEx("mgfractal_iterations",           iterations);
-	settings->getV3FNoEx("mgfractal_scale",                scale);
-	settings->getV3FNoEx("mgfractal_offset",               offset);
+
+	std::optional<v3f> mgfractal_scale;
+	if (settings->getV3FNoEx("mgfractal_scale", mgfractal_scale) && mgfractal_scale.has_value()) {
+		scale = *mgfractal_scale;
+	}
+
+	std::optional<v3f> mgfractal_offset;
+	if (settings->getV3FNoEx("mgfractal_offset", mgfractal_offset) && mgfractal_offset.has_value()) {
+		offset = *mgfractal_offset;
+	}
+
 	settings->getFloatNoEx("mgfractal_slice_w",            slice_w);
 	settings->getFloatNoEx("mgfractal_julia_x",            julia_x);
 	settings->getFloatNoEx("mgfractal_julia_y",            julia_y);

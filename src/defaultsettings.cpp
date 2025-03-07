@@ -78,11 +78,10 @@ void set_default_settings()
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");
 	settings->setDefault("bind_address", "");
-	settings->setDefault("serverlist_url", "servers.luanti.org");
+	settings->setDefault("serverlist_url", "https://servers.luanti.org");
 
 	// Client
 	settings->setDefault("address", "");
-	settings->setDefault("enable_sound", "true");
 #if defined(__unix__) && !defined(__APPLE__) && !defined (__ANDROID__)
 	// On Linux+X11 (not Linux+Wayland or Linux+XWayland), I've encountered a bug
 	// where fake mouse events were generated from touch events if in relative
@@ -104,6 +103,7 @@ void set_default_settings()
 	settings->setDefault("sound_extensions_blacklist", "");
 	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("mesh_generation_threads", "0");
+	settings->setDefault("mesh_buffer_min_vertices", "300");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
@@ -112,7 +112,7 @@ void set_default_settings()
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
-	settings->setDefault("client_mapblock_limit", "7500");
+	settings->setDefault("client_mapblock_limit", "7500"); // about 120 MB
 	settings->setDefault("enable_build_where_you_stand", "false");
 	settings->setDefault("curl_timeout", "20000");
 	settings->setDefault("curl_parallel_limit", "8");
@@ -148,7 +148,7 @@ void set_default_settings()
 	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
 
-	// See https://github.com/minetest/minetest/issues/12792
+	// see <https://github.com/luanti-org/luanti/issues/12792>
 	settings->setDefault("keymap_rangeselect", has_touch ? "KEY_KEY_R" : "");
 
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
@@ -243,7 +243,7 @@ void set_default_settings()
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("tooltip_append_itemname", "false");
 	settings->setDefault("fps_max", "60");
-	settings->setDefault("fps_max_unfocused", "20");
+	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("viewing_range", "190");
 	settings->setDefault("client_mesh_chunk", "1");
 	settings->setDefault("screen_w", "1024");
@@ -269,9 +269,7 @@ void set_default_settings()
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0.0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
-	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
-	settings->setDefault("fall_bobbing_amount", "0.03");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("soft_clouds", "false");
 	settings->setDefault("cloud_radius", "12");
@@ -291,17 +289,15 @@ void set_default_settings()
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
-	settings->setDefault("gui_scaling_filter_txr2img", "true");
 	settings->setDefault("smooth_scrolling", "true");
-	settings->setDefault("desynchronize_mapblock_texture_animation", "false");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
 	settings->setDefault("show_block_bounds_radius_near", "4");
+	settings->setDefault("transparency_sorting_group_by_buffers", "true");
 	settings->setDefault("transparency_sorting_distance", "16");
 
 	settings->setDefault("enable_minimap", "true");
@@ -310,6 +306,7 @@ void set_default_settings()
 
 	// Effects
 	settings->setDefault("enable_post_processing", "true");
+	settings->setDefault("post_processing_texture_bits", "16");
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
@@ -343,7 +340,7 @@ void set_default_settings()
 	settings->setDefault("shadow_map_color", "false");
 	settings->setDefault("shadow_filters", "1");
 	settings->setDefault("shadow_poisson_filter", "true");
-	settings->setDefault("shadow_update_frames", "8");
+	settings->setDefault("shadow_update_frames", "16");
 	settings->setDefault("shadow_soft_radius", "5.0");
 	settings->setDefault("shadow_sky_body_orbit_tilt", "0.0");
 
@@ -359,6 +356,8 @@ void set_default_settings()
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
+	settings->setDefault("toggle_sneak_key", "false");
+	settings->setDefault("toggle_aux1_key", "false");
 	settings->setDefault("autojump", bool_to_cstr(has_touch));
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
@@ -406,13 +405,12 @@ void set_default_settings()
 #endif
 
 #if ENABLE_UPDATE_CHECKER
-	settings->setDefault("update_information_url", "https://www.minetest.net/release_info.json");
+	settings->setDefault("update_information_url", "https://www.luanti.org/release_info.json");
 #else
 	settings->setDefault("update_information_url", "");
 #endif
 
 	// Server
-	settings->setDefault("disable_escape_sequences", "false");
 	settings->setDefault("strip_color_codes", "false");
 #ifndef NDEBUG
 	settings->setDefault("random_mod_load_order", "true");
@@ -425,14 +423,13 @@ void set_default_settings()
 
 	// Network
 	settings->setDefault("enable_ipv6", "true");
-	settings->setDefault("ipv6_server", "false");
+	settings->setDefault("ipv6_server", "true");
 	settings->setDefault("max_packets_per_iteration", "1024");
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("protocol_version_min", "1");
 	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
-	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "15");
@@ -542,6 +539,7 @@ void set_default_settings()
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 #endif
 
+	settings->setDefault("touch_layout", "");
 	settings->setDefault("touchscreen_sensitivity", "0.2");
 	settings->setDefault("touchscreen_threshold", "20");
 	settings->setDefault("touch_long_tap_delay", "400");
@@ -550,6 +548,7 @@ void set_default_settings()
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("touch_punch_gesture", "short_tap");
 	settings->setDefault("clickable_chat_weblinks", "true");
+
 	// Altered settings for Android
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
@@ -561,12 +560,17 @@ void set_default_settings()
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("server_map_save_interval", "15");
-	settings->setDefault("client_mapblock_limit", "1000");
+	settings->setDefault("client_mapblock_limit", "1500");
 	settings->setDefault("active_block_range", "2");
-	settings->setDefault("viewing_range", "50");
+	settings->setDefault("viewing_range", "70");
 	settings->setDefault("leaves_style", "simple");
+	// Note: OpenGL ES 2.0 is not guaranteed to provide depth textures,
+	// which we would need for PP.
 	settings->setDefault("enable_post_processing", "false");
+	// still set these two settings in case someone wants to enable it
 	settings->setDefault("debanding", "false");
+	settings->setDefault("post_processing_texture_bits", "8");
+	// We don't have working certificate verification...
 	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size

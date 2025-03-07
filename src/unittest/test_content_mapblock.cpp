@@ -38,8 +38,10 @@ public:
 
 	MeshMakeData makeSingleNodeMMD(bool smooth_lighting = true)
 	{
-		MeshMakeData data{ndef(), 1};
-		data.setSmoothLighting(smooth_lighting);
+		MeshMakeData data{ndef(), 1, MeshGrid{1}};
+		data.m_generate_minimap = false;
+		data.m_smooth_lighting = smooth_lighting;
+		data.m_enable_water_reflections = false;
 		data.m_blockpos = {0, 0, 0};
 		for (s16 x = -1; x <= 1; x++)
 		for (s16 y = -1; y <= 1; y++)
@@ -175,7 +177,7 @@ void TestMapblockMeshGenerator::testSimpleNode()
 	data.m_vmanip.setNode({0, 0, 0}, {stone, 0, 0});
 
 	MeshCollector col{{}};
-	MapblockMeshGenerator mg{&data, &col, nullptr};
+	MapblockMeshGenerator mg{&data, &col};
 	mg.generate();
 	UASSERTEQ(std::size_t, col.prebuffers[0].size(), 1);
 	UASSERTEQ(std::size_t, col.prebuffers[1].size(), 0);
@@ -197,7 +199,7 @@ void TestMapblockMeshGenerator::testSurroundedNode()
 	data.m_vmanip.setNode({1, 0, 0}, {wood, 0, 0});
 
 	MeshCollector col{{}};
-	MapblockMeshGenerator mg{&data, &col, nullptr};
+	MapblockMeshGenerator mg{&data, &col};
 	mg.generate();
 	UASSERTEQ(std::size_t, col.prebuffers[0].size(), 1);
 	UASSERTEQ(std::size_t, col.prebuffers[1].size(), 0);
@@ -218,7 +220,7 @@ void TestMapblockMeshGenerator::testInterliquidSame()
 	data.m_vmanip.setNode({1, 0, 0}, {water, 0, 0});
 
 	MeshCollector col{{}};
-	MapblockMeshGenerator mg{&data, &col, nullptr};
+	MapblockMeshGenerator mg{&data, &col};
 	mg.generate();
 	UASSERTEQ(std::size_t, col.prebuffers[0].size(), 1);
 	UASSERTEQ(std::size_t, col.prebuffers[1].size(), 0);
@@ -240,7 +242,7 @@ void TestMapblockMeshGenerator::testInterliquidDifferent()
 	data.m_vmanip.setNode({0, 0, 1}, {lava, 0, 0});
 
 	MeshCollector col{{}};
-	MapblockMeshGenerator mg{&data, &col, nullptr};
+	MapblockMeshGenerator mg{&data, &col};
 	mg.generate();
 	UASSERTEQ(std::size_t, col.prebuffers[0].size(), 1);
 	UASSERTEQ(std::size_t, col.prebuffers[1].size(), 0);

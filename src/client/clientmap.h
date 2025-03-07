@@ -36,6 +36,16 @@ namespace irr::video
 	class IVideoDriver;
 }
 
+struct CachedMeshBuffer {
+	std::vector<scene::IMeshBuffer*> buf;
+	u8 age = 0;
+
+	void drop();
+};
+
+using CachedMeshBuffers = std::unordered_map<std::string, CachedMeshBuffer>;
+
+
 /*
 	ClientMap
 
@@ -95,6 +105,8 @@ public:
 
 	void renderPostFx(CameraMode cam_mode);
 
+	void invalidateMapBlockMesh(MapBlockMesh *mesh);
+
 	// For debug printing
 	void PrintInfo(std::ostream &out) override;
 
@@ -115,7 +127,6 @@ private:
 	// update the vertex order in transparent mesh buffers
 	void updateTransparentMeshBuffers();
 
-
 	// Orders blocks by distance to the camera
 	class MapBlockComparer
 	{
@@ -131,30 +142,6 @@ private:
 
 	private:
 		v3s16 m_camera_block;
-	};
-
-
-	// reference to a mesh buffer used when rendering the map.
-	struct DrawDescriptor {
-		v3s16 m_pos;
-		union {
-			scene::IMeshBuffer *m_buffer;
-			const PartialMeshBuffer *m_partial_buffer;
-		};
-		bool m_reuse_material:1;
-		bool m_use_partial_buffer:1;
-
-		DrawDescriptor(v3s16 pos, scene::IMeshBuffer *buffer, bool reuse_material) :
-			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
-		{}
-
-		DrawDescriptor(v3s16 pos, const PartialMeshBuffer *buffer) :
-			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
-		{}
-
-		video::SMaterial &getMaterial();
-		/// @return index count
-		u32 draw(video::IVideoDriver* driver);
 	};
 
 	Client *m_client;
@@ -176,12 +163,12 @@ private:
 	std::vector<MapBlock*> m_keeplist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
 	bool m_needs_update_drawlist;
-
-	std::set<v2s16> m_last_drawn_sectors;
+	CachedMeshBuffers m_dynamic_buffers;
 
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
+	bool m_cache_transparency_sorting_group_by_buffers;
 	u16 m_cache_transparency_sorting_distance;
 
 	bool m_loops_occlusion_culler;

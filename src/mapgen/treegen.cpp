@@ -23,8 +23,7 @@ void TreeDef::resolveNodeNames()
 	getIdFromNrBacklog(&leavesnode.param0, "", CONTENT_IGNORE);
 	if (leaves2_chance)
 		getIdFromNrBacklog(&leaves2node.param0, "", CONTENT_IGNORE);
-	if (fruit_chance)
-		getIdFromNrBacklog(&fruitnode.param0, "", CONTENT_IGNORE);
+	getIdFromNrBacklog(&fruitnode.param0, "", CONTENT_IGNORE);
 }
 
 /*
@@ -78,7 +77,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 
 	VoxelArea leaves_a(v3s16(-2, -1, -2), v3s16(2, 2, 2));
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for (s32 i = 0; i < leaves_a.getVolume(); i++)
+	for (u32 i = 0; i < leaves_d.getSize(); i++)
 		leaves_d[i] = 0;
 
 	// Force leaves at near the end of the trunk
@@ -277,29 +276,29 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 
 	Key for Special L-System Symbols used in Axioms
 
-    G  - move forward one unit with the pen up
-    F  - move forward one unit with the pen down drawing trunks and branches
-    f  - move forward one unit with the pen down drawing leaves (100% chance)
-    T  - move forward one unit with the pen down drawing trunks only
-    R  - move forward one unit with the pen down placing fruit
-    A  - replace with rules set A
-    B  - replace with rules set B
-    C  - replace with rules set C
-    D  - replace with rules set D
-    a  - replace with rules set A, chance 90%
-    b  - replace with rules set B, chance 80%
-    c  - replace with rules set C, chance 70%
-    d  - replace with rules set D, chance 60%
-    +  - yaw the turtle right by angle degrees
-    -  - yaw the turtle left by angle degrees
-    &  - pitch the turtle down by angle degrees
-    ^  - pitch the turtle up by angle degrees
-    /  - roll the turtle to the right by angle degrees
-    *  - roll the turtle to the left by angle degrees
-    [  - save in stack current state info
-    ]  - recover from stack state info
+	  G  - move forward one unit with the pen up
+	  F  - move forward one unit with the pen down drawing trunks and branches
+	  f  - move forward one unit with the pen down drawing leaves (100% chance)
+	  T  - move forward one unit with the pen down drawing trunks only
+	  R  - move forward one unit with the pen down placing fruit
+	  A  - replace with rules set A
+	  B  - replace with rules set B
+	  C  - replace with rules set C
+	  D  - replace with rules set D
+	  a  - replace with rules set A, chance 90%
+	  b  - replace with rules set B, chance 80%
+	  c  - replace with rules set C, chance 70%
+	  d  - replace with rules set D, chance 60%
+	  +  - yaw the turtle right by angle degrees
+	  -  - yaw the turtle left by angle degrees
+	  &  - pitch the turtle down by angle degrees
+	  ^  - pitch the turtle up by angle degrees
+	  /  - roll the turtle to the right by angle degrees
+	  *  - roll the turtle to the left by angle degrees
+	  [  - save in stack current state info
+	  ]  - recover from stack state info
 
-    */
+	 */
 
 	s16 x,y,z;
 	for (s16 i = 0; i < (s16)axiom.size(); i++) {
@@ -698,9 +697,8 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-3, -2, -3), v3s16(3, 2, 3));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for (s32 i = 0; i < leaves_a.getVolume(); i++)
+	for (u32 i = 0; i < leaves_d.getSize(); i++)
 		leaves_d[i] = 0;
 
 	// Force leaves at near the end of the trunk
@@ -789,7 +787,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 
 	VoxelArea leaves_a(v3s16(-3, -6, -3), v3s16(3, 3, 3));
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for (s32 i = 0; i < leaves_a.getVolume(); i++)
+	for (u32 i = 0; i < leaves_d.getSize(); i++)
 		leaves_d[i] = 0;
 
 	// Upper branches
@@ -874,6 +872,17 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 			i++;
 		}
 	}
+}
+
+std::string error_to_string(error e)
+{
+	switch (e) {
+		case SUCCESS:
+			return "success";
+		case UNBALANCED_BRACKETS:
+			return "closing ']' has no matching opening bracket";
+	}
+	return "unknown error";
 }
 
 }; // namespace treegen

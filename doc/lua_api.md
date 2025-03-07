@@ -5,10 +5,10 @@ Luanti Lua Modding API Reference
 it's now called `core` due to the renaming of Luanti (formerly Minetest).
 `minetest` will keep existing as an alias, so that old code won't break.
 
-* More information at <http://www.minetest.net/>
-* Developer Wiki: <http://dev.minetest.net/>
+* More information at <http://www.luanti.org/>
+* Developer Wiki: <https://dev.luanti.org/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
-* Modding tools: <https://github.com/minetest/modtools>
+* Modding tools: <https://github.com/luanti-org/modtools>
 
 Introduction
 ------------
@@ -188,14 +188,14 @@ Mod directory structure
     │   ├── models
     │   ├── textures
     │   │   ├── modname_stuff.png
-    │   │   ├── modname_stuff_normal.png
     │   │   ├── modname_something_else.png
     │   │   ├── subfolder_foo
     │   │   │   ├── modname_more_stuff.png
     │   │   │   └── another_subfolder
     │   │   └── bar_subfolder
     │   ├── sounds
-    │   ├── media
+    │   ├── fonts
+    │   ├── media
     │   ├── locale
     │   └── <custom data>
     └── another
@@ -266,7 +266,7 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on Luanti calling the
 registered callbacks.
 
-### `textures`, `sounds`, `media`, `models`, `locale`
+### `textures`, `sounds`, `media`, `models`, `locale`, `fonts`
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
@@ -276,9 +276,10 @@ the clients (see [Translations]). Accepted characters for names are:
 
 Accepted formats are:
 
-    images: .png, .jpg, .tga, (deprecated:) .bmp
+    images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
+    fonts: .ttf, .woff (both since version 5.11, see notes below)
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -309,17 +310,24 @@ it unlocks no special rendering features.
 Binary glTF (`.glb`) files are supported and recommended over `.gltf` files
 due to their space savings.
 
-This means that many glTF features are not supported *yet*, including:
+Bone weights should be normalized, e.g. using ["normalize all" in Blender](https://docs.blender.org/manual/en/4.2/grease_pencil/modes/weight_paint/weights_menu.html#normalize-all).
+
+You can use the [Khronos glTF validator](https://github.com/KhronosGroup/glTF-Validator)
+to check whether a model is a valid glTF file.
+
+Many glTF features are not supported *yet*, including:
 
 * Animations
   * Only a single animation is supported, use frame ranges within this animation.
+  * `CUBICSPLINE` interpolation is not supported.
 * Cameras
 * Materials
   * Only base color textures are supported
   * Backface culling is overridden
   * Double-sided materials don't work
 * Alternative means of supplying data
-  * Embedded images
+  * Embedded images. You can use `gltfutil.py` from the
+    [modding tools](https://github.com/luanti-org/modtools) to strip or extract embedded images.
   * References to files via URIs
 
 Textures are supplied solely via the same means as for the other model file formats:
@@ -335,6 +343,28 @@ The backwards compatibility guarantee does not extend to ignoring unsupported fe
 For example, if your model used an emissive material,
 you should expect that a future version of Luanti may respect this,
 and thus cause your model to render differently there.
+
+#### Custom fonts
+
+You can supply custom fonts in TrueType Font (`.ttf`) or Web Open Font Format (`.woff`) format.
+The former is supported primarily for convenience. The latter is preferred due to its compression.
+
+In the future, having multiple custom fonts and the ability to switch between them is planned,
+but for now this feature is limited to the ability to override Luanti's default fonts via mods.
+It is recommended that this only be used by game mods to set a look and feel.
+
+The stems (file names without extension) are self-explanatory:
+
+* Regular variants:
+  * `regular`
+  * `bold`
+  * `italic`
+  * `bold_italic`
+* Monospaced variants:
+  * `mono`
+  * `mono_bold`
+  * `mono_italic`
+  * `mono_bold_italic`
 
 Naming conventions
 ------------------
@@ -486,9 +516,7 @@ stripping out the file extension:
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
 
-Supported texture formats are PNG (`.png`), JPEG (`.jpg`), Bitmap (`.bmp`)
-and Targa (`.tga`).
-Since better alternatives exist, the latter two may be removed in the future.
+Supported texture formats are PNG (`.png`), JPEG (`.jpg`) and Targa (`.tga`).
 
 Texture modifiers
 -----------------
@@ -1460,8 +1488,6 @@ Node drawtypes
 
 There are a bunch of different looking node types.
 
-Look for examples in `games/devtest` or `games/minetest_game`.
-
 * `normal`
     * A node-sized cube.
 * `airlike`
@@ -1500,7 +1526,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 * `allfaces`
     * Often used for partially-transparent nodes.
     * External sides of textures, and unlike other drawtypes, the external sides
-      of other blocks, are visible from the inside.
+      of other nodes, are visible from the inside.
 * `allfaces_optional`
     * Often used for leaves nodes.
     * This switches between `normal`, `glasslike` and `allfaces` according to
@@ -4189,14 +4215,14 @@ Two functions are provided to translate strings: `core.translate` and
 
 * `core.get_translator(textdomain)` is a simple wrapper around
   `core.translate` and `core.translate_n`.
-  After `local S, NS = core.get_translator(textdomain)`, we have
+  After `local S, PS = core.get_translator(textdomain)`, we have
   `S(str, ...)` equivalent to `core.translate(textdomain, str, ...)`, and
-  `NS(str, str_plural, n, ...)` to `core.translate_n(textdomain, str, str_plural, n, ...)`.
+  `PS(str, str_plural, n, ...)` to `core.translate_n(textdomain, str, str_plural, n, ...)`.
   It is intended to be used in the following way, so that it avoids verbose
   repetitions of `core.translate`:
 
   ```lua
-  local S, NS = core.get_translator(textdomain)
+  local S, PS = core.get_translator(textdomain)
   S(str, ...)
   ```
 
@@ -4230,7 +4256,7 @@ command that shows the amount of time since the player joined. We can do the
 following:
 
 ```lua
-local S, NS = core.get_translator("hello")
+local S, PS = core.get_translator("hello")
 core.register_on_joinplayer(function(player)
     local name = player:get_player_name()
     core.chat_send_player(name, S("Hello @1, how are you today?", name))
@@ -4239,7 +4265,7 @@ core.register_chatcommand("playtime", {
     func = function(name)
         local last_login = core.get_auth_handler().get_auth(name).last_login
         local playtime = math.floor((last_login-os.time())/60)
-        return true, NS(
+        return true, PS(
             "You have been playing for @1 minute.",
             "You have been playing for @1 minutes.",
             minutes, tostring(minutes))
@@ -4286,7 +4312,7 @@ After creating the `locale` directory, a translation template for the above
 example using the following command:
 
 ```sh
-xgettext -L lua -kS -kNS:1,2 -kcore.translate:1c,2 -kcore.translate_n:1c,2,3 \
+xgettext -L lua -kS -kPS:1,2 -kcore.translate:1c,2 -kcore.translate_n:1c,2,3 \
   -d hello -o locale/hello.pot *.lua
 ```
 
@@ -4346,7 +4372,7 @@ Hello @1, how are you today?=Hallo @1, wie geht es dir heute?
 ```
 
 For old translation files, consider using the script `mod_translation_updater.py`
-in the Luanti [modtools](https://github.com/minetest/modtools) repository to
+in the Luanti [modtools](https://github.com/luanti-org/modtools) repository to
 generate and update translation files automatically from the Lua sources.
 
 Gettext translation file format
@@ -5044,7 +5070,7 @@ inside the VoxelManip.
   can use `core.emerge_area` to make sure that the area you want to
   read/write is already generated.
 
-* Other mods, or the core itself, could possibly modify the area of the map
+* Other mods, or the engine itself, could possibly modify the area of the map
   currently loaded into a VoxelManip object. With the exception of Mapgen
   VoxelManips (see above section), the internal buffers are not updated. For
   this reason, it is strongly encouraged to complete the usage of a particular
@@ -5059,9 +5085,11 @@ inside the VoxelManip.
 Methods
 -------
 
-* `read_from_map(p1, p2)`:  Loads a chunk of map into the VoxelManip object
+* `read_from_map(p1, p2)`: Loads a chunk of map into the VoxelManip object
   containing the region formed by `p1` and `p2`.
     * returns actual emerged `pmin`, actual emerged `pmax`
+    * Note that calling this multiple times will *add* to the area loaded in the
+      VoxelManip, and not reset it.
 * `write_to_map([light])`: Writes the data loaded from the `VoxelManip` back to
   the map.
     * **important**: data must be set using `VoxelManip:set_data()` before
@@ -5120,8 +5148,8 @@ Methods
       generated mapchunk above are propagated down into the mapchunk, defaults
       to `true` if left out.
 * `update_liquids()`: Update liquid flow
-* `was_modified()`: Returns `true` if the data in the voxel manipulator has been modified
-   since it was last read from the map. This means you have to call `get_data` again.
+* `was_modified()`: Returns `true` if the data in the VoxelManip has been modified
+   since it was last read from the map. This means you have to call `get_data()` again.
    This only applies to a `VoxelManip` object from `core.get_mapgen_object`,
    where the engine will keep the map and the VM in sync automatically.
    * Note: this doesn't do what you think it does and is subject to removal. Don't use it!
@@ -5554,7 +5582,7 @@ Utilities
     * It's possible that multiple Luanti instances are running at the same
       time, which may lead to corruption if you are not careful.
 * `core.is_singleplayer()`
-* `core.features`: Table containing API feature flags
+* `core.features`: Table containing *server-side* API feature flags
 
   ```lua
   {
@@ -5663,13 +5691,18 @@ Utilities
       abm_without_neighbors = true,
       -- biomes have a weight parameter (5.11.0)
       biome_weights = true,
+      -- Particles can specify a "clip" blend mode (5.11.0)
+      particle_blend_clip = true,
+      -- The `match_meta` optional parameter is available for `InvRef:remove_item()` (5.12.0)
+      remove_item_match_meta = true,
       -- The upper four bits of liquid node param2 values are preserved
-      -- during liquid flow (5.11.0)
+      -- during liquid flow (5.12.0)
       preserve_liquid_param2 = true,
   }
   ```
 
 * `core.has_feature(arg)`: returns `boolean, missing_features`
+    * checks for *server-side* feature availability
     * `arg`: string or table in format `{foo=true, bar=true}`
     * `missing_features`: `{foo=true, bar=true}`
 * `core.get_player_information(player_name)`: Table containing information
@@ -5691,14 +5724,37 @@ Utilities
       min_jitter = 0.01,         -- minimum packet time jitter
       max_jitter = 0.5,          -- maximum packet time jitter
       avg_jitter = 0.03,         -- average packet time jitter
+
+      -- The version information is provided by the client and may be spoofed
+      -- or inconsistent in engine forks. You must not use this for checking
+      -- feature availability of clients. Instead, do use the fields
+      -- `protocol_version` and `formspec_version` where it matters.
+      -- Use `core.protocol_versions` to map Luanti versions to protocol versions.
+      -- This version string is only suitable for analysis purposes.
+      version_string = "0.4.9-git",   -- full version string
+
       -- the following information is available in a debug build only!!!
       -- DO NOT USE IN MODS
-      --ser_vers = 26,             -- serialization version used by client
-      --major = 0,                 -- major version number
-      --minor = 4,                 -- minor version number
-      --patch = 10,                -- patch version number
-      --vers_string = "0.4.9-git", -- full version string
-      --state = "Active"           -- current client state
+      --serialization_version = 26,     -- serialization version used by client
+      --major = 0,                      -- major version number
+      --minor = 4,                      -- minor version number
+      --patch = 10,                     -- patch version number
+      --state = "Active"                -- current client state
+  }
+  ```
+
+* `core.protocol_versions`:
+  * Table mapping Luanti versions to corresponding protocol versions for modder convenience.
+  * For example, to check whether a client has at least the feature set
+    of Luanti 5.8.0 or newer, you could do:
+    `core.get_player_information(player_name).protocol_version >= core.protocol_versions["5.8.0"]`
+  * (available since 5.11)
+
+  ```lua
+  {
+      [version string] = protocol version at time of release
+      -- every major and minor version has an entry
+      -- patch versions only for the first release whose protocol version is not already present in the table
   }
   ```
 
@@ -6187,7 +6243,7 @@ Setting-related
 * `core.settings`: Settings object containing all of the settings from the
   main config file (`minetest.conf`). See [`Settings`].
 * `core.setting_get_pos(name)`: Loads a setting from the main settings and
-  parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
+  parses it as a position (in the format `(1,2,3)`). Returns a position or nil. **Deprecated: use `core.settings:get_pos()` instead**
 
 Authentication
 --------------
@@ -6566,7 +6622,7 @@ Environment access
     * `pointabilities`: Allows overriding the `pointable` property of
       nodes and objects. Uses the same format as the `pointabilities` property
       of item definitions. Default is `nil`.
-* `core.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
+* `core.find_path(pos1, pos2, searchdistance, max_jump, max_drop, algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
       `nil` on failure.
@@ -6586,8 +6642,11 @@ Environment access
       Difference between `"A*"` and `"A*_noprefetch"` is that
       `"A*"` will pre-calculate the cost-data, the other will calculate it
       on-the-fly
-* `core.spawn_tree (pos, {treedef})`
+* `core.spawn_tree(pos, treedef)`
     * spawns L-system tree at given `pos` with definition in `treedef` table
+* `core.spawn_tree_on_vmanip(vmanip, pos, treedef)`
+    * analogous to `core.spawn_tree`, but spawns a L-system tree onto the specified
+      VoxelManip object `vmanip` instead of the map.
 * `core.transforming_liquid_add(pos)`
     * add node to liquid flow update queue
 * `core.get_node_max_level(pos)`
@@ -6706,6 +6765,9 @@ Formspec
 * `core.hypertext_escape(string)`: returns a string
     * escapes the characters "\", "<", and ">" to show text in a hypertext element.
     * not safe for use with tag attributes.
+    * this function does not do formspec escaping, you will likely need to do
+      `core.formspec_escape(core.hypertext_escape(string))` if the hypertext is
+      not already being formspec escaped.
 * `core.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
@@ -7401,7 +7463,8 @@ Misc.
     * This function can be overridden by mods to change the leave message.
 * `core.hash_node_position(pos)`: returns a 48-bit integer
     * `pos`: table {x=number, y=number, z=number},
-    * Gives a unique hash number for a node position (16+16+16=48bit)
+    * Gives a unique numeric encoding for a node position (16+16+16=48bit)
+    * Despite the name, this is not a hash function (so it doesn't mix or produce collisions).
 * `core.get_position_from_hash(hash)`: returns a position
     * Inverse transform of `core.hash_node_position`
 * `core.get_item_group(name, group)`: returns a rating
@@ -7819,13 +7882,15 @@ An `InvRef` is a reference to an inventory.
   can be fully added to the list
 * `contains_item(listname, stack, [match_meta])`: returns `true` if
   the stack of items can be fully taken from the list.
-  If `match_meta` is false, only the items' names are compared
-  (default: `false`).
-* `remove_item(listname, stack)`: take as many items as specified from the
-  list, returns the items that were actually removed (as an `ItemStack`)
-  -- note that any item metadata is ignored, so attempting to remove a specific
-  unique item this way will likely remove the wrong one -- to do that use
-  `set_stack` with an empty `ItemStack`.
+    * If `match_meta` is `true`, item metadata is also considered when comparing
+      items. Otherwise, only the items names are compared. Default: `false`
+    * The method ignores wear.
+* `remove_item(listname, stack, [match_meta])`: take as many items as specified from the
+  list, returns the items that were actually removed (as an `ItemStack`).
+    * If `match_meta` is `true` (available since feature `remove_item_match_meta`),
+      item metadata is also considered when comparing items. Otherwise, only the
+      items names are compared. Default: `false`
+    * The method ignores wear.
 * `get_location()`: returns a location compatible to
   `core.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
@@ -8774,6 +8839,14 @@ child will follow movement and rotation of that bone.
       Same limits as for `thirdperson_back` apply.
       Defaults to `thirdperson_back` if unspecified.
 * `get_eye_offset()`: Returns camera offset vectors as set via `set_eye_offset`.
+* `set_camera(params)`: Sets camera parameters.
+    * `mode`: Defines the camera mode used
+      - `any`: free choice between all modes (default)
+      - `first`: first-person camera
+      - `third`: third-person camera
+      - `third_front`: third-person camera, looking opposite of movement direction
+    * Supported by client since 5.12.0.
+* `get_camera()`: Returns the camera parameters as a table as above.
 * `send_mapblock(blockpos)`:
     * Sends an already loaded mapblock to the player.
     * Returns `false` if nothing was sent (note that this can also mean that
@@ -8899,7 +8972,7 @@ For `core.get_perlin_map()`, the actual seed used is the noiseparams seed
 plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
-for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
+for 2D noise, and it must be larger than 1 for 3D noise (otherwise
 `nil` is returned).
 
 For each of the functions with an optional `buffer` parameter: If `buffer` is
@@ -9055,6 +9128,9 @@ means that no defaults will be returned for mod settings.
     * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
       flags like `mgv5_spflags`.
     * Returns `nil` if `key` is not found.
+* `get_pos(key)`:
+    * Returns a `vector`
+    * Returns `nil` if no value is found or parsing failed.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
@@ -9064,6 +9140,9 @@ means that no defaults will be returned for mod settings.
     * See documentation for `set()` above.
 * `set_np_group(key, value)`
     * `value` is a NoiseParams table.
+    * Also, see documentation for `set()` above.
+* `set_pos(key, value)`
+    * `value` is a `vector`.
     * Also, see documentation for `set()` above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
@@ -9162,7 +9241,7 @@ Player properties need to be saved manually.
     -- Clients older than 5.9.0 interpret `pointable = "blocking"` as `pointable = true`.
     -- Can be overridden by the `pointabilities` of the held item.
 
-    visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
+    visual = "",
     -- "cube" is a node-sized cube.
     -- "sprite" is a flat texture always facing the player.
     -- "upright_sprite" is a vertical flat texture.
@@ -9184,6 +9263,8 @@ Player properties need to be saved manually.
     --   Wielditems are scaled a bit. If you want a wielditem to appear
     --   to be as large as a node, use `0.667` in `visual_size`
     -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
+    -- "node" looks exactly like a node in-world (supported since 5.12.0)
+    --   Note that visual effects like waving or liquid reflections will not work.
 
     visual_size = {x = 1, y = 1, z = 1},
     -- Multipliers for the visual size. If `z` is not specified, `x` will be used
@@ -9193,7 +9274,7 @@ Player properties need to be saved manually.
     -- File name of mesh when using "mesh" visual
 
     textures = {},
-    -- Number of required textures depends on visual.
+    -- Number of required textures depends on visual:
     -- "cube" uses 6 textures just like a node, but all 6 must be defined.
     -- "sprite" uses 1 texture.
     -- "upright_sprite" uses 2 textures: {front, back}.
@@ -9201,13 +9282,16 @@ Player properties need to be saved manually.
     -- Deprecated usage of "wielditem" expects 'textures = {itemname}' (see 'visual' above).
 
     colors = {},
-    -- Number of required colors depends on visual
+    -- Currently unused.
+
+    node = {name = "ignore", param1=0, param2=0},
+    -- Node to show when using the "node" visual
 
     use_texture_alpha = false,
-    -- Use texture's alpha channel.
-    -- Excludes "upright_sprite" and "wielditem".
+    -- Use texture's alpha channel for transparency blending.
     -- Note: currently causes visual issues when viewed through other
     -- semi-transparent materials such as water.
+    -- Note: ignored for "item", "wielditem" and "node" visual.
 
     spritediv = {x = 1, y = 1},
     -- Used with spritesheet textures for animation and/or frame selection
@@ -9224,7 +9308,7 @@ Player properties need to be saved manually.
     -- If false, object is invisible and can't be pointed.
 
     makes_footstep_sound = false,
-    -- If true, is able to make footstep sounds of nodes
+    -- If true, object is able to make footstep sounds of nodes
     -- (see node sound definition for details).
 
     automatic_rotate = 0,
@@ -9247,6 +9331,7 @@ Player properties need to be saved manually.
 
     backface_culling = true,
     -- Set to false to disable backface_culling for model
+    -- Note: only used by "mesh" and "cube" visual
 
     glow = 0,
     -- Add this much extra lighting when calculating texture color.
@@ -9282,6 +9367,7 @@ Player properties need to be saved manually.
 
     shaded = true,
     -- Setting this to 'false' disables diffuse lighting of entity
+    -- Note: ignored for "item", "wielditem" and "node" visual
 
     show_on_minimap = false,
     -- Defaults to true for players, false for other entities.
@@ -10799,10 +10885,9 @@ See [Decoration types]. Used by `core.register_decoration`.
 
     flags = "liquid_surface, force_placement, all_floors, all_ceilings",
     -- Flags for all decoration types.
-    -- "liquid_surface": Instead of placement on the highest solid surface
-    --   in a mapchunk column, placement is on the highest liquid surface.
-    --   Placement is disabled if solid nodes are found above the liquid
-    --   surface.
+    -- "liquid_surface": Find the highest liquid (not solid) surface under
+    --   open air. Search stops and fails on the first solid node.
+    --   Cannot be used with "all_floors" or "all_ceilings" below.
     -- "force_placement": Nodes other than "air" and "ignore" are replaced
     --   by the decoration.
     -- "all_floors", "all_ceilings": Instead of placement on the highest
@@ -11497,6 +11582,14 @@ texture = {
     -- (default) blends transparent pixels with those they are drawn atop
     -- according to the alpha channel of the source texture. useful for
     -- e.g. material objects like rocks, dirt, smoke, or node chunks
+    -- note: there will be rendering bugs when particles interact with
+    -- translucent nodes. particles are also not transparency-sorted
+    -- relative to each other.
+    blend = "clip",
+    -- pixels are either fully opaque or fully transparent,
+    -- depending on whether alpha is greater than or less than 50%
+    -- (just like `use_texture_alpha = "clip"` for nodes).
+    -- you should prefer this if you don't need semi-transparency, as it's faster.
     blend = "add",
     -- adds the value of pixels to those underneath them, modulo the sources
     -- alpha channel. useful for e.g. bright light effects like sparks or fire

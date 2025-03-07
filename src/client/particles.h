@@ -4,11 +4,20 @@
 
 #pragma once
 
+#include "irrlichttypes_bloated.h"
+#include "irr_ptr.h"
+#include "ISceneNode.h"
+#include "S3DVertex.h"
+#include "SMeshBuffer.h"
+
+#include <mutex>
 #include <vector>
 #include <unordered_map>
-#include "irrlichttypes_extrabloated.h"
-#include "irr_ptr.h"
 #include "../particles.h"
+
+namespace irr::video {
+	class ITexture;
+}
 
 struct ClientEvent;
 class ParticleManager;
@@ -76,6 +85,9 @@ public:
 	ParticleSpawner *getParent() const { return m_parent; }
 
 	const ClientParticleTexRef &getTextureRef() const { return m_texture; }
+
+	ParticleParamTypes::BlendMode getBlendMode() const
+	{ return m_texture.tex ? m_texture.tex->blendmode : m_p.texture.blendmode; }
 
 	ParticleBuffer *getBuffer() const { return m_buffer; }
 	bool attachToBuffer(ParticleBuffer *buffer);
@@ -231,7 +243,7 @@ protected:
 		ParticleParameters &p, video::ITexture **texture, v2f &texpos,
 		v2f &texsize, video::SColor *color, u8 tilenum = 0);
 
-	static video::SMaterial getMaterialForParticle(const ClientParticleTexRef &texture);
+	static video::SMaterial getMaterialForParticle(const Particle *texture);
 
 	bool addParticle(std::unique_ptr<Particle> toadd);
 

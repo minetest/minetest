@@ -1,4 +1,4 @@
-Luanti Lua Mainmenu API Reference 5.11.0
+Luanti Lua Mainmenu API Reference 5.12.0
 ========================================
 
 Introduction
@@ -105,11 +105,6 @@ of manually putting one, as different OSs use different delimiters. E.g.
   * `spec` = `SimpleSoundSpec` (see `lua_api.md`)
   * `looped` = bool
 * `handle:stop()` or `core.sound_stop(handle)`
-* `core.get_video_drivers()`
-  * get list of video drivers supported by engine (not all modes are guaranteed to work)
-  * returns list of available video drivers' settings name and 'friendly' display name
-    e.g. `{ {name="opengl", friendly_name="OpenGL"}, {name="software", friendly_name="Software Renderer"} }`
-  * first element of returned list is guaranteed to be the NULL driver
 * `core.get_mapgen_names([include_hidden=false])` -> table of map generator algorithms
     registered in the core (possible in async calls)
 * `core.get_cache_path()` -> path of cache
@@ -223,6 +218,7 @@ GUI
 * `core.set_clouds(<true/false>)`
 * `core.set_topleft_text(text)`
 * `core.show_keys_menu()`
+* `core.show_touchscreen_layout()`
 * `core.show_path_select_dialog(formname, caption, is_file_select)`
   * shows a path select dialog
   * `formname` is base name of dialog response returned in fields
@@ -386,7 +382,7 @@ Settings
 * `core.settings:save()` -> nil, save all settings to config file
 
 For a complete list of methods of the `Settings` object see
-[lua_api.md](https://github.com/minetest/minetest/blob/master/doc/lua_api.md)
+[lua_api.md](./lua_api.md)
 
 
 Worlds

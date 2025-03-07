@@ -66,6 +66,15 @@ core.register_entity("testentities:mesh_unshaded", {
 	},
 })
 
+core.register_entity("testentities:node", {
+	initial_properties = {
+		visual = "node",
+		node = { name = "stairs:stair_stone" },
+	},
+})
+
+-- More complex meshes
+
 core.register_entity("testentities:sam", {
 	initial_properties = {
 		visual = "mesh",
@@ -76,6 +85,20 @@ core.register_entity("testentities:sam", {
 	},
 	on_activate = function(self)
 		self.object:set_animation({x = 0, y = 219}, 30, 0, true)
+	end,
+})
+
+core.register_entity("testentities:lava_flan", {
+	initial_properties = {
+		infotext = "Lava Flan (smoke test .x)",
+		visual = "mesh",
+		mesh = "testentities_lava_flan.x",
+		textures = {
+			"testentities_lava_flan.png"
+		},
+	},
+	on_activate = function(self)
+		self.object:set_animation({x = 0, y = 28}, 15, 0, true)
 	end,
 })
 

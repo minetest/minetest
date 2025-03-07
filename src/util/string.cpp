@@ -139,16 +139,6 @@ std::string wide_to_utf8(std::wstring_view input)
 	return out;
 }
 
-void wide_add_codepoint(std::wstring &result, char32_t codepoint)
-{
-	if ((0xD800 <= codepoint && codepoint <= 0xDFFF) || (0x10FFFF < codepoint)) {
-		// Invalid codepoint, replace with unicode replacement character
-		result.push_back(0xFFFD);
-		return;
-	}
-	result.push_back(codepoint);
-}
-
 #else // _WIN32
 
 std::wstring utf8_to_wide(std::string_view input)
@@ -175,31 +165,24 @@ std::string wide_to_utf8(std::wstring_view input)
 	return out;
 }
 
+#endif // _WIN32
+
 void wide_add_codepoint(std::wstring &result, char32_t codepoint)
 {
-	if (codepoint < 0x10000) {
-		if (0xD800 <= codepoint && codepoint <= 0xDFFF) {
-			// Invalid codepoint, part of a surrogate pair
-			// Replace with unicode replacement character
-			result.push_back(0xFFFD);
-			return;
-		}
-		result.push_back((wchar_t) codepoint);
-		return;
-	}
-	codepoint -= 0x10000;
-	if (codepoint >= 0x100000) {
-		// original codepoint was above 0x10FFFF, so invalid
-		// replace with unicode replacement character
+	if ((0xD800 <= codepoint && codepoint <= 0xDFFF) || codepoint > 0x10FFFF) {
+		// Invalid codepoint, replace with unicode replacement character
 		result.push_back(0xFFFD);
 		return;
 	}
-	result.push_back((wchar_t) ((codepoint >> 10) | 0xD800));
-	result.push_back((wchar_t) ((codepoint & 0x3FF) | 0xDC00));
+	if constexpr (sizeof(wchar_t) == 2) { // Surrogate encoding needed?
+		if (codepoint > 0xffff) {
+			result.push_back((wchar_t) ((codepoint >> 10) | 0xD800));
+			result.push_back((wchar_t) ((codepoint & 0x3FF) | 0xDC00));
+			return;
+		}
+	}
+	result.push_back((wchar_t) codepoint);
 }
-
-#endif // _WIN32
-
 
 std::string urlencode(std::string_view str)
 {
@@ -1068,14 +1051,41 @@ void safe_print_string(std::ostream &os, std::string_view str)
 	os.setf(flags);
 }
 
-
-v3f str_to_v3f(std::string_view str)
+std::optional<v3f> str_to_v3f(std::string_view str)
 {
+	str = trim(str);
+
+	if (str.empty())
+		return std::nullopt;
+
+	// Strip parentheses if they exist
+	if (str.front() == '(' && str.back() == ')') {
+		str.remove_prefix(1);
+		str.remove_suffix(1);
+		str = trim(str);
+	}
+
+	std::istringstream iss((std::string(str)));
+
+	const auto expect_delimiter = [&]() {
+		const auto c = iss.get();
+		return c == ' ' || c == ',';
+	};
+
 	v3f value;
-	Strfnd f(str);
-	f.next("(");
-	value.X = stof(f.next(","));
-	value.Y = stof(f.next(","));
-	value.Z = stof(f.next(")"));
+	if (!(iss >> value.X))
+		return std::nullopt;
+	if (!expect_delimiter())
+		return std::nullopt;
+	if (!(iss >> value.Y))
+		return std::nullopt;
+	if (!expect_delimiter())
+		return std::nullopt;
+	if (!(iss >> value.Z))
+		return std::nullopt;
+
+	if (!iss.eof())
+		return std::nullopt;
+
 	return value;
 }

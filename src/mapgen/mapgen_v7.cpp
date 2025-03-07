@@ -24,7 +24,7 @@
 #include "mapgen_v7.h"
 
 
-FlagDesc flagdesc_mapgen_v7[] = {
+const FlagDesc flagdesc_mapgen_v7[] = {
 	{"mountains",   MGV7_MOUNTAINS},
 	{"ridges",      MGV7_RIDGES},
 	{"floatlands",  MGV7_FLOATLANDS},
@@ -523,7 +523,7 @@ int MapgenV7::generateTerrain()
 	}
 
 	//// Place nodes
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 

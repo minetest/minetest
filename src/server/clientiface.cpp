@@ -6,8 +6,10 @@
 #include "clientiface.h"
 #include "debug.h"
 #include "network/connection.h"
+#include "network/networkpacket.h"
 #include "network/serveropcodes.h"
 #include "remoteplayer.h"
+#include "serialization.h" // SER_FMT_VER_INVALID
 #include "settings.h"
 #include "mapblock.h"
 #include "serverenvironment.h"
@@ -51,6 +53,8 @@ std::string ClientInterface::state2Name(ClientState state)
 }
 
 RemoteClient::RemoteClient() :
+	serialization_version(SER_FMT_VER_INVALID),
+	m_pending_serialization_version(SER_FMT_VER_INVALID),
 	m_max_simul_sends(g_settings->getU16("max_simultaneous_block_sends_per_client")),
 	m_min_time_from_building(
 		g_settings->getFloat("full_block_send_enable_min_time_from_building")),

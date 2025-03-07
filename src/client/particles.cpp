@@ -22,6 +22,10 @@
 #include "settings.h"
 #include "profiler.h"
 
+#include "SMeshBuffer.h"
+
+using BlendMode = ParticleParamTypes::BlendMode;
+
 ClientParticleTexture::ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc)
 {
 	tex = p;
@@ -189,7 +193,7 @@ void Particle::updateVertices(ClientEnvironment *env, video::SColor color)
 	video::S3DVertex *vertices = m_buffer->getVertices(m_index);
 
 	if (m_texture.tex != nullptr)
-		scale = m_texture.tex -> scale.blend(m_time / (m_expiration+0.1));
+		scale = m_texture.tex -> scale.blend(m_time / (m_expiration+0.1f));
 	else
 		scale = v2f(1.f, 1.f);
 
@@ -199,7 +203,7 @@ void Particle::updateVertices(ClientEnvironment *env, video::SColor color)
 		v2u32 framesize;
 		texcoord = m_p.animation.getTextureCoords(texsize, m_animation_frame);
 		m_p.animation.determineParams(texsize, NULL, NULL, &framesize);
-		framesize_f = v2f(framesize.X / (float) texsize.X, framesize.Y / (float) texsize.Y);
+		framesize_f = v2f::from(framesize) / v2f::from(texsize);
 
 		tx0 = m_texpos.X + texcoord.X;
 		tx1 = m_texpos.X + texcoord.X + framesize_f.X * m_texsize.X;
@@ -268,6 +272,7 @@ ParticleSpawner::ParticleSpawner(
 	}
 
 	size_t max_particles = 0; // maximum number of particles likely to be visible at any given time
+	assert(p.time >= 0);
 	if (p.time != 0) {
 		auto maxGenerations = p.time / std::min(p.exptime.start.min, p.exptime.end.min);
 		max_particles = p.amount / maxGenerations;
@@ -387,7 +392,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 			}
 
 			case ParticleParamTypes::AttractorKind::line: {
-				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				// <https://github.com/luanti-org/luanti/issues/11505#issuecomment-915612700>
 				const auto& lorigin = attractor_origin;
 				v3f ldir = attractor_direction;
 				ldir.normalize();
@@ -403,7 +408,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 			}
 
 			case ParticleParamTypes::AttractorKind::plane: {
-				// https://github.com/minetest/minetest/issues/11505#issuecomment-915612700
+				// <https://github.com/luanti-org/luanti/issues/11505#issuecomment-915612700>
 				const v3f& porigin = attractor_origin;
 				v3f normal = attractor_direction;
 				normal.normalize();
@@ -603,8 +608,11 @@ video::S3DVertex *ParticleBuffer::getVertices(u16 index)
 
 void ParticleBuffer::OnRegisterSceneNode()
 {
-	if (IsVisible)
-		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
+	if (IsVisible) {
+		SceneManager->registerNodeForRendering(this,
+				m_mesh_buffer->getMaterial().MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF
+				? scene::ESNRP_SOLID : scene::ESNRP_TRANSPARENT_EFFECT);
+	}
 	scene::ISceneNode::OnRegisterSceneNode();
 }
 
@@ -613,15 +621,22 @@ const core::aabbox3df &ParticleBuffer::getBoundingBox() const
 	if (!m_bounding_box_dirty)
 		return m_mesh_buffer->BoundingBox;
 
-	core::aabbox3df box;
+	core::aabbox3df box{{0, 0, 0}};
+	bool first = true;
 	for (u16 i = 0; i < m_count; i++) {
 		// check if this index is used
 		static_assert(quad_indices[1] != 0);
 		if (m_mesh_buffer->getIndices()[6 * i + 1] == 0)
 			continue;
 
-		for (u16 j = 0; j < 4; j++)
-			box.addInternalPoint(m_mesh_buffer->getPosition(i * 4 + j));
+		for (u16 j = 0; j < 4; j++) {
+			const auto pos = m_mesh_buffer->getPosition(i * 4 + j);
+			if (first)
+				box.reset(pos);
+			else
+				box.addInternalPoint(pos);
+			first = false;
+		}
 	}
 
 	m_mesh_buffer->BoundingBox = box;
@@ -906,6 +921,9 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	if (!getNodeParticleParams(n, f, p, &ref, texpos, texsize, &color))
 		return;
 
+	p.texture.blendmode = f.alpha == ALPHAMODE_BLEND
+			? BlendMode::alpha : BlendMode::clip;
+
 	p.expirationtime = myrand_range(0, 100) / 100.0f;
 
 	// Physics
@@ -940,39 +958,46 @@ void ParticleManager::reserveParticleSpace(size_t max_estimate)
 	m_particles.reserve(m_particles.size() + max_estimate);
 }
 
-video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTexRef &texture)
+static void setBlendMode(video::SMaterial &material, BlendMode blendmode)
 {
-	// translate blend modes to GL blend functions
 	video::E_BLEND_FACTOR bfsrc, bfdst;
 	video::E_BLEND_OPERATION blendop;
-	const auto blendmode = texture.tex ? texture.tex->blendmode :
-						   ParticleParamTypes::BlendMode::alpha;
-
 	switch (blendmode) {
-		case ParticleParamTypes::BlendMode::add:
+		case BlendMode::add:
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_DST_ALPHA;
 			blendop = video::EBO_ADD;
 		break;
 
-		case ParticleParamTypes::BlendMode::sub:
+		case BlendMode::sub:
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_DST_ALPHA;
 			blendop = video::EBO_REVSUBTRACT;
 		break;
 
-		case ParticleParamTypes::BlendMode::screen:
+		case BlendMode::screen:
 			bfsrc = video::EBF_ONE;
 			bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
 			blendop = video::EBO_ADD;
 		break;
 
-		default: // includes ParticleParamTypes::BlendMode::alpha
+		default: // includes BlendMode::alpha
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
 			blendop = video::EBO_ADD;
 		break;
 	}
+
+	material.MaterialTypeParam = video::pack_textureBlendFunc(
+			bfsrc, bfdst,
+			video::EMFN_MODULATE_1X,
+			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
+	material.BlendOperation = blendop;
+}
+
+video::SMaterial ParticleManager::getMaterialForParticle(const Particle *particle)
+{
+	const ClientParticleTexRef &texture = particle->getTextureRef();
 
 	video::SMaterial material;
 
@@ -984,17 +1009,18 @@ video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTex
 		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
 
-	// We don't have working transparency sorting. Disable Z-Write for
-	// correct results for clipped-alpha at least.
-	material.ZWriteEnable = video::EZW_OFF;
-
-	// enable alpha blending and set blend mode
-	material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-	material.MaterialTypeParam = video::pack_textureBlendFunc(
-			bfsrc, bfdst,
-			video::EMFN_MODULATE_1X,
-			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
-	material.BlendOperation = blendop;
+	const auto blendmode = particle->getBlendMode();
+	if (blendmode == BlendMode::clip) {
+		material.ZWriteEnable = video::EZW_ON;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		material.MaterialTypeParam = 0.5f;
+	} else {
+		// We don't have working transparency sorting. Disable Z-Write for
+		// correct results for clipped-alpha at least.
+		material.ZWriteEnable = video::EZW_OFF;
+		material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+		setBlendMode(material, blendmode);
+	}
 	material.setTexture(0, texture.ref);
 
 	return material;
@@ -1004,7 +1030,7 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 
-	auto material = getMaterialForParticle(toadd->getTextureRef());
+	auto material = getMaterialForParticle(toadd.get());
 
 	ParticleBuffer *found = nullptr;
 	// simple shortcut when multiple particles of the same type get added

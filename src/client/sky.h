@@ -17,6 +17,7 @@
 namespace irr::video
 {
 	class IVideoDriver;
+	class IImage;
 }
 
 class IShaderSource;
@@ -121,7 +122,7 @@ public:
 	}
 
 private:
-	aabb3f m_box;
+	aabb3f m_box{{0.0f, 0.0f, 0.0f}};
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
 	// How much sun & moon transition should affect horizon color
 	float m_horizon_blend()
@@ -200,10 +201,10 @@ private:
 	u64 m_seed = 0;
 	irr_ptr<scene::SMeshBuffer> m_stars;
 
-	video::ITexture *m_sun_texture;
-	video::ITexture *m_moon_texture;
-	video::ITexture *m_sun_tonemap;
-	video::ITexture *m_moon_tonemap;
+	video::ITexture *m_sun_texture = nullptr;
+	video::ITexture *m_moon_texture = nullptr;
+	video::IImage *m_sun_tonemap = nullptr;
+	video::IImage *m_moon_tonemap = nullptr;
 
 	void updateStars();
 

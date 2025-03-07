@@ -8,7 +8,6 @@
 #include "map.h"
 #include "hud.h"
 #include "gamedef.h"
-#include "serialization.h" // For SER_FMT_VER_INVALID
 #include "content/mods.h"
 #include "inventorymanager.h"
 #include "content/subgames.h"
@@ -24,6 +23,7 @@
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
+#include "script/common/c_types.h" // LuaError
 #include <atomic>
 #include <string>
 #include <list>
@@ -45,6 +45,7 @@ class BanManager;
 class Inventory;
 class ModChannelMgr;
 class RemotePlayer;
+class Player;
 class PlayerSAO;
 struct PlayerHPChangeReason;
 class IRollbackManager;
@@ -195,7 +196,9 @@ public:
 	void Receive(float min_time);
 	void yieldToOtherThreads(float dtime);
 
-	PlayerSAO* StageTwoClientInit(session_t peer_id);
+	// Full player initialization after they processed all static media
+	// This is a helper function for TOSERVER_CLIENT_READY
+	PlayerSAO *StageTwoClientInit(session_t peer_id);
 
 	/*
 	 * Command Handlers
@@ -343,8 +346,7 @@ public:
 	void setStepSettings(StepSettings spdata) { m_step_settings.store(spdata); }
 	StepSettings getStepSettings() { return m_step_settings.load(); }
 
-	inline void setAsyncFatalError(const std::string &error)
-			{ m_async_fatal_error.set(error); }
+	void setAsyncFatalError(const std::string &error);
 	inline void setAsyncFatalError(const LuaError &e)
 	{
 		setAsyncFatalError(std::string("Lua: ") + e.what());
@@ -408,6 +410,7 @@ public:
 	void SendMovePlayerRel(session_t peer_id, const v3f &added_pos);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
+	void SendCamera(session_t peer_id, Player *player);
 
 	void SendMinimapModes(session_t peer_id,
 			std::vector<MinimapMode> &modes,
@@ -545,6 +548,7 @@ private:
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void SendSetLighting(session_t peer_id, const Lighting &lighting);
+
 	void broadcastModChannelMessage(const std::string &channel,
 			const std::string &message, session_t from_peer);
 
@@ -627,7 +631,8 @@ private:
 
 		Call with env and con locked.
 	*/
-	PlayerSAO *emergePlayer(const char *name, session_t peer_id, u16 proto_version);
+	std::unique_ptr<PlayerSAO> emergePlayer(const char *name, session_t peer_id,
+		u16 proto_version);
 
 	/*
 		Variables

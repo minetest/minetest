@@ -98,34 +98,45 @@ void TestVoxelArea::test_addarea()
 void TestVoxelArea::test_pad()
 {
 	VoxelArea v1(v3s16(-1447, -9547, -875), v3s16(-147, 8854, 669));
+	auto old_extent = v1.getExtent();
 	v1.pad(v3s16(100, 200, 300));
 
 	UASSERT(v1.MinEdge == v3s16(-1547, -9747, -1175));
 	UASSERT(v1.MaxEdge == v3s16(-47, 9054, 969));
+	UASSERT(v1.getExtent() > old_extent);
 }
 
 void TestVoxelArea::test_extent()
 {
 	VoxelArea v1(v3s16(-1337, -547, -789), v3s16(-147, 447, 669));
-	UASSERT(v1.getExtent() == v3s16(1191, 995, 1459));
+	UASSERT(v1.getExtent() == v3s32(1191, 995, 1459));
 
 	VoxelArea v2(v3s16(32493, -32507, 32752), v3s16(32508, -32492, 32767));
-	UASSERT(v2.getExtent() == v3s16(16, 16, 16));
+	UASSERT(v2.getExtent() == v3s32(16, 16, 16));
 
+	// side length bigger than S16_MAX
+	VoxelArea v3({-20000, 12, 34}, {20000, 12, 34});
+	UASSERT(v3.getExtent() == v3s32(40001, 1, 1));
+
+	UASSERT(VoxelArea().hasEmptyExtent());
 	UASSERT(VoxelArea({2,3,4}, {1,2,3}).hasEmptyExtent());
-	UASSERT(VoxelArea({2,3,4}, {2,2,3}).hasEmptyExtent() == false);
+	UASSERT(VoxelArea({2,3,4}, {2,2,3}).hasEmptyExtent());
 }
 
 void TestVoxelArea::test_volume()
 {
 	VoxelArea v1(v3s16(-1337, -547, -789), v3s16(-147, 447, 669));
-	UASSERTEQ(s32, v1.getVolume(), 1728980655);
+	UASSERTEQ(u32, v1.getVolume(), 1728980655);
 
 	VoxelArea v2(v3s16(32493, -32507, 32752), v3s16(32508, -32492, 32767));
-	UASSERTEQ(s32, v2.getVolume(), 4096);
+	UASSERTEQ(u32, v2.getVolume(), 4096);
 
-	UASSERTEQ(s32, VoxelArea({2,3,4}, {1,2,3}).getVolume(), 0);
-	UASSERTEQ(s32, VoxelArea({2,3,4}, {2,2,3}).getVolume(), 0);
+	// volume bigger than S32_MAX
+	VoxelArea v3({1, 1, 1}, {1337, 1337, 1337});
+	UASSERTEQ(u32, v3.getVolume(), 2389979753U);
+
+	UASSERTEQ(u32, VoxelArea({2,3,4}, {1,2,3}).getVolume(), 0);
+	UASSERTEQ(u32, VoxelArea({2,3,4}, {2,2,3}).getVolume(), 0);
 }
 
 void TestVoxelArea::test_contains_voxelarea()
@@ -156,6 +167,12 @@ void TestVoxelArea::test_contains_point()
 	UASSERTEQ(bool, v1.contains(v3s16(-100, 100, 10000)), false);
 	UASSERTEQ(bool, v1.contains(v3s16(-100, 100, -10000)), false);
 	UASSERTEQ(bool, v1.contains(v3s16(10000, 100, 10)), false);
+
+	VoxelArea v2;
+	UASSERTEQ(bool, v2.contains(v3s16(-200, 10, 10)), false);
+	UASSERTEQ(bool, v2.contains(v3s16(0, 0, 0)), false);
+	UASSERTEQ(bool, v2.contains(v3s16(1, 1, 1)), false);
+	UASSERTEQ(bool, v2.contains(v3s16(-1, -1, -1)), false);
 }
 
 void TestVoxelArea::test_contains_i()
@@ -171,6 +188,12 @@ void TestVoxelArea::test_contains_i()
 	UASSERTEQ(bool, v2.contains(10), true);
 	UASSERTEQ(bool, v2.contains(0), true);
 	UASSERTEQ(bool, v2.contains(-1), false);
+
+	VoxelArea v3;
+	UASSERTEQ(bool, v3.contains(0), false);
+	UASSERTEQ(bool, v3.contains(-1), false);
+	UASSERTEQ(bool, v3.contains(1), false);
+	UASSERTEQ(bool, v3.contains(2), false);
 }
 
 void TestVoxelArea::test_equal()
@@ -235,6 +258,7 @@ void TestVoxelArea::test_intersect()
 	VoxelArea v3({11, 11, 11}, {11, 11, 11});
 	VoxelArea v4({-11, -2, -10}, {10, 2, 11});
 	UASSERT(v2.intersect(v1) == v2);
+	UASSERT(!v2.intersect(v1).hasEmptyExtent());
 	UASSERT(v1.intersect(v2) == v2.intersect(v1));
 	UASSERT(v1.intersect(v3).hasEmptyExtent());
 	UASSERT(v3.intersect(v1) == v1.intersect(v3));
@@ -388,7 +412,7 @@ void TestVoxelArea::test_index_v3s16_all_neg()
 
 void TestVoxelArea::test_add_x()
 {
-	v3s16 extent;
+	v3s32 extent;
 	u32 i = 4;
 	VoxelArea::add_x(extent, i, 8);
 	UASSERTEQ(u32, i, 12)
@@ -396,7 +420,7 @@ void TestVoxelArea::test_add_x()
 
 void TestVoxelArea::test_add_y()
 {
-	v3s16 extent(740, 16, 87);
+	v3s32 extent(740, 16, 87);
 	u32 i = 8;
 	VoxelArea::add_y(extent, i, 88);
 	UASSERTEQ(u32, i, 65128)
@@ -404,7 +428,7 @@ void TestVoxelArea::test_add_y()
 
 void TestVoxelArea::test_add_z()
 {
-	v3s16 extent(114, 80, 256);
+	v3s32 extent(114, 80, 256);
 	u32 i = 4;
 	VoxelArea::add_z(extent, i, 8);
 	UASSERTEQ(u32, i, 72964)
@@ -412,7 +436,7 @@ void TestVoxelArea::test_add_z()
 
 void TestVoxelArea::test_add_p()
 {
-	v3s16 extent(33, 14, 742);
+	v3s32 extent(33, 14, 742);
 	v3s16 a(15, 12, 369);
 	u32 i = 4;
 	VoxelArea::add_p(extent, i, a);

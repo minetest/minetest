@@ -26,13 +26,12 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.pointable = PointabilityType::POINTABLE;
 	// Start of default appearance, this should be overwritten by Lua
-	m_prop.visual = "upright_sprite";
+	m_prop.visual = OBJECTVISUAL_UPRIGHT_SPRITE;
 	m_prop.visual_size = v3f(1, 2, 1);
 	m_prop.textures.clear();
 	m_prop.textures.emplace_back("player.png");
 	m_prop.textures.emplace_back("player_back.png");
 	m_prop.colors.clear();
-	m_prop.colors.emplace_back(255, 255, 255, 255);
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.eye_height = 1.625f;
 	// End of default appearance
