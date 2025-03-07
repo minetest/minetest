@@ -253,6 +253,7 @@ core.register_node("testnodes:color4dir", {
 	groups = { dig_immediate = 3 },
 })
 
+<<<<<<< HEAD
 minetest.register_node("testnodes:colorflowingliquid_source", {
 	description = S("Color Flowingliquid Source Test Node").."\n"..
 		S("param2 = color + 4 unused bits"),
@@ -303,6 +304,9 @@ minetest.register_node("testnodes:colorflowingliquid_flowing", {
 
 core.register_node("testnodes:color4dir_nodebox", {
 
+=======
+core.register_node("testnodes:color4dir_nodebox", {
+>>>>>>> be3acc5c5 (update testnodes)
 	description = S("Color 4dir Nodebox Test Node").."\n"..
 		S("param2 = color + 4dir rotation (0..255)"),
 	tiles = {
@@ -368,3 +372,84 @@ core.register_node("testnodes:colorwallmounted_nodebox", {
 	groups = { dig_immediate = 3 },
 })
 
+<<<<<<< HEAD
+=======
+--[[minetest.register_node("testnodes:colorflowingliquid_source", {
+	description = S("Color Flowingliquid Source Test Node").."\n"..
+		S("param2 = color + 4 unused bits"),
+	paramtype2 = "color",
+	paramtype = "light",
+	liquidtype = "source",
+	liquid_alternative_source = "testnodes:colorflowingliquid_source",
+	liquid_alternative_flowing = "testnodes:colorflowingliquid_flowing",
+	liquid_renewable = true,
+	liquid_range = 8,
+	walkable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	drawtype = "liquid",
+	palette = "testnodes_palette_flowingliquid.png",
+	tiles = {"testnodes_node.png"},
+	special_tiles = {
+		{name = "testnodes_node.png", backface_culling = false},
+		{name = "testnodes_node.png", backface_culling = true},
+	},
+	post_effect_color = "#7d7d7d7d",
+	post_effect_use_node_color = true,
+})
+
+core.register_node("testnodes:colorflowingliquid_flowing", {
+	description = S("Color Flowingliquid Flowing Test Node").."\n"..
+		S("param2 = color + flowing liquid properties"),
+	paramtype2 = "colorflowingliquid",
+	paramtype = "light",
+	liquidtype = "flowing",
+	liquid_alternative_source = "testnodes:colorflowingliquid_source",
+	liquid_alternative_flowing = "testnodes:colorflowingliquid_flowing",
+	liquid_renewable = true,
+	liquid_range = 8,
+	walkable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	drawtype = "flowingliquid",
+	palette = "testnodes_palette_flowingliquid.png",
+	tiles = {"testnodes_node.png"},
+	special_tiles = {
+		{name = "testnodes_node.png", backface_culling = false},
+		{name = "testnodes_node.png", backface_culling = true},
+	},
+	post_effect_color = "#7d7d7d7d",
+	post_effect_use_node_color = true,
+})]]
+
+local function register_color_flowing_liquid(name, desc, liquidtype, paramtype2, drawtype)
+	minetest.register_node(name, {
+		description = S(desc).."\n"..
+			S("param2 = color " .. (liquidtype == "flowing" and "+ flowing liquid properties" or "+ 4 unused bits")),
+		paramtype2 = paramtype2,
+		paramtype = "light",
+		liquidtype = liquidtype,
+		liquid_alternative_source = "testnodes:colorflowingliquid_source",
+		liquid_alternative_flowing = "testnodes:colorflowingliquid_flowing",
+		liquid_renewable = true,
+		liquid_range = 8,
+		walkable = false,
+		buildable_to = true,
+		is_ground_content = false,
+		drawtype = drawtype,
+		palette = "testnodes_palette_flowingliquid.png",
+		tiles = {"testnodes_node.png"},
+		special_tiles = {
+			{name = "testnodes_node.png", backface_culling = false},
+			{name = "testnodes_node.png", backface_culling = true},
+		},
+		post_effect_color = "#7d7d7d7d",
+		post_effect_use_node_color = true,
+	})
+end
+
+register_color_flowing_liquid("testnodes:colorflowingliquid_source", "Color Flowingliquid Source Test Node", "source", "color", "liquid")
+register_color_flowing_liquid("testnodes:colorflowingliquid_flowing", "Color Flowingliquid Flowing Test Node", "flowing", "colorflowingliquid", "flowingliquid")
+
+
+>>>>>>> be3acc5c5 (update testnodes)
