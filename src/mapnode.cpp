@@ -491,9 +491,10 @@ s8 MapNode::setLevel(const NodeDefManager *nodemgr, s16 level)
 {
 	s8 rest = 0;
 	const ContentFeatures &f = nodemgr->get(*this);
-	if (f.param_type_2 == CPT2_FLOWINGLIQUID
-			|| f.param_type_2 == CPT2_COLORED_FLOWINGLIQUID
-			|| f.liquid_type == LIQUID_FLOWING
+	//if (f.param_type_2 == CPT2_FLOWINGLIQUID
+	//		|| f.param_type_2 == CPT2_COLORED_FLOWINGLIQUID
+	//		|| f.liquid_type == LIQUID_FLOWING
+	if (f.liquid_type == LIQUID_FLOWING
 			|| f.liquid_type == LIQUID_SOURCE) {
 		if (level <= 0) { // liquid can’t exist with zero level
 			setContent(CONTENT_AIR);
