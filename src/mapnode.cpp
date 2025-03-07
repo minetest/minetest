@@ -463,7 +463,8 @@ u8 MapNode::getMaxLevel(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	// todo: after update in all games leave only if (f.param_type_2 ==
-	if( f.liquid_type == LIQUID_FLOWING || f.param_type_2 == CPT2_FLOWINGLIQUID || f.param_type_2 == CPT2_COLORED_FLOWINGLIQUID)
+	//if( f.liquid_type == LIQUID_FLOWING || f.param_type_2 == CPT2_FLOWINGLIQUID || f.param_type_2 == CPT2_COLORED_FLOWINGLIQUID)
+	if( f.liquid_type == LIQUID_FLOWING)
 		return LIQUID_LEVEL_MAX;
 	if(f.leveled || f.param_type_2 == CPT2_LEVELED)
 		return f.leveled_max;
