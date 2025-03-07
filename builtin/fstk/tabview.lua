@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2014 sapier
 --
 --This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@ local function add_tab(self,tab)
 		event_handler = tab.cbf_events,
 		get_formspec = tab.cbf_formspec,
 		tabsize = tab.tabsize,
+		formspec_version = tab.formspec_version or 6,
 		on_change = tab.on_change,
 		tabdata = {},
 	}
@@ -58,26 +59,61 @@ end
 
 --------------------------------------------------------------------------------
 local function get_formspec(self)
-	local formspec = ""
-
-	if not self.hidden and (self.parent == nil or not self.parent.hidden) then
-
-		if self.parent == nil then
-			local tsize = self.tablist[self.last_tab_index].tabsize or
-					{width=self.width, height=self.height}
-			formspec = formspec ..
-					string.format("size[%f,%f,%s]",tsize.width,tsize.height,
-						dump(self.fixed_size))
-		end
-		formspec = formspec .. self:tab_header()
-		formspec = formspec ..
-				self.tablist[self.last_tab_index].get_formspec(
-					self,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata,
-					self.tablist[self.last_tab_index].tabsize
-					)
+	if self.hidden or (self.parent ~= nil and self.parent.hidden) then
+		return ""
 	end
+	local tab = self.tablist[self.last_tab_index]
+
+	local content, prepend = tab.get_formspec(self, tab.name, tab.tabdata, tab.tabsize)
+
+	local TOUCH_GUI = core.settings:get_bool("touch_gui")
+
+	local orig_tsize = tab.tabsize or { width = self.width, height = self.height }
+	local tsize = { width = orig_tsize.width, height = orig_tsize.height }
+	tsize.height = tsize.height
+		+ TABHEADER_H -- tabheader included in formspec size
+		+ (TOUCH_GUI and GAMEBAR_OFFSET_TOUCH or GAMEBAR_OFFSET_DESKTOP)
+		+ GAMEBAR_H -- gamebar included in formspec size
+
+	if self.parent == nil and not prepend then
+		prepend = string.format("size[%f,%f,%s]", tsize.width, tsize.height,
+				dump(self.fixed_size))
+
+		local anchor_pos = TABHEADER_H + orig_tsize.height / 2
+		prepend = prepend .. ("anchor[0.5,%f]"):format(anchor_pos / tsize.height)
+
+		if tab.formspec_version then
+			prepend = ("formspec_version[%d]"):format(tab.formspec_version) .. prepend
+		end
+	end
+
+	local end_button_size = 0.75
+
+	local tab_header_size = { width = tsize.width, height = TABHEADER_H }
+	if self.end_button then
+		tab_header_size.width = tab_header_size.width - end_button_size - 0.1
+	end
+
+	local formspec = (prepend or "")
+	formspec = formspec .. ("bgcolor[;neither]container[0,%f]box[0,0;%f,%f;#0000008C]"):format(
+			TABHEADER_H, orig_tsize.width, orig_tsize.height)
+	formspec = formspec .. self:tab_header(tab_header_size) .. content
+
+	if self.end_button then
+		formspec = formspec ..
+				("style[%s;noclip=true;border=false]"):format(self.end_button.name) ..
+				("tooltip[%s;%s]"):format(self.end_button.name, self.end_button.label) ..
+				("image_button[%f,%f;%f,%f;%s;%s;]"):format(
+						self.width - end_button_size,
+						(-tab_header_size.height - end_button_size) / 2,
+						end_button_size,
+						end_button_size,
+						core.formspec_escape(self.end_button.icon),
+						self.end_button.name)
+	end
+
+	formspec = formspec .. "container_end[]"
+
 	return formspec
 end
 
@@ -92,19 +128,18 @@ local function handle_buttons(self,fields)
 		return true
 	end
 
+	if self.end_button and fields[self.end_button.name] then
+		return self.end_button.on_click(self)
+	end
+
 	if self.glb_btn_handler ~= nil and
-		self.glb_btn_handler(self,fields) then
+		self.glb_btn_handler(self, fields) then
 		return true
 	end
 
-	if self.tablist[self.last_tab_index].button_handler ~= nil then
-		return
-			self.tablist[self.last_tab_index].button_handler(
-					self,
-					fields,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata
-					)
+	local tab = self.tablist[self.last_tab_index]
+	if tab.button_handler ~= nil then
+		return tab.button_handler(self, fields, tab.name, tab.tabdata)
 	end
 
 	return false
@@ -122,14 +157,9 @@ local function handle_events(self,event)
 		return true
 	end
 
-	if self.tablist[self.last_tab_index].evt_handler ~= nil then
-		return
-			self.tablist[self.last_tab_index].evt_handler(
-					self,
-					event,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata
-					)
+	local tab = self.tablist[self.last_tab_index]
+	if tab.evt_handler ~= nil then
+		return tab.evt_handler(self, event, tab.name, tab.tabdata)
 	end
 
 	return false
@@ -137,20 +167,23 @@ end
 
 
 --------------------------------------------------------------------------------
-local function tab_header(self)
-
+local function tab_header(self, size)
 	local toadd = ""
 
-	for i=1,#self.tablist,1 do
-
+	for i = 1, #self.tablist do
 		if toadd ~= "" then
 			toadd = toadd .. ","
 		end
 
-		toadd = toadd .. self.tablist[i].caption
+		local caption = self.tablist[i].caption
+		if type(caption) == "function" then
+			caption = caption(self)
+		end
+
+		toadd = toadd .. caption
 	end
-	return string.format("tabheader[%f,%f;%s;%s;%i;true;false]",
-			self.header_x, self.header_y, self.name, toadd, self.last_tab_index);
+	return string.format("tabheader[%f,%f;%f,%f;%s;%s;%i;true;false]",
+			self.header_x, self.header_y, size.width, size.height, self.name, toadd, self.last_tab_index)
 end
 
 --------------------------------------------------------------------------------
@@ -241,6 +274,8 @@ local tabview_metatable = {
 			function(self,handler) self.glb_evt_handler = handler end,
 	set_fixed_size =
 			function(self,state) self.fixed_size = state end,
+	set_end_button =
+			function(self, v) self.end_button = v end,
 	tab_header = tab_header,
 	handle_tab_buttons = handle_tab_buttons
 }

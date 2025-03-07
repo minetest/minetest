@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -23,9 +8,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <string>
 #include <vector>
-#include <iostream>
 
-#include "irrlichttypes_extrabloated.h"
+#include "guiScrollBar.h"
 
 class ISimpleTextureSource;
 
@@ -122,6 +106,12 @@ public:
 	// Autoscroll to make the selected row fully visible
 	void setSelected(s32 index);
 
+	//! Sets another skin independent font. If this is set to zero, the button uses the font of the skin.
+	virtual void setOverrideFont(gui::IGUIFont *font = nullptr);
+
+	//! Gets the override font (if any)
+	virtual gui::IGUIFont *getOverrideFont() const;
+
 	/* Get selection, scroll position and opened (sub)trees */
 	DynamicData getDynamicData() const;
 
@@ -159,6 +149,7 @@ protected:
 		video::SColor color;
 		bool color_defined;
 		s32 reported_column;
+		f32 image_scale; // only for "image" type columns
 	};
 
 	struct Row {
@@ -198,7 +189,7 @@ protected:
 	video::SColor m_highlight_text = video::SColor(255, 255, 255, 255);
 	s32 m_rowheight = 1;
 	gui::IGUIFont *m_font = nullptr;
-	gui::IGUIScrollBar *m_scrollbar = nullptr;
+	GUIScrollBar *m_scrollbar = nullptr;
 
 	// Allocated strings and images
 	std::vector<core::stringw> m_strings;

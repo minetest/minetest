@@ -1,74 +1,64 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "httpfetch.h"
 #include "porting.h" // for sleep_ms(), get_sysinfo(), secure_rand_fill_buf()
-#include <iostream>
-#include <sstream>
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <cerrno>
 #include <mutex>
-#include "network/socket.h" // for select()
 #include "threading/event.h"
 #include "config.h"
 #include "exceptions.h"
 #include "debug.h"
 #include "log.h"
+#include "porting.h"
 #include "util/container.h"
 #include "util/thread.h"
 #include "version.h"
 #include "settings.h"
 #include "noise.h"
 
-std::mutex g_httpfetch_mutex;
-std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
-PcgRandom g_callerid_randomness;
+static std::mutex g_httpfetch_mutex;
+static std::unordered_map<u64, std::queue<HTTPFetchResult>>
+	g_httpfetch_results;
+static PcgRandom g_callerid_randomness;
+
+static std::string default_user_agent()
+{
+	std::string ret(PROJECT_NAME_C "/");
+	ret.append(g_version_string).append(" (").append(porting::get_sysinfo()).append(")");
+	return ret;
+}
 
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(g_settings->getS32("curl_timeout")),
-	connect_timeout(timeout),
-	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
+	connect_timeout(10 * 1000),
+	useragent(default_user_agent())
 {
+	timeout = std::max(timeout, MIN_HTTPFETCH_TIMEOUT_INTERACTIVE);
 }
 
 
 static void httpfetch_deliver_result(const HTTPFetchResult &fetch_result)
 {
-	unsigned long caller = fetch_result.caller;
+	u64 caller = fetch_result.caller;
 	if (caller != HTTPFETCH_DISCARD) {
 		MutexAutoLock lock(g_httpfetch_mutex);
-		g_httpfetch_results[caller].push(fetch_result);
+		g_httpfetch_results[caller].emplace(fetch_result);
 	}
 }
 
-static void httpfetch_request_clear(unsigned long caller);
+static void httpfetch_request_clear(u64 caller);
 
-unsigned long httpfetch_caller_alloc()
+u64 httpfetch_caller_alloc()
 {
 	MutexAutoLock lock(g_httpfetch_mutex);
 
-	// Check each caller ID except HTTPFETCH_DISCARD
-	const unsigned long discard = HTTPFETCH_DISCARD;
-	for (unsigned long caller = discard + 1; caller != discard; ++caller) {
-		std::map<unsigned long, std::queue<HTTPFetchResult> >::iterator
-			it = g_httpfetch_results.find(caller);
+	// Check each caller ID except reserved ones
+	for (u64 caller = HTTPFETCH_CID_START; caller != 0; ++caller) {
+		auto it = g_httpfetch_results.find(caller);
 		if (it == g_httpfetch_results.end()) {
 			verbosestream << "httpfetch_caller_alloc: allocating "
 					<< caller << std::endl;
@@ -79,18 +69,17 @@ unsigned long httpfetch_caller_alloc()
 	}
 
 	FATAL_ERROR("httpfetch_caller_alloc: ran out of caller IDs");
-	return discard;
 }
 
-unsigned long httpfetch_caller_alloc_secure()
+u64 httpfetch_caller_alloc_secure()
 {
 	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Generate random caller IDs and make sure they're not
-	// already used or equal to HTTPFETCH_DISCARD
+	// already used or reserved.
 	// Give up after 100 tries to prevent infinite loop
-	u8 tries = 100;
-	unsigned long caller;
+	size_t tries = 100;
+	u64 caller;
 
 	do {
 		caller = (((u64) g_callerid_randomness.next()) << 32) |
@@ -100,7 +89,8 @@ unsigned long httpfetch_caller_alloc_secure()
 			FATAL_ERROR("httpfetch_caller_alloc_secure: ran out of caller IDs");
 			return HTTPFETCH_DISCARD;
 		}
-	} while (g_httpfetch_results.find(caller) != g_httpfetch_results.end());
+	} while (caller >= HTTPFETCH_CID_START &&
+		g_httpfetch_results.find(caller) != g_httpfetch_results.end());
 
 	verbosestream << "httpfetch_caller_alloc_secure: allocating "
 		<< caller << std::endl;
@@ -110,7 +100,7 @@ unsigned long httpfetch_caller_alloc_secure()
 	return caller;
 }
 
-void httpfetch_caller_free(unsigned long caller)
+void httpfetch_caller_free(u64 caller)
 {
 	verbosestream<<"httpfetch_caller_free: freeing "
 			<<caller<<std::endl;
@@ -122,13 +112,12 @@ void httpfetch_caller_free(unsigned long caller)
 	}
 }
 
-bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
+bool httpfetch_async_get(u64 caller, HTTPFetchResult &fetch_result)
 {
 	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Check that caller exists
-	std::map<unsigned long, std::queue<HTTPFetchResult> >::iterator
-		it = g_httpfetch_results.find(caller);
+	auto it = g_httpfetch_results.find(caller);
 	if (it == g_httpfetch_results.end())
 		return false;
 
@@ -138,7 +127,7 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 		return false;
 
 	// Pop first result
-	fetch_result = caller_results.front();
+	fetch_result = std::move(caller_results.front());
 	caller_results.pop();
 	return true;
 }
@@ -153,9 +142,9 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 static size_t httpfetch_writefunction(
 		char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	std::ostringstream *stream = (std::ostringstream*)userdata;
+	auto *dest = reinterpret_cast<std::string*>(userdata);
 	size_t count = size * nmemb;
-	stream->write(ptr, count);
+	dest->append(ptr, count);
 	return count;
 }
 
@@ -167,16 +156,15 @@ static size_t httpfetch_discardfunction(
 
 class CurlHandlePool
 {
-	std::list<CURL*> handles;
+	std::vector<CURL*> handles;
 
 public:
 	CurlHandlePool() = default;
 
 	~CurlHandlePool()
 	{
-		for (std::list<CURL*>::iterator it = handles.begin();
-				it != handles.end(); ++it) {
-			curl_easy_cleanup(*it);
+		for (CURL *it : handles) {
+			curl_easy_cleanup(it);
 		}
 	}
 	CURL * alloc()
@@ -184,13 +172,11 @@ public:
 		CURL *curl;
 		if (handles.empty()) {
 			curl = curl_easy_init();
-			if (curl == NULL) {
-				errorstream<<"curl_easy_init returned NULL"<<std::endl;
-			}
-		}
-		else {
-			curl = handles.front();
-			handles.pop_front();
+			if (!curl)
+				throw std::bad_alloc();
+		} else {
+			curl = handles.back();
+			handles.pop_back();
 		}
 		return curl;
 	}
@@ -215,48 +201,49 @@ public:
 
 private:
 	CurlHandlePool *pool;
-	CURL *curl;
-	CURLM *multi;
+	CURL *curl = nullptr;
+	CURLM *multi = nullptr;
 	HTTPFetchRequest request;
 	HTTPFetchResult result;
-	std::ostringstream oss;
-	struct curl_slist *http_header;
-	curl_httppost *post;
+	struct curl_slist *http_header = nullptr;
+	curl_mime *multipart_mime = nullptr;
 };
 
 
 HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		CurlHandlePool *pool_):
 	pool(pool_),
-	curl(NULL),
-	multi(NULL),
 	request(request_),
-	result(request_),
-	oss(std::ios::binary),
-	http_header(NULL),
-	post(NULL)
+	result(request_)
 {
 	curl = pool->alloc();
-	if (curl == NULL) {
+	if (!curl)
 		return;
-	}
 
 	// Set static cURL options
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 1);
-	curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip");
+	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 3);
+	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""); // = all supported ones
 
 	std::string bind_address = g_settings->get("bind_address");
 	if (!bind_address.empty()) {
 		curl_easy_setopt(curl, CURLOPT_INTERFACE, bind_address.c_str());
 	}
 
-#if LIBCURL_VERSION_NUM >= 0x071304
+	if (!g_settings->getBool("enable_ipv6")) {
+		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+	}
+
 	// Restrict protocols so that curl vulnerabilities in
 	// other protocols don't affect us.
-	// These settings were introduced in curl 7.19.4.
+#if LIBCURL_VERSION_NUM >= 0x075500
+	// These settings were introduced in curl 7.85.0.
+	const char *protocols = "HTTP,HTTPS,FTP,FTPS";
+	curl_easy_setopt(curl, CURLOPT_PROTOCOLS_STR, protocols);
+	curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS_STR, protocols);
+#elif LIBCURL_VERSION_NUM >= 0x071304
+	// These settings were introduced in curl 7.19.4, and later deprecated.
 	long protocols =
 		CURLPROTO_HTTP |
 		CURLPROTO_HTTPS |
@@ -278,57 +265,62 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, request.useragent.c_str());
 
 	// Set up a write callback that writes to the
-	// ostringstream ongoing->oss, unless the data
-	// is to be discarded
+	// result struct, unless the data is to be discarded
 	if (request.caller == HTTPFETCH_DISCARD) {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_discardfunction);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
 	} else {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_writefunction);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result.data);
 	}
 
-	// Set POST (or GET) data
-	if (request.post_fields.empty() && request.post_data.empty()) {
-		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-	} else if (request.multipart) {
-		curl_httppost *last = NULL;
-		for (StringMap::iterator it = request.post_fields.begin();
-				it != request.post_fields.end(); ++it) {
-			curl_formadd(&post, &last,
-					CURLFORM_NAMELENGTH, it->first.size(),
-					CURLFORM_PTRNAME, it->first.c_str(),
-					CURLFORM_CONTENTSLENGTH, it->second.size(),
-					CURLFORM_PTRCONTENTS, it->second.c_str(),
-					CURLFORM_END);
+	// Set data from fields or raw_data
+	if (request.multipart) {
+		multipart_mime = curl_mime_init(curl);
+		for (auto &it : request.fields) {
+			curl_mimepart *part = curl_mime_addpart(multipart_mime);
+			curl_mime_name(part, it.first.c_str());
+			curl_mime_data(part, it.second.c_str(), it.second.size());
 		}
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
-		// request.post_fields must now *never* be
-		// modified until CURLOPT_HTTPPOST is cleared
-	} else if (request.post_data.empty()) {
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
-		std::string str;
-		for (auto &post_field : request.post_fields) {
-			if (!str.empty())
-				str += "&";
-			str += urlencode(post_field.first);
-			str += "=";
-			str += urlencode(post_field.second);
-		}
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
-				str.size());
-		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS,
-				str.c_str());
+		curl_easy_setopt(curl, CURLOPT_MIMEPOST, multipart_mime);
 	} else {
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
-				request.post_data.size());
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS,
-				request.post_data.c_str());
-		// request.post_data must now *never* be
-		// modified until CURLOPT_POSTFIELDS is cleared
+		switch (request.method) {
+		case HTTP_GET:
+			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+			break;
+		case HTTP_POST:
+			curl_easy_setopt(curl, CURLOPT_POST, 1);
+			break;
+		case HTTP_PUT:
+			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+			break;
+		case HTTP_DELETE:
+			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+			break;
+		}
+		if (request.method != HTTP_GET) {
+			if (!request.raw_data.empty()) {
+				curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
+						request.raw_data.size());
+				curl_easy_setopt(curl, CURLOPT_POSTFIELDS,
+						request.raw_data.c_str());
+			} else if (!request.fields.empty()) {
+				std::string str;
+				for (auto &field : request.fields) {
+					if (!str.empty())
+						str += "&";
+					str += urlencode(field.first);
+					str += "=";
+					str += urlencode(field.second);
+				}
+				curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
+						str.size());
+				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS,
+						str.c_str());
+			}
+		}
 	}
 	// Set additional HTTP headers
 	for (const std::string &extra_header : request.extra_headers) {
@@ -367,7 +359,6 @@ const HTTPFetchResult * HTTPFetchOngoing::complete(CURLcode res)
 {
 	result.succeeded = (res == CURLE_OK);
 	result.timeout = (res == CURLE_OPERATION_TIMEDOUT);
-	result.data = oss.str();
 
 	// Get HTTP/FTP response code
 	result.response_code = 0;
@@ -378,10 +369,20 @@ const HTTPFetchResult * HTTPFetchOngoing::complete(CURLcode res)
 	}
 
 	if (res != CURLE_OK) {
-		errorstream << request.url << " not found ("
-			<< curl_easy_strerror(res) << ")"
-			<< " (response code " << result.response_code << ")"
+		errorstream << "HTTPFetch for " << request.url << " failed: "
+			<< curl_easy_strerror(res);
+		if (result.timeout)
+			errorstream << " (timeout = " << request.timeout << "ms)" << std::endl;
+		errorstream << std::endl;
+	} else if (result.response_code >= 400) {
+		errorstream << "HTTPFetch for " << request.url
+			<< " returned response code " << result.response_code
 			<< std::endl;
+		if (result.caller == HTTPFETCH_PRINT_ERR && !result.data.empty()) {
+			errorstream << "Response body:" << std::endl;
+			safe_print_string(errorstream, result.data);
+			errorstream << std::endl;
+		}
 	}
 
 	return &result;
@@ -401,21 +402,29 @@ HTTPFetchOngoing::~HTTPFetchOngoing()
 	// Set safe options for the reusable cURL handle
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 			httpfetch_discardfunction);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, nullptr);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
+	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, nullptr);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
 	if (http_header) {
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, NULL);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, nullptr);
 		curl_slist_free_all(http_header);
 	}
-	if (post) {
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
-		curl_formfree(post);
+	if (multipart_mime) {
+		curl_easy_setopt(curl, CURLOPT_MIMEPOST, nullptr);
+		curl_mime_free(multipart_mime);
 	}
 
 	// Store the cURL handle for reuse
 	pool->free(curl);
 }
 
+
+#if LIBCURL_VERSION_NUM >= 0x074200
+#define HAVE_CURL_MULTI_POLL
+#else
+#undef HAVE_CURL_MULTI_POLL
+#endif
 
 class CurlFetchThread : public Thread
 {
@@ -429,7 +438,7 @@ protected:
 	struct Request {
 		RequestType type;
 		HTTPFetchRequest fetch_request;
-		Event *event;
+		Event *event = nullptr;
 	};
 
 	CURLM *m_multi;
@@ -437,7 +446,7 @@ protected:
 	size_t m_parallel_limit;
 
 	// Variables exclusively used within thread
-	std::vector<HTTPFetchOngoing*> m_all_ongoing;
+	std::vector<std::unique_ptr<HTTPFetchOngoing>> m_all_ongoing;
 	std::list<HTTPFetchRequest> m_queued_fetches;
 
 public:
@@ -455,49 +464,43 @@ public:
 		Request req;
 		req.type = RT_FETCH;
 		req.fetch_request = fetch_request;
-		req.event = NULL;
-		m_requests.push_back(req);
+		m_requests.push_back(std::move(req));
 	}
 
-	void requestClear(unsigned long caller, Event *event)
+	void requestClear(u64 caller, Event *event)
 	{
 		Request req;
 		req.type = RT_CLEAR;
 		req.fetch_request.caller = caller;
 		req.event = event;
-		m_requests.push_back(req);
+		m_requests.push_back(std::move(req));
 	}
 
 	void requestWakeUp()
 	{
 		Request req;
 		req.type = RT_WAKEUP;
-		req.event = NULL;
-		m_requests.push_back(req);
+		m_requests.push_back(std::move(req));
 	}
 
 protected:
 	// Handle a request from some other thread
 	// E.g. new fetch; clear fetches for one caller; wake up
-	void processRequest(const Request &req)
+	void processRequest(Request &req)
 	{
 		if (req.type == RT_FETCH) {
 			// New fetch, queue until there are less
 			// than m_parallel_limit ongoing fetches
-			m_queued_fetches.push_back(req.fetch_request);
+			m_queued_fetches.push_back(std::move(req.fetch_request));
 
 			// see processQueued() for what happens next
 
-		}
-		else if (req.type == RT_CLEAR) {
-			unsigned long caller = req.fetch_request.caller;
+		} else if (req.type == RT_CLEAR) {
+			u64 caller = req.fetch_request.caller;
 
 			// Abort all ongoing fetches for the caller
-			for (std::vector<HTTPFetchOngoing*>::iterator
-					it = m_all_ongoing.begin();
-					it != m_all_ongoing.end();) {
+			for (auto it = m_all_ongoing.begin(); it != m_all_ongoing.end();) {
 				if ((*it)->getRequest().caller == caller) {
-					delete (*it);
 					it = m_all_ongoing.erase(it);
 				} else {
 					++it;
@@ -505,20 +508,18 @@ protected:
 			}
 
 			// Also abort all queued fetches for the caller
-			for (std::list<HTTPFetchRequest>::iterator
-					it = m_queued_fetches.begin();
+			for (auto it = m_queued_fetches.begin();
 					it != m_queued_fetches.end();) {
 				if ((*it).caller == caller)
 					it = m_queued_fetches.erase(it);
 				else
 					++it;
 			}
-		}
-		else if (req.type == RT_WAKEUP) {
+		} else if (req.type == RT_WAKEUP) {
 			// Wakeup: Nothing to do, thread is awake at this point
 		}
 
-		if (req.event != NULL)
+		if (req.event)
 			req.event->signal();
 	}
 
@@ -527,22 +528,19 @@ protected:
 	{
 		while (m_all_ongoing.size() < m_parallel_limit &&
 				!m_queued_fetches.empty()) {
-			HTTPFetchRequest request = m_queued_fetches.front();
+			HTTPFetchRequest request = std::move(m_queued_fetches.front());
 			m_queued_fetches.pop_front();
 
 			// Create ongoing fetch data and make a cURL handle
 			// Set cURL options based on HTTPFetchRequest
-			HTTPFetchOngoing *ongoing =
-				new HTTPFetchOngoing(request, pool);
+			auto ongoing = std::make_unique<HTTPFetchOngoing>(request, pool);
 
 			// Initiate the connection (curl_multi_add_handle)
 			CURLcode res = ongoing->start(m_multi);
 			if (res == CURLE_OK) {
-				m_all_ongoing.push_back(ongoing);
-			}
-			else {
+				m_all_ongoing.push_back(std::move(ongoing));
+			} else {
 				httpfetch_deliver_result(*ongoing->complete(res));
-				delete ongoing;
 			}
 		}
 	}
@@ -550,21 +548,16 @@ protected:
 	// Process CURLMsg (indicates completion of a fetch)
 	void processCurlMessage(CURLMsg *msg)
 	{
+		if (msg->msg != CURLMSG_DONE)
+			return;
 		// Determine which ongoing fetch the message pertains to
-		size_t i = 0;
-		bool found = false;
-		for (i = 0; i < m_all_ongoing.size(); ++i) {
-			if (m_all_ongoing[i]->getEasyHandle() == msg->easy_handle) {
-				found = true;
-				break;
-			}
-		}
-		if (msg->msg == CURLMSG_DONE && found) {
-			// m_all_ongoing[i] succeeded or failed.
-			HTTPFetchOngoing *ongoing = m_all_ongoing[i];
-			httpfetch_deliver_result(*ongoing->complete(msg->data.result));
-			delete ongoing;
-			m_all_ongoing.erase(m_all_ongoing.begin() + i);
+		for (auto it = m_all_ongoing.begin(); it != m_all_ongoing.end(); ++it) {
+			auto &ongoing = **it;
+			if (ongoing.getEasyHandle() != msg->easy_handle)
+				continue;
+			httpfetch_deliver_result(*ongoing.complete(msg->data.result));
+			m_all_ongoing.erase(it);
+			return;
 		}
 	}
 
@@ -583,62 +576,40 @@ protected:
 	// Wait until some IO happens, or timeout elapses
 	void waitForIO(long timeout)
 	{
-		fd_set read_fd_set;
-		fd_set write_fd_set;
-		fd_set exc_fd_set;
-		int max_fd;
-		long select_timeout = -1;
-		struct timeval select_tv;
 		CURLMcode mres;
 
-		FD_ZERO(&read_fd_set);
-		FD_ZERO(&write_fd_set);
-		FD_ZERO(&exc_fd_set);
+#ifdef HAVE_CURL_MULTI_POLL
+		mres = curl_multi_poll(m_multi, nullptr, 0, timeout, nullptr);
 
-		mres = curl_multi_fdset(m_multi, &read_fd_set,
-				&write_fd_set, &exc_fd_set, &max_fd);
 		if (mres != CURLM_OK) {
-			errorstream<<"curl_multi_fdset"
-				<<" returned error code "<<mres
-				<<std::endl;
-			select_timeout = 0;
+			errorstream << "curl_multi_poll returned error code "
+				<< mres << std::endl;
+		}
+#else
+		// If there's nothing to do curl_multi_wait() will immediately return
+		// so we have to emulate the sleeping.
+
+		fd_set dummy;
+		int max_fd;
+		mres = curl_multi_fdset(m_multi, &dummy, &dummy, &dummy, &max_fd);
+		if (mres != CURLM_OK) {
+			errorstream << "curl_multi_fdset returned error code "
+				<< mres << std::endl;
+			max_fd = -1;
 		}
 
-		mres = curl_multi_timeout(m_multi, &select_timeout);
-		if (mres != CURLM_OK) {
-			errorstream<<"curl_multi_timeout"
-				<<" returned error code "<<mres
-				<<std::endl;
-			select_timeout = 0;
-		}
+		if (max_fd == -1) { // curl has nothing to wait for
+			if (timeout > 0)
+				sleep_ms(timeout);
+		} else {
+			mres = curl_multi_wait(m_multi, nullptr, 0, timeout, nullptr);
 
-		// Limit timeout so new requests get through
-		if (select_timeout < 0 || select_timeout > timeout)
-			select_timeout = timeout;
-
-		if (select_timeout > 0) {
-			// in Winsock it is forbidden to pass three empty
-			// fd_sets to select(), so in that case use sleep_ms
-			if (max_fd != -1) {
-				select_tv.tv_sec = select_timeout / 1000;
-				select_tv.tv_usec = (select_timeout % 1000) * 1000;
-				int retval = select(max_fd + 1, &read_fd_set,
-						&write_fd_set, &exc_fd_set,
-						&select_tv);
-				if (retval == -1) {
-					#ifdef _WIN32
-					errorstream<<"select returned error code "
-						<<WSAGetLastError()<<std::endl;
-					#else
-					errorstream<<"select returned error code "
-						<<errno<<std::endl;
-					#endif
-				}
-			}
-			else {
-				sleep_ms(select_timeout);
+			if (mres != CURLM_OK) {
+				errorstream << "curl_multi_wait returned error code "
+					<< mres << std::endl;
 			}
 		}
+#endif
 	}
 
 	void *run()
@@ -646,10 +617,7 @@ protected:
 		CurlHandlePool pool;
 
 		m_multi = curl_multi_init();
-		if (m_multi == NULL) {
-			errorstream<<"curl_multi_init returned NULL\n";
-			return NULL;
-		}
+		FATAL_ERROR_IF(!m_multi, "curl_multi_init returned NULL");
 
 		FATAL_ERROR_IF(!m_all_ongoing.empty(), "Expected empty");
 
@@ -706,9 +674,6 @@ protected:
 		}
 
 		// Call curl_multi_remove_handle and cleanup easy handles
-		for (HTTPFetchOngoing *i : m_all_ongoing) {
-			delete i;
-		}
 		m_all_ongoing.clear();
 
 		m_queued_fetches.clear();
@@ -724,17 +689,19 @@ protected:
 	}
 };
 
-CurlFetchThread *g_httpfetch_thread = NULL;
+static std::unique_ptr<CurlFetchThread> g_httpfetch_thread;
 
 void httpfetch_init(int parallel_limit)
 {
+	FATAL_ERROR_IF(g_httpfetch_thread, "httpfetch_init called twice");
+
 	verbosestream<<"httpfetch_init: parallel_limit="<<parallel_limit
 			<<std::endl;
 
 	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
-	FATAL_ERROR_IF(res != CURLE_OK, "CURL init failed");
+	FATAL_ERROR_IF(res != CURLE_OK, "cURL init failed");
 
-	g_httpfetch_thread = new CurlFetchThread(parallel_limit);
+	g_httpfetch_thread = std::make_unique<CurlFetchThread>(parallel_limit);
 
 	// Initialize g_callerid_randomness for httpfetch_caller_alloc_secure
 	u64 randbuf[2];
@@ -746,10 +713,12 @@ void httpfetch_cleanup()
 {
 	verbosestream<<"httpfetch_cleanup: cleaning up"<<std::endl;
 
-	g_httpfetch_thread->stop();
-	g_httpfetch_thread->requestWakeUp();
-	g_httpfetch_thread->wait();
-	delete g_httpfetch_thread;
+	if (g_httpfetch_thread) {
+		g_httpfetch_thread->stop();
+		g_httpfetch_thread->requestWakeUp();
+		g_httpfetch_thread->wait();
+		g_httpfetch_thread.reset();
+	}
 
 	curl_global_cleanup();
 }
@@ -761,28 +730,38 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request)
 		g_httpfetch_thread->start();
 }
 
-static void httpfetch_request_clear(unsigned long caller)
+static void httpfetch_request_clear(u64 caller)
 {
 	if (g_httpfetch_thread->isRunning()) {
 		Event event;
 		g_httpfetch_thread->requestClear(caller, &event);
 		event.wait();
 	} else {
-		g_httpfetch_thread->requestClear(caller, NULL);
+		g_httpfetch_thread->requestClear(caller, nullptr);
 	}
 }
 
-void httpfetch_sync(const HTTPFetchRequest &fetch_request,
-		HTTPFetchResult &fetch_result)
+bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
+		HTTPFetchResult &fetch_result, long interval)
 {
-	// Create ongoing fetch data and make a cURL handle
-	// Set cURL options based on HTTPFetchRequest
-	CurlHandlePool pool;
-	HTTPFetchOngoing ongoing(fetch_request, &pool);
-	// Do the fetch (curl_easy_perform)
-	CURLcode res = ongoing.start(NULL);
-	// Update fetch result
-	fetch_result = *ongoing.complete(res);
+	if (const Thread *thread = Thread::getCurrentThread()) {
+		HTTPFetchRequest req = fetch_request;
+		req.caller = httpfetch_caller_alloc_secure();
+		httpfetch_async(req);
+		do {
+			if (thread->stopRequested()) {
+				httpfetch_caller_free(req.caller);
+				fetch_result = HTTPFetchResult(fetch_request);
+				return false;
+			}
+			sleep_ms(interval);
+		} while (!httpfetch_async_get(req.caller, fetch_result));
+		httpfetch_caller_free(req.caller);
+	} else {
+		throw ModError(std::string("You have tried to execute a synchronous HTTP request on the main thread! "
+				"This offense shall be punished. (").append(fetch_request.url).append(")"));
+	}
+	return true;
 }
 
 #else  // USE_CURL
@@ -810,17 +789,18 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request)
 	httpfetch_deliver_result(fetch_result);
 }
 
-static void httpfetch_request_clear(unsigned long caller)
+static void httpfetch_request_clear(u64 caller)
 {
 }
 
-void httpfetch_sync(const HTTPFetchRequest &fetch_request,
-		HTTPFetchResult &fetch_result)
+bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
+		HTTPFetchResult &fetch_result, long interval)
 {
-	errorstream << "httpfetch_sync: unable to fetch " << fetch_request.url
+	errorstream << "httpfetch_sync_interruptible: unable to fetch " << fetch_request.url
 			<< " because USE_CURL=0" << std::endl;
 
 	fetch_result = HTTPFetchResult(fetch_request); // sets succeeded = false etc.
+	return false;
 }
 
 #endif  // USE_CURL

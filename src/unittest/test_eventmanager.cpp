@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
 
 #include <unordered_map>
 #include "test.h"
@@ -82,7 +67,7 @@ void TestEventManager::testDeregister()
 void TestEventManager::testRealEvent()
 {
 	EventManager ev;
-	std::unique_ptr<EventManagerTest> emt(new EventManagerTest());
+	auto emt = std::make_unique<EventManagerTest>();
 	ev.reg(MtEvent::PLAYER_REGAIN_GROUND, EventManagerTest::eventTest, emt.get());
 
 	// Put event & verify event value
@@ -93,7 +78,7 @@ void TestEventManager::testRealEvent()
 void TestEventManager::testRealEventAfterDereg()
 {
 	EventManager ev;
-	std::unique_ptr<EventManagerTest> emt(new EventManagerTest());
+	auto emt = std::make_unique<EventManagerTest>();
 	ev.reg(MtEvent::PLAYER_REGAIN_GROUND, EventManagerTest::eventTest, emt.get());
 
 	// Put event & verify event value

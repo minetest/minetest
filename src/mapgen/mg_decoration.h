@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2015-2018 paramat
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+// Copyright (C) 2015-2018 paramat
 
 #pragma once
 
@@ -25,10 +10,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "nodedef.h"
 
+typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+
 class Mapgen;
 class MMVManip;
 class PcgRandom;
 class Schematic;
+namespace treegen { struct TreeDef; }
 
 enum DecorationType {
 	DECO_SIMPLE,
@@ -45,7 +33,7 @@ enum DecorationType {
 #define DECO_ALL_FLOORS      0x40
 #define DECO_ALL_CEILINGS    0x80
 
-extern FlagDesc flagdesc_deco[];
+extern const FlagDesc flagdesc_deco[];
 
 
 class Decoration : public ObjDef, public NodeResolver {
@@ -56,7 +44,7 @@ public:
 	virtual void resolveNodeNames();
 
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
-	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	void placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling) = 0;
 
@@ -71,13 +59,19 @@ public:
 	std::vector<content_t> c_spawnby;
 	s16 nspawnby;
 	s16 place_offset_y = 0;
+	s16 check_offset = -1;
 
-	std::unordered_set<u8> biomes;
+	std::unordered_set<biome_t> biomes;
+
+protected:
+	void cloneTo(Decoration *def) const;
 };
 
 
 class DecoSimple : public Decoration {
 public:
+	ObjDef *clone() const;
+
 	virtual void resolveNodeNames();
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
@@ -91,27 +85,36 @@ public:
 
 class DecoSchematic : public Decoration {
 public:
+	ObjDef *clone() const;
+
 	DecoSchematic() = default;
+	virtual ~DecoSchematic();
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
 	Rotation rotation;
 	Schematic *schematic = nullptr;
+	bool was_cloned = false; // see FIXME inside DecoSchemtic::clone()
 };
 
 
-/*
 class DecoLSystem : public Decoration {
 public:
-	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	ObjDef *clone() const;
+
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
+
+	// In case it gets cloned it uses the same tree def.
+	std::shared_ptr<treegen::TreeDef> tree_def;
 };
-*/
 
 
 class DecorationManager : public ObjDefManager {
 public:
 	DecorationManager(IGameDef *gamedef);
 	virtual ~DecorationManager() = default;
+
+	DecorationManager *clone() const;
 
 	const char *getObjectTitle() const
 	{
@@ -125,12 +128,15 @@ public:
 			return new DecoSimple;
 		case DECO_SCHEMATIC:
 			return new DecoSchematic;
-		//case DECO_LSYSTEM:
-		//	return new DecoLSystem;
+		case DECO_LSYSTEM:
+			return new DecoLSystem;
 		default:
 			return NULL;
 		}
 	}
 
-	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	void placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+
+private:
+	DecorationManager() {};
 };

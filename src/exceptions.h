@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -26,10 +11,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class BaseException : public std::exception
 {
 public:
-	BaseException(const std::string &s) throw(): m_s(s) {}
+	BaseException(const std::string &s) noexcept: m_s(s) {}
 	~BaseException() throw() = default;
 
-	virtual const char * what() const throw()
+	virtual const char * what() const noexcept
 	{
 		return m_s.c_str();
 	}
@@ -72,11 +57,6 @@ public:
 	SettingNotFoundException(const std::string &s): BaseException(s) {}
 };
 
-class InvalidFilenameException : public BaseException {
-public:
-	InvalidFilenameException(const std::string &s): BaseException(s) {}
-};
-
 class ItemNotFoundException : public BaseException {
 public:
 	ItemNotFoundException(const std::string &s): BaseException(s) {}
@@ -95,6 +75,11 @@ public:
 class PrngException : public BaseException {
 public:
 	PrngException(const std::string &s): BaseException(s) {}
+};
+
+class ShaderException : public BaseException {
+public:
+	ShaderException(const std::string &s): BaseException(s) {}
 };
 
 class ModError : public BaseException {

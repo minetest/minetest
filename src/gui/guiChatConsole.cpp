@@ -1,45 +1,38 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "guiChatConsole.h"
 #include "chat.h"
-#include "client.h"
+#include "client/client.h"
 #include "debug.h"
 #include "gettime.h"
-#include "keycode.h"
+#include "client/keycode.h"
 #include "settings.h"
 #include "porting.h"
-#include "client/tile.h"
-#include "fontengine.h"
+#include "client/texturesource.h"
+#include "client/fontengine.h"
 #include "log.h"
 #include "gettext.h"
+#include "irrlicht_changes/CGUITTFont.h"
+#include "util/string.h"
+#include "guiScrollBar.h"
 #include <string>
-
-#if USE_FREETYPE
-	#include "irrlicht_changes/CGUITTFont.h"
-#endif
 
 inline u32 clamp_u8(s32 value)
 {
 	return (u32) MYMIN(MYMAX(value, 0), 255);
 }
 
+inline bool isInCtrlKeys(const irr::EKEY_CODE& kc)
+{
+	return kc == KEY_LCONTROL || kc == KEY_RCONTROL || kc == KEY_CONTROL;
+}
+
+inline u32 getScrollbarSize(IGUIEnvironment* env)
+{
+	return env->getSkin()->getSize(gui::EGDS_SCROLLBAR_SIZE);
+}
 
 GUIChatConsole::GUIChatConsole(
 		gui::IGUIEnvironment* env,
@@ -68,45 +61,52 @@ GUIChatConsole::GUIChatConsole(
 		m_background_color.setGreen(255);
 		m_background_color.setBlue(255);
 	} else {
-		v3f console_color = g_settings->getV3F("console_color");
+		v3f console_color = g_settings->getV3F("console_color").value_or(v3f());
 		m_background_color.setRed(clamp_u8(myround(console_color.X)));
 		m_background_color.setGreen(clamp_u8(myround(console_color.Y)));
 		m_background_color.setBlue(clamp_u8(myround(console_color.Z)));
 	}
 
-	m_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+	const u16 chat_font_size = g_settings->getU16("chat_font_size");
+	m_font.grab(g_fontengine->getFont(chat_font_size != 0 ?
+		rangelim(chat_font_size, 5, 72) : FONT_SIZE_UNSPECIFIED, FM_Mono));
 
 	if (!m_font) {
-		errorstream << "GUIChatConsole: Unable to load mono font ";
+		errorstream << "GUIChatConsole: Unable to load mono font" << std::endl;
 	} else {
 		core::dimension2d<u32> dim = m_font->getDimension(L"M");
 		m_fontsize = v2u32(dim.Width, dim.Height);
-		m_font->grab();
 	}
 	m_fontsize.X = MYMAX(m_fontsize.X, 1);
 	m_fontsize.Y = MYMAX(m_fontsize.Y, 1);
 
 	// set default cursor options
 	setCursor(true, true, 2.0, 0.1);
-}
 
-GUIChatConsole::~GUIChatConsole()
-{
-	if (m_font)
-		m_font->drop();
+	// track ctrl keys for mouse event
+	m_is_ctrl_down = false;
+	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
+
+	m_scrollbar.reset(new GUIScrollBar(env, this, -1, core::rect<s32>(0, 0, 30, m_height), false, true, tsrc));
+	m_scrollbar->setSubElement(true);
+	m_scrollbar->setLargeStep(1);
+	m_scrollbar->setSmallStep(1);
 }
 
 void GUIChatConsole::openConsole(f32 scale)
 {
+	if (m_open)
+		return;
+
 	assert(scale > 0.0f && scale <= 1.0f);
 
 	m_open = true;
+
 	m_desired_height_fraction = scale;
 	m_desired_height = scale * m_screensize.Y;
 	reformatConsole();
 	m_animate_time_old = porting::getTimeMs();
 	IGUIElement::setVisible(true);
-	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
 }
 
@@ -125,6 +125,7 @@ void GUIChatConsole::closeConsole()
 	m_open = false;
 	Environment->removeFocus(this);
 	m_menumgr->deletingMenu(this);
+	m_scrollbar->setVisible(false);
 }
 
 void GUIChatConsole::closeConsoleAtOnce()
@@ -134,12 +135,7 @@ void GUIChatConsole::closeConsoleAtOnce()
 	recalculateConsolePosition();
 }
 
-f32 GUIChatConsole::getDesiredHeight() const
-{
-	return m_desired_height_fraction;
-}
-
-void GUIChatConsole::replaceAndAddToHistory(std::wstring line)
+void GUIChatConsole::replaceAndAddToHistory(const std::wstring &line)
 {
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	prompt.addToHistory(prompt.getLine());
@@ -189,6 +185,10 @@ void GUIChatConsole::draw()
 		m_screensize = screensize;
 		m_desired_height = m_desired_height_fraction * m_screensize.Y;
 		reformatConsole();
+	} else if (!m_scrollbar->getAbsolutePosition().isPointInside(core::vector2di(screensize.X, m_height))) {
+		// the height of the chat window is no longer the height of the scrollbar
+		// happens while opening/closing the window
+		updateScrollbar(true);
 	}
 
 	// Animation
@@ -213,6 +213,9 @@ void GUIChatConsole::reformatConsole()
 	s32 rows = m_desired_height / m_fontsize.Y - 1; // make room for the input prompt
 	if (cols <= 0 || rows <= 0)
 		cols = rows = 0;
+
+	updateScrollbar(true);
+
 	recalculateConsolePosition();
 	m_chat_backend->reformat(cols, rows);
 }
@@ -302,10 +305,17 @@ void GUIChatConsole::drawBackground()
 
 void GUIChatConsole::drawText()
 {
-	if (m_font == NULL)
+	if (!m_font)
 		return;
 
 	ChatBuffer& buf = m_chat_backend->getConsoleBuffer();
+
+	core::recti rect;
+	if (m_scrollbar->isVisible())
+		rect = core::rect<s32> (0, 0, m_screensize.X - getScrollbarSize(Environment), m_height);
+	else
+		rect = AbsoluteClippingRect;
+
 	for (u32 row = 0; row < buf.getRows(); ++row)
 	{
 		const ChatFormattedLine& line = buf.getFormattedLine(row);
@@ -322,29 +332,29 @@ void GUIChatConsole::drawText()
 			core::rect<s32> destrect(
 				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
 
-
-			#if USE_FREETYPE
-			// Draw colored text if FreeType is enabled
-				irr::gui::CGUITTFont *tmp = dynamic_cast<irr::gui::CGUITTFont *>(m_font);
+			if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
+				// Draw colored text if possible
+				auto *tmp = static_cast<gui::CGUITTFont*>(m_font.get());
 				tmp->draw(
 					fragment.text,
 					destrect,
-					video::SColor(255, 255, 255, 255),
 					false,
 					false,
-					&AbsoluteClippingRect);
-			#else
-			// Otherwise use standard text
+					&rect);
+			} else {
+				// Otherwise use standard text
 				m_font->draw(
 					fragment.text.c_str(),
 					destrect,
 					video::SColor(255, 255, 255, 255),
 					false,
 					false,
-					&AbsoluteClippingRect);
-			#endif
+					&rect);
+			}
 		}
 	}
+
+	updateScrollbar();
 }
 
 void GUIChatConsole::drawPrompt()
@@ -352,44 +362,48 @@ void GUIChatConsole::drawPrompt()
 	if (!m_font)
 		return;
 
-	u32 row = m_chat_backend->getConsoleBuffer().getRows();
-	s32 line_height = m_fontsize.Y;
-	s32 y = row * line_height + m_height - m_desired_height;
-
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
-	// FIXME Draw string at once, not character by character
-	// That will only work with the cursor once we have a monospace font
-	for (u32 i = 0; i < prompt_text.size(); ++i)
-	{
-		wchar_t ws[2] = {prompt_text[i], 0};
-		s32 x = (1 + i) * m_fontsize.X;
-		core::rect<s32> destrect(
-			x, y, x + m_fontsize.X, y + m_fontsize.Y);
-		m_font->draw(
-			ws,
-			destrect,
-			video::SColor(255, 255, 255, 255),
-			false,
-			false,
-			&AbsoluteClippingRect);
-	}
+	u32 font_width  = m_fontsize.X;
+	u32 font_height = m_fontsize.Y;
+
+	core::dimension2d<u32> size = m_font->getDimension(prompt_text.c_str());
+	u32 text_width = size.Width;
+	if (size.Height > font_height)
+		font_height = size.Height;
+
+	u32 row = m_chat_backend->getConsoleBuffer().getRows();
+	s32 y = row * font_height + m_height - m_desired_height;
+
+	core::rect<s32> destrect(
+		font_width, y, font_width + text_width, y + font_height);
+	m_font->draw(
+		prompt_text.c_str(),
+		destrect,
+		video::SColor(255, 255, 255, 255),
+		false,
+		false,
+		&AbsoluteClippingRect);
 
 	// Draw the cursor during on periods
 	if ((m_cursor_blink & 0x8000) != 0)
 	{
 		s32 cursor_pos = prompt.getVisibleCursorPosition();
+
 		if (cursor_pos >= 0)
 		{
+
+			u32 text_to_cursor_pos_width = m_font->getDimension(prompt_text.substr(0, cursor_pos).c_str()).Width;
+
 			s32 cursor_len = prompt.getCursorLength();
 			video::IVideoDriver* driver = Environment->getVideoDriver();
-			s32 x = (1 + cursor_pos) * m_fontsize.X;
+			s32 x = font_width + text_to_cursor_pos_width;
 			core::rect<s32> destrect(
 				x,
-				y + m_fontsize.Y * (1.0 - m_cursor_height),
-				x + m_fontsize.X * MYMAX(cursor_len, 1),
-				y + m_fontsize.Y * (cursor_len ? m_cursor_height+1 : 1)
+				y + font_height * (1.0 - m_cursor_height),
+				x + font_width * MYMAX(cursor_len, 1),
+				y + font_height * (cursor_len ? m_cursor_height+1 : 1)
 			);
 			video::SColor cursor_color(255,255,255,255);
 			driver->draw2DRectangle(
@@ -406,8 +420,21 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 
 	ChatPrompt &prompt = m_chat_backend->getPrompt();
 
-	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+	if (event.EventType == EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown)
 	{
+		// CTRL up
+		if (isInCtrlKeys(event.KeyInput.Key))
+		{
+			m_is_ctrl_down = false;
+		}
+	}
+	else if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+	{
+		// CTRL down
+		if (isInCtrlKeys(event.KeyInput.Key)) {
+			m_is_ctrl_down = true;
+		}
+
 		// Key input
 		if (KeyPress(event.KeyInput) == getKeySetting("keymap_console")) {
 			closeConsole();
@@ -418,6 +445,10 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			return true;
 		}
 
+		// Mac OS sends private use characters along with some keys.
+		bool has_char = event.KeyInput.Char && !event.KeyInput.Control &&
+				!iswcntrl(event.KeyInput.Char) && !IS_PRIVATE_USE_CHAR(event.KeyInput.Char);
+
 		if (event.KeyInput.Key == KEY_ESCAPE) {
 			closeConsoleAtOnce();
 			m_close_on_enter = false;
@@ -427,13 +458,17 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_PRIOR)
 		{
-			m_chat_backend->scrollPageUp();
-			return true;
+			if (!has_char) { // no num lock
+				m_chat_backend->scrollPageUp();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_NEXT)
 		{
-			m_chat_backend->scrollPageDown();
-			return true;
+			if (!has_char) { // no num lock
+				m_chat_backend->scrollPageDown();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_RETURN)
 		{
@@ -448,53 +483,66 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_UP)
 		{
-			// Up pressed
-			// Move back in history
-			prompt.historyPrev();
-			return true;
+			if (!has_char) { // no num lock
+				// Up pressed
+				// Move back in history
+				prompt.historyPrev();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_DOWN)
 		{
-			// Down pressed
-			// Move forward in history
-			prompt.historyNext();
-			return true;
+			if (!has_char) { // no num lock
+				// Down pressed
+				// Move forward in history
+				prompt.historyNext();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_LEFT || event.KeyInput.Key == KEY_RIGHT)
 		{
-			// Left/right pressed
-			// Move/select character/word to the left depending on control and shift keys
-			ChatPrompt::CursorOp op = event.KeyInput.Shift ?
-				ChatPrompt::CURSOROP_SELECT :
-				ChatPrompt::CURSOROP_MOVE;
-			ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
-				ChatPrompt::CURSOROP_DIR_LEFT :
-				ChatPrompt::CURSOROP_DIR_RIGHT;
-			ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(op, dir, scope);
-			return true;
+			if (!has_char) { // no num lock
+				// Left/right pressed
+				// Move/select character/word to the left depending on control and shift keys
+				ChatPrompt::CursorOp op = event.KeyInput.Shift ?
+					ChatPrompt::CURSOROP_SELECT :
+					ChatPrompt::CURSOROP_MOVE;
+				ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
+					ChatPrompt::CURSOROP_DIR_LEFT :
+					ChatPrompt::CURSOROP_DIR_RIGHT;
+				ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
+					ChatPrompt::CURSOROP_SCOPE_WORD :
+					ChatPrompt::CURSOROP_SCOPE_CHARACTER;
+				prompt.cursorOperation(op, dir, scope);
+
+				if (op == ChatPrompt::CURSOROP_SELECT)
+					updatePrimarySelection();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_HOME)
 		{
-			// Home pressed
-			// move to beginning of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
+			if (!has_char) { // no num lock
+				// Home pressed
+				// move to beginning of line
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_MOVE,
+					ChatPrompt::CURSOROP_DIR_LEFT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_END)
 		{
-			// End pressed
-			// move to end of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
+			if (!has_char) { // no num lock
+				// End pressed
+				// move to end of line
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_MOVE,
+					ChatPrompt::CURSOROP_DIR_RIGHT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_BACK)
 		{
@@ -512,17 +560,19 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_DELETE)
 		{
-			// Delete or Ctrl-Delete pressed
-			// delete character / word to the right
-			ChatPrompt::CursorOpScope scope =
-				event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				scope);
-			return true;
+			if (!has_char) { // no num lock
+				// Delete or Ctrl-Delete pressed
+				// delete character / word to the right
+				ChatPrompt::CursorOpScope scope =
+					event.KeyInput.Control ?
+					ChatPrompt::CURSOROP_SCOPE_WORD :
+					ChatPrompt::CURSOROP_SCOPE_CHARACTER;
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_RIGHT,
+					scope);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_KEY_A && event.KeyInput.Control)
 		{
@@ -532,6 +582,8 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_SELECT,
 				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
 				ChatPrompt::CURSOROP_SCOPE_LINE);
+
+			updatePrimarySelection();
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_C && event.KeyInput.Control)
@@ -541,7 +593,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			if (prompt.getCursorLength() <= 0)
 				return true;
 			std::wstring wselected = prompt.getSelection();
-			std::string selected(wselected.begin(), wselected.end());
+			std::string selected = wide_to_utf8(wselected);
 			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			return true;
 		}
@@ -560,8 +612,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			const c8 *text = os_operator->getTextFromClipboard();
 			if (!text)
 				return true;
-			std::basic_string<unsigned char> str((const unsigned char*)text);
-			prompt.input(std::wstring(str.begin(), str.end()));
+			prompt.input(utf8_to_wide(text));
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_X && event.KeyInput.Control)
@@ -571,7 +622,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			if (prompt.getCursorLength() <= 0)
 				return true;
 			std::wstring wselected = prompt.getSelection();
-			std::string selected(wselected.begin(), wselected.end());
+			std::string selected = wide_to_utf8(wselected);
 			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
@@ -603,28 +654,57 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Tab or Shift-Tab pressed
 			// Nick completion
-			std::list<std::string> names = m_client->getConnectedPlayerNames();
+			auto names = m_client->getConnectedPlayerNames();
 			bool backwards = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;
-		} else if (!iswcntrl(event.KeyInput.Char) && !event.KeyInput.Control) {
-			#if defined(__linux__) && (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9)
-				wchar_t wc = L'_';
-				mbtowc( &wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char) );
-				prompt.input(wc);
-			#else
-				prompt.input(event.KeyInput.Char);
-			#endif
+		}
+
+		if (has_char) {
+			prompt.input(event.KeyInput.Char);
 			return true;
 		}
 	}
 	else if(event.EventType == EET_MOUSE_INPUT_EVENT)
 	{
-		if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
+		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL)
 		{
 			s32 rows = myround(-3.0 * event.MouseInput.Wheel);
 			m_chat_backend->scroll(rows);
 		}
+		// Middle click or ctrl-click opens weblink, if enabled in config
+		// Otherwise, middle click pastes primary selection
+		else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN ||
+				(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN && m_is_ctrl_down))
+		{
+			// If clicked within console output region
+			if (event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 )
+			{
+				// Translate pixel position to font position
+				bool was_url_pressed = m_cache_clickable_chat_weblinks &&
+						weblinkClick(event.MouseInput.X / m_fontsize.X,
+								event.MouseInput.Y / m_fontsize.Y);
+
+				if (!was_url_pressed
+						&& event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN) {
+					// Paste primary selection at cursor pos
+					const c8 *text = Environment->getOSOperator()
+							->getTextFromPrimarySelection();
+					if (text)
+						prompt.input(utf8_to_wide(text));
+				}
+			}
+		}
+	}
+	else if(event.EventType == EET_STRING_INPUT_EVENT)
+	{
+		prompt.input(std::wstring(event.StringInput.Str->c_str()));
+		return true;
+	}
+	else if (event.EventType == EET_GUI_EVENT && event.GUIEvent.EventType == EGET_SCROLL_BAR_CHANGED &&
+			(void*) event.GUIEvent.Caller == (void*) m_scrollbar.get())
+	{
+		m_chat_backend->getConsoleBuffer().scrollAbsolute(m_scrollbar->getPos());
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
@@ -638,5 +718,90 @@ void GUIChatConsole::setVisible(bool visible)
 		m_height = 0;
 		recalculateConsolePosition();
 	}
+	m_scrollbar->setVisible(visible);
 }
 
+bool GUIChatConsole::weblinkClick(s32 col, s32 row)
+{
+	// Prevent accidental rapid clicking
+	static u64 s_oldtime = 0;
+	u64 newtime = porting::getTimeMs();
+
+	// 0.6 seconds should suffice
+	if (newtime - s_oldtime < 600)
+		return false;
+	s_oldtime = newtime;
+
+	const std::vector<ChatFormattedFragment> &
+			frags = m_chat_backend->getConsoleBuffer().getFormattedLine(row).fragments;
+	std::string weblink = ""; // from frag meta
+
+	// Identify targetted fragment, if exists
+	int indx = frags.size() - 1;
+	if (indx < 0) {
+		// Invalid row, frags is empty
+		return false;
+	}
+	// Scan from right to left, offset by 1 font space because left margin
+	while (indx > -1 && (u32)col < frags[indx].column + 1) {
+		--indx;
+	}
+	if (indx > -1) {
+		weblink = frags[indx].weblink;
+		// Note if(indx < 0) then a frag somehow had a corrupt column field
+	}
+
+	/*
+	// Debug help. Please keep this in case adjustments are made later.
+	std::string ws;
+	ws = "Middleclick: (" + std::to_string(col) + ',' + std::to_string(row) + ')' + " frags:";
+	// show all frags <position>(<length>) for the clicked row
+	for (u32 i=0;i<frags.size();++i) {
+		if (indx == int(i))
+			// tag the actual clicked frag
+			ws += '*';
+		ws += std::to_string(frags.at(i).column) + '('
+			+ std::to_string(frags.at(i).text.size()) + "),";
+	}
+	actionstream << ws << std::endl;
+	*/
+
+	// User notification
+	if (weblink.size() != 0) {
+		std::ostringstream msg;
+		msg << " * ";
+		if (porting::open_url(weblink)) {
+			msg << gettext("Opening webpage");
+		}
+		else {
+			msg << gettext("Failed to open webpage");
+		}
+		msg << " '" << weblink << "'";
+		m_chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
+		return true;
+	}
+
+	return false;
+}
+
+void GUIChatConsole::updatePrimarySelection()
+{
+	std::wstring wselected = m_chat_backend->getPrompt().getSelection();
+	std::string selected = wide_to_utf8(wselected);
+	Environment->getOSOperator()->copyToPrimarySelection(selected.c_str());
+}
+
+void GUIChatConsole::updateScrollbar(bool update_size)
+{
+	ChatBuffer &buf = m_chat_backend->getConsoleBuffer();
+	m_scrollbar->setMin(buf.getTopScrollPos());
+	m_scrollbar->setMax(buf.getBottomScrollPos());
+	m_scrollbar->setPos(buf.getScrollPosition());
+	m_scrollbar->setPageSize(m_fontsize.Y * buf.getLineCount());
+	m_scrollbar->setVisible(m_scrollbar->getMin() != m_scrollbar->getMax());
+
+	if (update_size) {
+		const core::rect<s32> rect (m_screensize.X - getScrollbarSize(Environment), 0, m_screensize.X, m_height);
+		m_scrollbar->setRelativePosition(rect);
+	}
+}

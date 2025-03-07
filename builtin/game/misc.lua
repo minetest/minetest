@@ -1,8 +1,18 @@
--- Minetest: builtin/misc.lua
+local S = core.get_translator("__builtin")
 
 --
 -- Misc. API functions
 --
+
+-- @spec core.kick_player(String, String, Boolean) :: Boolean
+function core.kick_player(player_name, reason, reconnect)
+	if type(reason) == "string" then
+		reason = "Kicked: " .. reason
+	else
+		reason = "Kicked."
+	end
+	return core.disconnect_player(player_name, reason, reconnect)
+end
 
 function core.check_player_privs(name, ...)
 	if core.is_player(name) then
@@ -40,20 +50,17 @@ function core.check_player_privs(name, ...)
 end
 
 
-local player_list = {}
-
-
 function core.send_join_message(player_name)
-	if not minetest.is_singleplayer() then
-		core.chat_send_all("*** " .. player_name .. " joined the game.")
+	if not core.is_singleplayer() then
+		core.chat_send_all("*** " .. S("@1 joined the game.", player_name))
 	end
 end
 
 
 function core.send_leave_message(player_name, timed_out)
-	local announcement = "*** " ..  player_name .. " left the game."
+	local announcement = "*** " .. S("@1 left the game.", player_name)
 	if timed_out then
-		announcement = announcement .. " (timed out)"
+		announcement = "*** " .. S("@1 left the game (timed out).", player_name)
 	end
 	core.chat_send_all(announcement)
 end
@@ -61,27 +68,20 @@ end
 
 core.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
-	player_list[player_name] = player
+	if not core.is_singleplayer() then
+		local status = core.get_server_status(player_name, true)
+		if status and status ~= "" then
+			core.chat_send_player(player_name, status)
+		end
+	end
 	core.send_join_message(player_name)
 end)
 
 
 core.register_on_leaveplayer(function(player, timed_out)
 	local player_name = player:get_player_name()
-	player_list[player_name] = nil
 	core.send_leave_message(player_name, timed_out)
 end)
-
-
-function core.get_connected_players()
-	local temp_table = {}
-	for index, value in pairs(player_list) do
-		if value:is_player_connected() then
-			temp_table[#temp_table + 1] = value
-		end
-	end
-	return temp_table
-end
 
 
 function core.is_player(player)
@@ -93,8 +93,8 @@ function core.is_player(player)
 end
 
 
-function minetest.player_exists(name)
-	return minetest.get_auth_handler().get_auth(name) ~= nil
+function core.player_exists(name)
+	return core.get_auth_handler().get_auth(name) ~= nil
 end
 
 
@@ -107,7 +107,7 @@ function core.get_player_radius_area(player_name, radius)
 		return nil
 	end
 
-	local p1 = player:getpos()
+	local p1 = player:get_pos()
 	local p2 = p1
 
 	if radius then
@@ -119,47 +119,7 @@ function core.get_player_radius_area(player_name, radius)
 end
 
 
-function core.hash_node_position(pos)
-	return (pos.z+32768)*65536*65536 + (pos.y+32768)*65536 + pos.x+32768
-end
-
-
-function core.get_position_from_hash(hash)
-	local pos = {}
-	pos.x = (hash%65536) - 32768
-	hash = math.floor(hash/65536)
-	pos.y = (hash%65536) - 32768
-	hash = math.floor(hash/65536)
-	pos.z = (hash%65536) - 32768
-	return pos
-end
-
-
-function core.get_item_group(name, group)
-	if not core.registered_items[name] or not
-			core.registered_items[name].groups[group] then
-		return 0
-	end
-	return core.registered_items[name].groups[group]
-end
-
-
-function core.get_node_group(name, group)
-	core.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
-	return core.get_item_group(name, group)
-end
-
-
-function core.setting_get_pos(name)
-	local value = core.settings:get(name)
-	if not value then
-		return nil
-	end
-	return core.string_to_pos(value)
-end
-
-
--- To be overriden by protection mods
+-- To be overridden by protection mods
 
 function core.is_protected(pos, name)
 	return false
@@ -172,6 +132,12 @@ function core.record_protection_violation(pos, name)
 	end
 end
 
+-- To be overridden by Creative mods
+
+local creative_mode_cache = core.settings:get_bool("creative_mode")
+function core.is_creative_enabled(name)
+	return creative_mode_cache
+end
 
 -- Checks if specified volume intersects a protected volume
 
@@ -209,7 +175,7 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			local y = math.floor(yf + 0.5)
 			for xf = minp.x, maxp.x, d.x do
 				local x = math.floor(xf + 0.5)
-				local pos = {x = x, y = y, z = z}
+				local pos = vector.new(x, y, z)
 				if core.is_protected(pos, player_name) then
 					return pos
 				end
@@ -235,7 +201,7 @@ end
 
 -- HTTP callback interface
 
-function core.http_add_fetch(httpenv)
+core.set_http_api_lua(function(httpenv)
 	httpenv.fetch = function(req, callback)
 		local handle = httpenv.fetch_async(req)
 
@@ -251,14 +217,107 @@ function core.http_add_fetch(httpenv)
 	end
 
 	return httpenv
-end
+end)
+core.set_http_api_lua = nil
 
 
 function core.close_formspec(player_name, formname)
-	return minetest.show_formspec(player_name, formname, "")
+	return core.show_formspec(player_name, formname, "")
 end
 
 
 function core.cancel_shutdown_requests()
 	core.request_shutdown("", false, -1)
+end
+
+
+-- Used for callback handling with dynamic_add_media
+core.dynamic_media_callbacks = {}
+
+
+-- Transfer of certain globals into seconday Lua environments
+-- see builtin/async/game.lua or builtin/emerge/register.lua for the unpacking
+
+local function copy_filtering(t, seen)
+	if type(t) == "userdata" or type(t) == "function" then
+		return true -- don't use nil so presence can still be detected
+	elseif type(t) ~= "table" then
+		return t
+	end
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		local k_ = seen[k] or copy_filtering(k, seen)
+		local v_ = seen[v] or copy_filtering(v, seen)
+		n[k_] = v_
+	end
+	return n
+end
+
+function core.get_globals_to_transfer()
+	local all = {
+		registered_items = copy_filtering(core.registered_items),
+		registered_aliases = core.registered_aliases,
+		registered_biomes = core.registered_biomes,
+		registered_ores = core.registered_ores,
+		registered_decorations = core.registered_decorations,
+
+		nodedef_default = copy_filtering(core.nodedef_default),
+		craftitemdef_default = copy_filtering(core.craftitemdef_default),
+		tooldef_default = copy_filtering(core.tooldef_default),
+		noneitemdef_default = copy_filtering(core.noneitemdef_default),
+	}
+	return all
+end
+
+do
+	local function valid_object_iterator(objects)
+		local i = 0
+		local function next_valid_object()
+			i = i + 1
+			local obj = objects[i]
+			if obj == nil then
+				return
+			end
+			if obj:is_valid() then
+				return obj
+			end
+			return next_valid_object()
+		end
+		return next_valid_object
+	end
+
+	function core.objects_inside_radius(center, radius)
+		return valid_object_iterator(core.get_objects_inside_radius(center, radius))
+	end
+
+	function core.objects_in_area(min_pos, max_pos)
+		return valid_object_iterator(core.get_objects_in_area(min_pos, max_pos))
+	end
+end
+
+--
+-- Helper for LBM execution, called from C++
+--
+
+function core.run_lbm(id, pos_list, dtime_s)
+	local lbm = core.registered_lbms[id]
+	assert(lbm, "Entry with given id not found in registered_lbms table")
+	core.set_last_run_mod(lbm.mod_origin)
+	if lbm.bulk_action then
+		return lbm.bulk_action(pos_list, dtime_s)
+	end
+	-- emulate non-bulk LBMs
+	local expect = core.get_node(pos_list[1]).name
+	-- engine guarantees that
+	-- 1) all nodes are the same content type
+	-- 2) the list is up-to-date when we're called
+	assert(expect ~= "ignore")
+	for _, pos in ipairs(pos_list) do
+		local n = core.get_node(pos)
+		if n.name == expect then -- might have been changed by previous call
+			lbm.action(pos, n, dtime_s)
+		end
+	end
 end

@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "chat.h"
 
@@ -25,6 +10,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #include "debug.h"
+#include "settings.h"
 #include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
@@ -35,10 +21,23 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 	if (m_scrollback == 0)
 		m_scrollback = 1;
 	m_empty_formatted_line.first = true;
+
+	m_cache_clickable_chat_weblinks = false;
+	// Curses mode cannot access g_settings here
+	if (g_settings != nullptr) {
+		m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
+		if (m_cache_clickable_chat_weblinks) {
+			std::string colorval = g_settings->get("chat_weblink_color");
+			parseColorString(colorval, m_cache_chat_weblink_color, false, 255);
+			m_cache_chat_weblink_color.setAlpha(255);
+		}
+	}
 }
 
 void ChatBuffer::addLine(const std::wstring &name, const std::wstring &text)
 {
+	m_lines_modified = true;
+
 	ChatLine line(name, text);
 	m_unformatted.push_back(line);
 
@@ -61,6 +60,7 @@ void ChatBuffer::clear()
 	m_unformatted.clear();
 	m_formatted.clear();
 	m_scroll = 0;
+	m_lines_modified = true;
 }
 
 u32 ChatBuffer::getLineCount() const
@@ -88,14 +88,11 @@ void ChatBuffer::deleteOldest(u32 count)
 	u32 del_unformatted = 0;
 	u32 del_formatted = 0;
 
-	while (count > 0 && del_unformatted < m_unformatted.size())
-	{
+	while (count > 0 && del_unformatted < m_unformatted.size()) {
 		++del_unformatted;
 
 		// keep m_formatted in sync
-		if (del_formatted < m_formatted.size())
-		{
-
+		if (del_formatted < m_formatted.size()) {
 			sanity_check(m_formatted[del_formatted].first);
 			++del_formatted;
 			while (del_formatted < m_formatted.size() &&
@@ -109,6 +106,9 @@ void ChatBuffer::deleteOldest(u32 count)
 	m_unformatted.erase(m_unformatted.begin(), m_unformatted.begin() + del_unformatted);
 	m_formatted.erase(m_formatted.begin(), m_formatted.begin() + del_formatted);
 
+	if (del_unformatted > 0)
+		m_lines_modified = true;
+
 	if (at_bottom)
 		m_scroll = getBottomScrollPos();
 	else
@@ -121,11 +121,6 @@ void ChatBuffer::deleteByAge(f32 maxAge)
 	while (count < m_unformatted.size() && m_unformatted[count].age > maxAge)
 		++count;
 	deleteOldest(count);
-}
-
-u32 ChatBuffer::getColumns() const
-{
-	return m_cols;
 }
 
 u32 ChatBuffer::getRows() const
@@ -220,13 +215,8 @@ void ChatBuffer::scrollBottom()
 	m_scroll = getBottomScrollPos();
 }
 
-void ChatBuffer::scrollTop()
-{
-	m_scroll = getTopScrollPos();
-}
-
-u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
-		std::vector<ChatFormattedLine>& destination) const
+u32 ChatBuffer::formatChatLine(const ChatLine &line, u32 cols,
+		std::vector<ChatFormattedLine> &destination) const
 {
 	u32 num_added = 0;
 	std::vector<ChatFormattedFragment> next_frags;
@@ -265,81 +255,157 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		// Very long names
 		hanging_indentation = 2;
 	}
-	//EnrichedString line_text(line.text);
+	// If there are no columns remaining after the indentation (window is very
+	// narrow), we can't write anything
+	if (hanging_indentation >= cols)
+		return 0;
 
 	next_line.first = true;
-	bool text_processing = false;
+	// Set/use forced newline after the last frag in each line
+	bool mark_newline = false;
 
 	// Produce fragments and layout them into lines
-	while (!next_frags.empty() || in_pos < line.text.size())
-	{
+	while (!next_frags.empty() || in_pos < line.text.size()) {
+		mark_newline = false; // now using this to USE line-end frag
+
 		// Layout fragments into lines
-		while (!next_frags.empty())
-		{
+		while (!next_frags.empty()) {
 			ChatFormattedFragment& frag = next_frags[0];
-			if (frag.text.size() <= cols - out_column)
-			{
+
+			// Force newline after this frag, if marked
+			if (frag.column == INT_MAX)
+				mark_newline = true;
+
+			if (frag.text.size() <= cols - out_column) {
 				// Fragment fits into current line
 				frag.column = out_column;
 				next_line.fragments.push_back(frag);
 				out_column += frag.text.size();
 				next_frags.erase(next_frags.begin());
-			}
-			else
-			{
+			} else {
 				// Fragment does not fit into current line
 				// So split it up
 				temp_frag.text = frag.text.substr(0, cols - out_column);
 				temp_frag.column = out_column;
-				//temp_frag.bold = frag.bold;
+				temp_frag.weblink = frag.weblink;
+
 				next_line.fragments.push_back(temp_frag);
 				frag.text = frag.text.substr(cols - out_column);
+				frag.column = 0;
 				out_column = cols;
 			}
-			if (out_column == cols || text_processing)
-			{
+
+			if (out_column == cols || mark_newline) {
 				// End the current line
 				destination.push_back(next_line);
 				num_added++;
 				next_line.fragments.clear();
 				next_line.first = false;
 
-				out_column = text_processing ? hanging_indentation : 0;
+				out_column = hanging_indentation;
+				mark_newline = false;
 			}
 		}
 
-		// Produce fragment
-		if (in_pos < line.text.size())
-		{
-			u32 remaining_in_input = line.text.size() - in_pos;
-			u32 remaining_in_output = cols - out_column;
+		// Produce fragment(s) for next formatted line
+		if (!(in_pos < line.text.size()))
+			continue;
 
+		const std::wstring &linestring = line.text.getString();
+		u32 remaining_in_output = cols - out_column;
+		size_t http_pos = std::wstring::npos;
+		mark_newline = false;  // now using this to SET line-end frag
+
+		// Construct all frags for next output line
+		while (!mark_newline) {
 			// Determine a fragment length <= the minimum of
 			// remaining_in_{in,out}put. Try to end the fragment
 			// on a word boundary.
-			u32 frag_length = 1, space_pos = 0;
+			u32 frag_length = 0, space_pos = 0;
+			u32 remaining_in_input = line.text.size() - in_pos;
+
+			if (m_cache_clickable_chat_weblinks) {
+				// Note: unsigned(-1) on fail
+				http_pos = linestring.find(L"https://", in_pos);
+				if (http_pos == std::wstring::npos)
+					http_pos = linestring.find(L"http://", in_pos);
+				if (http_pos != std::wstring::npos)
+					http_pos -= in_pos;
+			}
+
 			while (frag_length < remaining_in_input &&
-					frag_length < remaining_in_output)
-			{
-				if (iswspace(line.text.getString()[in_pos + frag_length]))
+					frag_length < remaining_in_output) {
+				if (iswspace(linestring[in_pos + frag_length]))
 					space_pos = frag_length;
 				++frag_length;
 			}
+
+			if (http_pos >= remaining_in_output) {
+				// Http not in range, grab until space or EOL, halt as normal.
+				// Note this works because (http_pos = npos) is unsigned(-1)
+
+				mark_newline = true;
+			} else if (http_pos == 0) {
+				// At http, grab ALL until FIRST whitespace or end marker. loop.
+				// If at end of string, next loop will be empty string to mark end of weblink.
+
+				frag_length = 6;  // Frag is at least "http://"
+
+				// Chars to mark end of weblink
+				// TODO? replace this with a safer (slower) regex whitelist?
+				static const std::wstring delim_chars = L"\'\";";
+				wchar_t tempchar = linestring[in_pos+frag_length];
+				while (frag_length < remaining_in_input &&
+						!iswspace(tempchar) &&
+						delim_chars.find(tempchar) == std::wstring::npos) {
+					++frag_length;
+					tempchar = linestring[in_pos+frag_length];
+				}
+
+				// Remove tailing punctuation characters
+				static const std::wstring tailing_chars = L",.";
+				tempchar = linestring[in_pos+frag_length - 1];
+				if (tailing_chars.find(tempchar) != std::wstring::npos) {
+					frag_length--;
+				}
+
+				space_pos = frag_length - 1;
+				// This frag may need to be force-split. That's ok, urls aren't "words"
+				if (frag_length >= remaining_in_output) {
+					mark_newline = true;
+				}
+			} else {
+				// Http in range, grab until http, loop
+
+				space_pos = http_pos - 1;
+				frag_length = http_pos;
+			}
+
+			// Include trailing space in current frag
 			if (space_pos != 0 && frag_length < remaining_in_input)
 				frag_length = space_pos + 1;
 
 			temp_frag.text = line.text.substr(in_pos, frag_length);
-			temp_frag.column = 0;
-			//temp_frag.bold = 0;
+			// A hack so this frag remembers mark_newline for the layout phase
+			temp_frag.column = mark_newline ? INT_MAX : 0;
+
+			if (http_pos == 0) {
+				// Discard color stuff from the source frag
+				temp_frag.text = EnrichedString(temp_frag.text.getString());
+				temp_frag.text.setDefaultColor(m_cache_chat_weblink_color);
+				// Set weblink in the frag meta
+				temp_frag.weblink = wide_to_utf8(temp_frag.text.getString());
+			} else {
+				temp_frag.weblink.clear();
+			}
 			next_frags.push_back(temp_frag);
 			in_pos += frag_length;
-			text_processing = true;
+			remaining_in_output -= std::min(frag_length, remaining_in_output);
 		}
 	}
 
 	// End the last line
-	if (num_added == 0 || !next_line.fragments.empty())
-	{
+	if (num_added == 0 || !next_line.fragments.empty()) {
 		destination.push_back(next_line);
 		num_added++;
 	}
@@ -384,9 +450,36 @@ ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit):
 {
 }
 
+const std::wstring &ChatPrompt::getLineRef() const
+{
+	return m_history_index >= m_history.size() ? m_line : m_history[m_history_index].line;
+}
+
+std::wstring &ChatPrompt::makeLineRef()
+{
+	if (m_history_index >= m_history.size()) {
+		return m_line;
+	} else {
+		if (!m_history[m_history_index].saved)
+			m_history[m_history_index].saved = m_history[m_history_index].line;
+		return m_history[m_history_index].line;
+	}
+}
+
+bool ChatPrompt::HistoryEntry::operator==(const ChatPrompt::HistoryEntry &other)
+{
+	if (line != other.line)
+		return false;
+	if (saved == other.saved)
+		return true;
+	if ((!saved || saved == line) && (!other.saved || other.saved == other.line))
+		return true;
+	return false;
+}
+
 void ChatPrompt::input(wchar_t ch)
 {
-	m_line.insert(m_cursor, 1, ch);
+	makeLineRef().insert(m_cursor, 1, ch);
 	m_cursor++;
 	clampView();
 	m_nick_completion_start = 0;
@@ -395,7 +488,7 @@ void ChatPrompt::input(wchar_t ch)
 
 void ChatPrompt::input(const std::wstring &str)
 {
-	m_line.insert(m_cursor, str);
+	makeLineRef().insert(m_cursor, str);
 	m_cursor += str.size();
 	clampView();
 	m_nick_completion_start = 0;
@@ -404,22 +497,38 @@ void ChatPrompt::input(const std::wstring &str)
 
 void ChatPrompt::addToHistory(const std::wstring &line)
 {
+	std::wstring old_line = getLine();
+	if (m_history_index < m_history.size()) {
+		auto entry = m_history.begin() + m_history_index;
+		if (entry->saved && entry->line == line) {
+			entry->line = *entry->saved;
+			entry->saved = std::nullopt;
+			// Remove potential duplicates
+			auto dup_before = std::find(m_history.begin(), entry, *entry);
+			if (dup_before != entry)
+				m_history.erase(dup_before);
+			else if (std::find(entry + 1, m_history.end(), *entry) != m_history.end())
+				m_history.erase(entry);
+		}
+	}
 	if (!line.empty() &&
-			(m_history.size() == 0 || m_history.back() != line)) {
+			(m_history.size() == 0 || m_history.back().line != line)) {
+		HistoryEntry entry(line);
 		// Remove all duplicates
-		m_history.erase(std::remove(m_history.begin(), m_history.end(),
-			line), m_history.end());
+		m_history.erase(std::remove(m_history.begin(), m_history.end(), entry),
+				m_history.end());
 		// Push unique line
-		m_history.push_back(line);
+		m_history.push_back(std::move(entry));
 	}
 	if (m_history.size() > m_history_limit)
 		m_history.erase(m_history.begin());
 	m_history_index = m_history.size();
+	m_line = std::move(old_line);
 }
 
 void ChatPrompt::clear()
 {
-	m_line.clear();
+	makeLineRef().clear();
 	m_view = 0;
 	m_cursor = 0;
 	m_nick_completion_start = 0;
@@ -428,8 +537,8 @@ void ChatPrompt::clear()
 
 std::wstring ChatPrompt::replace(const std::wstring &line)
 {
-	std::wstring old_line = m_line;
-	m_line =  line;
+	std::wstring old_line = getLine();
+	makeLineRef() = line;
 	m_view = m_cursor = line.size();
 	clampView();
 	m_nick_completion_start = 0;
@@ -439,29 +548,29 @@ std::wstring ChatPrompt::replace(const std::wstring &line)
 
 void ChatPrompt::historyPrev()
 {
-	if (m_history_index != 0)
-	{
+	if (m_history_index != 0) {
 		--m_history_index;
-		replace(m_history[m_history_index]);
+		m_view = m_cursor = getLineRef().size();
+		clampView();
+		m_nick_completion_start = 0;
+		m_nick_completion_end = 0;
 	}
 }
 
 void ChatPrompt::historyNext()
 {
-	if (m_history_index + 1 >= m_history.size())
-	{
-		m_history_index = m_history.size();
-		replace(L"");
-	}
-	else
-	{
-		++m_history_index;
-		replace(m_history[m_history_index]);
+	if (m_history_index < m_history.size()) {
+		m_history_index++;
+		m_view = m_cursor = getLineRef().size();
+		clampView();
+		m_nick_completion_start = 0;
+		m_nick_completion_end = 0;
 	}
 }
 
-void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwards)
+void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwards)
 {
+	const std::wstring_view line(getLineRef());
 	// Two cases:
 	// (a) m_nick_completion_start == m_nick_completion_end == 0
 	//     Then no previous nick completion is active.
@@ -478,20 +587,20 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 	{
 		// no previous nick completion is active
 		prefix_start = prefix_end = m_cursor;
-		while (prefix_start > 0 && !iswspace(m_line[prefix_start-1]))
+		while (prefix_start > 0 && !iswspace(line[prefix_start-1]))
 			--prefix_start;
-		while (prefix_end < m_line.size() && !iswspace(m_line[prefix_end]))
+		while (prefix_end < line.size() && !iswspace(line[prefix_end]))
 			++prefix_end;
 		if (prefix_start == prefix_end)
 			return;
 	}
-	std::wstring prefix = m_line.substr(prefix_start, prefix_end - prefix_start);
+	auto prefix = line.substr(prefix_start, prefix_end - prefix_start);
 
 	// find all names that start with the selected prefix
 	std::vector<std::wstring> completions;
 	for (const std::string &name : names) {
-		if (str_starts_with(narrow_to_wide(name), prefix, true)) {
-			std::wstring completion = narrow_to_wide(name);
+		std::wstring completion = utf8_to_wide(name);
+		if (str_starts_with(completion, prefix, true)) {
 			if (prefix_start == 0)
 				completion += L": ";
 			completions.push_back(completion);
@@ -506,9 +615,9 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 	u32 replacement_index = 0;
 	if (!initial)
 	{
-		while (word_end < m_line.size() && !iswspace(m_line[word_end]))
+		while (word_end < line.size() && !iswspace(line[word_end]))
 			++word_end;
-		std::wstring word = m_line.substr(prefix_start, word_end - prefix_start);
+		auto word = line.substr(prefix_start, word_end - prefix_start);
 
 		// cycle through completions
 		for (u32 i = 0; i < completions.size(); ++i)
@@ -524,13 +633,13 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 			}
 		}
 	}
-	std::wstring replacement = completions[replacement_index];
-	if (word_end < m_line.size() && iswspace(m_line[word_end]))
+	const auto &replacement = completions[replacement_index];
+	if (word_end < line.size() && iswspace(line[word_end]))
 		++word_end;
 
 	// replace existing word with replacement word,
 	// place the cursor at the end and record the completion prefix
-	m_line.replace(prefix_start, word_end - prefix_start, replacement);
+	makeLineRef().replace(prefix_start, word_end - prefix_start, replacement);
 	m_cursor = prefix_start + replacement.size();
 	clampView();
 	m_nick_completion_start = prefix_start;
@@ -546,7 +655,7 @@ void ChatPrompt::reformat(u32 cols)
 	}
 	else
 	{
-		s32 length = m_line.size();
+		s32 length = getLineRef().size();
 		bool was_at_end = (m_view + m_cols >= length + 1);
 		m_cols = cols - m_prompt.size();
 		if (was_at_end)
@@ -557,7 +666,11 @@ void ChatPrompt::reformat(u32 cols)
 
 std::wstring ChatPrompt::getVisiblePortion() const
 {
-	return m_prompt + m_line.substr(m_view, m_cols);
+	const std::wstring &line_ref = getLineRef();
+	if ((size_t)m_view >= line_ref.size())
+		return m_prompt;
+	else
+		return m_prompt + line_ref.substr(m_view, m_cols);
 }
 
 s32 ChatPrompt::getVisibleCursorPosition() const
@@ -570,7 +683,8 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 	s32 old_cursor = m_cursor;
 	s32 new_cursor = m_cursor;
 
-	s32 length = m_line.size();
+	const std::wstring &line = getLineRef();
+	s32 length = line.size();
 	s32 increment = (dir == CURSOROP_DIR_RIGHT) ? 1 : -1;
 
 	switch (scope) {
@@ -580,17 +694,17 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 	case CURSOROP_SCOPE_WORD:
 		if (dir == CURSOROP_DIR_RIGHT) {
 			// skip one word to the right
-			while (new_cursor < length && iswspace(m_line[new_cursor]))
+			while (new_cursor < length && iswspace(line[new_cursor]))
 				new_cursor++;
-			while (new_cursor < length && !iswspace(m_line[new_cursor]))
+			while (new_cursor < length && !iswspace(line[new_cursor]))
 				new_cursor++;
-			while (new_cursor < length && iswspace(m_line[new_cursor]))
+			while (new_cursor < length && iswspace(line[new_cursor]))
 				new_cursor++;
 		} else {
 			// skip one word to the left
-			while (new_cursor >= 1 && iswspace(m_line[new_cursor - 1]))
+			while (new_cursor >= 1 && iswspace(line[new_cursor - 1]))
 				new_cursor--;
-			while (new_cursor >= 1 && !iswspace(m_line[new_cursor - 1]))
+			while (new_cursor >= 1 && !iswspace(line[new_cursor - 1]))
 				new_cursor--;
 		}
 		break;
@@ -610,10 +724,10 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 		break;
 	case CURSOROP_DELETE:
 		if (m_cursor_len > 0) { // Delete selected text first
-			m_line.erase(m_cursor, m_cursor_len);
+			makeLineRef().erase(m_cursor, m_cursor_len);
 		} else {
 			m_cursor = MYMIN(new_cursor, old_cursor);
-			m_line.erase(m_cursor, abs(new_cursor - old_cursor));
+			makeLineRef().erase(m_cursor, abs(new_cursor - old_cursor));
 		}
 		m_cursor_len = 0;
 		break;
@@ -637,7 +751,7 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 
 void ChatPrompt::clampView()
 {
-	s32 length = m_line.size();
+	s32 length = getLineRef().size();
 	if (length + 1 <= m_cols)
 	{
 		m_view = 0;
@@ -654,9 +768,9 @@ void ChatPrompt::clampView()
 
 
 ChatBackend::ChatBackend():
-	m_console_buffer(500),
+	m_console_buffer(1500),
 	m_recent_buffer(6),
-	m_prompt(L"]", 500)
+	m_prompt(L"]", 1500)
 {
 }
 

@@ -1,30 +1,16 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
 #include "chat.h"
-#include "config.h"
+#include "irr_ptr.h"
+#include <IGUIEnvironment.h>
 
 class Client;
+class GUIScrollBar;
 
 class GUIChatConsole : public gui::IGUIElement
 {
@@ -35,7 +21,6 @@ public:
 			ChatBackend* backend,
 			Client* client,
 			IMenuManager* menumgr);
-	virtual ~GUIChatConsole();
 
 	// Open the console (height = desired fraction of screen size)
 	// This doesn't open immediately but initiates an animation.
@@ -55,12 +40,8 @@ public:
 	// Set whether to close the console after the user presses enter.
 	void setCloseOnEnter(bool close) { m_close_on_enter = close; }
 
-	// Return the desired height (fraction of screen size)
-	// Zero if the console is closed or getting closed
-	f32 getDesiredHeight() const;
-
 	// Replace actual line when adding the actual to the history (if there is any)
-	void replaceAndAddToHistory(std::wstring line);
+	void replaceAndAddToHistory(const std::wstring &line);
 
 	// Change how the cursor looks
 	void setCursor(
@@ -72,11 +53,11 @@ public:
 	// Irrlicht draw method
 	virtual void draw();
 
-	bool canTakeFocus(gui::IGUIElement* element) { return false; }
-
 	virtual bool OnEvent(const SEvent& event);
 
 	virtual void setVisible(bool visible);
+
+	virtual bool acceptsIME() { return true; }
 
 private:
 	void reformatConsole();
@@ -88,10 +69,20 @@ private:
 	void drawText();
 	void drawPrompt();
 
+	// If clicked fragment has a web url, send it to the system default web browser.
+	// Returns true if, and only if a web url was pressed.
+	bool weblinkClick(s32 col, s32 row);
+
+	// If the selected text changed, we need to update the (X11) primary selection.
+	void updatePrimarySelection();
+
+	void updateScrollbar(bool update_size = false);
+
 private:
 	ChatBackend* m_chat_backend;
 	Client* m_client;
 	IMenuManager* m_menumgr;
+	irr_ptr<GUIScrollBar> m_scrollbar;
 
 	// current screen size
 	v2u32 m_screensize;
@@ -128,6 +119,11 @@ private:
 	video::SColor m_background_color = video::SColor(255, 0, 0, 0);
 
 	// font
-	gui::IGUIFont *m_font = nullptr;
+	irr_ptr<gui::IGUIFont> m_font;
 	v2u32 m_fontsize;
+
+	// Enable clickable chat weblinks
+	bool m_cache_clickable_chat_weblinks;
+	// Track if a ctrl key is currently held down
+	bool m_is_ctrl_down;
 };

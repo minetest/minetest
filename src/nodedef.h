@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -25,42 +10,48 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "mapnode.h"
 #include "nameidmapping.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/tile.h"
 #include <IMeshManipulator.h>
 class Client;
 #endif
 #include "itemgroup.h"
-#include "sound.h" // SimpleSoundSpec
+#include "sound.h" // SoundSpec
 #include "constants.h" // BS
+#include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
+#include "util/pointabilities.h"
 
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
 class IGameDef;
 class NodeResolver;
+#if BUILD_UNITTESTS
+class TestSchematic;
+#endif
 
-enum ContentParamType
+enum ContentParamType : u8
 {
 	CPT_NONE,
 	CPT_LIGHT,
+	ContentParamType_END // Dummy for validity check
 };
 
-enum ContentParamType2
+enum ContentParamType2 : u8
 {
 	CPT2_NONE,
 	// Need 8-bit param2
 	CPT2_FULL,
 	// Flowing liquid properties
 	CPT2_FLOWINGLIQUID,
-	// Direction for chests and furnaces and such
+	// Direction for chests and furnaces and such (with axis rotation)
 	CPT2_FACEDIR,
 	// Direction for signs, torches and such
 	CPT2_WALLMOUNTED,
 	// Block level like FLOWINGLIQUID
 	CPT2_LEVELED,
-	// 2D rotation for things like plants
+	// 2D rotation
 	CPT2_DEGROTATE,
 	// Mesh options for plants
 	CPT2_MESHOPTIONS,
@@ -72,16 +63,25 @@ enum ContentParamType2
 	CPT2_COLORED_WALLMOUNTED,
 	// Glasslike framed drawtype internal liquid level, param2 values 0 to 63
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
+	// 3 bits of palette index, then degrotate
+	CPT2_COLORED_DEGROTATE,
+	// Simplified direction for chests and furnaces and such (4 directions)
+	CPT2_4DIR,
+	// 6 bits of palette index, then 4dir
+	CPT2_COLORED_4DIR,
+	// Dummy for validity check
+	ContentParamType2_END
 };
 
-enum LiquidType
+enum LiquidType : u8
 {
 	LIQUID_NONE,
 	LIQUID_FLOWING,
 	LIQUID_SOURCE,
+	LiquidType_END // Dummy for validity check
 };
 
-enum NodeBoxType
+enum NodeBoxType : u8
 {
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
 	NODEBOX_FIXED, // Static separately defined box(es)
@@ -90,17 +90,8 @@ enum NodeBoxType
 	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
 };
 
-struct NodeBox
+struct NodeBoxConnected
 {
-	enum NodeBoxType type;
-	// NODEBOX_REGULAR (no parameters)
-	// NODEBOX_FIXED
-	std::vector<aabb3f> fixed;
-	// NODEBOX_WALLMOUNTED
-	aabb3f wall_top;
-	aabb3f wall_bottom;
-	aabb3f wall_side; // being at the -X side
-	// NODEBOX_CONNECTED
 	std::vector<aabb3f> connect_top;
 	std::vector<aabb3f> connect_bottom;
 	std::vector<aabb3f> connect_front;
@@ -115,13 +106,43 @@ struct NodeBox
 	std::vector<aabb3f> disconnected_right;
 	std::vector<aabb3f> disconnected;
 	std::vector<aabb3f> disconnected_sides;
+};
+
+struct NodeBox
+{
+	enum NodeBoxType type;
+	// NODEBOX_REGULAR (no parameters)
+	// NODEBOX_FIXED
+	std::vector<aabb3f> fixed;
+	// NODEBOX_WALLMOUNTED
+	aabb3f wall_top = dummybox;
+	aabb3f wall_bottom = dummybox;
+	aabb3f wall_side = dummybox; // being at the -X side
+	// NODEBOX_CONNECTED
+	// (kept externally to not bloat the structure)
+	std::shared_ptr<NodeBoxConnected> connected;
 
 	NodeBox()
 	{ reset(); }
+	~NodeBox() = default;
+
+	inline NodeBoxConnected &getConnected() {
+		if (!connected)
+			connected = std::make_shared<NodeBoxConnected>();
+		return *connected;
+	}
+	inline const NodeBoxConnected &getConnected() const {
+		assert(connected);
+		return *connected;
+	}
 
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
+
+private:
+	/// @note the actual defaults are in reset(), see nodedef.cpp
+	static constexpr aabb3f dummybox = aabb3f({0, 0, 0});
 };
 
 struct MapNode;
@@ -152,10 +173,8 @@ public:
 	WorldAlignMode world_aligned_mode;
 	AutoScale autoscale_mode;
 	int node_texture_size;
-	bool opaque_water;
+	bool translucent_liquids;
 	bool connected_glass;
-	bool use_normal_texture;
-	bool enable_mesh_cache;
 	bool enable_minimap;
 
 	TextureSettings() = default;
@@ -163,7 +182,7 @@ public:
 	void readSettings();
 };
 
-enum NodeDrawType
+enum NodeDrawType : u8
 {
 	// A basic solid block
 	NDT_NORMAL,
@@ -187,10 +206,10 @@ enum NodeDrawType
 	// paramtype2 = "meshoptions" allows various forms, sizes and
 	// vertical and horizontal random offsets.
 	NDT_PLANTLIKE,
-	// Fenceposts that connect to neighbouring fenceposts with horizontal bars
+	// Fenceposts that connect to neighboring fenceposts with horizontal bars
 	NDT_FENCELIKE,
 	// Selects appropriate junction texture to connect like rails to
-	// neighbouring raillikes.
+	// neighboring raillikes.
 	NDT_RAILLIKE,
 	// Custom Lua-definable structure of multiple cuboids
 	NDT_NODEBOX,
@@ -199,7 +218,7 @@ enum NodeDrawType
 	// Uses 3 textures, one for frames, second for faces,
 	// optional third is a 'special tile' for the liquid.
 	NDT_GLASSLIKE_FRAMED,
-	// Draw faces slightly rotated and only on neighbouring nodes
+	// Draw faces slightly rotated and only on neighboring nodes
 	NDT_FIRELIKE,
 	// Enabled -> ndt_glasslike_framed, disabled -> ndt_glasslike
 	NDT_GLASSLIKE_FRAMED_OPTIONAL,
@@ -207,6 +226,9 @@ enum NodeDrawType
 	NDT_MESH,
 	// Combined plantlike-on-solid
 	NDT_PLANTLIKE_ROOTED,
+
+	// Dummy for validity check
+	NodeDrawType_END
 };
 
 // Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS
@@ -226,7 +248,17 @@ enum AlignStyle : u8 {
 	ALIGN_STYLE_NODE,
 	ALIGN_STYLE_WORLD,
 	ALIGN_STYLE_USER_DEFINED,
+	AlignStyle_END // Dummy for validity check
 };
+
+enum AlphaMode : u8 {
+	ALPHAMODE_BLEND,
+	ALPHAMODE_CLIP,
+	ALPHAMODE_OPAQUE,
+	ALPHAMODE_LEGACY_COMPAT, /* only sent by old servers, equals OPAQUE */
+	AlphaMode_END // Dummy for validity check
+};
+
 
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
@@ -253,23 +285,30 @@ struct TileDef
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, u8 contentfeatures_version,
-		NodeDrawType drawtype);
+	void deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_version);
 };
 
+// Defines the number of special tiles per nodedef
+//
+// NOTE: When changing this value, the enum entries of OverrideTarget and
+//       parser in TextureOverrideSource must be updated so that all special
+//       tiles can be overridden.
 #define CF_SPECIAL_COUNT 6
 
 struct ContentFeatures
 {
+	// PROTOCOL_VERSION >= 37. This is legacy and should not be increased anymore,
+	// write checks that depend directly on the protocol version instead.
+	static const u8 CONTENTFEATURES_VERSION = 13;
+
 	/*
 		Cached stuff
 	 */
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	// 0     1     2     3     4     5
 	// up    down  right left  back  front
 	TileSpec tiles[6];
 	// Special tiles
-	// - Currently used for flowing liquids
 	TileSpec special_tiles[CF_SPECIAL_COUNT];
 	u8 solidness; // Used when choosing which face is drawn
 	u8 visual_solidness; // When solidness=0, this tells how it looks like
@@ -280,6 +319,9 @@ struct ContentFeatures
 	bool has_on_construct;
 	bool has_on_destruct;
 	bool has_after_destruct;
+
+	// "float" group
+	bool floats;
 
 	/*
 		Actual data
@@ -298,8 +340,8 @@ struct ContentFeatures
 
 	enum NodeDrawType drawtype;
 	std::string mesh;
-#ifndef SERVER
-	scene::IMesh *mesh_ptr[24];
+#if CHECK_CLIENT_BUILD()
+	scene::IMesh *mesh_ptr; // mesh in case of mesh node
 	video::SColor minimap_color;
 #endif
 	float visual_scale; // Misc. scale parameter
@@ -307,9 +349,7 @@ struct ContentFeatures
 	// These will be drawn over the base tiles.
 	TileDef tiledef_overlay[6];
 	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
-	// If 255, the node is opaque.
-	// Otherwise it uses texture alpha.
-	u8 alpha;
+	AlphaMode alpha;
 	// The color of the node.
 	video::SColor color;
 	std::string palette_name;
@@ -322,8 +362,11 @@ struct ContentFeatures
 	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
-	// Flowing liquid or snow, value = default level
+	bool post_effect_color_shaded;
+	// Flowing liquid or leveled nodebox, value = default level
 	u8 leveled;
+	// Maximum value for leveled nodes
+	u8 leveled_max;
 
 	// --- LIGHTING-RELATED ---
 
@@ -342,8 +385,8 @@ struct ContentFeatures
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	bool walkable;
-	// Player can point to these
-	bool pointable;
+	// Player can point to these, point through or it is blocking
+	PointabilityType pointable;
 	// Player can dig these
 	bool diggable;
 	// Player can climb these
@@ -355,15 +398,21 @@ struct ContentFeatures
 	u32 damage_per_second;
 	// client dig prediction
 	std::string node_dig_prediction;
+	// how slow players move through
+	u8 move_resistance = 0;
 
 	// --- LIQUID PROPERTIES ---
 
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
+	// If true, movement (e.g. of players) inside this node is liquid-like.
+	bool liquid_move_physics;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
+	content_t liquid_alternative_flowing_id;
 	// If the content is liquid, this is the source version of the liquid.
 	std::string liquid_alternative_source;
+	content_t liquid_alternative_source_id;
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
@@ -384,9 +433,9 @@ struct ContentFeatures
 
 	// --- SOUND PROPERTIES ---
 
-	SimpleSoundSpec sound_footstep;
-	SimpleSoundSpec sound_dig;
-	SimpleSoundSpec sound_dug;
+	SoundSpec sound_footstep;
+	SoundSpec sound_dig;
+	SoundSpec sound_dug;
 
 	// --- LEGACY ---
 
@@ -401,30 +450,53 @@ struct ContentFeatures
 	*/
 
 	ContentFeatures();
-	~ContentFeatures() = default;
+	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
-	void serializeOld(std::ostream &os, u16 protocol_version) const;
-	void deSerializeOld(std::istream &is, int version);
-	/*!
-	 * Since vertex alpha is no longer supported, this method
-	 * adds opacity directly to the texture pixels.
-	 *
-	 * \param tiles array of the tile definitions.
-	 * \param length length of tiles
-	 */
-	void correctAlpha(TileDef *tiles, int length);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*
 		Some handy methods
 	*/
+	void setDefaultAlphaMode()
+	{
+		switch (drawtype) {
+		case NDT_NORMAL:
+		case NDT_LIQUID:
+		case NDT_FLOWINGLIQUID:
+		case NDT_NODEBOX:
+		case NDT_MESH:
+			alpha = ALPHAMODE_OPAQUE;
+			break;
+		default:
+			alpha = ALPHAMODE_CLIP;
+			break;
+		}
+	}
+
+
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
 	}
-	bool sameLiquid(const ContentFeatures &f) const{
-		if(!isLiquid() || !f.isLiquid()) return false;
-		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
+
+	bool isLiquidRender() const {
+		return (drawtype == NDT_LIQUID || drawtype == NDT_FLOWINGLIQUID);
+	}
+
+	bool sameLiquidRender(const ContentFeatures &f) const {
+		if (!isLiquidRender() || !f.isLiquidRender())
+			return false;
+		return liquid_alternative_flowing_id == f.liquid_alternative_flowing_id &&
+			liquid_alternative_source_id == f.liquid_alternative_source_id;
+	}
+
+	ContentLightingFlags getLightingFlags() const {
+		ContentLightingFlags flags;
+		flags.has_light = param_type == CPT_LIGHT;
+		flags.light_propagates = light_propagates;
+		flags.sunlight_propagates = sunlight_propagates;
+		flags.light_source = light_source;
+		return flags;
 	}
 
 	int getGroup(const std::string &group) const
@@ -432,10 +504,15 @@ struct ContentFeatures
 		return itemgroup_get(groups, group);
 	}
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif
+
+private:
+	void setAlphaFromLegacy(u8 legacy_alpha);
+
+	u8 getAlphaForLegacy() const;
 };
 
 /*!
@@ -467,7 +544,7 @@ public:
 	 */
 	inline const ContentFeatures& get(content_t c) const {
 		return
-			c < m_content_features.size() ?
+			(c < m_content_features.size() && !m_content_features[c].name.empty()) ?
 				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 	}
 
@@ -479,6 +556,15 @@ public:
 	 */
 	inline const ContentFeatures& get(const MapNode &n) const {
 		return get(n.getContent());
+	}
+
+	inline ContentLightingFlags getLightingFlags(content_t c) const {
+		// No bound check is necessary, since the array's length is CONTENT_MAX + 1.
+		return m_content_lighting_flag_cache[c];
+	}
+
+	inline ContentLightingFlags getLightingFlags(const MapNode &n) const {
+		return getLightingFlags(n.getContent());
 	}
 
 	/*!
@@ -582,15 +668,12 @@ public:
 	void updateAliases(IItemDefManager *idef);
 
 	/*!
-	 * Reads the used texture pack's override.txt, and replaces the textures
-	 * of registered nodes with the ones specified there.
+	 * Replaces the textures of registered nodes with the ones specified in
+	 * the texturepack's override.txt file
 	 *
-	 * Format of the input file: in each line
-	 * `node_name top|bottom|right|left|front|back|all|*|sides texture_name.png`
-	 *
-	 * @param override_filepath path to 'texturepack/override.txt'
+	 * @param overrides the texture overrides
 	 */
-	void applyTextureOverrides(const std::string &override_filepath);
+	void applyTextureOverrides(const std::vector<TextureOverride> &overrides);
 
 	/*!
 	 * Only the client uses this. Loads textures and shaders required for
@@ -601,13 +684,11 @@ public:
 	 * total ContentFeatures.
 	 * @param progress_cbk_args passed to the callback function
 	 */
-	void updateTextures(IGameDef *gamedef,
-		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args);
+	void updateTextures(IGameDef *gamedef, void *progress_cbk_args);
 
 	/*!
 	 * Writes the content of this manager to the given output stream.
-	 * @param protocol_version serialization version of ContentFeatures
+	 * @param protocol_version Active network protocol version
 	 */
 	void serialize(std::ostream &os, u16 protocol_version) const;
 
@@ -615,8 +696,9 @@ public:
 	 * Restores the manager from a serialized stream.
 	 * This clears the previous state.
 	 * @param is input stream containing a serialized NodeDefManager
+	 * @param protocol_version Active network protocol version
 	 */
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*!
 	 * Used to indicate that node registration has finished.
@@ -640,10 +722,11 @@ public:
 	void resetNodeResolveState();
 
 	/*!
-	 * Resolves the IDs to which connecting nodes connect from names.
+	 * Resolves (caches the IDs) cross-references between nodes,
+	 * like liquid alternatives.
 	 * Must be called after node registration has finished!
 	 */
-	void mapNodeboxConnections();
+	void resolveCrossrefs();
 
 private:
 	/*!
@@ -665,7 +748,15 @@ private:
 	 * @param i a content ID
 	 * @param name a node name
 	 */
-	void addNameIdMapping(content_t i, std::string name);
+	void addNameIdMapping(content_t i, const std::string &name);
+
+	/*!
+	 * Removes a content ID from all groups.
+	 * Erases content IDs from vectors in \ref m_group_to_items and
+	 * removes empty vectors.
+	 * @param id Content ID
+	 */
+	void eraseIdFromGroups(content_t id);
 
 	/*!
 	 * Recalculates m_selection_box_int_union based on
@@ -708,41 +799,72 @@ private:
 	 * The union of all nodes' selection boxes.
 	 * Might be larger if big nodes are removed from the manager.
 	 */
-	aabb3f m_selection_box_union;
+	aabb3f m_selection_box_union{{0.0f, 0.0f, 0.0f}};
 
 	/*!
 	 * The smallest box in integer node coordinates that
 	 * contains all nodes' selection boxes.
 	 * Might be larger if big nodes are removed from the manager.
 	 */
-	core::aabbox3d<s16> m_selection_box_int_union;
+	core::aabbox3d<s16> m_selection_box_int_union{{0, 0, 0}};
 
 	/*!
 	 * NodeResolver instances to notify once node registration has finished.
 	 * Even constant NodeDefManager instances can register listeners.
 	 */
 	mutable std::vector<NodeResolver *> m_pending_resolve_callbacks;
+
+	/*!
+	 * Fast cache of content lighting flags.
+	 */
+	ContentLightingFlags m_content_lighting_flag_cache[CONTENT_MAX + 1L];
 };
 
 NodeDefManager *createNodeDefManager();
 
+// NodeResolver: Queue for node names which are then translated
+// to content_t after the NodeDefManager was initialized
 class NodeResolver {
 public:
 	NodeResolver();
 	virtual ~NodeResolver();
+	// Callback which is run as soon NodeDefManager is ready
 	virtual void resolveNodeNames() = 0;
 
-	bool getIdFromNrBacklog(content_t *result_out,
-		const std::string &node_alt, content_t c_fallback);
-	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
-		bool all_required=false, content_t c_fallback=CONTENT_IGNORE);
+	// required because this class is used as mixin for ObjDef
+	void cloneTo(NodeResolver *res) const;
 
+	bool getIdFromNrBacklog(content_t *result_out,
+		const std::string &node_alt, content_t c_fallback,
+		bool error_on_fallback = true);
+	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
+		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
+
+	inline bool isResolveDone() const { return m_resolve_done; }
+	void reset(bool resolve_done = false);
+
+	// Vector containing all node names in the resolve "queue"
+	std::vector<std::string> m_nodenames;
+	// Specifies the "set size" of node names which are to be processed
+	// this is used for getIdsFromNrBacklog
+	// TODO: replace or remove
+	std::vector<size_t> m_nnlistsizes;
+
+protected:
+	friend class NodeDefManager; // m_ndef
+
+	const NodeDefManager *m_ndef = nullptr;
+	// Index of the next "m_nodenames" entry to resolve
+	u32 m_nodenames_idx = 0;
+
+private:
+#if BUILD_UNITTESTS
+	// Unittest requires access to m_resolve_done
+	friend class TestSchematic;
+#endif
 	void nodeResolveInternal();
 
-	u32 m_nodenames_idx = 0;
+	// Index of the next "m_nnlistsizes" entry to process
 	u32 m_nnlistsizes_idx = 0;
-	std::vector<std::string> m_nodenames;
-	std::vector<size_t> m_nnlistsizes;
-	const NodeDefManager *m_ndef = nullptr;
 	bool m_resolve_done = false;
 };

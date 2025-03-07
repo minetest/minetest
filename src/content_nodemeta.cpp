@@ -1,27 +1,13 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "content_nodemeta.h"
 #include "nodemetadata.h"
 #include "nodetimer.h"
 #include "inventory.h"
 #include "log.h"
+#include "debug.h"
 #include "serialization.h"
 #include "util/serialize.h"
 #include "util/string.h"
@@ -43,26 +29,26 @@ static bool content_nodemeta_deserialize_legacy_body(
 	if(id == NODEMETA_GENERIC) // GenericNodeMetadata (0.4-dev)
 	{
 		meta->getInventory()->deSerialize(is);
-		deSerializeLongString(is);  // m_text
-		deSerializeString(is);  // m_owner
+		deSerializeString32(is);  // m_text
+		deSerializeString16(is);  // m_owner
 
-		meta->setString("infotext",deSerializeString(is));
-		meta->setString("formspec",deSerializeString(is));
+		meta->setString("infotext",deSerializeString16(is));
+		meta->setString("formspec",deSerializeString16(is));
 		readU8(is);  // m_allow_text_input
 		readU8(is);  // m_allow_removal
 		readU8(is);  // m_enforce_owner
 
 		int num_vars = readU32(is);
 		for(int i=0; i<num_vars; i++){
-			std::string name = deSerializeString(is);
-			std::string var = deSerializeLongString(is);
+			std::string name = deSerializeString16(is);
+			std::string var = deSerializeString32(is);
 			meta->setString(name, var);
 		}
 		return false;
 	}
 	else if(id == NODEMETA_SIGN) // SignNodeMetadata
 	{
-		meta->setString("text", deSerializeString(is));
+		meta->setString("text", deSerializeString16(is));
 		//meta->setString("infotext","\"${text}\"");
 		meta->setString("infotext",
 				std::string("\"") + meta->getString("text") + "\"");
@@ -87,7 +73,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 	}
 	else if(id == NODEMETA_LOCKABLE_CHEST) // LockingChestNodeMetadata
 	{
-		meta->setString("owner", deSerializeString(is));
+		meta->setString("owner", deSerializeString16(is));
 		meta->getInventory()->deSerialize(is);
 
 		// Rename inventory list "0" to "main"
@@ -138,7 +124,7 @@ static bool content_nodemeta_deserialize_legacy_meta(
 	s16 id = readS16(is);
 
 	// Read data
-	std::string data = deSerializeString(is);
+	std::string data = deSerializeString16(is);
 	std::istringstream tmp_is(data, std::ios::binary);
 	return content_nodemeta_deserialize_legacy_body(tmp_is, id, meta);
 }

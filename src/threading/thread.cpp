@@ -25,14 +25,16 @@ DEALINGS IN THE SOFTWARE.
 
 #include "threading/thread.h"
 #include "threading/mutex_auto_lock.h"
-#include "log.h"
+#include "log_internal.h"
 #include "porting.h"
 
 // for setName
 #if defined(__linux__)
 	#include <sys/prctl.h>
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 	#include <pthread_np.h>
+#elif defined(__NetBSD__)
+	#include <sched.h>
 #elif defined(_MSC_VER)
 	struct THREADNAME_INFO {
 		DWORD dwType;     // Must be 0x1000
@@ -57,6 +59,11 @@ DEALINGS IN THE SOFTWARE.
 	#include <mach/thread_act.h>
 #endif
 
+// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
+#define win32_native_handle() ((HANDLE) getThreadHandle())
+
+thread_local Thread *current_thread = nullptr;
+
 
 Thread::Thread(const std::string &name) :
 	m_name(name),
@@ -71,12 +78,31 @@ Thread::Thread(const std::string &name) :
 
 Thread::~Thread()
 {
-	kill();
+	// kill the thread if running
+	if (!m_running) {
+		wait();
+	} else {
+
+		m_running = false;
+
+#if defined(_WIN32)
+		TerminateThread(win32_native_handle(), 0);
+		CloseHandle(win32_native_handle());
+#else
+		// We need to pthread_kill instead on Android since NDKv5's pthread
+		// implementation is incomplete.
+# ifdef __ANDROID__
+		pthread_kill(getThreadHandle(), SIGKILL);
+# else
+		pthread_cancel(getThreadHandle());
+# endif
+		wait();
+#endif
+	}
 
 	// Make sure start finished mutex is unlocked before it's destroyed
 	if (m_start_finished_mutex.try_lock())
 		m_start_finished_mutex.unlock();
-
 }
 
 
@@ -90,7 +116,8 @@ bool Thread::start()
 	m_request_stop = false;
 
 	// The mutex may already be locked if the thread is being restarted
-	m_start_finished_mutex.try_lock();
+	// FIXME: what if this fails, or if already locked by same thread?
+	std::unique_lock sf_lock(m_start_finished_mutex, std::try_to_lock);
 
 	try {
 		m_thread_obj = new std::thread(threadProc, this);
@@ -98,11 +125,11 @@ bool Thread::start()
 		return false;
 	}
 
-	// Allow spawned thread to continue
-	m_start_finished_mutex.unlock();
-
 	while (!m_running)
 		sleep_ms(1);
+
+	// Allow spawned thread to continue
+	sf_lock.unlock();
 
 	m_joinable = true;
 
@@ -136,39 +163,8 @@ bool Thread::wait()
 }
 
 
-bool Thread::kill()
-{
-	if (!m_running) {
-		wait();
-		return false;
-	}
 
-	m_running = false;
-
-#if defined(_WIN32)
-	// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
-	TerminateThread((HANDLE) m_thread_obj->native_handle(), 0);
-	CloseHandle((HANDLE) m_thread_obj->native_handle());
-#else
-	// We need to pthread_kill instead on Android since NDKv5's pthread
-	// implementation is incomplete.
-# ifdef __ANDROID__
-	pthread_kill(getThreadHandle(), SIGKILL);
-# else
-	pthread_cancel(getThreadHandle());
-# endif
-	wait();
-#endif
-
-	m_retval       = nullptr;
-	m_joinable     = false;
-	m_request_stop = false;
-
-	return true;
-}
-
-
-bool Thread::getReturnValue(void **ret)
+bool Thread::getReturnValue(void **ret) const
 {
 	if (m_running)
 		return false;
@@ -184,6 +180,8 @@ void Thread::threadProc(Thread *thr)
 	thr->m_kernel_thread_id = thread_self();
 #endif
 
+	current_thread = thr;
+
 	thr->setName(thr->m_name);
 
 	g_logger.registerThread(thr->m_name);
@@ -191,7 +189,7 @@ void Thread::threadProc(Thread *thr)
 
 	// Wait for the thread that started this one to finish initializing the
 	// thread handle so that getThreadId/getThreadHandle will work.
-	thr->m_start_finished_mutex.lock();
+	std::unique_lock sf_lock(thr->m_start_finished_mutex);
 
 	thr->m_retval = thr->run();
 
@@ -199,8 +197,14 @@ void Thread::threadProc(Thread *thr)
 	// Unlock m_start_finished_mutex to prevent data race condition on Windows.
 	// On Windows with VS2017 build TerminateThread is called and this mutex is not
 	// released. We try to unlock it from caller thread and it's refused by system.
-	thr->m_start_finished_mutex.unlock();
+	sf_lock.unlock();
 	g_logger.deregisterThread();
+}
+
+
+Thread *Thread::getCurrentThread()
+{
+	return current_thread;
 }
 
 
@@ -213,17 +217,21 @@ void Thread::setName(const std::string &name)
 	// distributions are still runing 2.11 and previous versions.
 	prctl(PR_SET_NAME, name.c_str());
 
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 
 	pthread_set_name_np(pthread_self(), name.c_str());
 
 #elif defined(__NetBSD__)
 
-	pthread_setname_np(pthread_self(), name.c_str());
+	pthread_setname_np(pthread_self(), "%s", const_cast<char*>(name.c_str()));
 
 #elif defined(__APPLE__)
 
 	pthread_setname_np(name.c_str());
+
+#elif defined(__HAIKU__)
+
+	rename_thread(find_thread(NULL), name.c_str());
 
 #elif defined(_MSC_VER)
 
@@ -265,15 +273,11 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 	return false;
 
-#elif _MSC_VER
+#elif defined(_WIN32)
 
-	return SetThreadAffinityMask(getThreadHandle(), 1 << proc_number);
+	return SetThreadAffinityMask(win32_native_handle(), 1 << proc_number);
 
-#elif __MINGW32__
-
-	return SetThreadAffinityMask(pthread_gethandle(getThreadHandle()), 1 << proc_number);
-
-#elif __FreeBSD_version >= 702106 || defined(__linux__)
+#elif __FreeBSD_version >= 702106 || defined(__linux__) || defined(__DragonFly__)
 
 	cpu_set_t cpuset;
 
@@ -281,7 +285,14 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 	CPU_SET(proc_number, &cpuset);
 
 	return pthread_setaffinity_np(getThreadHandle(), sizeof(cpuset), &cpuset) == 0;
+#elif defined(__NetBSD__)
 
+	cpuset_t *cpuset = cpuset_create();
+	if (cpuset == NULL)
+		return false;
+	int r = pthread_setaffinity_np(getThreadHandle(), cpuset_size(cpuset), cpuset);
+	cpuset_destroy(cpuset);
+	return r == 0;
 #elif defined(__sun) || defined(sun)
 
 	return processor_bind(P_LWPID, P_MYID, proc_number, NULL) == 0
@@ -317,13 +328,9 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 bool Thread::setPriority(int prio)
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
 
-	return SetThreadPriority(getThreadHandle(), prio);
-
-#elif __MINGW32__
-
-	return SetThreadPriority(pthread_gethandle(getThreadHandle()), prio);
+	return SetThreadPriority(win32_native_handle(), prio);
 
 #else
 

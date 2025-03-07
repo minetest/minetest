@@ -31,24 +31,14 @@ set(LUA_CORE_SRC
 	lvm.c
 	lzio.c
 )
-set(LUA_LIB_HEADERS
-	lua.h
-	lualib.h
-	lauxlib.h
-	luaconf.h
-)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR})
-
-# Lua library.
+# Lua library
 add_library(lua STATIC ${LUA_CORE_SRC})
 target_link_libraries(lua ${LIBS})
-set(LUA_STATIC_LIB lua)
-set(LUA_LIBS lua)
-
-set_target_properties(${LUA_LIBS} PROPERTIES
+set_target_properties(lua PROPERTIES
 	VERSION ${LUA_VERSION}
 	CLEAN_DIRECT_OUTPUT 1
 )
 
+# Compile code as C++
+set_source_files_properties(${LUA_CORE_SRC} PROPERTIES LANGUAGE CXX)

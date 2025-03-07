@@ -1,28 +1,22 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "irr_v3d.h"
+
+typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+
+class MMVManip;
+class BiomeManager;
+class BiomeGen;
+class Mapgen;
 
 class ModApiMapgen : public ModApiBase
 {
+	friend class LuaVoxelManip;
 private:
 	// get_biome_id(biomename)
 	// returns the biome id as used in biomemap and returned by 'get_biome_data()'
@@ -59,6 +53,12 @@ private:
 	// set mapgen parameters
 	static int l_set_mapgen_params(lua_State *L);
 
+	// get_mapgen_edges([mapgen_limit[, chunksize]])
+	static int l_get_mapgen_edges(lua_State *L);
+
+	// get_seed([add])
+	static int l_get_seed(lua_State *L);
+
 	// get_mapgen_setting(name)
 	static int l_get_mapgen_setting(lua_State *L);
 
@@ -77,11 +77,14 @@ private:
 	// get_noiseparam_defaults(name)
 	static int l_get_noiseparams(lua_State *L);
 
-	// set_gen_notify(flags, {deco_id_table})
+	// set_gen_notify(flags, {deco_ids}, {ud_ids})
 	static int l_set_gen_notify(lua_State *L);
 
 	// get_gen_notify()
 	static int l_get_gen_notify(lua_State *L);
+
+	// save_gen_notify(ud_id, data)
+	static int l_save_gen_notify(lua_State *L);
 
 	// get_decoration_id(decoration_name)
 	// returns the decoration ID as used in gennotify
@@ -128,11 +131,42 @@ private:
 	//     replacements, force_placement, flagstring)
 	static int l_place_schematic_on_vmanip(lua_State *L);
 
+	// spawn_tree_on_vmanip(vmanip, pos, treedef)
+	static int l_spawn_tree_on_vmanip(lua_State *L);
+
 	// serialize_schematic(schematic, format, options={...})
 	static int l_serialize_schematic(lua_State *L);
 
+	// read_schematic(schematic, options={...})
+	static int l_read_schematic(lua_State *L);
+
+	// Foreign implementations
+	/*
+	 * In this case the API functions belong to LuaVoxelManip (so l_vmanip.cpp),
+	 * but the implementations are so deeply connected to mapgen-related code
+	 * that they are better off being here.
+	 */
+
+	static int update_liquids(lua_State *L, MMVManip *vm);
+
+	static int calc_lighting(lua_State *L, MMVManip *vm,
+			v3s16 pmin, v3s16 pmax, bool propagate_shadow);
+
+	static int set_lighting(lua_State *L, MMVManip *vm,
+			v3s16 pmin, v3s16 pmax, u8 light);
+
+	// Helpers
+
+	// get a read-only(!) EmergeManager
+	static const EmergeManager *getEmergeManager(lua_State *L);
+	// get the thread-local or global BiomeGen (still read-only)
+	static const BiomeGen *getBiomeGen(lua_State *L);
+	// get the thread-local mapgen
+	static Mapgen *getMapgen(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
+	static void InitializeEmerge(lua_State *L, int top);
 
 	static struct EnumString es_BiomeTerrainType[];
 	static struct EnumString es_DecorationType[];

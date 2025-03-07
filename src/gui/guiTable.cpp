@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 
 #include "guiTable.h"
@@ -25,18 +10,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <IGUISkin.h>
 #include <IGUIFont.h>
-#include <IGUIScrollBar.h>
 #include "client/renderingengine.h"
 #include "debug.h"
+#include "irrlicht_changes/CGUITTFont.h"
 #include "log.h"
-#include "client/tile.h"
+#include "client/texturesource.h"
 #include "gettime.h"
 #include "util/string.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
 #include "settings.h" // for settings
 #include "porting.h" // for dpi
-#include "guiscalingfilter.h"
+#include "client/guiscalingfilter.h"
 
 /*
 	GUITable
@@ -57,17 +42,17 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	m_font = skin->getFont();
 	if (m_font) {
 		m_font->grab();
-		m_rowheight = m_font->getDimension(L"A").Height + 4;
+		m_rowheight = m_font->getDimension(L"Ay").Height + 4;
 		m_rowheight = MYMAX(m_rowheight, 1);
 	}
 
 	const s32 s = skin->getSize(gui::EGDS_SCROLLBAR_SIZE);
-	m_scrollbar = Environment->addScrollBar(false,
+	m_scrollbar = new GUIScrollBar(Environment, this, -1,
 			core::rect<s32>(RelativeRect.getWidth() - s,
 					0,
 					RelativeRect.getWidth(),
 					RelativeRect.getHeight()),
-			this, -1);
+			false, true, tsrc);
 	m_scrollbar->setSubElement(true);
 	m_scrollbar->setTabStop(false);
 	m_scrollbar->setAlignment(gui::EGUIA_LOWERRIGHT, gui::EGUIA_LOWERRIGHT,
@@ -78,15 +63,6 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	setTabStop(true);
 	setTabOrder(-1);
 	updateAbsolutePosition();
-
-	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
-	s32 width = (relative_rect.getWidth()/(2.0/3.0)) *
-			RenderingEngine::getDisplayDensity() *
-			g_settings->getFloat("gui_scaling");
-	m_scrollbar->setRelativePosition(core::rect<s32>(
-			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
-			relative_rect.LowerRightCorner.X,relative_rect.LowerRightCorner.Y
-			));
 }
 
 GUITable::~GUITable()
@@ -97,7 +73,8 @@ GUITable::~GUITable()
 	if (m_font)
 		m_font->drop();
 
-	m_scrollbar->remove();
+	if (m_scrollbar)
+		m_scrollbar->drop();
 }
 
 GUITable::Option GUITable::splitOption(const std::string &str)
@@ -192,7 +169,6 @@ void GUITable::setTable(const TableOptions &options,
 	}
 
 	// Handle table options
-	video::SColor default_color(255, 255, 255, 255);
 	s32 opendepth = 0;
 	for (const Option &option : options) {
 		const std::string &name = option.name;
@@ -219,7 +195,7 @@ void GUITable::setTable(const TableOptions &options,
 	s32 colcount = columns.size();
 	assert(colcount >= 1);
 	// rowcount = ceil(cellcount / colcount) but use integer arithmetic
-	s32 rowcount = (content.size() + colcount - 1) / colcount;
+	s32 rowcount = std::min(((u32)content.size() + colcount - 1) / colcount, (u32)S32_MAX);
 	assert(rowcount >= 0);
 	// Append empty strings to content if there is an incomplete row
 	s32 cellcount = rowcount * colcount;
@@ -237,6 +213,8 @@ void GUITable::setTable(const TableOptions &options,
 		s32 content_index;
 		// Next cell: Width in pixels
 		s32 content_width;
+		// Next cell: Image scale (only for "image" column type)
+		f32 image_scale;
 		// Vector of completed cells in this row
 		std::vector<Cell> cells;
 		// Stores colors and how long they last (maximum column index)
@@ -245,6 +223,17 @@ void GUITable::setTable(const TableOptions &options,
 		TempRow(): x(0), indent(0), content_index(0), content_width(0) {}
 	};
 	TempRow *rows = new TempRow[rowcount];
+
+	CGUITTFont *ttfont = dynamic_cast<CGUITTFont *>(m_font);
+	f32 desired_image_scale = 1.0f;
+	if (ttfont) {
+		// This gives us the effective font size, which is chosen taking display
+		// density and gui_scaling into account.
+		// Since row height scales with font size, this gives better results than
+		// just using display density and gui_scaling when a non-standard font
+		// size is used (e.g. Android default of 14).
+		desired_image_scale = std::max(1.0f, ttfont->getFontSize() / 16.0f);
+	}
 
 	// Get em width. Pedantically speaking, the width of "M" is not
 	// necessarily the same as the em width, but whatever, close enough.
@@ -334,7 +323,6 @@ void GUITable::setTable(const TableOptions &options,
 
 		// Make template for new cells
 		Cell newcell;
-		memset(&newcell, 0, sizeof newcell);
 		newcell.content_type = columntype;
 		newcell.tooltip_index = tooltip_index;
 		newcell.reported_column = j+1;
@@ -374,8 +362,7 @@ void GUITable::setTable(const TableOptions &options,
 				// Find content_index. Image indices are defined in
 				// column options so check active_image_indices.
 				s32 image_index = stoi(content[i * colcount + j]);
-				std::map<s32, s32>::iterator image_iter =
-					active_image_indices.find(image_index);
+				auto image_iter =active_image_indices.find(image_index);
 				if (image_iter != active_image_indices.end())
 					row->content_index = image_iter->second;
 
@@ -384,8 +371,18 @@ void GUITable::setTable(const TableOptions &options,
 				if (row->content_index >= 0)
 					image = m_images[row->content_index];
 
+				row->image_scale = 1.0f;
+				row->content_width = 0;
+				if (image) {
+					f32 max_image_scale = (f32)m_rowheight / (f32)image->getOriginalSize().Height;
+					// Scale with display density and make sure it fits into the row
+					row->image_scale = std::min(desired_image_scale, max_image_scale);
+					// When upscaling, fractional factors would cause artifacts
+					if (row->image_scale > 1.0f)
+						row->image_scale = std::floor(row->image_scale);
+					row->content_width = image->getOriginalSize().Width * row->image_scale;
+				}
 				// Get content width and update xmax
-				row->content_width = image ? image->getOriginalSize().Width : 0;
 				row->content_width = MYMAX(row->content_width, width);
 				s32 row_xmax = row->x + padding + row->content_width;
 				xmax = MYMAX(xmax, row_xmax);
@@ -395,6 +392,7 @@ void GUITable::setTable(const TableOptions &options,
 				newcell.xmin = rows[i].x + padding;
 				alignContent(&newcell, xmax, rows[i].content_width, align);
 				newcell.content_index = rows[i].content_index;
+				newcell.image_scale = rows[i].image_scale;
 				rows[i].cells.push_back(newcell);
 				rows[i].x = newcell.xmax;
 			}
@@ -585,6 +583,31 @@ void GUITable::setSelected(s32 index)
 	}
 }
 
+void GUITable::setOverrideFont(IGUIFont *font)
+{
+	if (m_font == font)
+		return;
+
+	if (font == nullptr)
+		font = Environment->getSkin()->getFont();
+
+	if (m_font)
+		m_font->drop();
+
+	m_font = font;
+	m_font->grab();
+
+	m_rowheight = m_font->getDimension(L"Ay").Height + 4;
+	m_rowheight = MYMAX(m_rowheight, 1);
+
+	updateScrollBar();
+}
+
+IGUIFont *GUITable::getOverrideFont() const
+{
+	return m_font;
+}
+
 GUITable::DynamicData GUITable::getDynamicData() const
 {
 	DynamicData dyndata;
@@ -726,23 +749,23 @@ void GUITable::drawCell(const Cell *cell, video::SColor color,
 		video::ITexture *image = m_images[cell->content_index];
 
 		if (image) {
-			core::position2d<s32> dest_pos =
-					row_rect.UpperLeftCorner;
-			dest_pos.X += cell->xpos;
 			core::rect<s32> source_rect(
 					core::position2d<s32>(0, 0),
 					image->getOriginalSize());
-			s32 imgh = source_rect.LowerRightCorner.Y;
+			core::rect<s32> dest_rect(
+					0, 0,
+					image->getOriginalSize().Width * cell->image_scale,
+					image->getOriginalSize().Height * cell->image_scale);
+			dest_rect += row_rect.UpperLeftCorner + v2s32(cell->xpos, 0);
+
+			s32 imgh = dest_rect.getHeight();
 			s32 rowh = row_rect.getHeight();
+			// Center vertically if needed
 			if (imgh < rowh)
-				dest_pos.Y += (rowh - imgh) / 2;
-			else
-				source_rect.LowerRightCorner.Y = rowh;
+				dest_rect += v2s32(0, (rowh - imgh) / 2);
 
-			video::SColor color(255, 255, 255, 255);
-
-			driver->draw2DImage(image, dest_pos, source_rect,
-					&client_clip, color, true);
+			driver->draw2DImage(image, dest_rect, source_rect,
+					&client_clip, nullptr, true);
 		}
 	}
 }
@@ -854,7 +877,7 @@ bool GUITable::OnEvent(const SEvent &event)
 		core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 
 		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
-			m_scrollbar->setPos(m_scrollbar->getPos() +
+			m_scrollbar->setPosInterpolated(m_scrollbar->getTargetPos() +
 					(event.MouseInput.Wheel < 0 ? -3 : 3) *
 					- (s32) m_rowheight / 2);
 			return true;
@@ -874,7 +897,7 @@ bool GUITable::OnEvent(const SEvent &event)
 		setToolTipText(cell ? m_strings[cell->tooltip_index].c_str() : L"");
 
 		// Fix for #1567/#1806:
-		// IGUIScrollBar passes double click events to its parent,
+		// GUIScrollBar passes double click events to its parent,
 		// which we don't want. Detect this case and discard the event
 		if (event.MouseInput.Event != EMIE_MOUSE_MOVED &&
 				m_scrollbar->isVisible() &&
@@ -941,7 +964,7 @@ bool GUITable::OnEvent(const SEvent &event)
 
 s32 GUITable::allocString(const std::string &text)
 {
-	std::map<std::string, s32>::iterator it = m_alloc_strings.find(text);
+	auto it = m_alloc_strings.find(text);
 	if (it == m_alloc_strings.end()) {
 		s32 id = m_strings.size();
 		std::wstring wtext = utf8_to_wide(text);
@@ -955,7 +978,7 @@ s32 GUITable::allocString(const std::string &text)
 
 s32 GUITable::allocImage(const std::string &imagename)
 {
-	std::map<std::string, s32>::iterator it = m_alloc_images.find(imagename);
+	auto it = m_alloc_images.find(imagename);
 	if (it == m_alloc_images.end()) {
 		s32 id = m_images.size();
 		m_images.push_back(m_tsrc->getTexture(imagename));
@@ -1074,6 +1097,7 @@ void GUITable::updateScrollBar()
 	m_scrollbar->setMax(scrollmax);
 	m_scrollbar->setSmallStep(m_rowheight);
 	m_scrollbar->setLargeStep(2 * m_rowheight);
+	m_scrollbar->setPageSize(totalheight);
 }
 
 void GUITable::sendTableEvent(s32 column, bool doubleclick)
@@ -1082,7 +1106,6 @@ void GUITable::sendTableEvent(s32 column, bool doubleclick)
 	m_sel_doubleclick = doubleclick;
 	if (Parent) {
 		SEvent e;
-		memset(&e, 0, sizeof e);
 		e.EventType = EET_GUI_EVENT;
 		e.GUIEvent.Caller = this;
 		e.GUIEvent.Element = 0;

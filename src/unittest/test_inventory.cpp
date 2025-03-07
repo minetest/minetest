@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "test.h"
 
@@ -33,8 +18,9 @@ public:
 
 	void testSerializeDeserialize(IItemDefManager *idef);
 
-	static const char *serialized_inventory;
-	static const char *serialized_inventory_2;
+	static const char *serialized_inventory_in;
+	static const char *serialized_inventory_out;
+	static const char *serialized_inventory_inc;
 };
 
 static TestInventory g_test_instance;
@@ -49,7 +35,7 @@ void TestInventory::runTests(IGameDef *gamedef)
 void TestInventory::testSerializeDeserialize(IItemDefManager *idef)
 {
 	Inventory inv(idef);
-	std::istringstream is(serialized_inventory, std::ios::binary);
+	std::istringstream is(serialized_inventory_in, std::ios::binary);
 
 	inv.deSerialize(is);
 	UASSERT(inv.getList("0"));
@@ -62,82 +48,64 @@ void TestInventory::testSerializeDeserialize(IItemDefManager *idef)
 
 	inv.getList("main")->setWidth(5);
 	std::ostringstream inv_os(std::ios::binary);
-	inv.serialize(inv_os);
-	UASSERTEQ(std::string, inv_os.str(), serialized_inventory_2);
+	inv.serialize(inv_os, false);
+	UASSERTEQ(std::string, inv_os.str(), serialized_inventory_out);
+
+	inv.setModified(false);
+	inv_os.str("");
+	inv_os.clear();
+	inv.serialize(inv_os, true);
+	UASSERTEQ(std::string, inv_os.str(), serialized_inventory_inc);
+
+	ItemStack leftover = inv.getList("main")->takeItem(7, 99 - 12);
+	ItemStack wanted = ItemStack("default:dirt", 99 - 12, 0, idef);
+	UASSERT(leftover == wanted);
+	leftover = inv.getList("main")->getItem(7);
+	wanted.count = 12;
+	UASSERT(leftover == wanted);
 }
 
-const char *TestInventory::serialized_inventory =
-	"List 0 32\n"
+const char *TestInventory::serialized_inventory_in =
+	"List 0 10\n"
 	"Width 3\n"
 	"Empty\n"
 	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
 	"Item default:cobble 61\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
 	"Empty\n"
 	"Empty\n"
 	"Item default:dirt 71\n"
 	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
 	"Item default:dirt 99\n"
 	"Item default:cobble 38\n"
 	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
+	"EndInventoryList\n"
+	"List abc 1\n"
+	"Item default:stick 3\n"
+	"Width 0\n"
 	"EndInventoryList\n"
 	"EndInventory\n";
 
-const char *TestInventory::serialized_inventory_2 =
-	"List main 32\n"
+const char *TestInventory::serialized_inventory_out =
+	"List main 10\n"
 	"Width 5\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
 	"Empty\n"
 	"Empty\n"
 	"Item default:cobble 61\n"
 	"Empty\n"
 	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
 	"Item default:dirt 71\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
 	"Empty\n"
 	"Item default:dirt 99\n"
 	"Item default:cobble 38\n"
 	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
-	"Empty\n"
 	"EndInventoryList\n"
+	"List abc 1\n"
+	"Width 0\n"
+	"Item default:stick 3\n"
+	"EndInventoryList\n"
+	"EndInventory\n";
+
+const char *TestInventory::serialized_inventory_inc =
+	"KeepList main\n"
+	"KeepList abc\n"
 	"EndInventory\n";

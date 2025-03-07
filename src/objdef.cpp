@@ -1,26 +1,14 @@
-/*
-Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 #include "objdef.h"
 #include "util/numeric.h"
 #include "log.h"
 #include "gamedef.h"
+#include "porting.h" // strcasecmp
+
+#include <cassert>
 
 ObjDefManager::ObjDefManager(IGameDef *gamedef, ObjDefType type)
 {
@@ -181,4 +169,23 @@ bool ObjDefManager::decodeHandle(ObjDefHandle handle, u32 *index,
 	*type  = (ObjDefType)get_bits(handle, 18, 6);
 	*uid   = get_bits(handle, 24, 7);
 	return true;
+}
+
+// Cloning
+
+void ObjDef::cloneTo(ObjDef *def) const
+{
+	def->index = index;
+	def->uid = uid;
+	def->handle = handle;
+	def->name = name;
+}
+
+void ObjDefManager::cloneTo(ObjDefManager *mgr) const
+{
+	mgr->m_ndef = m_ndef;
+	mgr->m_objects.reserve(m_objects.size());
+	for (const auto &obj : m_objects)
+		mgr->m_objects.push_back(obj->clone());
+	mgr->m_objtype = m_objtype;
 }

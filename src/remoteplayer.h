@@ -1,27 +1,14 @@
-/*
-Minetest
-Copyright (C) 2010-2016 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2014-2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2016 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2014-2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #pragma once
 
 #include "player.h"
-#include "cloudparams.h"
+#include "skyparams.h"
+#include "lighting.h"
+#include "network/networkprotocol.h" // session_t
 
 class PlayerSAO;
 
@@ -40,15 +27,13 @@ class RemotePlayer : public Player
 	friend class PlayerDatabaseFiles;
 
 public:
-	RemotePlayer(const char *name, IItemDefManager *idef);
-	virtual ~RemotePlayer() = default;
-
-	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
+	RemotePlayer(const std::string &name, IItemDefManager *idef);
+	virtual ~RemotePlayer();
 
 	PlayerSAO *getPlayerSAO() { return m_sao; }
 	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
 
-	const RemotePlayerChatResult canSendChatMessage();
+	RemotePlayerChatResult canSendChatMessage();
 
 	void setHotbarItemcount(s32 hotbar_itemcount)
 	{
@@ -83,23 +68,24 @@ public:
 		return hud_hotbar_selected_image;
 	}
 
-	void setSky(const video::SColor &bgcolor, const std::string &type,
-			const std::vector<std::string> &params, bool &clouds)
+	void setSky(const SkyboxParams &skybox_params)
 	{
-		m_sky_bgcolor = bgcolor;
-		m_sky_type = type;
-		m_sky_params = params;
-		m_sky_clouds = clouds;
+		m_skybox_params = skybox_params;
 	}
 
-	void getSky(video::SColor *bgcolor, std::string *type,
-			std::vector<std::string> *params, bool *clouds)
-	{
-		*bgcolor = m_sky_bgcolor;
-		*type = m_sky_type;
-		*params = m_sky_params;
-		*clouds = m_sky_clouds;
-	}
+	const SkyboxParams &getSkyParams() const { return m_skybox_params; }
+
+	void setSun(const SunParams &sun_params) { m_sun_params = sun_params; }
+
+	const SunParams &getSunParams() const { return m_sun_params; }
+
+	void setMoon(const MoonParams &moon_params) { m_moon_params = moon_params; }
+
+	const MoonParams &getMoonParams() const { return m_moon_params; }
+
+	void setStars(const StarParams &star_params) { m_star_params = star_params; }
+
+	const StarParams &getStarParams() const { return m_star_params; }
 
 	void setCloudParams(const CloudParams &cloud_params)
 	{
@@ -110,44 +96,39 @@ public:
 
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }
 
-	void setModified(const bool x)
-	{
-		m_dirty = x;
-		if (!x)
-			inventory.setModified(x);
-	}
+	inline void setModified(const bool x) { m_dirty = x; }
 
-	void setLocalAnimations(v2s32 frames[4], float frame_speed)
+	void setLocalAnimations(v2f frames[4], float frame_speed)
 	{
 		for (int i = 0; i < 4; i++)
 			local_animations[i] = frames[i];
 		local_animation_speed = frame_speed;
 	}
 
-	void getLocalAnimations(v2s32 *frames, float *frame_speed)
+	void getLocalAnimations(v2f *frames, float *frame_speed)
 	{
 		for (int i = 0; i < 4; i++)
 			frames[i] = local_animations[i];
 		*frame_speed = local_animation_speed;
 	}
 
+	void setLighting(const Lighting &lighting) { m_lighting = lighting; }
+
+	const Lighting& getLighting() const { return m_lighting; }
+
 	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version = 0;
+	u16 formspec_version = 0;
 
+	/// returns PEER_ID_INEXISTENT when PlayerSAO is not ready
 	session_t getPeerId() const { return m_peer_id; }
 
 	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
 
-private:
-	/*
-		serialize() writes a bunch of text that can contain
-		any characters except a '\0', and such an ending that
-		deSerialize stops reading exactly at the right point.
-	*/
-	void serialize(std::ostream &os);
-	void serializeExtraAttributes(std::string &output);
+	void onSuccessfulSave();
 
+private:
 	PlayerSAO *m_sao = nullptr;
 	bool m_dirty = false;
 
@@ -164,12 +145,14 @@ private:
 	std::string hud_hotbar_image = "";
 	std::string hud_hotbar_selected_image = "";
 
-	std::string m_sky_type;
-	video::SColor m_sky_bgcolor;
-	std::vector<std::string> m_sky_params;
-	bool m_sky_clouds;
-
 	CloudParams m_cloud_params;
+
+	SkyboxParams m_skybox_params;
+	SunParams m_sun_params;
+	MoonParams m_moon_params;
+	StarParams m_star_params;
+
+	Lighting m_lighting;
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

@@ -1,25 +1,11 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "test.h"
 
 #include <atomic>
+#include <iostream>
 #include "threading/semaphore.h"
 #include "threading/thread.h"
 
@@ -31,8 +17,8 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testStartStopWait();
-	void testThreadKill();
 	void testAtomicSemaphoreThread();
+	void testTLS();
 };
 
 static TestThreading g_test_instance;
@@ -40,8 +26,8 @@ static TestThreading g_test_instance;
 void TestThreading::runTests(IGameDef *gamedef)
 {
 	TEST(testStartStopWait);
-	TEST(testThreadKill);
 	TEST(testAtomicSemaphoreThread);
+	TEST(testTLS);
 }
 
 class SimpleTestThread : public Thread {
@@ -111,29 +97,6 @@ void TestThreading::testStartStopWait()
 }
 
 
-void TestThreading::testThreadKill()
-{
-	SimpleTestThread *thread = new SimpleTestThread(300);
-
-	UASSERT(thread->start() == true);
-
-	// kill()ing is quite violent, so let's make sure our victim is sleeping
-	// before we do this... so we don't corrupt the rest of the program's state
-	sleep_ms(100);
-	UASSERT(thread->kill() == true);
-
-	// The state of the thread object should be reset if all went well
-	UASSERT(thread->isRunning() == false);
-	UASSERT(thread->start() == true);
-	UASSERT(thread->stop() == true);
-	UASSERT(thread->wait() == true);
-
-	// kill() after already waiting should fail.
-	UASSERT(thread->kill() == false);
-
-	delete thread;
-}
-
 
 class AtomicTestThread : public Thread {
 public:
@@ -181,3 +144,86 @@ void TestThreading::testAtomicSemaphoreThread()
 	UASSERT(val == num_threads * 0x10000);
 }
 
+
+
+static std::atomic<bool> g_tls_broken;
+
+class TLSTestThread : public Thread {
+public:
+	TLSTestThread() : Thread("TLSTest")
+	{
+	}
+
+private:
+	struct TestObject {
+		TestObject() {
+			for (u32 i = 0; i < buffer_size; i++)
+				buffer[i] = (i % 2) ? 0xa1 : 0x1a;
+		}
+		~TestObject() {
+			for (u32 i = 0; i < buffer_size; i++) {
+				const u8 expect = (i % 2) ? 0xa1 : 0x1a;
+				if (buffer[i] != expect) {
+					std::cout << "At offset " << i << " expected " << (int)expect
+						<< " but found " << (int)buffer[i] << std::endl;
+					g_tls_broken = true;
+					break;
+				}
+				// If we're unlucky the loop might actually just crash.
+				// probably the user will realize the test failure :)
+			}
+		}
+		// larger objects seem to surface corruption more easily
+		static constexpr u32 buffer_size = 576;
+		u8 buffer[buffer_size];
+	};
+
+	void *run() {
+		thread_local TestObject foo;
+		while (!stopRequested())
+			sleep_ms(1);
+		return nullptr;
+	}
+};
+
+/*
+	What are we actually testing here?
+
+	MinGW with gcc has a long-standing unsolved bug where memory belonging to
+	thread-local variables is freed *before* the destructors are called.
+	Needless to say this leads to unreliable crashes whenever a thread exits.
+	It does not affect MSVC or MinGW+clang and as far as we know no other platforms
+	are affected either.
+
+	Related reports and information:
+	* <https://sourceforge.net/p/mingw-w64/bugs/727/> (2018)
+	* <https://github.com/msys2/MINGW-packages/issues/2519> (2017)
+	* <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=58142> maybe
+
+	Note that this is different from <https://sourceforge.net/p/mingw-w64/bugs/527/>,
+	which affected only 32-bit MinGW. It was caused by incorrect calling convention
+	and fixed in GCC in 2020.
+
+	Occurrences in Luanti:
+	* <https://github.com/luanti-org/luanti/issues/10137> (2020)
+	* <https://github.com/luanti-org/luanti/issues/12022> (2022)
+	* <https://github.com/luanti-org/luanti/issues/14140> (2023)
+*/
+void TestThreading::testTLS()
+{
+	constexpr int num_threads = 10;
+
+	for (int j = 0; j < num_threads; j++) {
+		g_tls_broken = false;
+
+		TLSTestThread thread;
+		thread.start();
+		thread.stop();
+		thread.wait();
+
+		if (g_tls_broken) {
+			std::cout << "While running test thread " << j << std::endl;
+			UASSERT(!g_tls_broken);
+		}
+	}
+}

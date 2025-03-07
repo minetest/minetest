@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -26,16 +11,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cassert>
 #include <list>
 
+#include "IGUIEnvironment.h"
+
+namespace irr::gui {
+	class IGUIStaticText;
+}
+
 class IGameCallback
 {
 public:
 	virtual void exitToOS() = 0;
+	virtual void openSettings() = 0;
 	virtual void keyConfig() = 0;
 	virtual void disconnect() = 0;
 	virtual void changePassword() = 0;
 	virtual void changeVolume() = 0;
-
+	virtual void showOpenURLDialog(const std::string &url) = 0;
 	virtual void signalKeyConfigChange() = 0;
+	virtual void touchscreenLayout() = 0;
 };
 
 extern gui::IGUIEnvironment *guienv;
@@ -48,42 +41,27 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(gui::IGUIElement *menu)
 	{
-#ifndef NDEBUG
-		for (gui::IGUIElement *i : m_stack) {
-			assert(i != menu);
+		for (gui::IGUIElement *e : m_stack) {
+			if (e == menu)
+				return;
 		}
-#endif
 
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(false);
+
 		m_stack.push_back(menu);
+		guienv->setFocus(m_stack.back());
 	}
 
 	virtual void deletingMenu(gui::IGUIElement *menu)
 	{
 		// Remove all entries if there are duplicates
-		bool removed_entry;
-		do{
-			removed_entry = false;
-			for(std::list<gui::IGUIElement*>::iterator
-					i = m_stack.begin();
-					i != m_stack.end(); ++i)
-			{
-				if(*i == menu)
-				{
-					m_stack.erase(i);
-					removed_entry = true;
-					break;
-				}
-			}
-		}while(removed_entry);
+		m_stack.remove(menu);
 
-		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
-		assert(*i == menu);
-		m_stack.erase(i);*/
-
-		if(!m_stack.empty())
+		if(!m_stack.empty()) {
 			m_stack.back()->setVisible(true);
+			guienv->setFocus(m_stack.back());
+		}
 	}
 
 	// Returns true to prevent further processing
@@ -95,9 +73,15 @@ public:
 		return mm && mm->preprocessEvent(event);
 	}
 
-	u32 menuCount()
+	size_t menuCount() const
 	{
 		return m_stack.size();
+	}
+
+	void deleteFront()
+	{
+		m_stack.front()->setVisible(false);
+		deletingMenu(m_stack.front());
 	}
 
 	bool pausesGame()
@@ -110,12 +94,16 @@ public:
 		return false;
 	}
 
+private:
 	std::list<gui::IGUIElement*> m_stack;
 };
 
 extern MainMenuManager g_menumgr;
 
-extern bool isMenuActive();
+static inline bool isMenuActive()
+{
+	return g_menumgr.menuCount() != 0;
+}
 
 class MainGameCallback : public IGameCallback
 {
@@ -123,44 +111,60 @@ public:
 	MainGameCallback() = default;
 	virtual ~MainGameCallback() = default;
 
-	virtual void exitToOS()
+	void exitToOS() override
 	{
 		shutdown_requested = true;
 	}
 
-	virtual void disconnect()
+	void openSettings() override
+	{
+		settings_requested = true;
+	}
+
+	void disconnect() override
 	{
 		disconnect_requested = true;
 	}
 
-	virtual void changePassword()
+	void changePassword() override
 	{
 		changepassword_requested = true;
 	}
 
-	virtual void changeVolume()
+	void changeVolume() override
 	{
 		changevolume_requested = true;
 	}
 
-	virtual void keyConfig()
+	void keyConfig() override
 	{
 		keyconfig_requested = true;
 	}
 
-	virtual void signalKeyConfigChange()
+	void signalKeyConfigChange() override
 	{
 		keyconfig_changed = true;
 	}
 
+	void touchscreenLayout() override
+	{
+		touchscreenlayout_requested = true;
+	}
+
+	void showOpenURLDialog(const std::string &url) override
+	{
+		show_open_url_dialog = url;
+	}
 
 	bool disconnect_requested = false;
+	bool settings_requested = false;
 	bool changepassword_requested = false;
 	bool changevolume_requested = false;
 	bool keyconfig_requested = false;
+	bool touchscreenlayout_requested = false;
 	bool shutdown_requested = false;
-
 	bool keyconfig_changed = false;
+	std::string show_open_url_dialog = "";
 };
 
 extern MainGameCallback *g_gamecallback;

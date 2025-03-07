@@ -1,39 +1,34 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
 #include "basic_macros.h"
+#include "constants.h"
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
 #include "irr_v3d.h"
 #include "irr_aabb3d.h"
+#include "SColor.h"
+#include <matrix4.h>
+#include <cmath>
+#include <algorithm>
 
-#define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
-#define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
-// The naive swap performs better than the xor version
-#define SWAP(t, x, y) do { \
-	t temp = x; \
-	x = y; \
-	y = temp; \
-} while (0)
+// Like std::clamp but allows mismatched types
+template <typename T, typename T2, typename T3>
+inline constexpr T rangelim(const T &d, const T2 &min, const T3 &max)
+{
+	if (d < (T)min)
+		return (T)min;
+	if (d > (T)max)
+		return (T)max;
+	return d;
+}
 
+// Maximum radius of a block.  The magic number is
+// sqrt(3.0) / 2.0 in literal form.
+static constexpr const f32 BLOCK_MAX_RADIUS = 0.866025403784f * MAP_BLOCKSIZE * BS;
 
 inline s16 getContainerPos(s16 p, s16 d)
 {
@@ -120,25 +115,71 @@ inline bool isInArea(v3s16 p, v3s16 d)
 	);
 }
 
-inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
+inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2)
+{
 	if (p1.X > p2.X)
-		SWAP(s16, p1.X, p2.X);
+		std::swap(p1.X, p2.X);
 	if (p1.Y > p2.Y)
-		SWAP(s16, p1.Y, p2.Y);
+		std::swap(p1.Y, p2.Y);
 	if (p1.Z > p2.Z)
-		SWAP(s16, p1.Z, p2.Z);
+		std::swap(p1.Z, p2.Z);
 }
 
 inline v3s16 componentwise_min(const v3s16 &a, const v3s16 &b)
 {
-	return v3s16(MYMIN(a.X, b.X), MYMIN(a.Y, b.Y), MYMIN(a.Z, b.Z));
+	return v3s16(std::min(a.X, b.X), std::min(a.Y, b.Y), std::min(a.Z, b.Z));
 }
 
 inline v3s16 componentwise_max(const v3s16 &a, const v3s16 &b)
 {
-	return v3s16(MYMAX(a.X, b.X), MYMAX(a.Y, b.Y), MYMAX(a.Z, b.Z));
+	return v3s16(std::max(a.X, b.X), std::max(a.Y, b.Y), std::max(a.Z, b.Z));
 }
 
+/// @brief Describes a grid with given step, oirginating at (0,0,0)
+struct MeshGrid {
+	u16 cell_size;
+
+	u32 getCellVolume() const { return cell_size * cell_size * cell_size; }
+
+	/// @brief returns coordinate of mesh cell given coordinate of a map block
+	s16 getCellPos(s16 p) const
+	{
+		return (p - (p < 0) * (cell_size - 1)) / cell_size;
+	}
+
+	/// @brief returns position of mesh cell in the grid given position of a map block
+	v3s16 getCellPos(v3s16 block_pos) const
+	{
+		return v3s16(getCellPos(block_pos.X), getCellPos(block_pos.Y), getCellPos(block_pos.Z));
+	}
+
+	/// @brief returns closest step of the grid smaller than p
+	s16 getMeshPos(s16 p) const
+	{
+		return getCellPos(p) * cell_size;
+	}
+
+	/// @brief Returns coordinates of the origin of the grid cell containing p
+	v3s16 getMeshPos(v3s16 p) const
+	{
+		return v3s16(getMeshPos(p.X), getMeshPos(p.Y), getMeshPos(p.Z));
+	}
+
+	/// @brief Returns true if p is an origin of a cell in the grid.
+	bool isMeshPos(v3s16 &p) const
+	{
+		return p.X % cell_size == 0
+				&& p.Y % cell_size == 0
+				&& p.Z % cell_size == 0;
+	}
+
+	/// @brief Returns index of the given offset in a grid cell
+	/// All offset coordinates must be smaller than the size of the cell
+	u16 getOffsetIndex(v3s16 offset) const
+	{
+		return (offset.Z * cell_size + offset.Y) * cell_size + offset.X;
+	}
+};
 
 /** Returns \p f wrapped to the range [-360, 360]
  *
@@ -146,30 +187,10 @@ inline v3s16 componentwise_max(const v3s16 &a, const v3s16 &b)
  *
  *  \note This is also used in cases where degrees wrapped to the range [0, 360]
  *  is innapropriate (e.g. pitch needs negative values)
- *
- *  \internal functionally equivalent -- although precision may vary slightly --
- *  to fmodf((f), 360.0f) however empirical tests indicate that this approach is
- *  faster.
  */
 inline float modulo360f(float f)
 {
-	int sign;
-	int whole;
-	float fraction;
-
-	if (f < 0) {
-		f = -f;
-		sign = -1;
-	} else {
-		sign = 1;
-	}
-
-	whole = f;
-
-	fraction = f - whole;
-	whole %= 360;
-
-	return sign * (whole + fraction);
+	return fmodf(f, 360.0f);
 }
 
 
@@ -179,6 +200,23 @@ inline float wrapDegrees_0_360(float f)
 {
 	float value = modulo360f(f);
 	return value < 0 ? value + 360 : value;
+}
+
+
+/** Returns \p v3f wrapped to the range [0, 360]
+  */
+inline v3f wrapDegrees_0_360_v3f(v3f v)
+{
+	v3f value_v3f;
+	value_v3f.X = modulo360f(v.X);
+	value_v3f.Y = modulo360f(v.Y);
+	value_v3f.Z = modulo360f(v.Z);
+
+	// Now that values are wrapped, use to get values for certain ranges
+	value_v3f.X = value_v3f.X < 0 ? value_v3f.X + 360 : value_v3f.X;
+	value_v3f.Y = value_v3f.Y < 0 ? value_v3f.Y + 360 : value_v3f.Y;
+	value_v3f.Z = value_v3f.Z < 0 ? value_v3f.Z + 360 : value_v3f.Z;
+	return value_v3f;
 }
 
 
@@ -200,6 +238,18 @@ u32 myrand();
 void mysrand(unsigned int seed);
 void myrand_bytes(void *out, size_t len);
 int myrand_range(int min, int max);
+float myrand_range(float min, float max);
+float myrand_float();
+
+// Implements a C++11 UniformRandomBitGenerator using the above functions
+struct MyRandGenerator {
+	typedef u32 result_type;
+	static constexpr result_type min() { return 0; }
+	static constexpr result_type max() { return MYRAND_RANGE; }
+	inline result_type operator()() {
+		return myrand();
+	}
+};
 
 /*
 	Miscellaneous functions
@@ -243,6 +293,12 @@ inline s32 myround(f32 f)
 	return (s32)(f < 0.f ? (f - 0.5f) : (f + 0.5f));
 }
 
+template <typename T>
+inline constexpr T sqr(T f)
+{
+	return f * f;
+}
+
 /*
 	Returns integer position of node in given floating point position
 */
@@ -270,23 +326,15 @@ inline v3s16 doubleToInt(v3d p, double d)
 */
 inline v3f intToFloat(v3s16 p, f32 d)
 {
-	return v3f(
-		(f32)p.X * d,
-		(f32)p.Y * d,
-		(f32)p.Z * d
-	);
+	return v3f::from(p) * d;
 }
 
 // Random helper. Usually d=BS
 inline aabb3f getNodeBox(v3s16 p, float d)
 {
 	return aabb3f(
-		(float)p.X * d - 0.5f * d,
-		(float)p.Y * d - 0.5f * d,
-		(float)p.Z * d - 0.5f * d,
-		(float)p.X * d + 0.5f * d,
-		(float)p.Y * d + 0.5f * d,
-		(float)p.Z * d + 0.5f * d
+		v3f::from(p) * d - 0.5f * d,
+		v3f::from(p) * d + 0.5f * d
 	);
 }
 
@@ -296,12 +344,10 @@ class IntervalLimiter
 public:
 	IntervalLimiter() = default;
 
-	/*
-		dtime: time from last call to this method
-		wanted_interval: interval wanted
-		return value:
-			true: action should be skipped
-			false: action should be done
+	/**
+		@param dtime time from last call to this method
+		@param wanted_interval interval wanted
+		@return true if action should be done
 	*/
 	bool step(float dtime, float wanted_interval)
 	{
@@ -355,19 +401,20 @@ inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxi
 
 inline float cycle_shift(float value, float by = 0, float max = 1)
 {
-    if (value + by < 0)   return value + by + max;
-    if (value + by > max) return value + by - max;
-    return value + by;
+	if (value + by < 0)   return value + by + max;
+	if (value + by > max) return value + by - max;
+	return value + by;
 }
 
-inline bool is_power_of_two(u32 n)
+constexpr inline bool is_power_of_two(u32 n)
 {
 	return n != 0 && (n & (n - 1)) == 0;
 }
 
 // Compute next-higher power of 2 efficiently, e.g. for power-of-2 texture sizes.
 // Public Domain: https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-inline u32 npot2(u32 orig) {
+constexpr inline u32 npot2(u32 orig)
+{
 	orig--;
 	orig |= orig >> 1;
 	orig |= orig >> 2;
@@ -375,4 +422,78 @@ inline u32 npot2(u32 orig) {
 	orig |= orig >> 8;
 	orig |= orig >> 16;
 	return orig + 1;
+}
+
+// Distance between two values in a wrapped (circular) system
+template<typename T>
+inline unsigned wrappedDifference(T a, T b, const T maximum)
+{
+	if (a > b)
+		std::swap(a, b);
+	// now b >= a
+	unsigned s = b - a, l = static_cast<unsigned>(maximum - b) + a + 1;
+	return std::min(s, l);
+}
+
+// Gradual steps towards the target value in a wrapped (circular) system
+// using the shorter of both ways
+template<typename T>
+inline void wrappedApproachShortest(T &current, const T target, const T stepsize,
+	const T maximum)
+{
+	T delta = target - current;
+	if (delta < 0)
+		delta += maximum;
+
+	if (delta > stepsize && maximum - delta > stepsize) {
+		current += (delta < maximum / 2) ? stepsize : -stepsize;
+		if (current >= maximum)
+			current -= maximum;
+	} else {
+		current = target;
+	}
+}
+
+void setPitchYawRollRad(core::matrix4 &m, v3f rot);
+
+inline void setPitchYawRoll(core::matrix4 &m, v3f rot)
+{
+	setPitchYawRollRad(m, rot * core::DEGTORAD);
+}
+
+v3f getPitchYawRollRad(const core::matrix4 &m);
+
+inline v3f getPitchYawRoll(const core::matrix4 &m)
+{
+	return getPitchYawRollRad(m) * core::RADTODEG;
+}
+
+// Muliply the RGB value of a color linearly, and clamp to black/white
+inline irr::video::SColor multiplyColorValue(const irr::video::SColor &color, float mod)
+{
+	return irr::video::SColor(color.getAlpha(),
+			core::clamp<u32>(color.getRed() * mod, 0, 255),
+			core::clamp<u32>(color.getGreen() * mod, 0, 255),
+			core::clamp<u32>(color.getBlue() * mod, 0, 255));
+}
+
+template <typename T> inline T numericAbsolute(T v) { return v < 0 ? T(-v) : v;                }
+template <typename T> inline T numericSign(T v)     { return T(v < 0 ? -1 : (v == 0 ? 0 : 1)); }
+
+inline v3f vecAbsolute(v3f v)
+{
+	return v3f(
+		numericAbsolute(v.X),
+		numericAbsolute(v.Y),
+		numericAbsolute(v.Z)
+	);
+}
+
+inline v3f vecSign(v3f v)
+{
+	return v3f(
+		numericSign(v.X),
+		numericSign(v.Y),
+		numericSign(v.Z)
+	);
 }

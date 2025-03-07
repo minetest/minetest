@@ -1,35 +1,62 @@
-/*
-Minetest
-Copyright (C) 2013 PilzAdam <pilzadam@minetest.net>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 PilzAdam <pilzadam@minetest.net>
 
 #include "lua_api/l_settings.h"
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_security.h"
+#include "threading/mutex_auto_lock.h"
+#include "util/string.h" // FlagDesc
 #include "settings.h"
 #include "noise.h"
 #include "log.h"
+#include "common/c_converter.h"
 
 
-#define SET_SECURITY_CHECK(L, name) \
-	if (o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
-			name.compare(0, 7, "secure.") == 0) { \
-		throw LuaError("Attempt to set secure setting."); \
+/*
+ * This protects the following from being set:
+ * - 'secure.*' settings
+ * - some security-relevant settings
+ *   (better solution pending)
+ * - some mapgen settings
+ *   (not security-criticial, just to avoid messing up user configs)
+ */
+#define CHECK_SETTING_SECURITY(L, name) \
+	if (o->m_settings == g_settings) { \
+		if (checkSettingSecurity(L, name) == -1) \
+			return 0; \
 	}
+
+static inline int checkSettingSecurity(lua_State* L, const std::string &name)
+{
+#if CHECK_CLIENT_BUILD()
+	// Main menu and pause menu are allowed everything
+	auto context = ModApiBase::getScriptApiBase(L)->getType();
+	if (context == ScriptingType::MainMenu || context == ScriptingType::PauseMenu)
+		return 0;
+#endif
+
+	if (ScriptApiSecurity::isSecure(L) && name.compare(0, 7, "secure.") == 0)
+		throw LuaError("Attempted to set secure setting.");
+
+	if (name == "mg_name" || name == "mg_flags") {
+		errorstream << "Tried to set global setting " << name << ", ignoring. "
+			"minetest.set_mapgen_setting() should be used instead." << std::endl;
+		infostream << script_get_backtrace(L) << std::endl;
+		return -1;
+	}
+
+	const char *disallowed[] = {
+		"main_menu_script", "shader_path", "texture_path", "screenshot_path",
+		"serverlist_file", "serverlist_url", "map-dir", "contentdb_url",
+	};
+	for (const char *name2 : disallowed) {
+		if (name == name2)
+			throw LuaError("Attempted to set disallowed setting.");
+	}
+
+	return 0;
+}
 
 LuaSettings::LuaSettings(Settings *settings, const std::string &filename) :
 	m_settings(settings),
@@ -76,7 +103,7 @@ int LuaSettings::gc_object(lua_State* L)
 int LuaSettings::l_get(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	if (o->m_settings->exists(key)) {
@@ -93,7 +120,7 @@ int LuaSettings::l_get(lua_State* L)
 int LuaSettings::l_get_bool(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	if (o->m_settings->exists(key)) {
@@ -102,7 +129,7 @@ int LuaSettings::l_get_bool(lua_State* L)
 	} else {
 		// Push default value
 		if (lua_isboolean(L, 3))
-			lua_pushboolean(L, lua_toboolean(L, 3));
+			lua_pushboolean(L, readParam<bool>(L, 3));
 		else
 			lua_pushnil(L);
 	}
@@ -114,7 +141,7 @@ int LuaSettings::l_get_bool(lua_State* L)
 int LuaSettings::l_get_np_group(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings *o = checkobject(L, 1);
+	LuaSettings *o = checkObject<LuaSettings>(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	if (o->m_settings->exists(key)) {
@@ -128,16 +155,55 @@ int LuaSettings::l_get_np_group(lua_State *L)
 	return 1;
 }
 
+// get_flags(self, key) -> table or nil
+int LuaSettings::l_get_flags(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings *o = checkObject<LuaSettings>(L, 1);
+	std::string key = std::string(luaL_checkstring(L, 2));
+
+	u32 flags = 0;
+	auto flagdesc = o->m_settings->getFlagDescFallback(key);
+	if (o->m_settings->getFlagStrNoEx(key, flags, flagdesc)) {
+		lua_newtable(L);
+		int table = lua_gettop(L);
+		for (size_t i = 0; flagdesc[i].name; ++i) {
+			lua_pushboolean(L, flags & flagdesc[i].flag);
+			lua_setfield(L, table, flagdesc[i].name);
+		}
+		lua_pushvalue(L, table);
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+// get_pos(self, key) -> vector or nil
+int LuaSettings::l_get_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings *o = checkObject<LuaSettings>(L, 1);
+	std::string key = luaL_checkstring(L, 2);
+
+	std::optional<v3f> pos;
+	if (o->m_settings->getV3FNoEx(key, pos) && pos.has_value())
+		push_v3f(L, *pos);
+	else
+		lua_pushnil(L);
+	return 1;
+}
+
 // set(self, key, value)
 int LuaSettings::l_set(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	const char* value = luaL_checkstring(L, 3);
 
-	SET_SECURITY_CHECK(L, key);
+	CHECK_SETTING_SECURITY(L, key);
 
 	if (!o->m_settings->set(key, value))
 		throw LuaError("Invalid sequence found in setting parameters");
@@ -149,31 +215,47 @@ int LuaSettings::l_set(lua_State* L)
 int LuaSettings::l_set_bool(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
-	bool value = lua_toboolean(L, 3);
+	bool value = readParam<bool>(L, 3);
 
-	SET_SECURITY_CHECK(L, key);
+	CHECK_SETTING_SECURITY(L, key);
 
 	o->m_settings->setBool(key, value);
 
-	return 1;
+	return 0;
 }
 
-// set(self, key, value)
+// set_np_group(self, key, value)
 int LuaSettings::l_set_np_group(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings *o = checkobject(L, 1);
+	LuaSettings *o = checkObject<LuaSettings>(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	NoiseParams value;
 	read_noiseparams(L, 3, &value);
 
-	SET_SECURITY_CHECK(L, key);
+	CHECK_SETTING_SECURITY(L, key);
 
-	o->m_settings->setNoiseParams(key, value, false);
+	o->m_settings->setNoiseParams(key, value);
+
+	return 0;
+}
+
+// set_pos(self, key, value)
+int LuaSettings::l_set_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings *o = checkObject<LuaSettings>(L, 1);
+
+	std::string key = luaL_checkstring(L, 2);
+	v3f value = check_v3f(L, 3);
+
+	CHECK_SETTING_SECURITY(L, key);
+
+	o->m_settings->setV3F(key, value);
 
 	return 0;
 }
@@ -182,11 +264,11 @@ int LuaSettings::l_set_np_group(lua_State *L)
 int LuaSettings::l_remove(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 
-	SET_SECURITY_CHECK(L, key);
+	CHECK_SETTING_SECURITY(L, key);
 
 	bool success = o->m_settings->remove(key);
 	lua_pushboolean(L, success);
@@ -198,7 +280,7 @@ int LuaSettings::l_remove(lua_State* L)
 int LuaSettings::l_get_names(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
 	std::vector<std::string> keys = o->m_settings->getNames();
 
@@ -212,11 +294,23 @@ int LuaSettings::l_get_names(lua_State* L)
 	return 1;
 }
 
+// has(self, key) -> boolean
+int LuaSettings::l_has(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
+
+	std::string key = std::string(luaL_checkstring(L, 2));
+	lua_pushboolean(L, o->m_settings->existsLocal(key));
+
+	return 1;
+}
+
 // write(self) -> success
 int LuaSettings::l_write(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
 	if (!o->m_write_allowed) {
 		throw LuaError("Settings: writing " + o->m_filename +
@@ -229,47 +323,46 @@ int LuaSettings::l_write(lua_State* L)
 	return 1;
 }
 
+static void push_settings_table(lua_State *L, const Settings *settings)
+{
+	std::vector<std::string> keys = settings->getNames();
+	lua_newtable(L);
+	for (const std::string &key : keys) {
+		std::string value;
+		Settings *group = nullptr;
+
+		if (settings->getNoEx(key, value)) {
+			lua_pushstring(L, value.c_str());
+		} else if (settings->getGroupNoEx(key, group)) {
+			// Recursively push tables
+			push_settings_table(L, group);
+		} else {
+			// Impossible case (multithreading) due to MutexAutoLock
+			continue;
+		}
+
+		lua_setfield(L, -2, key.c_str());
+	}
+}
+
 // to_table(self) -> {[key1]=value1,...}
 int LuaSettings::l_to_table(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
-	std::vector<std::string> keys = o->m_settings->getNames();
-
-	lua_newtable(L);
-	for (const std::string &key : keys) {
-		lua_pushstring(L, o->m_settings->get(key).c_str());
-		lua_setfield(L, -2, key.c_str());
-	}
-
+	push_settings_table(L, o->m_settings);
 	return 1;
 }
 
 
 void LuaSettings::Register(lua_State* L)
 {
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1);  // drop metatable
-
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	static const luaL_Reg metamethods[] = {
+		{"__gc", gc_object},
+		{0, 0}
+	};
+	registerClass(L, className, methods, metamethods);
 
 	// Can be created from Lua (Settings(filename))
 	lua_register(L, className, create_object);
@@ -290,26 +383,20 @@ int LuaSettings::create_object(lua_State* L)
 	return 1;
 }
 
-LuaSettings* LuaSettings::checkobject(lua_State* L, int narg)
-{
-	NO_MAP_LOCK_REQUIRED;
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-	return *(LuaSettings**) ud;  // unbox pointer
-}
-
 const char LuaSettings::className[] = "Settings";
 const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, get_np_group),
+	luamethod(LuaSettings, get_flags),
+	luamethod(LuaSettings, get_pos),
 	luamethod(LuaSettings, set),
 	luamethod(LuaSettings, set_bool),
 	luamethod(LuaSettings, set_np_group),
+	luamethod(LuaSettings, set_pos),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
+	luamethod(LuaSettings, has),
 	luamethod(LuaSettings, write),
 	luamethod(LuaSettings, to_table),
 	{0,0}

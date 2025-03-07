@@ -1,4 +1,4 @@
-mark_as_advanced(SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR) 
+mark_as_advanced(SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR)
 
 find_path(SQLITE3_INCLUDE_DIR sqlite3.h)
 

@@ -79,17 +79,6 @@ typedef enum {
 	SRP_OK,
 } SRP_Result;
 
-// clang-format off
-
-/* Sets the memory functions used by srp.
- * Note: this doesn't set the memory functions used by gmp,
- * but it is supported to have different functions for srp and gmp.
- * Don't call this after you have already allocated srp structures.
- */
-void srp_set_memory_functions(
-	void *(*new_srp_alloc) (size_t),
-	void *(*new_srp_realloc) (void *, size_t),
-	void (*new_srp_free) (void *));
 
 /* Out: bytes_v, len_v
  *
@@ -130,8 +119,6 @@ struct SRPVerifier* srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type,
 	unsigned char** bytes_B, size_t *len_B,
 	const char* n_hex, const char* g_hex);
 
-// clang-format on
-
 void srp_verifier_delete(struct SRPVerifier *ver);
 
 // srp_verifier_verify_session must have been called before
@@ -170,8 +157,6 @@ const unsigned char *srp_user_get_session_key(struct SRPUser *usr, size_t *key_l
 
 size_t srp_user_get_session_key_length(struct SRPUser *usr);
 
-// clang-format off
-
 /* Output: username, bytes_A, len_A.
  * If you don't want it get written, set username to NULL.
  * If bytes_a == NULL, random data is used for a. */
@@ -185,7 +170,6 @@ void srp_user_process_challenge(struct SRPUser *usr,
 	const unsigned char *bytes_s, size_t len_s,
 	const unsigned char *bytes_B, size_t len_B,
 	unsigned char **bytes_M, size_t *len_M);
-// clang-format on
 
 /* bytes_HAMK must be exactly srp_user_get_session_key_length() bytes in size */
 void srp_user_verify_session(struct SRPUser *usr, const unsigned char *bytes_HAMK);

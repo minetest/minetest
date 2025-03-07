@@ -1,10 +1,12 @@
 set(common_SCRIPT_LUA_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/l_areastore.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_auth.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_base.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_craft.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_env.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_http.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_inventory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_ipc.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_item.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_itemstackmeta.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_mapgen.cpp
@@ -27,10 +29,14 @@ set(common_SCRIPT_LUA_API_SRCS
 set(client_SCRIPT_LUA_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/l_camera.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_client.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_client_common.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_client_sound.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_localplayer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_mainmenu.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_mainmenu_sound.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_menu_common.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_minimap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_particles_local.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/l_sound.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_pause_menu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_storage.cpp
 	PARENT_SCOPE)

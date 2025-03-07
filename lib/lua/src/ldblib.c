@@ -1,5 +1,5 @@
 /*
-** $Id: ldblib.c,v 1.104.1.3 2008/01/21 13:11:21 roberto Exp $
+** $Id: ldblib.c,v 1.104.1.4 2009/08/04 18:50:18 roberto Exp $
 ** Interface from Lua to its debug API
 ** See Copyright Notice in lua.h
 */
@@ -45,6 +45,7 @@ static int db_setmetatable (lua_State *L) {
 
 
 static int db_getfenv (lua_State *L) {
+  luaL_checkany(L, 1);
   lua_getfenv(L, 1);
   return 1;
 }
@@ -100,6 +101,7 @@ static int db_getinfo (lua_State *L) {
   int arg;
   lua_State *L1 = getthread(L, &arg);
   const char *options = luaL_optstring(L, arg+2, "flnSu");
+  luaL_argcheck(L, options[0] != '>', arg + 2, "invalid option '>'");
   if (lua_isnumber(L, arg+1)) {
     if (!lua_getstack(L1, (int)lua_tointeger(L, arg+1), &ar)) {
       lua_pushnil(L);  /* level out of range */
@@ -138,7 +140,7 @@ static int db_getinfo (lua_State *L) {
     treatstackoption(L, L1, "func");
   return 1;  /* return table */
 }
-    
+
 
 static int db_getlocal (lua_State *L) {
   int arg;

@@ -1,21 +1,6 @@
- /*
-Minetest
-Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 #include "test.h"
 
@@ -66,13 +51,14 @@ void TestSchematic::testMtsSerializeDeserialize(const NodeDefManager *ndef)
 	std::stringstream ss(std::ios_base::binary |
 		std::ios_base::in | std::ios_base::out);
 
-	std::vector<std::string> names;
-	names.emplace_back("foo");
-	names.emplace_back("bar");
-	names.emplace_back("baz");
-	names.emplace_back("qux");
-
-	Schematic schem, schem2;
+	Schematic schem;
+	{
+		std::vector<std::string> &names = schem.m_nodenames;
+		names.emplace_back("foo");
+		names.emplace_back("bar");
+		names.emplace_back("baz");
+		names.emplace_back("qux");
+	}
 
 	schem.flags       = 0;
 	schem.size        = size;
@@ -83,18 +69,21 @@ void TestSchematic::testMtsSerializeDeserialize(const NodeDefManager *ndef)
 	for (s16 y = 0; y != size.Y; y++)
 		schem.slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
-	UASSERT(schem.serializeToMts(&ss, names));
+	UASSERT(schem.serializeToMts(&ss));
 
 	ss.seekg(0);
-	names.clear();
 
-	UASSERT(schem2.deserializeFromMts(&ss, &names));
+	Schematic schem2;
+	UASSERT(schem2.deserializeFromMts(&ss));
 
-	UASSERTEQ(size_t, names.size(), 4);
-	UASSERTEQ(std::string, names[0], "foo");
-	UASSERTEQ(std::string, names[1], "bar");
-	UASSERTEQ(std::string, names[2], "baz");
-	UASSERTEQ(std::string, names[3], "qux");
+	{
+		std::vector<std::string> &names = schem2.m_nodenames;
+		UASSERTEQ(size_t, names.size(), 4);
+		UASSERTEQ(std::string, names[0], "foo");
+		UASSERTEQ(std::string, names[1], "bar");
+		UASSERTEQ(std::string, names[2], "baz");
+		UASSERTEQ(std::string, names[3], "qux");
+	}
 
 	UASSERT(schem2.size == size);
 	for (size_t i = 0; i != volume; i++)
@@ -120,14 +109,14 @@ void TestSchematic::testLuaTableSerialize(const NodeDefManager *ndef)
 	for (s16 y = 0; y != size.Y; y++)
 		schem.slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
-	std::vector<std::string> names;
+	std::vector<std::string> &names = schem.m_nodenames;
 	names.emplace_back("air");
 	names.emplace_back("default:lava_source");
 	names.emplace_back("default:glass");
 
 	std::ostringstream ss(std::ios_base::binary);
 
-	UASSERT(schem.serializeToLua(&ss, names, false, 0));
+	UASSERT(schem.serializeToLua(&ss, false, 0));
 	UASSERTEQ(std::string, ss.str(), expected_lua_output);
 }
 
@@ -159,6 +148,8 @@ void TestSchematic::testFileSerializeDeserialize(const NodeDefManager *ndef)
 	schem1.slice_probs[0] = 80;
 	schem1.slice_probs[1] = 160;
 	schem1.slice_probs[2] = 240;
+	// Node resolving happened manually.
+	schem1.m_resolve_done = true;
 
 	for (size_t i = 0; i != volume; i++) {
 		content_t c = content_map[test_schem2_data[i]];

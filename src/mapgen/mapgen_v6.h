@@ -1,23 +1,8 @@
-/*
-Minetest
-Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2013-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2018 paramat
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2013-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+// Copyright (C) 2014-2018 paramat
 
 #pragma once
 
@@ -39,9 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_SNOWBIOMES 0x08
 #define MGV6_FLAT       0x10
 #define MGV6_TREES      0x20
+#define MGV6_TEMPLES    0x40
 
 
-extern FlagDesc flagdesc_mapgen_v6[];
+extern const FlagDesc flagdesc_mapgen_v6[];
 
 
 enum BiomeV6Type
@@ -55,8 +41,6 @@ enum BiomeV6Type
 
 
 struct MapgenV6Params : public MapgenParams {
-	u32 spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
-		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
 	float freq_desert = 0.45f;
 	float freq_beach = 0.15f;
 	s16 dungeon_ymin = -31000;
@@ -79,13 +63,12 @@ struct MapgenV6Params : public MapgenParams {
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 
 class MapgenV6 : public Mapgen {
 public:
-	EmergeManager *m_emerge;
-
 	int ystride;
 	u32 spflags;
 
@@ -107,6 +90,8 @@ public:
 	NoiseParams *np_humidity;
 	NoiseParams *np_trees;
 	NoiseParams *np_apple_trees;
+
+	NoiseParams np_dungeons;
 
 	float freq_desert;
 	float freq_beach;
@@ -132,7 +117,7 @@ public:
 	content_t c_stair_cobble;
 	content_t c_stair_desert_stone;
 
-	MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge);
+	MapgenV6(MapgenV6Params *params, EmergeParams *emerge);
 	~MapgenV6();
 
 	virtual MapgenType getType() const { return MAPGEN_V6; }
@@ -149,14 +134,11 @@ public:
 
 	s16 find_stone_level(v2s16 p2d);
 	bool block_is_underground(u64 seed, v3s16 blockpos);
-	s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
 
 	float getHumidity(v2s16 p);
 	float getTreeAmount(v2s16 p);
 	bool getHaveAppleTree(v2s16 p);
-	float getMudAmount(v2s16 p);
-	virtual float getMudAmount(int index);
-	bool getHaveBeach(v2s16 p);
+	float getMudAmount(int index);
 	bool getHaveBeach(int index);
 	BiomeV6Type getBiome(v2s16 p);
 	BiomeV6Type getBiome(int index, v2s16 p);
@@ -168,7 +150,7 @@ public:
 	void addMud();
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
 	void moveMud(u32 remove_index, u32 place_index,
-		u32 above_remove_index, v2s16 pos, v3s16 em);
+		u32 above_remove_index, v2s16 pos, v3s32 em);
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);

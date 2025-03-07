@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2015-2018 paramat
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+// Copyright (C) 2015-2018 paramat
 
 #include "mg_decoration.h"
 #include "mg_schematic.h"
@@ -27,9 +12,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <algorithm>
 #include <vector>
+#include "mapgen/treegen.h"
 
 
-FlagDesc flagdesc_deco[] = {
+const FlagDesc flagdesc_deco[] = {
 	{"place_center_x",  DECO_PLACE_CENTER_X},
 	{"place_center_y",  DECO_PLACE_CENTER_Y},
 	{"place_center_z",  DECO_PLACE_CENTER_Z},
@@ -50,21 +36,24 @@ DecorationManager::DecorationManager(IGameDef *gamedef) :
 }
 
 
-size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
+void DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 	v3s16 nmin, v3s16 nmax)
 {
-	size_t nplaced = 0;
-
 	for (size_t i = 0; i != m_objects.size(); i++) {
 		Decoration *deco = (Decoration *)m_objects[i];
 		if (!deco)
 			continue;
 
-		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax);
+		deco->placeDeco(mg, blockseed, nmin, nmax);
 		blockseed++;
 	}
+}
 
-	return nplaced;
+DecorationManager *DecorationManager::clone() const
+{
+	auto mgr = new DecorationManager();
+	ObjDefManager::cloneTo(mgr);
+	return mgr;
 }
 
 
@@ -80,6 +69,9 @@ void Decoration::resolveNodeNames()
 
 bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 {
+	// Note that `p` refers to the node the decoration will be placed ontop of,
+	// not to the decoration itself.
+
 	// Check if the decoration can be placed on this node
 	u32 vi = vm->m_area.index(p);
 	if (!CONTAINS(c_place_on, vm->m_data[vi].getContent()))
@@ -90,16 +82,7 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 		return true;
 
 	int nneighs = 0;
-	static const v3s16 dirs[16] = {
-		v3s16( 0, 0,  1),
-		v3s16( 0, 0, -1),
-		v3s16( 1, 0,  0),
-		v3s16(-1, 0,  0),
-		v3s16( 1, 0,  1),
-		v3s16(-1, 0,  1),
-		v3s16(-1, 0, -1),
-		v3s16( 1, 0, -1),
-
+	static const v3s16 dirs[8] = {
 		v3s16( 0, 1,  1),
 		v3s16( 0, 1, -1),
 		v3s16( 1, 1,  0),
@@ -110,7 +93,8 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 		v3s16( 1, 1, -1)
 	};
 
-	// Check these 16 neighbouring nodes for enough spawnby nodes
+
+	// Check these 16 neighboring nodes for enough spawnby nodes
 	for (size_t i = 0; i != ARRLEN(dirs); i++) {
 		u32 index = vm->m_area.index(p + dirs[i]);
 		if (!vm->m_area.contains(index))
@@ -120,6 +104,19 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 			nneighs++;
 	}
 
+	if (check_offset != 0) {
+		const v3s16 dir_offset(0, check_offset,  0);
+
+		for (size_t i = 0; i != ARRLEN(dirs); i++) {
+			u32 index = vm->m_area.index(p + dirs[i] + dir_offset);
+			if (!vm->m_area.contains(index))
+				continue;
+
+			if (CONTAINS(c_spawnby, vm->m_data[index].getContent()))
+				nneighs++;
+		}
+
+	}
 	if (nneighs < nspawnby)
 		return false;
 
@@ -127,51 +124,64 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 }
 
 
-size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
+	// Skip if y ranges do not overlap
+	if (nmax.Y < y_min || y_max < nmin.Y)
+		return;
+
 	PcgRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
 
 	// Divide area into parts
 	// If chunksize is changed it may no longer be divisable by sidelen
-	if (carea_size % sidelen)
+	if (carea_size % sidelen != 0)
 		sidelen = carea_size;
 
-	s16 divlen = carea_size / sidelen;
 	int area = sidelen * sidelen;
 
-	for (s16 z0 = 0; z0 < divlen; z0++)
-	for (s16 x0 = 0; x0 < divlen; x0++) {
-		v2s16 p2d_center( // Center position of part of division
-			nmin.X + sidelen / 2 + sidelen * x0,
-			nmin.Z + sidelen / 2 + sidelen * z0
-		);
-		v2s16 p2d_min( // Minimum edge of part of division
-			nmin.X + sidelen * x0,
-			nmin.Z + sidelen * z0
-		);
-		v2s16 p2d_max( // Maximum edge of part of division
-			nmin.X + sidelen + sidelen * x0 - 1,
-			nmin.Z + sidelen + sidelen * z0 - 1
-		);
+	for (s16 z0 = 0; z0 < carea_size; z0 += sidelen)
+	for (s16 x0 = 0; x0 < carea_size; x0 += sidelen) {
+		v2s16 p2d_min(nmin.X + x0, nmin.Z + z0);
+		v2s16 p2d_max(nmin.X + x0 + sidelen - 1, nmin.Z + z0 + sidelen - 1);
 
+		bool cover = false;
 		// Amount of decorations
 		float nval = (flags & DECO_USE_NOISE) ?
-			NoisePerlin2D(&np, p2d_center.X, p2d_center.Y, mapseed) :
+			NoisePerlin2D(&np, p2d_min.X + sidelen / 2, p2d_min.Y + sidelen / 2, mapseed) :
 			fill_ratio;
 		u32 deco_count = 0;
-		float deco_count_f = (float)area * nval;
-		if (deco_count_f >= 1.f) {
-			deco_count = deco_count_f;
-		} else if (deco_count_f > 0.f) {
-			// For low density decorations calculate a chance for 1 decoration
-			if (ps.range(1000) <= deco_count_f * 1000.f)
-				deco_count = 1;
+
+		if (nval >= 10.0f) {
+			// Complete coverage. Disable random placement to avoid
+			// redundant multiple placements at one position.
+			cover = true;
+			deco_count = area;
+		} else {
+			float deco_count_f = (float)area * nval;
+			if (deco_count_f >= 1.0f) {
+				deco_count = deco_count_f;
+			} else if (deco_count_f > 0.0f) {
+				// For very low density calculate a chance for 1 decoration
+				if (ps.range(1000) <= deco_count_f * 1000.0f)
+					deco_count = 1;
+			}
 		}
 
+		s16 x = p2d_min.X - 1;
+		s16 z = p2d_min.Y;
+
 		for (u32 i = 0; i < deco_count; i++) {
-			s16 x = ps.range(p2d_min.X, p2d_max.X);
-			s16 z = ps.range(p2d_min.Y, p2d_max.Y);
+			if (!cover) {
+				x = ps.range(p2d_min.X, p2d_max.X);
+				z = ps.range(p2d_min.Y, p2d_max.Y);
+			} else {
+				x++;
+				if (x == p2d_max.X + 1) {
+					z++;
+					x = p2d_min.X;
+				}
+			}
 			int mapindex = carea_size * (z - nmin.Z) + (x - nmin.X);
 
 			if ((flags & DECO_ALL_FLOORS) ||
@@ -179,8 +189,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 				// All-surfaces decorations
 				// Check biome of column
 				if (mg->biomemap && !biomes.empty()) {
-					std::unordered_set<u8>::const_iterator iter =
-						biomes.find(mg->biomemap[mapindex]);
+					auto iter = biomes.find(mg->biomemap[mapindex]);
 					if (iter == biomes.end())
 						continue;
 				}
@@ -202,8 +211,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 						v3s16 pos(x, y, z);
 						if (generate(mg->vm, &ps, pos, false))
-							mg->gennotify.addEvent(
-									GENNOTIFY_DECORATION, pos, index);
+							mg->gennotify.addDecorationEvent(pos, index);
 					}
 				}
 
@@ -215,8 +223,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 						v3s16 pos(x, y, z);
 						if (generate(mg->vm, &ps, pos, true))
-							mg->gennotify.addEvent(
-									GENNOTIFY_DECORATION, pos, index);
+							mg->gennotify.addDecorationEvent(pos, index);
 					}
 				}
 			} else { // Heightmap decorations
@@ -232,24 +239,57 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 					continue;
 
 				if (mg->biomemap && !biomes.empty()) {
-					std::unordered_set<u8>::const_iterator iter =
-						biomes.find(mg->biomemap[mapindex]);
+					auto iter = biomes.find(mg->biomemap[mapindex]);
 					if (iter == biomes.end())
 						continue;
 				}
 
 				v3s16 pos(x, y, z);
 				if (generate(mg->vm, &ps, pos, false))
-					mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
+					mg->gennotify.addDecorationEvent(pos, index);
 			}
 		}
 	}
 
-	return 0;
+	return;
+}
+
+
+void Decoration::cloneTo(Decoration *def) const
+{
+	ObjDef::cloneTo(def);
+	def->flags = flags;
+	def->mapseed = mapseed;
+	def->c_place_on = c_place_on;
+	def->check_offset = check_offset;
+	def->sidelen = sidelen;
+	def->y_min = y_min;
+	def->y_max = y_max;
+	def->fill_ratio = fill_ratio;
+	def->np = np;
+	def->c_spawnby = c_spawnby;
+	def->nspawnby = nspawnby;
+	def->place_offset_y = place_offset_y;
+	def->biomes = biomes;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+ObjDef *DecoSimple::clone() const
+{
+	auto def = new DecoSimple();
+	Decoration::cloneTo(def);
+
+	def->c_decos = c_decos;
+	def->deco_height = deco_height;
+	def->deco_height_max = deco_height_max;
+	def->deco_param2 = deco_param2;
+	def->deco_param2_max = deco_param2_max;
+
+	return def;
+}
 
 
 void DecoSimple::resolveNodeNames()
@@ -295,7 +335,7 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 		pr->range(deco_param2, deco_param2_max) : deco_param2;
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
 
 	if (ceiling) {
@@ -331,6 +371,31 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 ///////////////////////////////////////////////////////////////////////////////
 
 
+DecoSchematic::~DecoSchematic()
+{
+	if (was_cloned)
+		delete schematic;
+}
+
+
+ObjDef *DecoSchematic::clone() const
+{
+	auto def = new DecoSchematic();
+	Decoration::cloneTo(def);
+	NodeResolver::cloneTo(def);
+
+	def->rotation = rotation;
+	/* FIXME: We do not own this schematic, yet we only have a pointer to it
+	 * and not a handle. We are left with no option but to clone it ourselves.
+	 * This is a waste of memory and should be replaced with an alternative
+	 * approach sometime. */
+	def->schematic = dynamic_cast<Schematic*>(schematic->clone());
+	def->was_cloned = true;
+
+	return def;
+}
+
+
 size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 {
 	// Schematic could have been unloaded but not the decoration
@@ -360,16 +425,46 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceilin
 	if (p.Y < vm->m_area.MinEdge.Y)
 		return 0;
 
-	if (flags & DECO_PLACE_CENTER_X)
-		p.X -= (schematic->size.X - 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Z)
-		p.Z -= (schematic->size.Z - 1) / 2;
-
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
+
+	if (flags & DECO_PLACE_CENTER_X) {
+		if (rot == ROTATE_0 || rot == ROTATE_180)
+			p.X -= (schematic->size.X - 1) / 2;
+		else
+			p.Z -= (schematic->size.X - 1) / 2;
+	}
+	if (flags & DECO_PLACE_CENTER_Z) {
+		if (rot == ROTATE_0 || rot == ROTATE_180)
+			p.Z -= (schematic->size.Z - 1) / 2;
+		else
+			p.X -= (schematic->size.Z - 1) / 2;
+	}
+
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	schematic->blitToVManip(vm, p, rot, force_placement);
 
 	return 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+ObjDef *DecoLSystem::clone() const
+{
+	auto def = new DecoLSystem();
+	Decoration::cloneTo(def);
+
+	def->tree_def = tree_def;
+	return def;
+}
+
+
+size_t DecoLSystem::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
+{
+	if (!canPlaceDecoration(vm, p))
+		return 0;
+
+	// Make sure that tree_def can't be modified, since it is shared.
+	const auto &ref = *tree_def;
+	return treegen::make_ltree(*vm, p, ref);
 }

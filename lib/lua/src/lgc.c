@@ -1,5 +1,5 @@
 /*
-** $Id: lgc.c,v 2.38.1.1 2007/12/27 13:02:25 roberto Exp $
+** $Id: lgc.c,v 2.38.1.2 2011/03/18 18:05:38 roberto Exp $
 ** Garbage Collector
 ** See Copyright Notice in lua.h
 */
@@ -164,8 +164,13 @@ static int traversetable (global_State *g, Table *h) {
     markobject(g, h->metatable);
   mode = gfasttm(g, h->metatable, TM_MODE);
   if (mode && ttisstring(mode)) {  /* is there a weak mode? */
-    weakkey = (strchr(svalue(mode), 'k') != NULL);
-    weakvalue = (strchr(svalue(mode), 'v') != NULL);
+    // Android's 'FORTIFY libc' calls __builtin_object_size on the argument of strchr.
+    // This produces an incorrect size for the expression `svalue(mode)`, causing
+    // an assertion. By placing it in a temporary, __builtin_object_size returns
+    // -1 (for unknown size) which functions correctly.
+    const char *tmp = svalue(mode);
+    weakkey = (strchr(tmp, 'k') != NULL);
+    weakvalue = (strchr(tmp, 'v') != NULL);
     if (weakkey || weakvalue) {  /* is really weak? */
       h->marked &= ~(KEYWEAK | VALUEWEAK);  /* clear bits */
       h->marked |= cast_byte((weakkey << KEYWEAKBIT) |
@@ -310,7 +315,7 @@ static l_mem propagatemark (global_State *g) {
       traverseproto(g, p);
       return sizeof(Proto) + sizeof(Instruction) * p->sizecode +
                              sizeof(Proto *) * p->sizep +
-                             sizeof(TValue) * p->sizek + 
+                             sizeof(TValue) * p->sizek +
                              sizeof(int) * p->sizelineinfo +
                              sizeof(LocVar) * p->sizelocvars +
                              sizeof(TString *) * p->sizeupvalues;
@@ -627,7 +632,6 @@ void luaC_step (lua_State *L) {
     }
   }
   else {
-    lua_assert(g->totalbytes >= g->estimate);
     setthreshold(g);
   }
 }
@@ -697,7 +701,7 @@ void luaC_linkupval (lua_State *L, UpVal *uv) {
   GCObject *o = obj2gco(uv);
   o->gch.next = g->rootgc;  /* link upvalue into `rootgc' list */
   g->rootgc = o;
-  if (isgray(o)) { 
+  if (isgray(o)) {
     if (g->gcstate == GCSpropagate) {
       gray2black(o);  /* closed upvalues need barrier */
       luaC_barrier(L, uv, uv->v);

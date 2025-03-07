@@ -1,5 +1,3 @@
--- Minetest: builtin/constants.lua
-
 --
 -- Constants values for use with the Lua API
 --
@@ -24,7 +22,7 @@ core.MAP_BLOCKSIZE = 16
 -- Default maximal HP of a player
 core.PLAYER_MAX_HP_DEFAULT = 20
 -- Default maximal breath of a player
-core.PLAYER_MAX_BREATH_DEFAULT = 11
+core.PLAYER_MAX_BREATH_DEFAULT = 10
 
 -- light.h
 -- Maximum value for node 'light_source' parameter

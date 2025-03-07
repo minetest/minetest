@@ -1,22 +1,17 @@
-cmake_minimum_required(VERSION 2.6)
-
-if(${CMAKE_VERSION} STREQUAL "2.8.2")
-	# Bug http://vtk.org/Bug/view.php?id=11020
-	message(WARNING "CMake/CPack version 2.8.2 will not create working .deb packages!")
-endif()
+cmake_minimum_required(VERSION 3.12)
 
 # This can be read from ${PROJECT_NAME} after project() is called
-project(minetest)
-set(PROJECT_NAME_CAPITALIZED "Minetest")
+project(luanti)
+set(PROJECT_NAME_CAPITALIZED "Luanti")
 
-# Works only for cmake 3.1 and greater
-set(CMAKE_CXX_STANDARD 11)
-set(GCC_MINIMUM_VERSION "4.8")
-set(CLANG_MINIMUM_VERSION "3.4")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(GCC_MINIMUM_VERSION "7.5")
+set(CLANG_MINIMUM_VERSION "7.0.1")
 
-# Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
-set(VERSION_MAJOR 0)
-set(VERSION_MINOR 5)
+# You should not need to edit these manually, use util/bump_version.sh
+set(VERSION_MAJOR 5)
+set(VERSION_MINOR 12)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
@@ -25,7 +20,7 @@ set(DEVELOPMENT_BUILD TRUE)
 
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 if(VERSION_EXTRA)
-	set(VERSION_STRING ${VERSION_STRING}-${VERSION_EXTRA})
+	set(VERSION_STRING "${VERSION_STRING}-${VERSION_EXTRA}")
 elseif(DEVELOPMENT_BUILD)
 	set(VERSION_STRING "${VERSION_STRING}-dev")
 endif()
@@ -35,10 +30,37 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
 	set(VERSION_STRING "${VERSION_STRING}-debug")
 endif()
 
-message(STATUS "*** Will build version ${VERSION_STRING} ***")
-
-
 # Configuration options
+set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
+set(BUILD_SERVER FALSE CACHE BOOL "Build server")
+set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
+set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")
+set(BUILD_DOCUMENTATION TRUE CACHE BOOL "Build documentation")
+
+set(DEFAULT_ENABLE_LTO TRUE)
+# by default don't enable on Debug builds to get faster builds
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(DEFAULT_ENABLE_LTO FALSE)
+endif()
+#### LTO testing list ####
+# - Linux: seems to work always
+# - win32/msvc: works
+# - win32/gcc: fails to link
+# - win32/clang: works
+# - macOS on x86: seems to be fine
+# - macOS on ARM: crashes, see <https://github.com/luanti-org/luanti/issues/14397>
+# Note: since CMake has no easy architecture detection disabling for Mac entirely
+#### ####
+if((WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU") OR APPLE)
+	set(DEFAULT_ENABLE_LTO FALSE)
+endif()
+set(ENABLE_LTO ${DEFAULT_ENABLE_LTO} CACHE BOOL "Use Link Time Optimization")
+
+set(BUILD_WITH_TRACY FALSE CACHE BOOL
+	"Fetch and build with the Tracy profiler client")
+set(FETCH_TRACY_GIT_TAG "master" CACHE STRING
+	"Git tag for fetching Tracy client. Match with your server (gui) version")
+
 set(DEFAULT_RUN_IN_PLACE FALSE)
 if(WIN32)
 	set(DEFAULT_RUN_IN_PLACE TRUE)
@@ -46,10 +68,13 @@ endif()
 set(RUN_IN_PLACE ${DEFAULT_RUN_IN_PLACE} CACHE BOOL
 	"Run directly in source directory structure")
 
-
-set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
-set(BUILD_SERVER FALSE CACHE BOOL "Build server")
-
+message(STATUS "*** Will build version ${VERSION_STRING} ***")
+message(STATUS "BUILD_CLIENT: " ${BUILD_CLIENT})
+message(STATUS "BUILD_SERVER: " ${BUILD_SERVER})
+message(STATUS "BUILD_UNITTESTS: " ${BUILD_UNITTESTS})
+message(STATUS "BUILD_BENCHMARKS: " ${BUILD_BENCHMARKS})
+message(STATUS "BUILD_DOCUMENTATION: " ${BUILD_DOCUMENTATION})
+message(STATUS "RUN_IN_PLACE: " ${RUN_IN_PLACE})
 
 set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 
@@ -58,13 +83,59 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type: Debug or Release" FORCE)
 endif()
 
+set(ENABLE_UPDATE_CHECKER (NOT ${DEVELOPMENT_BUILD}) CACHE BOOL
+	"Whether to enable update checks by default")
+
 # Included stuff
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+# Load default options for Android
+if(ANDROID)
+	cmake_minimum_required(VERSION 3.20)
+	include(AndroidLibs)
+endif()
 
-# This is done here so that relative search paths are more reasonable
-find_package(Irrlicht)
 
+if(TRUE)
+	message(STATUS "Using imported IrrlichtMt at subdirectory 'irr'")
+	if(BUILD_CLIENT)
+		add_subdirectory(irr EXCLUDE_FROM_ALL)
+
+		if(NOT TARGET IrrlichtMt)
+			message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
+		endif()
+	else()
+		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
+		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/irr/include")
+	endif()
+endif()
+
+if (ENABLE_LTO OR CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+	include(CheckIPOSupported)
+	check_ipo_supported(RESULT lto_supported OUTPUT lto_output)
+	if(lto_supported)
+		set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+		message(STATUS "LTO/IPO is enabled")
+	else()
+		set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+		message(STATUS "LTO/IPO was requested but is not supported by the compiler: ${lto_output}")
+	endif()
+else()
+	message(STATUS "LTO/IPO is not enabled")
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${GCC_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
+	endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
+	endif()
+endif()
 
 # Installation
 
@@ -90,19 +161,20 @@ elseif(UNIX) # Linux, BSD etc
 		set(EXAMPLE_CONF_DIR ".")
 		set(MANDIR "unix/man")
 		set(XDG_APPS_DIR "unix/applications")
-		set(APPDATADIR "unix/metainfo")
+		set(METAINFODIR "unix/metainfo")
 		set(ICONDIR "unix/icons")
 		set(LOCALEDIR "locale")
 	else()
-		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}")
-		set(BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
-		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}")
-		set(MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
+		include(GNUInstallDirs)
+		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+		set(BINDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}")
+		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}")
+		set(MANDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_MANDIR}")
 		set(EXAMPLE_CONF_DIR ${DOCDIR})
-		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
-		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/metainfo")
-		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
-		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/locale")
+		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/applications")
+		set(METAINFODIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/metainfo")
+		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/icons")
+		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LOCALEDIR}")
 	endif()
 endif()
 
@@ -164,7 +236,12 @@ if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/texture_packs_here.txt" DESTINATION "${SHAREDIR}/textures")
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games" DESTINATION "${SHAREDIR}" PATTERN ".git*" EXCLUDE)
+set(INSTALL_DEVTEST FALSE CACHE BOOL "Install Development Test")
+
+if(INSTALL_DEVTEST)
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHAREDIR}/games/"
+		PATTERN ".git*" EXCLUDE )
+endif()
 
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
@@ -175,76 +252,107 @@ if(BUILD_CLIENT)
 	endif()
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
-
-install(FILES "README.md" DESTINATION "${DOCDIR}")
-install(FILES "LICENSE.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/texture_packs.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/world_format.txt" DESTINATION "${DOCDIR}")
+install(FILES "README.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/client_lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/menu_lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/texture_packs.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/world_format.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 if(UNIX AND NOT APPLE)
-	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
+	install(FILES "doc/luanti.6" "doc/luantiserver.6" DESTINATION "${MANDIR}/man6")
 	install(FILES "misc/net.minetest.minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
-	install(FILES "misc/net.minetest.minetest.appdata.xml" DESTINATION "${APPDATADIR}")
-	install(FILES "misc/minetest.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
-	install(FILES "misc/minetest-xorg-icon-128.png"
+	install(FILES "misc/net.minetest.minetest.metainfo.xml" DESTINATION "${METAINFODIR}")
+	install(FILES "misc/luanti.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
+	install(FILES "misc/luanti-xorg-icon-128.png"
 		DESTINATION "${ICONDIR}/hicolor/128x128/apps"
-		RENAME "minetest.png")
+		RENAME "luanti.png")
 endif()
 
 if(APPLE)
-	install(FILES "misc/minetest-icon.icns" DESTINATION "${SHAREDIR}")
-	install(FILES "misc/Info.plist" DESTINATION "${BUNDLE_PATH}/Contents")
+	install(FILES "misc/luanti-icon.icns" DESTINATION "${SHAREDIR}")
+	install(FILES "${CMAKE_BINARY_DIR}/Info.plist" DESTINATION "${BUNDLE_PATH}/Contents")
+endif()
+
+if(CMAKE_GENERATOR STREQUAL "Xcode")
+	set(client_RESOURCES "${CMAKE_SOURCE_DIR}/misc/luanti-icon.icns")
 endif()
 
 # Library pack
 find_package(GMP REQUIRED)
-find_package(Json REQUIRED)
+find_package(Json 1.0.0 REQUIRED)
 find_package(Lua REQUIRED)
+if(NOT USE_LUAJIT)
+	add_subdirectory(lib/bitop)
+endif()
+add_subdirectory(lib/sha256)
 
-# JsonCPP doesn't compile well on GCC 4.8
-if(NOT ENABLE_SYSTEM_JSONCPP)
-	set(GCC_MINIMUM_VERSION "4.9")
+if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
+	add_subdirectory(lib/catch2)
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${GCC_MINIMUM_VERSION}")
-		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
-			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
-	endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
-		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
-			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
-	endif()
-endif()
+add_subdirectory(lib/tiniergltf)
 
 # Subdirectories
 # Be sure to add all relevant definitions above this
-
 add_subdirectory(src)
-
 
 # CPack
 
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "An InfiniMiner/Minecraft inspired game")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A free open-source voxel game engine with easy modding and game creation.")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set(CPACK_PACKAGE_VENDOR "celeron55")
 set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
 
-if(WIN32)
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win64")
-	else()
-		set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win32")
-	endif()
+include(CPackComponent)
 
-	set(CPACK_GENERATOR ZIP)
+cpack_add_component(Docs
+	DISPLAY_NAME "Documentation"
+	DESCRIPTION "Documentation about ${PROJECT_NAME_CAPITALIZED} and ${PROJECT_NAME_CAPITALIZED} modding"
+)
+
+if(WIN32)
+	# Include all dynamically linked runtime libraries such as MSVCRxxx.dll
+	include(InstallRequiredSystemLibraries)
+
+	if(RUN_IN_PLACE)
+		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win64")
+		else()
+			set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win32")
+		endif()
+
+		set(CPACK_GENERATOR ZIP)
+
+	else()
+		set(CPACK_GENERATOR WIX)
+		set(CPACK_PACKAGE_NAME "${PROJECT_NAME_CAPITALIZED}")
+		set(CPACK_PACKAGE_INSTALL_DIRECTORY ".")
+		set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "${PROJECT_NAME_CAPITALIZED}")
+		set(CPACK_CREATE_DESKTOP_LINKS ${PROJECT_NAME})
+		set(CPACK_PACKAGING_INSTALL_PREFIX "/${PROJECT_NAME_CAPITALIZED}")
+
+		set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/misc/luanti-icon.ico")
+		# Supported languages can be found at
+		# http://wixtoolset.org/documentation/manual/v3/wixui/wixui_localization.html
+		#set(CPACK_WIX_CULTURES "ar-SA,bg-BG,ca-ES,hr-HR,cs-CZ,da-DK,nl-NL,en-US,et-EE,fi-FI,fr-FR,de-DE")
+		set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/misc/CPACK_WIX_UI_BANNER.BMP")
+		set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/misc/CPACK_WIX_UI_DIALOG.BMP")
+
+		set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/doc/lgpl-2.1.txt")
+
+		# The correct way would be to include both x32 and x64 into one installer
+		# and install the appropriate one.
+		# CMake does not support that, so there are two separate GUID's
+		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(CPACK_WIX_UPGRADE_GUID "745A0FB3-5552-44CA-A587-A91C397CCC56")
+		else()
+			set(CPACK_WIX_UPGRADE_GUID "814A2E2D-2779-4BBD-9ACD-FC3BD51FBBA2")
+		endif()
+	endif()
 elseif(APPLE)
 	set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-osx")
@@ -259,14 +367,31 @@ include(CPack)
 
 
 # Add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in
-			${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
-	add_custom_target(doc
-		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-		COMMENT "Generating API documentation with Doxygen" VERBATIM
-	)
+if(BUILD_DOCUMENTATION)
+	find_package(Doxygen)
+	if(DOXYGEN_FOUND)
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in
+				${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
+		add_custom_target(doc
+			${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
+			COMMENT "Generating API documentation with Doxygen" VERBATIM
+		)
+	endif()
 endif()
 
+# Fetch Tracy
+if(BUILD_WITH_TRACY)
+	include(FetchContent)
+
+	message(STATUS "Fetching Tracy (${FETCH_TRACY_GIT_TAG})...")
+	FetchContent_Declare(
+		tracy
+		GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+		GIT_TAG ${FETCH_TRACY_GIT_TAG}
+		GIT_SHALLOW TRUE
+		GIT_PROGRESS TRUE
+	)
+	FetchContent_MakeAvailable(tracy)
+	message(STATUS "Fetching Tracy - done")
+endif()

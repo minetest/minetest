@@ -29,7 +29,14 @@
 #include "exceptions.h"
 #include "util/string.h"
 
-extern FlagDesc flagdesc_noiseparams[];
+#if defined(RANDOM_MIN)
+#undef RANDOM_MIN
+#endif
+#if defined(RANDOM_MAX)
+#undef RANDOM_MAX
+#endif
+
+extern const FlagDesc flagdesc_noiseparams[];
 
 // Note: this class is not polymorphic so that its high level of
 // optimizability may be preserved in the common use case
@@ -37,40 +44,46 @@ class PseudoRandom {
 public:
 	const static u32 RANDOM_RANGE = 32767;
 
-	inline PseudoRandom(int seed=0):
-		m_next(seed)
+	inline PseudoRandom(s32 seed_=0)
 	{
+		seed(seed_);
 	}
 
-	inline void seed(int seed)
+	inline void seed(s32 seed)
 	{
 		m_next = seed;
 	}
 
-	inline int next()
+	inline u32 next()
 	{
-		m_next = m_next * 1103515245 + 12345;
-		return (unsigned)(m_next / 65536) % (RANDOM_RANGE + 1);
+		m_next = static_cast<u32>(m_next) * 1103515245U + 12345U;
+		// Signed division is required due to backwards compatibility
+		return static_cast<u32>(m_next / 65536) % (RANDOM_RANGE + 1U);
 	}
 
-	inline int range(int min, int max)
+	inline s32 range(s32 min, s32 max)
 	{
 		if (max < min)
 			throw PrngException("Invalid range (max < min)");
 		/*
 		Here, we ensure the range is not too large relative to RANDOM_MAX,
-		as otherwise the effects of bias would become noticable.  Unlike
+		as otherwise the effects of bias would become noticeable.  Unlike
 		PcgRandom, we cannot modify this RNG's range as it would change the
 		output of this RNG for reverse compatibility.
 		*/
-		if ((u32)(max - min) > (RANDOM_RANGE + 1) / 10)
+		if (static_cast<u32>(max - min) > (RANDOM_RANGE + 1) / 5)
 			throw PrngException("Range too large");
 
 		return (next() % (max - min + 1)) + min;
 	}
 
+	// Allow save and restore of state
+	inline s32 getState() const
+	{
+		return m_next;
+	}
 private:
-	int m_next;
+	s32 m_next;
 };
 
 class PcgRandom {
@@ -87,6 +100,9 @@ public:
 	void bytes(void *out, size_t len);
 	s32 randNormalDist(s32 min, s32 max, int num_trials=6);
 
+	// Allow save and restore of state
+	void getState(u64 state[2]) const;
+	void setState(const u64 state[2]);
 private:
 	u64 m_state;
 	u64 m_inc;
@@ -139,7 +155,7 @@ public:
 	float *persist_buf = nullptr;
 	float *result = nullptr;
 
-	Noise(NoiseParams *np, s32 seed, u32 sx, u32 sy, u32 sz=1);
+	Noise(const NoiseParams *np, s32 seed, u32 sx, u32 sy, u32 sz=1);
 	~Noise();
 
 	void setSize(u32 sx, u32 sy, u32 sz=1);
@@ -185,8 +201,8 @@ private:
 
 };
 
-float NoisePerlin2D(NoiseParams *np, float x, float y, s32 seed);
-float NoisePerlin3D(NoiseParams *np, float x, float y, float z, s32 seed);
+float NoisePerlin2D(const NoiseParams *np, float x, float y, s32 seed);
+float NoisePerlin3D(const NoiseParams *np, float x, float y, float z, s32 seed);
 
 inline float NoisePerlin2D_PO(NoiseParams *np, float x, float xoff,
 	float y, float yoff, s32 seed)
@@ -216,15 +232,6 @@ float noise3d_gradient(float x, float y, float z, s32 seed, bool eased=false);
 
 float noise2d_perlin(float x, float y, s32 seed,
 		int octaves, float persistence, bool eased=true);
-
-float noise2d_perlin_abs(float x, float y, s32 seed,
-		int octaves, float persistence, bool eased=true);
-
-float noise3d_perlin(float x, float y, float z, s32 seed,
-		int octaves, float persistence, bool eased=false);
-
-float noise3d_perlin_abs(float x, float y, float z, s32 seed,
-		int octaves, float persistence, bool eased=false);
 
 inline float easeCurve(float t)
 {

@@ -137,6 +137,18 @@ LUA_API lua_CFunction lua_atpanic (lua_State *L, lua_CFunction panicf) {
 }
 
 
+/* MINETEST-SPECIFIC CHANGE */
+LUA_API lua_CFunctionwrapper lua_atccall (lua_State *L,
+                                          lua_CFunctionwrapper wrapf) {
+  lua_CFunctionwrapper old;
+  lua_lock(L);
+  old = G(L)->wrapcf;
+  G(L)->wrapcf = wrapf;
+  lua_unlock(L);
+  return old;
+}
+
+
 LUA_API lua_State *lua_newthread (lua_State *L) {
   lua_State *L1;
   lua_lock(L);
@@ -211,7 +223,7 @@ LUA_API void lua_replace (lua_State *L, int idx) {
   api_checkvalidindex(L, o);
   if (idx == LUA_ENVIRONINDEX) {
     Closure *func = curr_func(L);
-    api_check(L, ttistable(L->top - 1)); 
+    api_check(L, ttistable(L->top - 1));
     func->c.env = hvalue(L->top - 1);
     luaC_barrier(L, func, L->top - 1);
   }
@@ -771,7 +783,7 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 
 #define checkresults(L,na,nr) \
      api_check(L, (nr) == LUA_MULTRET || (L->ci->top - L->top >= (nr) - (na)))
-	
+
 
 LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
   StkId func;

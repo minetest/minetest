@@ -1,26 +1,14 @@
-/*
-Minetest
-Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #include "test.h"
 #include <algorithm>
 #include "server/mods.h"
-#include "test_config.h"
+#include "settings.h"
+#include "util/string.h"
+
+#define SUBGAME_ID "devtest"
 
 class TestServerModManager : public TestBase
 {
@@ -29,6 +17,8 @@ public:
 	const char *getName() { return "TestServerModManager"; }
 
 	void runTests(IGameDef *gamedef);
+
+	std::string m_worlddir;
 
 	void testCreation();
 	void testIsConsistent();
@@ -46,16 +36,26 @@ static TestServerModManager g_test_instance;
 
 void TestServerModManager::runTests(IGameDef *gamedef)
 {
-	const char *saved_env_mt_subgame_path = getenv("MINETEST_SUBGAME_PATH");
-#ifdef WIN32
-	{
-		std::string subgame_path("MINETEST_SUBGAME_PATH=");
-		subgame_path.append(TEST_SUBGAME_PATH);
-		_putenv(subgame_path.c_str());
+	if (!findSubgame(SUBGAME_ID).isValid()) {
+		warningstream << "Can't find game " SUBGAME_ID ", skipping this module." << std::endl;
+		return;
 	}
-#else
-	setenv("MINETEST_SUBGAME_PATH", TEST_SUBGAME_PATH, 1);
-#endif
+
+	auto test_mods = getTestTempDirectory().append(DIR_DELIM "test_mods");
+	{
+		auto p = test_mods + (DIR_DELIM "test_mod" DIR_DELIM);
+		fs::CreateAllDirs(p);
+		std::ofstream ofs1(p + "mod.conf", std::ios::out | std::ios::binary);
+		ofs1 << "name = test_mod\n"
+			<< "description = Does nothing\n";
+		std::ofstream ofs2(p + "init.lua", std::ios::out | std::ios::binary);
+		ofs2 << "-- intentionally empty\n";
+	}
+
+	setenv("MINETEST_MOD_PATH", test_mods.c_str(), 1);
+
+	m_worlddir = getTestTempDirectory().append(DIR_DELIM "world");
+	fs::CreateDir(m_worlddir);
 
 	TEST(testCreation);
 	TEST(testIsConsistent);
@@ -67,75 +67,79 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 	TEST(testGetModNames);
 	TEST(testGetModMediaPathsWrongDir);
 	TEST(testGetModMediaPaths);
+	// TODO: test MINETEST_GAME_PATH
 
-#ifdef WIN32
-	{
-		std::string subgame_path("MINETEST_SUBGAME_PATH=");
-		if (saved_env_mt_subgame_path)
-			subgame_path.append(saved_env_mt_subgame_path);
-		_putenv(subgame_path.c_str());
-	}
-#else
-	if (saved_env_mt_subgame_path)
-		setenv("MINETEST_SUBGAME_PATH", saved_env_mt_subgame_path, 1);
-	else
-		unsetenv("MINETEST_SUBGAME_PATH");
-#endif
+	unsetenv("MINETEST_MOD_PATH");
 }
 
 void TestServerModManager::testCreation()
 {
-	ServerModManager sm(TEST_WORLDDIR);
+	std::string path = m_worlddir + DIR_DELIM + "world.mt";
+	Settings world_config;
+	world_config.set("gameid", SUBGAME_ID);
+	world_config.set("load_mod_test_mod", "true");
+	UASSERTEQ(bool, world_config.updateConfigFile(path.c_str()), true);
+
+	ServerModManager sm(m_worlddir);
 }
 
 void TestServerModManager::testGetModsWrongDir()
 {
 	// Test in non worlddir to ensure no mods are found
-	ServerModManager sm(std::string(TEST_WORLDDIR) + DIR_DELIM + "..");
+	ServerModManager sm(m_worlddir + DIR_DELIM + "..");
 	UASSERTEQ(bool, sm.getMods().empty(), true);
 }
 
 void TestServerModManager::testUnsatisfiedMods()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	ServerModManager sm(m_worlddir);
 	UASSERTEQ(bool, sm.getUnsatisfiedMods().empty(), true);
 }
 
 void TestServerModManager::testIsConsistent()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	ServerModManager sm(m_worlddir);
 	UASSERTEQ(bool, sm.isConsistent(), true);
 }
 
 void TestServerModManager::testGetMods()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	ServerModManager sm(m_worlddir);
 	const auto &mods = sm.getMods();
-	UASSERTEQ(bool, mods.empty(), false);
+	// `ls ./games/devtest/mods | wc -l` + 1 (test mod)
+	UASSERTEQ(std::size_t, mods.size(), 34 + 1);
 
-	// Ensure we found default mod inside the test folder
+	// Ensure we found basenodes mod (part of devtest)
+	// and test_mod (for testing MINETEST_MOD_PATH).
 	bool default_found = false;
+	bool test_mod_found = false;
 	for (const auto &m : mods) {
-		if (m.name == "default")
+		if (m.name == "basenodes")
 			default_found = true;
+		if (m.name == "test_mod")
+			test_mod_found = true;
 
 		// Verify if paths are not empty
 		UASSERTEQ(bool, m.path.empty(), false);
 	}
 
 	UASSERTEQ(bool, default_found, true);
+	UASSERTEQ(bool, test_mod_found, true);
+
+	UASSERT(mods.front().name == "first_mod");
+	UASSERT(mods.back().name == "last_mod");
 }
 
 void TestServerModManager::testGetModspec()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	ServerModManager sm(m_worlddir);
 	UASSERTEQ(const ModSpec *, sm.getModSpec("wrongmod"), NULL);
-	UASSERT(sm.getModSpec("default") != NULL);
+	UASSERT(sm.getModSpec("basenodes") != NULL);
 }
 
 void TestServerModManager::testGetModNamesWrongDir()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR) + DIR_DELIM + "..");
+	ServerModManager sm(m_worlddir + DIR_DELIM + "..");
 	std::vector<std::string> result;
 	sm.getModNames(result);
 	UASSERTEQ(bool, result.empty(), true);
@@ -143,16 +147,16 @@ void TestServerModManager::testGetModNamesWrongDir()
 
 void TestServerModManager::testGetModNames()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	ServerModManager sm(m_worlddir);
 	std::vector<std::string> result;
 	sm.getModNames(result);
 	UASSERTEQ(bool, result.empty(), false);
-	UASSERT(std::find(result.begin(), result.end(), "default") != result.end());
+	UASSERT(std::find(result.begin(), result.end(), "basenodes") != result.end());
 }
 
 void TestServerModManager::testGetModMediaPathsWrongDir()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR) + DIR_DELIM + "..");
+	ServerModManager sm(m_worlddir + DIR_DELIM + "..");
 	std::vector<std::string> result;
 	sm.getModsMediaPaths(result);
 	UASSERTEQ(bool, result.empty(), true);
@@ -160,10 +164,15 @@ void TestServerModManager::testGetModMediaPathsWrongDir()
 
 void TestServerModManager::testGetModMediaPaths()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	ServerModManager sm(m_worlddir);
 	std::vector<std::string> result;
 	sm.getModsMediaPaths(result);
 	UASSERTEQ(bool, result.empty(), false);
-	// We should have 5 folders for each mod (textures, media, locale, model, sounds)
-	UASSERTEQ(unsigned long, result.size() % 5, 0);
+
+	// Test media overriding:
+	// unittests depends on basenodes to override default_dirt.png,
+	// thus the unittests texture path must come first in the returned media paths to take priority
+	auto it = std::find(result.begin(), result.end(), sm.getModSpec("unittests")->path + DIR_DELIM + "textures");
+	UASSERT(it != result.end());
+	UASSERT(std::find(++it, result.end(), sm.getModSpec("basenodes")->path + DIR_DELIM + "textures") != result.end());
 }

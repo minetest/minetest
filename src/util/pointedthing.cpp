@@ -1,48 +1,12 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "pointedthing.h"
 
 #include "serialize.h"
 #include "exceptions.h"
 #include <sstream>
-
-PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
-	const v3s16 &real_under, const v3f &point, const v3s16 &normal,
-	f32 distSq):
-	type(POINTEDTHING_NODE),
-	node_undersurface(under),
-	node_abovesurface(above),
-	node_real_undersurface(real_under),
-	intersection_point(point),
-	intersection_normal(normal),
-	distanceSq(distSq)
-{}
-
-PointedThing::PointedThing(s16 id, const v3f &point, const v3s16 &normal,
-	f32 distSq) :
-	type(POINTEDTHING_OBJECT),
-	object_id(id),
-	intersection_point(point),
-	intersection_normal(normal),
-	distanceSq(distSq)
-{}
 
 std::string PointedThing::dump() const
 {
@@ -80,7 +44,7 @@ void PointedThing::serialize(std::ostream &os) const
 		writeV3S16(os, node_abovesurface);
 		break;
 	case POINTEDTHING_OBJECT:
-		writeS16(os, object_id);
+		writeU16(os, object_id);
 		break;
 	}
 }
@@ -90,7 +54,7 @@ void PointedThing::deSerialize(std::istream &is)
 	int version = readU8(is);
 	if (version != 0) throw SerializationError(
 			"unsupported PointedThing version");
-	type = (PointedThingType) readU8(is);
+	type = static_cast<PointedThingType>(readU8(is));
 	switch (type) {
 	case POINTEDTHING_NOTHING:
 		break;
@@ -99,7 +63,7 @@ void PointedThing::deSerialize(std::istream &is)
 		node_abovesurface = readV3S16(is);
 		break;
 	case POINTEDTHING_OBJECT:
-		object_id = readS16(is);
+		object_id = readU16(is);
 		break;
 	default:
 		throw SerializationError("unsupported PointedThingType");
@@ -116,18 +80,14 @@ bool PointedThing::operator==(const PointedThing &pt2) const
 	{
 		if ((node_undersurface != pt2.node_undersurface)
 				|| (node_abovesurface != pt2.node_abovesurface)
-				|| (node_real_undersurface != pt2.node_real_undersurface))
+				|| (node_real_undersurface != pt2.node_real_undersurface)
+				|| (pointability != pt2.pointability))
 			return false;
 	}
 	else if (type == POINTEDTHING_OBJECT)
 	{
-		if (object_id != pt2.object_id)
+		if (object_id != pt2.object_id || pointability != pt2.pointability)
 			return false;
 	}
 	return true;
-}
-
-bool PointedThing::operator!=(const PointedThing &pt2) const
-{
-	return !(*this == pt2);
 }

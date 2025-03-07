@@ -1,28 +1,13 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
 #include "irrlichttypes.h"
 #include "exceptions.h"
 #include <iostream>
-#include "util/pointer.h"
+#include <string_view>
 
 /*
 	Map format serialization version
@@ -63,33 +48,54 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	26: Never written; read the same as 25
 	27: Added light spreading flags to blocks
 	28: Added "private" flag to NodeMetadata
+	29: Switched compression to zstd, a bit of reorganization
 */
+
 // This represents an uninitialized or invalid format
-#define SER_FMT_VER_INVALID 255
+constexpr u8 SER_FMT_VER_INVALID = 255;
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST_READ 28
+constexpr u8 SER_FMT_VER_HIGHEST_READ = 29;
 // Saved on disk version
-#define SER_FMT_VER_HIGHEST_WRITE 28
+constexpr u8 SER_FMT_VER_HIGHEST_WRITE = 29;
 // Lowest supported serialization version
-#define SER_FMT_VER_LOWEST_READ 0
+constexpr u8 SER_FMT_VER_LOWEST_READ = 0;
 // Lowest serialization version for writing
 // Can't do < 24 anymore; we have 16-bit dynamically allocated node IDs
 // in memory; conversion just won't work in this direction.
-#define SER_FMT_VER_LOWEST_WRITE 24
+constexpr u8 SER_FMT_VER_LOWEST_WRITE = 24;
 
-inline bool ser_ver_supported(s32 v) {
+inline bool ser_ver_supported_read(s32 v)
+{
 	return v >= SER_FMT_VER_LOWEST_READ && v <= SER_FMT_VER_HIGHEST_READ;
 }
 
+inline bool ser_ver_supported_write(s32 v)
+{
+	return v >= SER_FMT_VER_LOWEST_WRITE && v <= SER_FMT_VER_HIGHEST_WRITE;
+}
+
 /*
-	Misc. serialization functions
+	Compression functions
 */
 
 void compressZlib(const u8 *data, size_t data_size, std::ostream &os, int level = -1);
-void compressZlib(const std::string &data, std::ostream &os, int level = -1);
-void decompressZlib(std::istream &is, std::ostream &os);
+inline void compressZlib(std::string_view data, std::ostream &os, int level = -1)
+{
+	compressZlib(reinterpret_cast<const u8*>(data.data()), data.size(), os, level);
+}
+void decompressZlib(std::istream &is, std::ostream &os, size_t limit = 0);
 
-// These choose between zlib and a self-made one according to version
-void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version);
-//void compress(const std::string &data, std::ostream &os, u8 version);
+void compressZstd(const u8 *data, size_t data_size, std::ostream &os, int level = 0);
+inline void compressZstd(std::string_view data, std::ostream &os, int level = 0)
+{
+	compressZstd(reinterpret_cast<const u8*>(data.data()), data.size(), os, level);
+}
+void decompressZstd(std::istream &is, std::ostream &os);
+
+// These choose between zstd, zlib and a self-made one according to version
+void compress(const u8 *data, u32 size, std::ostream &os, u8 version, int level = -1);
+inline void compress(std::string_view data, std::ostream &os, u8 version, int level = -1)
+{
+	compress(reinterpret_cast<const u8*>(data.data()), data.size(), os, version, level);
+}
 void decompress(std::istream &is, std::ostream &os, u8 version);

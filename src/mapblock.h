@@ -1,25 +1,10 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
-#include <set>
+#include <vector>
 #include "irr_v3d.h"
 #include "mapnode.h"
 #include "exceptions.h"
@@ -30,7 +15,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
-#include "mapgen/mapgen.h"
 
 class Map;
 class NodeMetadataList;
@@ -44,27 +28,27 @@ class VoxelManipulator;
 //// MapBlock modified reason flags
 ////
 
-#define MOD_REASON_INITIAL                   (1 << 0)
-#define MOD_REASON_REALLOCATE                (1 << 1)
-#define MOD_REASON_SET_IS_UNDERGROUND        (1 << 2)
-#define MOD_REASON_SET_LIGHTING_COMPLETE     (1 << 3)
-#define MOD_REASON_SET_GENERATED             (1 << 4)
-#define MOD_REASON_SET_NODE                  (1 << 5)
-#define MOD_REASON_SET_NODE_NO_CHECK         (1 << 6)
-#define MOD_REASON_SET_TIMESTAMP             (1 << 7)
-#define MOD_REASON_REPORT_META_CHANGE        (1 << 8)
-#define MOD_REASON_CLEAR_ALL_OBJECTS         (1 << 9)
-#define MOD_REASON_BLOCK_EXPIRED             (1 << 10)
-#define MOD_REASON_ADD_ACTIVE_OBJECT_RAW     (1 << 11)
-#define MOD_REASON_REMOVE_OBJECTS_REMOVE     (1 << 12)
-#define MOD_REASON_REMOVE_OBJECTS_DEACTIVATE (1 << 13)
-#define MOD_REASON_TOO_MANY_OBJECTS          (1 << 14)
-#define MOD_REASON_STATIC_DATA_ADDED         (1 << 15)
-#define MOD_REASON_STATIC_DATA_REMOVED       (1 << 16)
-#define MOD_REASON_STATIC_DATA_CHANGED       (1 << 17)
-#define MOD_REASON_EXPIRE_DAYNIGHTDIFF       (1 << 18)
-#define MOD_REASON_VMANIP                    (1 << 19)
-#define MOD_REASON_UNKNOWN                   (1 << 20)
+enum ModReason : u32 {
+	MOD_REASON_REALLOCATE                 = 1 << 0,
+	MOD_REASON_SET_IS_UNDERGROUND         = 1 << 1,
+	MOD_REASON_SET_LIGHTING_COMPLETE      = 1 << 2,
+	MOD_REASON_SET_GENERATED              = 1 << 3,
+	MOD_REASON_SET_NODE                   = 1 << 4,
+	MOD_REASON_SET_TIMESTAMP              = 1 << 5,
+	MOD_REASON_REPORT_META_CHANGE         = 1 << 6,
+	MOD_REASON_CLEAR_ALL_OBJECTS          = 1 << 7,
+	MOD_REASON_BLOCK_EXPIRED              = 1 << 8,
+	MOD_REASON_ADD_ACTIVE_OBJECT_RAW      = 1 << 9,
+	MOD_REASON_REMOVE_OBJECTS_REMOVE      = 1 << 10,
+	MOD_REASON_REMOVE_OBJECTS_DEACTIVATE  = 1 << 11,
+	MOD_REASON_TOO_MANY_OBJECTS           = 1 << 12,
+	MOD_REASON_STATIC_DATA_ADDED          = 1 << 13,
+	MOD_REASON_STATIC_DATA_REMOVED        = 1 << 14,
+	MOD_REASON_STATIC_DATA_CHANGED        = 1 << 15,
+	MOD_REASON_EXPIRE_IS_AIR              = 1 << 16,
+	MOD_REASON_VMANIP                     = 1 << 17,
+	MOD_REASON_UNKNOWN                    = 1 << 18,
+};
 
 ////
 //// MapBlock itself
@@ -73,26 +57,26 @@ class VoxelManipulator;
 class MapBlock
 {
 public:
-	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy=false);
+	MapBlock(v3s16 pos, IGameDef *gamedef);
 	~MapBlock();
 
-	/*virtual u16 nodeContainerId() const
+	// Any server-modding code can "delete" arbitrary blocks (i.e. with
+	// core.delete_area), which makes them orphan. Avoid using orphan blocks for
+	// anything.
+	bool isOrphan() const
 	{
-		return NODECONTAINER_ID_MAPBLOCK;
-	}*/
+		return m_orphan;
+	}
 
-	Map * getParent()
+	void makeOrphan()
 	{
-		return m_parent;
+		m_orphan = true;
 	}
 
 	void reallocate()
 	{
-		delete[] data;
-		data = new MapNode[nodecount];
 		for (u32 i = 0; i < nodecount; i++)
 			data[i] = MapNode(CONTENT_IGNORE);
-
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_REALLOCATE);
 	}
 
@@ -114,6 +98,8 @@ public:
 		} else if (mod == m_modified) {
 			m_modified_reason |= reason;
 		}
+		if (mod == MOD_STATE_WRITE_NEEDED)
+			contents.clear();
 	}
 
 	inline u32 getModified()
@@ -138,17 +124,6 @@ public:
 	//// Flags
 	////
 
-	inline bool isDummy()
-	{
-		return !data;
-	}
-
-	inline void unDummify()
-	{
-		assert(isDummy()); // Pre-condition
-		reallocate();
-	}
-
 	// is_underground getter/setter
 	inline bool getIsUnderground()
 	{
@@ -165,7 +140,7 @@ public:
 	{
 		if (newflags != m_lighting_complete) {
 			m_lighting_complete = newflags;
-			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_COMPLETE);
+			raiseModified(MOD_STATE_WRITE_AT_UNLOAD, MOD_REASON_SET_LIGHTING_COMPLETE);
 		}
 	}
 
@@ -177,7 +152,7 @@ public:
 	inline void setLightingComplete(LightBank bank, u8 direction,
 		bool is_complete)
 	{
-		assert(direction >= 0 && direction <= 5);
+		assert(direction <= 5);
 		if (bank == LIGHTBANK_NIGHT) {
 			direction += 6;
 		}
@@ -192,7 +167,7 @@ public:
 
 	inline bool isLightingComplete(LightBank bank, u8 direction)
 	{
-		assert(direction >= 0 && direction <= 5);
+		assert(direction <= 5);
 		if (bank == LIGHTBANK_NIGHT) {
 			direction += 6;
 		}
@@ -226,10 +201,14 @@ public:
 		return m_pos_relative;
 	}
 
-	inline core::aabbox3d<s16> getBox()
+	inline core::aabbox3d<s16> getBox() {
+		return getBox(getPosRelative());
+	}
+
+	static inline core::aabbox3d<s16> getBox(const v3s16 &pos_relative)
 	{
-		return core::aabbox3d<s16>(getPosRelative(),
-				getPosRelative()
+		return core::aabbox3d<s16>(pos_relative,
+				pos_relative
 				+ v3s16(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE)
 				- v3s16(1,1,1));
 	}
@@ -240,8 +219,7 @@ public:
 
 	inline bool isValidPosition(s16 x, s16 y, s16 z)
 	{
-		return data
-			&& x >= 0 && x < MAP_BLOCKSIZE
+		return x >= 0 && x < MAP_BLOCKSIZE
 			&& y >= 0 && y < MAP_BLOCKSIZE
 			&& z >= 0 && z < MAP_BLOCKSIZE;
 	}
@@ -272,7 +250,7 @@ public:
 		return getNode(p.X, p.Y, p.Z, &is_valid);
 	}
 
-	inline void setNode(s16 x, s16 y, s16 z, MapNode & n)
+	inline void setNode(s16 x, s16 y, s16 z, MapNode n)
 	{
 		if (!isValidPosition(x, y, z))
 			throw InvalidPositionException();
@@ -281,7 +259,7 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE);
 	}
 
-	inline void setNode(v3s16 p, MapNode & n)
+	inline void setNode(v3s16 p, MapNode n)
 	{
 		setNode(p.X, p.Y, p.Z, n);
 	}
@@ -290,99 +268,52 @@ public:
 	//// Non-checking variants of the above
 	////
 
-	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position)
-	{
-		*valid_position = data != nullptr;
-		if (!*valid_position)
-			return {CONTENT_IGNORE};
-
-		return data[z * zstride + y * ystride + x];
-	}
-
-	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position)
-	{
-		return getNodeNoCheck(p.X, p.Y, p.Z, valid_position);
-	}
-
-	////
-	//// Non-checking, unsafe variants of the above
-	//// MapBlock must be loaded by another function in the same scope/function
-	//// Caller must ensure that this is not a dummy block (by calling isDummy())
-	////
-
-	inline const MapNode &getNodeUnsafe(s16 x, s16 y, s16 z)
+	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z)
 	{
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline const MapNode &getNodeUnsafe(v3s16 &p)
+	inline MapNode getNodeNoCheck(v3s16 p)
 	{
-		return getNodeUnsafe(p.X, p.Y, p.Z);
+		return getNodeNoCheck(p.X, p.Y, p.Z);
 	}
 
-	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
+	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode n)
 	{
-		if (!data)
-			throw InvalidPositionException();
-
 		data[z * zstride + y * ystride + x] = n;
-		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE_NO_CHECK);
+		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE);
 	}
 
-	inline void setNodeNoCheck(v3s16 p, MapNode & n)
+	inline void setNodeNoCheck(v3s16 p, MapNode n)
 	{
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
-	}
-
-	// These functions consult the parent container if the position
-	// is not valid on this MapBlock.
-	bool isValidPositionParent(v3s16 p);
-	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL);
-	void setNodeParent(v3s16 p, MapNode & n);
-
-	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
-	{
-		for (u16 z = 0; z < d; z++)
-		for (u16 y = 0; y < h; y++)
-		for (u16 x = 0; x < w; x++)
-			setNode(x0 + x, y0 + y, z0 + z, node);
 	}
 
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);
 
-	// Copies data from VoxelManipulator getPosRelative()
-	void copyFrom(VoxelManipulator &dst);
+	// Copies data from VoxelManipulator to getPosRelative()
+	void copyFrom(const VoxelManipulator &src);
 
-	// Update day-night lighting difference flag.
-	// Sets m_day_night_differs to appropriate value.
-	// These methods don't care about neighboring blocks.
-	void actuallyUpdateDayNightDiff();
+	// Update is air flag.
+	// Sets m_is_air to appropriate value.
+	void actuallyUpdateIsAir();
 
 	// Call this to schedule what the previous function does to be done
 	// when the value is actually needed.
-	void expireDayNightDiff();
+	void expireIsAirCache();
 
-	inline bool getDayNightDiff()
+	inline bool isAir()
 	{
-		if (m_day_night_differs_expired)
-			actuallyUpdateDayNightDiff();
-		return m_day_night_differs;
+		if (m_is_air_expired)
+			actuallyUpdateIsAir();
+		return m_is_air;
 	}
 
-	////
-	//// Miscellaneous stuff
-	////
+	bool onObjectsActivation();
+	bool saveStaticObject(u16 id, const StaticObject &obj, u32 reason);
 
-	/*
-		Tries to measure ground level.
-		Return value:
-			-1 = only air
-			-2 = only ground
-			-3 = random fail
-			0...MAP_BLOCKSIZE-1 = ground level
-	*/
-	s16 getGroundLevel(v2s16 p2d);
+	void step(float dtime, const std::function<bool(v3s16, MapNode, f32)> &on_timer_cb);
 
 	////
 	//// Timestamp (see m_timestamp)
@@ -436,15 +367,17 @@ public:
 
 	inline void refGrab()
 	{
+		assert(m_refcount < SHRT_MAX);
 		m_refcount++;
 	}
 
 	inline void refDrop()
 	{
+		assert(m_refcount > 0);
 		m_refcount--;
 	}
 
-	inline int refGet()
+	inline short refGet()
 	{
 		return m_refcount;
 	}
@@ -453,12 +386,12 @@ public:
 	//// Node Timers
 	////
 
-	inline NodeTimer getNodeTimer(const v3s16 &p)
+	inline NodeTimer getNodeTimer(v3s16 p)
 	{
 		return m_node_timers.get(p);
 	}
 
-	inline void removeNodeTimer(const v3s16 &p)
+	inline void removeNodeTimer(v3s16 p)
 	{
 		m_node_timers.remove(p);
 	}
@@ -480,49 +413,17 @@ public:
 	// These don't write or read version by itself
 	// Set disk to true for on-disk format, false for over-the-network format
 	// Precondition: version >= SER_FMT_VER_LOWEST_WRITE
-	void serialize(std::ostream &os, u8 version, bool disk);
+	void serialize(std::ostream &result, u8 version, bool disk, int compression_level);
 	// If disk == true: In addition to doing other things, will add
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
-private:
-	/*
-		Private methods
-	*/
 
-	void deSerialize_pre22(std::istream &is, u8 version, bool disk);
-
-	/*
-		Used only internally, because changes can't be tracked
-	*/
-
-	inline MapNode &getNodeRef(s16 x, s16 y, s16 z)
-	{
-		if (!isValidPosition(x, y, z))
-			throw InvalidPositionException();
-
-		return data[z * zstride + y * ystride + x];
-	}
-
-	inline MapNode &getNodeRef(v3s16 &p)
-	{
-		return getNodeRef(p.X, p.Y, p.Z);
-	}
-
-public:
-	/*
-		Public member variables
-	*/
-
-#ifndef SERVER // Only on client
-	MapBlockMesh *mesh = nullptr;
-#endif
-
-	NodeMetadataList m_node_metadata;
-	NodeTimerList m_node_timers;
-	StaticObjectList m_static_objects;
+	bool storeActiveObject(u16 id);
+	// clearObject and return removed objects count
+	u32 clearObjects();
 
 	static const u32 ystride = MAP_BLOCKSIZE;
 	static const u32 zstride = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
@@ -531,47 +432,93 @@ public:
 
 private:
 	/*
-		Private member variables
+		Private methods
 	*/
 
-	// NOTE: Lots of things rely on this being the Map
-	Map *m_parent;
+	void deSerialize_pre22(std::istream &is, u8 version, bool disk);
+
+	/*
+	 * PLEASE NOTE: When adding something here be mindful of position and size
+	 * of member variables! This is also the reason for the weird public-private
+	 * interleaving.
+	 * If in doubt consult `pahole` to see the effects.
+	 */
+
+public:
+#if CHECK_CLIENT_BUILD() // Only on client
+	MapBlockMesh *mesh = nullptr;
+
+	// marks the sides which are opaque: 00+Z-Z+Y-Y+X-X
+	u8 solid_sides = 0;
+#endif
+
+private:
+	// see isOrphan()
+	bool m_orphan = false;
+
 	// Position in blocks on parent
 	v3s16 m_pos;
 
-	/* This is the precalculated m_pos_relative value
-	* This caches the value, improving performance by removing 3 s16 multiplications
-	* at runtime on each getPosRelative call
-	* For a 5 minutes runtime with valgrind this removes 3 * 19M s16 multiplications
-	* The gain can be estimated in Release Build to 3 * 100M multiply operations for 5 mins
-	*/
+	/* Precalculated m_pos_relative value
+	 * This caches the value, improving performance by removing 3 s16 multiplications
+	 * at runtime on each getPosRelative call.
+	 * For a 5 minutes runtime with valgrind this removes 3 * 19M s16 multiplications.
+	 * The gain can be estimated in Release Build to 3 * 100M multiply operations for 5 mins.
+	 */
 	v3s16 m_pos_relative;
 
+	/*
+		Reference count; currently used for determining if this block is in
+		the list of blocks to be drawn.
+	*/
+	short m_refcount = 0;
+
+	/*
+	 * Note that this is not an inline array because that has implications for
+	 * heap fragmentation (the array is exactly 16K), CPU caches and/or
+	 * optimizability of algorithms working on this array.
+	 */
+	MapNode *const data; // of `nodecount` elements
+
+	// provides the item and node definitions
 	IGameDef *m_gamedef;
 
 	/*
-		If NULL, block is a dummy block.
-		Dummy blocks are used for caching not-found-on-disk blocks.
+		When the block is accessed, this is set to 0.
+		Map will unload the block when this reaches a timeout.
 	*/
-	MapNode *data = nullptr;
+	float m_usage_timer = 0;
+
+public:
+	//// ABM optimizations ////
+	// True if we never want to cache content types for this block
+	bool do_not_cache_contents = false;
+	// Cache of content types
+	// This is actually a set but for the small sizes we have a vector should be
+	// more efficient.
+	// Can be empty, in which case nothing was cached yet.
+	std::vector<content_t> contents;
+
+private:
+	// Whether day and night lighting differs
+	bool m_is_air = false;
+	bool m_is_air_expired = true;
 
 	/*
 		- On the server, this is used for telling whether the
 		  block has been modified from the one on disk.
 		- On the client, this is used for nothing.
 	*/
-	u32 m_modified = MOD_STATE_WRITE_NEEDED;
-	u32 m_modified_reason = MOD_REASON_INITIAL;
+	u16 m_modified = MOD_STATE_CLEAN;
+	u32 m_modified_reason = 0;
 
 	/*
-		When propagating sunlight and the above block doesn't exist,
-		sunlight is assumed if this is false.
-
-		In practice this is set to true if the block is completely
-		undeground with nothing visible above the ground except
-		caves.
+		When block is removed from active blocks, this is set to gametime.
+		Value BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.
 	*/
-	bool is_underground = false;
+	u32 m_timestamp = BLOCK_TIMESTAMP_UNDEFINED;
+	// The on-disk (or to-be on-disk) timestamp value
+	u32 m_disk_timestamp = BLOCK_TIMESTAMP_UNDEFINED;
 
 	/*!
 	 * Each bit indicates if light spreading was finished
@@ -583,38 +530,32 @@ private:
 	*/
 	u16 m_lighting_complete = 0xFFFF;
 
-	// Whether day and night lighting differs
-	bool m_day_night_differs = false;
-	bool m_day_night_differs_expired = true;
-
+	// Whether mapgen has generated the content of this block (persisted)
 	bool m_generated = false;
 
 	/*
-		When block is removed from active blocks, this is set to gametime.
-		Value BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.
-	*/
-	u32 m_timestamp = BLOCK_TIMESTAMP_UNDEFINED;
-	// The on-disk (or to-be on-disk) timestamp value
-	u32 m_disk_timestamp = BLOCK_TIMESTAMP_UNDEFINED;
+		When propagating sunlight and the above block doesn't exist,
+		sunlight is assumed if this is false.
 
-	/*
-		When the block is accessed, this is set to 0.
-		Map will unload the block when this reaches a timeout.
+		In practice this is set to true if the block is completely
+		undeground with nothing visible above the ground except
+		caves.
 	*/
-	float m_usage_timer = 0;
+	bool is_underground = false;
 
-	/*
-		Reference count; currently used for determining if this block is in
-		the list of blocks to be drawn.
-	*/
-	int m_refcount = 0;
+public:
+	NodeMetadataList m_node_metadata;
+	StaticObjectList m_static_objects;
+
+private:
+	NodeTimerList m_node_timers;
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool objectpos_over_limit(v3f p)
 {
-	const float max_limit_bs = MAX_MAP_GENERATION_LIMIT * BS;
+	const float max_limit_bs = (MAX_MAP_GENERATION_LIMIT + 0.5f) * BS;
 	return p.X < -max_limit_bs ||
 		p.X >  max_limit_bs ||
 		p.Y < -max_limit_bs ||
@@ -637,12 +578,12 @@ inline bool blockpos_over_max_limit(v3s16 p)
 /*
 	Returns the position of the block where the node is located
 */
-inline v3s16 getNodeBlockPos(const v3s16 &p)
+inline v3s16 getNodeBlockPos(v3s16 p)
 {
 	return getContainerPos(p, MAP_BLOCKSIZE);
 }
 
-inline void getNodeBlockPosWithOffset(const v3s16 &p, v3s16 &block, v3s16 &offset)
+inline void getNodeBlockPosWithOffset(v3s16 p, v3s16 &block, v3s16 &offset)
 {
 	getContainerPosWithOffset(p, MAP_BLOCKSIZE, block, offset);
 }

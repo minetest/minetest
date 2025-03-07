@@ -20,27 +20,26 @@ if(NOT GP2XWIZ)
     # Handle the QUIETLY and REQUIRED arguments and set VORBIS_FOUND
     # to TRUE if all listed variables are TRUE.
     include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args(VORBIS DEFAULT_MSG
+    find_package_handle_standard_args(Vorbis DEFAULT_MSG
         OGG_INCLUDE_DIR VORBIS_INCLUDE_DIR
         OGG_LIBRARY VORBIS_LIBRARY VORBISFILE_LIBRARY)
 else(NOT GP2XWIZ)
     find_path(VORBIS_INCLUDE_DIR tremor/ivorbisfile.h)
     find_library(VORBIS_LIBRARY NAMES vorbis_dec)
-    find_package_handle_standard_args(VORBIS DEFAULT_MSG
+    find_package_handle_standard_args(Vorbis DEFAULT_MSG
         VORBIS_INCLUDE_DIR VORBIS_LIBRARY)
 endif(NOT GP2XWIZ)
-    
+
 if(VORBIS_FOUND)
-  if(NOT GP2XWIZ)
-     set(VORBIS_LIBRARIES ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY}
-           ${OGG_LIBRARY})
-  else(NOT GP2XWIZ)
-     set(VORBIS_LIBRARIES ${VORBIS_LIBRARY})
-  endif(NOT GP2XWIZ)
+    if(NOT GP2XWIZ)
+        set(VORBIS_LIBRARIES ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY}
+            ${OGG_LIBRARY})
+    else(NOT GP2XWIZ)
+        set(VORBIS_LIBRARIES ${VORBIS_LIBRARY})
+    endif(NOT GP2XWIZ)
 else(VORBIS_FOUND)
-  set(VORBIS_LIBRARIES)
+    set(VORBIS_LIBRARIES)
 endif(VORBIS_FOUND)
 
 mark_as_advanced(OGG_INCLUDE_DIR VORBIS_INCLUDE_DIR)
 mark_as_advanced(OGG_LIBRARY VORBIS_LIBRARY VORBISFILE_LIBRARY)
-

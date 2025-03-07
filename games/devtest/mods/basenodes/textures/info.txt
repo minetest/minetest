@@ -1,0 +1,7 @@
+
+The dirt_with_grass folder is for testing loading textures from subfolders.
+If it works correctly, the default_grass_side.png file in the folder is used but
+default_grass.png is not overwritten by the file in the folder.
+
+default_dirt.png should be overwritten by the default_dirt.png in the unittests
+mod which depends on basenodes.

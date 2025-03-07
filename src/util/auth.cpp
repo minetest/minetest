@@ -1,27 +1,12 @@
-/*
-Minetest
-Copyright (C) 2015, 2016 est31 <MTest31@outlook.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2015, 2016 est31 <MTest31@outlook.com>
 
 #include <algorithm>
 #include <string>
 #include "auth.h"
 #include "base64.h"
-#include "sha1.h"
+#include "util/hashing.h"
 #include "srp.h"
 #include "util/string.h"
 #include "debug.h"
@@ -38,11 +23,8 @@ std::string translate_password(const std::string &name,
 		return "";
 
 	std::string slt = name + password;
-	SHA1 sha1;
-	sha1.addBytes(slt.c_str(), slt.length());
-	unsigned char *digest = sha1.getDigest();
-	std::string pwd = base64_encode(digest, 20);
-	free(digest);
+	std::string digest = hashing::sha1(slt);
+	std::string pwd = base64_encode(digest);
 	return pwd;
 }
 
@@ -112,8 +94,8 @@ std::string encode_srp_verifier(const std::string &verifier,
 {
 	std::ostringstream ret_str;
 	ret_str << "#1#"
-		<< base64_encode((unsigned char *)salt.c_str(), salt.size()) << "#"
-		<< base64_encode((unsigned char *)verifier.c_str(), verifier.size());
+		<< base64_encode(salt) << "#"
+		<< base64_encode(verifier);
 	return ret_str.str();
 }
 

@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_internal.h"
@@ -60,7 +45,7 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 		float time_from_last_punch,
 		const ToolCapabilities *toolcap,
 		v3f dir,
-		s16 damage)
+		s32 damage)
 {
 	SCRIPTAPI_PRECHECKHEADER
 	// Get core.registered_on_punchplayers
@@ -68,17 +53,33 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	lua_getfield(L, -1, "registered_on_punchplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
-	objectrefGetOrCreate(L, hitter);
+	if (hitter)
+		objectrefGetOrCreate(L, hitter);
+	else
+		lua_pushnil(L);
 	lua_pushnumber(L, time_from_last_punch);
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);
 	lua_pushnumber(L, damage);
 	runCallbacks(6, RUN_CALLBACKS_MODE_OR);
-	return lua_toboolean(L, -1);
+	return readParam<bool>(L, -1);
 }
 
-s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
-	s16 hp_change, const PlayerHPChangeReason &reason)
+void ScriptApiPlayer::on_rightclickplayer(ServerActiveObject *player,
+		ServerActiveObject *clicker)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	// Get core.registered_on_rightclickplayers
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_rightclickplayers");
+	// Call callbacks
+	objectrefGetOrCreate(L, player);
+	objectrefGetOrCreate(L, clicker);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
+s32 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
+	s32 hp_change, const PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -111,8 +112,7 @@ bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
-	bool positioning_handled_by_some = lua_toboolean(L, -1);
-	return positioning_handled_by_some;
+	return readParam<bool>(L, -1);
 }
 
 bool ScriptApiPlayer::on_prejoinplayer(
@@ -129,7 +129,7 @@ bool ScriptApiPlayer::on_prejoinplayer(
 	lua_pushstring(L, ip.c_str());
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
 	if (lua_isstring(L, -1)) {
-		reason->assign(lua_tostring(L, -1));
+		reason->assign(readParam<std::string>(L, -1));
 		return true;
 	}
 	return false;
@@ -148,7 +148,7 @@ bool ScriptApiPlayer::can_bypass_userlimit(const std::string &name, const std::s
 	return lua_toboolean(L, -1);
 }
 
-void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
+void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player, s64 last_login)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -157,7 +157,11 @@ void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
 	lua_getfield(L, -1, "registered_on_joinplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	if (last_login != -1)
+		lua_pushinteger(L, last_login);
+	else
+		lua_pushnil(L);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player,
@@ -196,7 +200,7 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_chat_messages
+	// Get core.registered_on_player_receive_fields
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_player_receive_fields");
 	// Call callbacks
@@ -217,16 +221,19 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
 }
 
-void ScriptApiPlayer::on_auth_failure(const std::string &name, const std::string &ip)
+void ScriptApiPlayer::on_authplayer(const std::string &name, const std::string &ip, bool is_success)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_auth_failure
+	// Get core.registered_on_authplayers
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_auth_fail");
+	lua_getfield(L, -1, "registered_on_authplayers");
+
+	// Call callbacks
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	lua_pushboolean(L, is_success);
+	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::pushMoveArguments(

@@ -1,0 +1,79 @@
+name: Bug report
+description: Create a report to help us improve
+labels: ["Unconfirmed bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please note the following:
+
+        1. **Please update Luanti to the latest stable or dev version** before submitting bug reports. Make sure the bug is still reproducible on the latest version.
+        2. This page is for reporting the bugs of **the engine itself**. For bugs in a particular game, please [search for the game in the ContentDB](https://content.luanti.org/packages/?type=game) and submit a bug report in their issue trackers.
+            * For example, you can submit issues about the Minetest Game [in its own repository](https://github.com/luanti-org/minetest_game/issues).
+        3. Please provide as many details as possible for us to spot the problem quicker.
+  - type: textarea
+    attributes:
+      label: Luanti version
+      description: |
+        Paste the Luanti version below.
+        If you are on a dev version, please also indicate the git commit hash.
+        Refer to the "About" tab of the menu or run `luanti --version` on the command line.
+      placeholder: |
+        Example:
+        Luanti 5.10.0-3ad6aee9b (Linux)
+        Using LuaJIT 2.1.1727870382
+        Built by GCC 14.2
+        Running on Linux/6.11.5 x86_64
+        BUILD_TYPE=Release
+        RUN_IN_PLACE=1
+        USE_CURL=1
+        USE_GETTEXT=1
+        USE_SOUND=1
+        STATIC_SHAREDIR="."
+        STATIC_LOCALEDIR="locale"
+      render: "true"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Operating system and version
+      description: It is recommended to upgrade your operating system to see if the problem persists.
+      placeholder: "Example: Ubuntu 22.04"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: CPU model
+      description: Usually found in OS/system settings.
+      placeholder: "Example: Intel Core i5-2410M"
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: The GPU model and renderer can be omitted if the bug is not a graphical issue.
+  - type: input
+    attributes:
+      label: GPU model
+      description: Usually found in OS/system settings.
+      placeholder: "Example: NVIDIA GeForce GTX 1660"
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: Active renderer
+      description: You can find this in the "About" tab in the main menu.
+      placeholder: "Example: ES 3.2 / ogles2 / X11"
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Summary
+      description: Describe your problem here.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Explain how the problem has happened, providing a minimal test (e.g. a minimized code snippet) where possible.
+    validations:
+      required: true

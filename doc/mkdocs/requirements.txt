@@ -1,0 +1,4 @@
+mkdocs~=1.4.3
+pygments~=2.15.1
+pymdown-extensions~=10.3
+markdown-gfm-admonition~=0.1.0

@@ -36,6 +36,10 @@ DEALINGS IN THE SOFTWARE.
 	#include <sys/thread.h> // for tid_t
 #endif
 
+#ifdef __HAIKU__
+	#include <kernel/OS.h>
+#endif
+
 /*
  * On platforms using pthreads, these five priority classes correlate to
  * even divisions between the minimum and maximum reported thread priority.
@@ -55,6 +59,7 @@ public:
 	Thread(const std::string &name="");
 	virtual ~Thread();
 	DISABLE_CLASS_COPY(Thread)
+	// Note: class cannot be moved since other references exist
 
 	/*
 	 * Begins execution of a new thread at the pure virtual method Thread::run().
@@ -71,14 +76,6 @@ public:
 	bool stop();
 
 	/*
-	 * Immediately terminates the thread.
-	 * This should be used with extreme caution, as the thread will not have
-	 * any opportunity to release resources it may be holding (such as memory
-	 * or locks).
-	 */
-	bool kill();
-
-	/*
 	 * Waits for thread to finish.
 	 * Note:  This does not stop a thread, you have to do this on your own.
 	 * Returns false immediately if the thread is not started or has been waited
@@ -89,19 +86,19 @@ public:
 	/*
 	 * Returns true if the calling thread is this Thread object.
 	 */
-	bool isCurrentThread() { return std::this_thread::get_id() == getThreadId(); }
+	bool isCurrentThread() const { return std::this_thread::get_id() == getThreadId(); }
 
-	bool isRunning() { return m_running; }
-	bool stopRequested() { return m_request_stop; }
+	bool isRunning() const { return m_running; }
+	bool stopRequested() const { return m_request_stop; }
 
-	std::thread::id getThreadId() { return m_thread_obj->get_id(); }
+	std::thread::id getThreadId() const { return m_thread_obj->get_id(); }
 
 	/*
 	 * Gets the thread return value.
 	 * Returns true if the thread has exited and the return value was available,
 	 * or false if the thread has yet to finish.
 	 */
-	bool getReturnValue(void **ret);
+	bool getReturnValue(void **ret) const;
 
 	/*
 	 * Binds (if possible, otherwise sets the affinity of) the thread to the
@@ -124,6 +121,11 @@ public:
 	bool setPriority(int prio);
 
 	/*
+	 * Returns the thread object of the current thread if it exists.
+	 */
+	static Thread *getCurrentThread();
+
+	/*
 	 * Sets the currently executing thread's name to where supported; useful
 	 * for debugging.
 	 */
@@ -140,7 +142,7 @@ protected:
 	virtual void *run() = 0;
 
 private:
-	std::thread::native_handle_type getThreadHandle()
+	std::thread::native_handle_type getThreadHandle() const
 		{ return m_thread_obj->native_handle(); }
 
 	static void threadProc(Thread *thr);

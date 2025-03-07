@@ -1,24 +1,10 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 #include <cassert>
+#include "config.h"
 #include "irrlichttypes.h"
 
 /*
@@ -35,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This brightness is reserved for sunlight
 #define LIGHT_SUN 15
 
-#ifndef SERVER
+#if IS_CLIENT_BUILD
 
 /**
  * \internal
@@ -63,25 +49,11 @@ inline u8 decode_light(u8 light)
 
 // 0.0 <= light <= 1.0
 // 0.0 <= return value <= 1.0
-inline float decode_light_f(float light_f)
-{
-	s32 i = (u32)(light_f * LIGHT_MAX + 0.5);
-
-	if (i <= 0)
-		return (float)light_decode_table[0] / 255.0;
-	if (i >= LIGHT_SUN)
-		return (float)light_decode_table[LIGHT_SUN] / 255.0;
-
-	float v1 = (float)light_decode_table[i - 1] / 255.0;
-	float v2 = (float)light_decode_table[i] / 255.0;
-	float f0 = (float)i - 0.5;
-	float f = light_f * LIGHT_MAX - f0;
-	return f * v2 + (1.0 - f) * v1;
-}
+float decode_light_f(float light_f);
 
 void set_light_table(float gamma);
 
-#endif // ifndef SERVER
+#endif
 
 // 0 <= daylight_factor <= 1000
 // 0 <= lightday, lightnight <= LIGHT_SUN

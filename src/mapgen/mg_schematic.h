@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2015-2018 paramat
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+// Copyright (C) 2015-2018 paramat
 
 #pragma once
 
@@ -63,13 +48,14 @@ class Server;
 	1 - Initial version
 	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
 	3 - Added y-slice probabilities; this allows for variable height structures
-	4 - Compressed range of node occurence prob., added per-node force placement bit
+	4 - Compressed range of node occurrence prob., added per-node force placement bit
 */
 
 //// Schematic constants
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
 #define MTSCHEM_FILE_VER_HIGHEST_READ  4
 #define MTSCHEM_FILE_VER_HIGHEST_WRITE 4
+#define MTSCHEM_MAPNODE_SER_FMT_VER    28 // Fixed serialization version for schematics since these still need to use Zlib
 
 #define MTSCHEM_PROB_MASK       0x7F
 
@@ -92,8 +78,10 @@ enum SchematicFormatType {
 
 class Schematic : public ObjDef, public NodeResolver {
 public:
-	Schematic();
+	Schematic() = default;
 	virtual ~Schematic();
+
+	ObjDef *clone() const;
 
 	virtual void resolveNodeNames();
 
@@ -103,10 +91,9 @@ public:
 		const NodeDefManager *ndef);
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 
-	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names);
-	bool serializeToMts(std::ostream *os, const std::vector<std::string> &names);
-	bool serializeToLua(std::ostream *os, const std::vector<std::string> &names,
-		bool use_comments, u32 indent_spaces);
+	bool deserializeFromMts(std::istream *is);
+	bool serializeToMts(std::ostream *os) const;
+	bool serializeToLua(std::ostream *os, bool use_comments, u32 indent_spaces) const;
 
 	void blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place);
 	bool placeOnVManip(MMVManip *vm, v3s16 p, u32 flags, Rotation rot, bool force_place);
@@ -121,12 +108,18 @@ public:
 	v3s16 size;
 	MapNode *schemdata = nullptr;
 	u8 *slice_probs = nullptr;
+
+private:
+	// Counterpart to the node resolver: Condense content_t to a sequential "m_nodenames" list
+	void condenseContentIds();
 };
 
 class SchematicManager : public ObjDefManager {
 public:
 	SchematicManager(Server *server);
 	virtual ~SchematicManager() = default;
+
+	SchematicManager *clone() const;
 
 	virtual void clear();
 
@@ -141,8 +134,8 @@ public:
 	}
 
 private:
+	SchematicManager() {};
+
 	Server *m_server;
 };
 
-void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
-	std::vector<std::string> *usednodes, const NodeDefManager *ndef);

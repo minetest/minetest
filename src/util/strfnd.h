@@ -1,33 +1,23 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
 #include <string>
+#include <string_view>
 
+// FIXME: convert this class to string_view
 template <typename T>
 class BasicStrfnd {
 	typedef std::basic_string<T> String;
 	String str;
 	size_t pos;
 public:
-	BasicStrfnd(const String &s) : str(s), pos(0) {}
+	BasicStrfnd(const String &s) { start(s); }
+	BasicStrfnd(const T *ptr) { str = ptr; pos = 0; }
+	BasicStrfnd(std::basic_string_view<T> sv) { str = sv; pos = 0; }
+
 	void start(const String &s) { str = s; pos = 0; }
 	size_t where() { return pos; }
 	void to(size_t i) { pos = i; }
@@ -48,7 +38,7 @@ public:
 		return ret;
 	}
 
-	// Returns substr up to the next occurence of sep that isn't escaped with esc ('\\')
+	// Returns substr up to the next occurrence of sep that isn't escaped with esc ('\\')
 	String next_esc(const String &sep, T esc=static_cast<T>('\\'))
 	{
 		if (pos >= str.size())

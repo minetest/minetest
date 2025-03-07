@@ -1,0 +1,146 @@
+name: windows
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'po/**.po'
+      - 'util/buildbot/**'
+      - 'misc/*.manifest'
+      - '.github/workflows/windows.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'po/**.po'
+      - 'util/buildbot/**'
+      - 'misc/*.manifest'
+      - '.github/workflows/windows.yml'
+
+jobs:
+  mingw:
+    name: "MinGW cross-compiler (${{ matrix.bits }}-bit)"
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        bits: [32, 64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install compiler
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gettext wine wine${{ matrix.bits }}
+          sudo ./util/buildbot/download_toolchain.sh /usr
+
+      - name: Build
+        run: |
+           EXISTING_MINETEST_DIR=$PWD \
+           ./util/buildbot/buildwin${{ matrix.bits }}.sh B
+
+      # Check that the resulting binary can run (DLLs etc.)
+      - name: Runtime test
+        run: |
+          dest=$(mktemp -d)
+          unzip -q -d "$dest" B/build/*.zip
+          cd "$dest"/luanti-*-win*
+          wine bin/luanti.exe --version
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "mingw${{ matrix.bits }}"
+          path: B/build/*.zip
+          if-no-files-found: error
+
+  msvc:
+    name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
+    runs-on: windows-2019
+    env:
+      VCPKG_VERSION: 01f602195983451bc83e72f4214af2cbc495aa94
+      # 2024.05.24
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp sdl2
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              arch: x86,
+              generator: "-G'Visual Studio 16 2019' -A Win32",
+              vcpkg_triplet: x86-windows
+            }
+          - {
+              arch: x64,
+              generator: "-G'Visual Studio 16 2019' -A x64",
+              vcpkg_triplet: x64-windows
+            }
+        type: [portable]
+#        type: [portable, installer]
+# The installer type is working, but disabled, to save runner jobs.
+# Enable it, when working on the installer.
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore from cache and run vcpkg
+        uses: lukka/run-vcpkg@v7
+        with:
+          vcpkgArguments: ${{env.vcpkg_packages}}
+          vcpkgDirectory: '${{ github.workspace }}\vcpkg'
+          appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
+          vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
+          vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
+
+      - name: CMake
+        run: |
+          cmake ${{matrix.config.generator}}  `
+          -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"  `
+          -DCMAKE_BUILD_TYPE=Release  `
+          -DENABLE_POSTGRESQL=OFF  `
+          -DENABLE_LUAJIT=TRUE  `
+          -DREQUIRE_LUAJIT=TRUE  `
+          -DRUN_IN_PLACE=${{ contains(matrix.type, 'portable') }} .
+
+      - name: Build
+        run: cmake --build . --config Release
+
+      - name: Unittests
+        # need this workaround for stdout to work
+        run: |
+          $proc = start .\bin\Release\luanti.exe --run-unittests -NoNewWindow -Wait -PassThru
+          exit $proc.ExitCode
+        continue-on-error: true # FIXME!!
+
+      - name: CPack
+        run: |
+          If ($env:TYPE -eq "installer")
+          {
+            cpack -G WIX -B "$env:GITHUB_WORKSPACE\Package"
+          }
+          ElseIf($env:TYPE -eq "portable")
+          {
+            cpack -G ZIP -B "$env:GITHUB_WORKSPACE\Package"
+          }
+          rm -r $env:GITHUB_WORKSPACE\Package\_CPack_Packages
+        env:
+          TYPE: ${{matrix.type}}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msvc-${{ matrix.config.arch }}-${{ matrix.type }}
+          path: .\Package\
+          if-no-files-found: error

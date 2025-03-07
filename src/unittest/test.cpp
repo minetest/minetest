@@ -1,31 +1,23 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+#include "catch.h"
 
 #include "test.h"
 
-#include "client/sound.h"
 #include "nodedef.h"
 #include "itemdef.h"
-#include "gamedef.h"
+#include "dummygamedef.h"
+#include "log_internal.h"
 #include "modchannels.h"
-#include "mods.h"
 #include "util/numeric.h"
+#include "porting.h"
+#include "debug.h"
+
+#include <iostream>
+
+#include "catch.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -40,36 +32,13 @@ content_t t_CONTENT_BRICK;
 //// TestGameDef
 ////
 
-class TestGameDef : public IGameDef {
+class TestGameDef : public DummyGameDef {
 public:
 	TestGameDef();
-	~TestGameDef();
-
-	IItemDefManager *getItemDefManager() { return m_itemdef; }
-	const NodeDefManager *getNodeDefManager() { return m_nodedef; }
-	ICraftDefManager *getCraftDefManager() { return m_craftdef; }
-	ITextureSource *getTextureSource() { return m_texturesrc; }
-	IShaderSource *getShaderSource() { return m_shadersrc; }
-	ISoundManager *getSoundManager() { return m_soundmgr; }
-	scene::ISceneManager *getSceneManager() { return m_scenemgr; }
-	IRollbackManager *getRollbackManager() { return m_rollbackmgr; }
-	EmergeManager *getEmergeManager() { return m_emergemgr; }
-
-	scene::IAnimatedMesh *getMesh(const std::string &filename) { return NULL; }
-	bool checkLocalPrivilege(const std::string &priv) { return false; }
-	u16 allocateUnknownNodeId(const std::string &name) { return 0; }
+	~TestGameDef() = default;
 
 	void defineSomeNodes();
 
-	virtual const std::vector<ModSpec> &getMods() const
-	{
-		static std::vector<ModSpec> testmodspec;
-		return testmodspec;
-	}
-	virtual const ModSpec* getModSpec(const std::string &modname) const { return NULL; }
-	virtual std::string getModStoragePath() const { return "."; }
-	virtual bool registerModStorage(ModMetadata *meta) { return true; }
-	virtual void unregisterModStorage(const std::string &name) {}
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
@@ -79,33 +48,15 @@ public:
 	}
 
 private:
-	IItemDefManager *m_itemdef = nullptr;
-	const NodeDefManager *m_nodedef = nullptr;
-	ICraftDefManager *m_craftdef = nullptr;
-	ITextureSource *m_texturesrc = nullptr;
-	IShaderSource *m_shadersrc = nullptr;
-	ISoundManager *m_soundmgr = nullptr;
-	scene::ISceneManager *m_scenemgr = nullptr;
-	IRollbackManager *m_rollbackmgr = nullptr;
-	EmergeManager *m_emergemgr = nullptr;
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };
 
 
 TestGameDef::TestGameDef() :
+	DummyGameDef(),
 	m_modchannel_mgr(new ModChannelMgr())
 {
-	m_itemdef = createItemDefManager();
-	m_nodedef = createNodeDefManager();
-
 	defineSomeNodes();
-}
-
-
-TestGameDef::~TestGameDef()
-{
-	delete m_itemdef;
-	delete m_nodedef;
 }
 
 
@@ -179,7 +130,9 @@ void TestGameDef::defineSomeNodes()
 		"{default_water.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	f.alpha = 128;
+	f.alpha = ALPHAMODE_BLEND;
+	f.light_propagates = true;
+	f.param_type = CPT_LIGHT;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 4;
 	f.is_ground_content = true;
@@ -200,7 +153,7 @@ void TestGameDef::defineSomeNodes()
 		"{default_lava.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	f.alpha = 128;
+	f.alpha = ALPHAMODE_OPAQUE;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 7;
 	f.light_source = LIGHT_MAX-1;
@@ -259,27 +212,38 @@ bool run_tests()
 	u64 t1 = porting::getTimeMs();
 	TestGameDef gamedef;
 
-	g_logger.setLevelSilenced(LL_ERROR, true);
-
 	u32 num_modules_failed     = 0;
 	u32 num_total_tests_failed = 0;
 	u32 num_total_tests_run    = 0;
 	std::vector<TestBase *> &testmods = TestManager::getTestModules();
-	for (size_t i = 0; i != testmods.size(); i++) {
-		if (!testmods[i]->testModule(&gamedef))
+	for (auto *testmod: testmods) {
+		if (!testmod->testModule(&gamedef))
 			num_modules_failed++;
 
-		num_total_tests_failed += testmods[i]->num_tests_failed;
-		num_total_tests_run += testmods[i]->num_tests_run;
+		num_total_tests_failed += testmod->num_tests_failed;
+		num_total_tests_run += testmod->num_tests_run;
+	}
+
+	rawstream << "Catch test results: " << std::endl;
+	Catch::Session session{};
+	auto config = session.configData();
+	config.skipBenchmarks = true;
+	config.allowZeroTests = true;
+	session.useConfigData(config);
+	auto exit_code = session.run();
+	// We count all the Catch tests as one test for Minetest's own logging
+	// because we don't have a way to tell how many individual tests Catch ran.
+	++num_total_tests_run;
+	if (exit_code != 0) {
+		++num_modules_failed;
+		++num_total_tests_failed;
 	}
 
 	u64 tdiff = porting::getTimeMs() - t1;
 
-	g_logger.setLevelSilenced(LL_ERROR, false);
-
 	const char *overall_status = (num_modules_failed == 0) ? "PASSED" : "FAILED";
 
-	rawstream
+	rawstream << "\n"
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
 		<< "Unit Test Results: " << overall_status << std::endl
@@ -290,7 +254,50 @@ bool run_tests()
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
 
-	return num_modules_failed;
+	return num_modules_failed == 0;
+}
+
+static TestBase *findTestModule(const std::string &module_name) {
+	std::vector<TestBase *> &testmods = TestManager::getTestModules();
+	for (auto *testmod: testmods) {
+		if (module_name == testmod->getName())
+			return testmod;
+	}
+	return nullptr;
+}
+
+bool run_tests(const std::string &module_name)
+{
+	TestGameDef gamedef;
+
+	auto testmod = findTestModule(module_name);
+	if (!testmod) {
+		rawstream << "Did not find module, searching Catch tests: " << module_name << std::endl;
+		Catch::Session session;
+		session.configData().testsOrTags.push_back(module_name);
+		auto catch_test_failures = session.run();
+		return catch_test_failures == 0;
+	}
+
+	u64 t1 = porting::getTimeMs();
+
+	bool ok = testmod->testModule(&gamedef);
+
+	u64 tdiff = porting::getTimeMs() - t1;
+
+	const char *overall_status = ok ? "PASSED" : "FAILED";
+
+	rawstream << "\n"
+		<< "++++++++++++++++++++++++++++++++++++++++"
+		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
+		<< "Unit Test Results: " << overall_status << std::endl
+		<< "    " << testmod->num_tests_failed << " / "
+		<< testmod->num_tests_run << " failed tests." << std::endl
+		<< "    Testing took " << tdiff << "ms." << std::endl
+		<< "++++++++++++++++++++++++++++++++++++++++"
+		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
+
+	return ok;
 }
 
 ////
@@ -322,24 +329,42 @@ std::string TestBase::getTestTempDirectory()
 	if (!m_test_dir.empty())
 		return m_test_dir;
 
-	char buf[32];
-	snprintf(buf, sizeof(buf), "%08X", myrand());
-
-	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
-	if (!fs::CreateDir(m_test_dir))
-		throw TestFailedException();
-
+	m_test_dir = fs::CreateTempDir();
+	UASSERT(!m_test_dir.empty());
 	return m_test_dir;
 }
 
 std::string TestBase::getTestTempFile()
 {
 	char buf[32];
-	snprintf(buf, sizeof(buf), "%08X", myrand());
+	porting::mt_snprintf(buf, sizeof(buf), "%08X", myrand());
 
 	return getTestTempDirectory() + DIR_DELIM + buf + ".tmp";
 }
 
+void TestBase::runTest(const char *name, std::function<void()> &&test)
+{
+	u64 t1 = porting::getTimeMs();
+	try {
+		test();
+		rawstream << "[PASS] ";
+	} catch (TestFailedException &e) {
+		rawstream << "Test assertion failed: " << e.message << std::endl;
+		rawstream << "    at " << e.file << ":" << e.line << std::endl;
+		rawstream << "[FAIL] ";
+		num_tests_failed++;
+	}
+#if CATCH_UNHANDLED_EXCEPTIONS == 1
+	catch (std::exception &e) {
+		rawstream << "Caught unhandled exception: " << e.what() << std::endl;
+		rawstream << "[FAIL] ";
+		num_tests_failed++;
+	}
+#endif
+	num_tests_run++;
+	u64 tdiff = porting::getTimeMs() - t1;
+	rawstream << name << " - " << tdiff << "ms" << std::endl;
+}
 
 /*
 	NOTE: These tests became non-working then NodeContainer was removed.
@@ -355,7 +380,7 @@ struct TestMapBlock: public TestBase
 
 		MapNode node;
 		bool position_valid;
-		core::list<v3s16> validity_exceptions;
+		std::list<v3s16> validity_exceptions;
 
 		TC()
 		{
@@ -366,7 +391,7 @@ struct TestMapBlock: public TestBase
 		{
 			//return position_valid ^ (p==position_valid_exception);
 			bool exception = false;
-			for(core::list<v3s16>::Iterator i=validity_exceptions.begin();
+			for(std::list<v3s16>::iterator i=validity_exceptions.begin();
 					i != validity_exceptions.end(); i++)
 			{
 				if(p == *i)
@@ -528,7 +553,7 @@ struct TestMapBlock: public TestBase
 			parent.node.setContent(CONTENT_AIR);
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_SUN);
 			parent.node.setLight(LIGHTBANK_NIGHT, 0);
-			core::map<v3s16, bool> light_sources;
+			std::map<v3s16, bool> light_sources;
 			// The bottom block is invalid, because we have a shadowing node
 			UASSERT(b.propagateSunlight(light_sources) == false);
 			UASSERT(b.getNode(v3s16(1,4,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
@@ -551,11 +576,11 @@ struct TestMapBlock: public TestBase
 			while being underground
 		*/
 		{
-			// Make neighbours to exist and set some non-sunlight to them
+			// Make neighbors to exist and set some non-sunlight to them
 			parent.position_valid = true;
 			b.setIsUnderground(true);
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
-			core::map<v3s16, bool> light_sources;
+			std::map<v3s16, bool> light_sources;
 			// The block below should be valid because there shouldn't be
 			// sunlight in there either
 			UASSERT(b.propagateSunlight(light_sources, true) == true);
@@ -586,7 +611,7 @@ struct TestMapBlock: public TestBase
 					}
 				}
 			}
-			// Make neighbours invalid
+			// Make neighbors invalid
 			parent.position_valid = false;
 			// Add exceptions to the top of the bottom block
 			for(u16 x=0; x<MAP_BLOCKSIZE; x++)
@@ -596,7 +621,7 @@ struct TestMapBlock: public TestBase
 			}
 			// Lighting value for the valid nodes
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
-			core::map<v3s16, bool> light_sources;
+			std::map<v3s16, bool> light_sources;
 			// Bottom block is not valid
 			UASSERT(b.propagateSunlight(light_sources) == false);
 		}
@@ -649,12 +674,12 @@ struct TestMapSector: public TestBase
 		// Create one with no heightmaps
 		ServerMapSector sector(&parent, v2s16(1,1));
 
-		UASSERT(sector.getBlockNoCreateNoEx(0) == 0);
-		UASSERT(sector.getBlockNoCreateNoEx(1) == 0);
+		UASSERT(sector.getBlockNoCreateNoEx(0) == nullptr);
+		UASSERT(sector.getBlockNoCreateNoEx(1) == nullptr);
 
 		MapBlock * bref = sector.createBlankBlock(-2);
 
-		UASSERT(sector.getBlockNoCreateNoEx(0) == 0);
+		UASSERT(sector.getBlockNoCreateNoEx(0) == nullptr);
 		UASSERT(sector.getBlockNoCreateNoEx(-2) == bref);
 
 		//TODO: Check for AlreadyExistsException

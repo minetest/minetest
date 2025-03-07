@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -24,7 +9,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 
 class Map;
-class ServerMap;
 class MapBlock;
 class MMVManip;
 
@@ -45,7 +29,7 @@ namespace voxalgo
  */
 void update_lighting_nodes(
 	Map *map,
-	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
+	const std::vector<std::pair<v3s16, MapNode>> &oldnodes,
 	std::map<v3s16, MapBlock*> &modified_blocks);
 
 /*!
@@ -68,7 +52,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
  * \param modified_blocks output, contains all map blocks that
  * the function modified
  */
-void blit_back_with_light(ServerMap *map, MMVManip *vm,
+void blit_back_with_light(Map *map, MMVManip *vm,
 	std::map<v3s16, MapBlock*> *modified_blocks);
 
 /*!
@@ -77,7 +61,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
  *
  * \param block the block to update
  */
-void repair_block_light(ServerMap *map, MapBlock *block,
+void repair_block_light(Map *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> *modified_blocks);
 
 /*!

@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2016 T4im
 --
 --This program is free software; you can redistribute it and/or modify
@@ -43,13 +43,21 @@ local register_functions = {
 	register_on_item_eat = 0,
 	register_on_punchplayer = 0,
 	register_on_player_hpchange = 0,
+	register_on_mapblocks_changed = 0,
 }
+
+local function regex_escape(s)
+	return s:gsub("(%W)", "%%%1")
+end
 
 ---
 -- Create an unique instrument name.
 -- Generate a missing label with a running index number.
 --
 local counts = {}
+local worldmods_path = regex_escape(core.get_worldpath())
+local user_path = regex_escape(core.get_user_path())
+local builtin_path = regex_escape(core.get_builtin_path())
 local function generate_name(def)
 	local class, label, func_name = def.class, def.label, def.func_name
 	if label then
@@ -64,7 +72,16 @@ local function generate_name(def)
 	local index_id = def.mod .. (class or func_name)
 	local index = counts[index_id] or 1
 	counts[index_id] = index + 1
-	return format("%s[%d] %s", class or func_name, index, class and func_name or ""):trim()
+	local info = debug.getinfo(def.func)
+	local modpath = regex_escape(core.get_modpath(def.mod) or "")
+	local source = info.source
+	if modpath ~= "" then
+		source = source:gsub(modpath, def.mod)
+	end
+	source = source:gsub(worldmods_path, "")
+	source = source:gsub(builtin_path, "builtin" .. DIR_DELIM)
+	source = source:gsub(user_path, "")
+	return format("%s[%d] %s#%s", class or func_name, index, source, info.linedefined)
 end
 
 ---
@@ -88,7 +105,7 @@ local function instrument(def)
 	if not def or not def.func then
 		return
 	end
-	def.mod = def.mod or get_current_modname()
+	def.mod = def.mod or get_current_modname() or "??"
 	local modname = def.mod
 	local instrument_name = generate_name(def)
 	local func = def.func
@@ -102,8 +119,9 @@ local function instrument(def)
 		-- also called https://en.wikipedia.org/wiki/Continuation_passing_style
 		-- Compared to table creation and unpacking it won't lose `nil` returns
 		-- and is expected to be faster
-		-- `measure` will be executed after time() and func(...)
-		return measure(modname, instrument_name, time(), func(...))
+		-- `measure` will be executed after func(...)
+		local start = time()
+		return measure(modname, instrument_name, start, func(...))
 	end
 end
 
@@ -117,7 +135,8 @@ end
 local function assert_can_be_called(func, func_name, level)
 	if not can_be_called(func) then
 		-- Then throw an *helpful* error, by pointing on our caller instead of us.
-		error(format("Invalid argument to %s. Expected function-like type instead of '%s'.", func_name, type(func)), level + 1)
+		error(format("Invalid argument to %s. Expected function-like type instead of '%s'.",
+				func_name, type(func)), level + 1)
 	end
 end
 
@@ -159,9 +178,10 @@ local function init()
 		-- Simple iteration would ignore lookup via __index.
 		local entity_instrumentation = {
 			"on_activate",
+			"on_deactivate",
 			"on_step",
 			"on_punch",
-			"rightclick",
+			"on_rightclick",
 			"get_staticdata",
 		}
 		-- Wrap register_entity() to instrument them on registration.
@@ -197,8 +217,9 @@ local function init()
 		-- Wrap register_lbm() to automatically instrument lbms.
 		local orig_register_lbm = core.register_lbm
 		core.register_lbm = function(spec)
-			spec.action = instrument {
-				func = spec.action,
+			local k = spec.bulk_action ~= nil and "bulk_action" or "action"
+			spec[k] = instrument {
+				func = spec[k],
 				class = "LBM",
 				label = spec.label or spec.name,
 			}

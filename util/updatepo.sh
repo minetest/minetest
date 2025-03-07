@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Update/create minetest po files
+# Update/create luanti po files
 
 # an auxiliary function to abort processing with an optional error
 # message
@@ -13,7 +13,7 @@ abort() {
 # this script is. Relative paths are fine for us so we can just
 # use the following trick (works both for manual invocations and for
 # script found from PATH)
-scriptisin="$(dirname "$(which "$0")")"
+scriptisin="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # The script is executed from the parent of po/, which is also the
 # parent of the script directory and of the src/ directory.
@@ -47,26 +47,35 @@ cd ..
 # First thing first, update the .pot template. We place it in the po/
 # directory at the top level. You a recent enough xgettext that supports
 # --package-name
-potfile=po/minetest.pot
-xgettext --package-name=minetest \
+potfile=po/luanti.pot
+echo "updating pot"
+xgettext --package-name=luanti \
+	--add-comments='~' \
 	--sort-by-file \
 	--add-location=file \
 	--keyword=N_ \
 	--keyword=wgettext \
+	--keyword=fwgettext \
 	--keyword=fgettext \
 	--keyword=fgettext_ne \
 	--keyword=strgettext \
 	--keyword=wstrgettext \
+	--keyword=core.gettext \
 	--keyword=showTranslatedStatusText \
+	--keyword=fmtgettext \
 	--output $potfile \
 	--from-code=utf-8 \
 	`find src/ -name '*.cpp' -o -name '*.h'` \
 	`find builtin/ -name '*.lua'`
 
+# Gettext collects a bunch of bogus comments for the "Available commands: " string
+# I couldn't figure out how to avoid that so get rid of them afterwards
+sed '/^#\. ~<number>.*relative_to/,/^#: /{ /^#: /!d; }' -i $potfile
+
 # Now iterate on all languages and create the po file if missing, or update it
 # if it exists already
 for lang in $langs ; do # note the missing quotes around $langs
-	pofile=po/$lang/minetest.po
+	pofile=po/$lang/luanti.po
 	if test -e $pofile; then
 		echo "[$lang]: updating strings"
 		msgmerge --update --sort-by-file $pofile $potfile
@@ -75,4 +84,5 @@ for lang in $langs ; do # note the missing quotes around $langs
 		echo "[$lang]: NEW strings"
 		msginit --locale=$lang --output-file=$pofile --input=$potfile
 	fi
+
 done

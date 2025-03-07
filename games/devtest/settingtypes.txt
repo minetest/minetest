@@ -1,0 +1,32 @@
+# If enabled, nodes won't be used up when placed.
+# Note: This behavior can also be toggled in-game with the /infplace command.
+#
+# - true: enabled
+# - false: disabled
+# - auto: only enabled when Creative Mode is enabled (default)
+devtest_infplace (Infinite node placement) enum auto true,false,auto
+
+# If enabled, new players receive some initial items when joining for the first time.
+give_initial_stuff (Give initial stuff) bool true
+
+# If enabled, automated tests of the Lua API such as player health, crafting and PseudoRandom will be performed on startup.
+devtest_unittests_autostart (Perform unit tests) bool false
+
+# If enabled, the game will use all mapgen aliases for the v6 mapgen.
+# If disabled, it will only use a minimal set of mapgen aliases.
+# If enabled, there should be biome-specific tree, leaves and ground nodes. If disabled, stuff should use fallback nodes (like stone instead of desert stone).
+#
+# Many mapgen aliases have fallback values when no value is provided. Having this setting disabled can be useful to test whether those fallback values are functional.
+devtest_v6_mapgen_aliases (Use all v6 mapgen aliases) bool false
+
+# If enabled, the game will use dungeon stairs by enabling the corresponding mapgen aliases.
+#
+# Disabling this setting can be useful to test whether dungeons still work when stairs are not defined.
+devtest_dungeon_stairs (Generate dungeon stairs) bool false
+
+# If enabled, the mapgen alias 'mapgen_mossycobble' will be used. This should enable random mossy cobblestone in dungeons.
+# If disabled, it won't be used. The engine should fall back to cobble instead.
+devtest_dungeon_mossycobble (Generate mossy cobblestone) bool false
+
+# If enabled, some very basic biomes will be registered.
+devtest_register_biomes (Register biomes) bool true

@@ -1,4 +1,5 @@
--- Minetest: builtin/misc_register.lua
+local builtin_shared = ...
+local S = core.get_translator("__builtin")
 
 --
 -- Make raw registration functions inaccessible to anyone except this file
@@ -77,8 +78,23 @@ local function check_modname_prefix(name)
 	end
 end
 
+local function check_node_list(list, field)
+	local t = type(list)
+	if t == "table" then
+		for _, entry in pairs(list) do
+			assert(type(entry) == "string",
+				"Field '" .. field .. "' contains non-string entry")
+		end
+	elseif t ~= "string" and t ~= "nil" then
+		error("Field '" .. field .. "' has invalid type " .. t)
+	end
+end
+
 function core.register_abm(spec)
 	-- Add to core.registered_abms
+	check_node_list(spec.nodenames, "nodenames")
+	check_node_list(spec.neighbors, "neighbors")
+	assert(type(spec.action) == "function", "Required field 'action' of type function")
 	core.registered_abms[#core.registered_abms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
 end
@@ -86,6 +102,13 @@ end
 function core.register_lbm(spec)
 	-- Add to core.registered_lbms
 	check_modname_prefix(spec.name)
+	check_node_list(spec.nodenames, "nodenames")
+	local have = spec.action ~= nil
+	local have_bulk = spec.bulk_action ~= nil
+	assert(not have or type(spec.action) == "function", "Field 'action' must be a function")
+	assert(not have_bulk or type(spec.bulk_action) == "function", "Field 'bulk_action' must be a function")
+	assert(have ~= have_bulk, "Either 'action' or 'bulk_action' must be present")
+
 	core.registered_lbms[#core.registered_lbms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
 end
@@ -115,8 +138,6 @@ function core.register_item(name, itemdef)
 		error("Unable to register item: Name is forbidden: " .. name)
 	end
 	itemdef.name = name
-
-	local is_overriding = core.registered_items[name]
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
@@ -179,13 +200,7 @@ function core.register_item(name, itemdef)
 	--core.log("Registering item: " .. itemdef.name)
 	core.registered_items[itemdef.name] = itemdef
 	core.registered_aliases[itemdef.name] = nil
-
-	-- Used to allow builtin to register ignore to registered_items
-	if name ~= "ignore" then
-		register_item_raw(itemdef)
-	elseif is_overriding then
-		core.log("warning", "Attempted redefinition of \"ignore\"")
-	end
+	register_item_raw(itemdef)
 end
 
 function core.unregister_item(name)
@@ -262,6 +277,18 @@ function core.register_tool(name, tooldef)
 	end
 	-- END Legacy stuff
 
+	-- This isn't just legacy, but more of a convenience feature
+	local toolcaps = tooldef.tool_capabilities
+	if toolcaps and toolcaps.punch_attack_uses == nil then
+		for _, cap in pairs(toolcaps.groupcaps or {}) do
+			local level = (cap.maxlevel or 0) - 1
+			if (cap.uses or 0) ~= 0 and level >= 0 then
+				toolcaps.punch_attack_uses = cap.uses * (3 ^ level)
+				break
+			end
+		end
+	end
+
 	core.register_item(name, tooldef)
 end
 
@@ -295,32 +322,26 @@ end
 
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
 
 function core.craft_predict(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_craft_predicts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
 
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
-local name
 for name in pairs(forbidden_item_names) do
 	core.registered_aliases[name] = ""
 	register_alias_raw(name, "")
 end
-
-
--- Deprecated:
--- Aliases for core.register_alias (how ironic...)
---core.alias_node = core.register_alias
---core.alias_tool = core.register_alias
---core.alias_craftitem = core.register_alias
 
 --
 -- Built-in node definitions. Also defined in C.
@@ -328,7 +349,7 @@ end
 
 core.register_item(":unknown", {
 	type = "none",
-	description = "Unknown Item",
+	description = S("Unknown Item"),
 	inventory_image = "unknown_item.png",
 	on_place = core.item_place,
 	on_secondary_use = core.item_secondary_use,
@@ -338,7 +359,7 @@ core.register_item(":unknown", {
 })
 
 core.register_node(":air", {
-	description = "Air (you hacker you!)",
+	description = S("Air"),
 	inventory_image = "air.png",
 	wield_image = "air.png",
 	drawtype = "airlike",
@@ -355,7 +376,7 @@ core.register_node(":air", {
 })
 
 core.register_node(":ignore", {
-	description = "Ignore (you hacker you!)",
+	description = S("Ignore"),
 	inventory_image = "ignore.png",
 	wield_image = "ignore.png",
 	drawtype = "airlike",
@@ -368,16 +389,25 @@ core.register_node(":ignore", {
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
+	node_placement_prediction = "",
+	on_place = function(itemstack, placer, pointed_thing)
+		core.chat_send_player(
+				placer:get_player_name(),
+				core.colorize("#FF0000",
+				S("You can't place 'ignore' nodes!")))
+		return ""
+	end,
 })
 
 -- The hand (bare definition)
 core.register_item(":", {
 	type = "none",
+	wield_image = "wieldhand.png",
 	groups = {not_in_creative_inventory=1},
 })
 
 
-function core.override_item(name, redefinition)
+function core.override_item(name, redefinition, del_fields)
 	if redefinition.name ~= nil then
 		error("Attempt to redefine name of "..name.." to "..dump(redefinition.name), 2)
 	end
@@ -391,62 +421,16 @@ function core.override_item(name, redefinition)
 	for k, v in pairs(redefinition) do
 		rawset(item, k, v)
 	end
+	for _, field in ipairs(del_fields or {}) do
+		rawset(item, field, nil)
+	end
 	register_item_raw(item)
-end
-
-
-core.callback_origins = {}
-
-function core.run_callbacks(callbacks, mode, ...)
-	assert(type(callbacks) == "table")
-	local cb_len = #callbacks
-	if cb_len == 0 then
-		if mode == 2 or mode == 3 then
-			return true
-		elseif mode == 4 or mode == 5 then
-			return false
-		end
-	end
-	local ret = nil
-	for i = 1, cb_len do
-		local origin = core.callback_origins[callbacks[i]]
-		if origin then
-			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callbacks[i]) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
-		else
-			--print("No data associated with callback")
-		end
-		local cb_ret = callbacks[i](...)
-
-		if mode == 0 and i == 1 then
-			ret = cb_ret
-		elseif mode == 1 and i == cb_len then
-			ret = cb_ret
-		elseif mode == 2 then
-			if not cb_ret or i == 1 then
-				ret = cb_ret
-			end
-		elseif mode == 3 then
-			if cb_ret then
-				return cb_ret
-			end
-			ret = cb_ret
-		elseif mode == 4 then
-			if (cb_ret and not ret) or i == 1 then
-				ret = cb_ret
-			end
-		elseif mode == 5 and cb_ret then
-			return cb_ret
-		end
-	end
-	return ret
 end
 
 function core.run_priv_callbacks(name, priv, caller, method)
 	local def = core.registered_privileges[priv]
 	if not def or not def["on_" .. method] or
-			not def[priv]["on_" .. method](name, caller) then
+			not def["on_" .. method](name, caller) then
 		for _, func in ipairs(core["registered_on_priv_" .. method]) do
 			if not func(name, caller, priv) then
 				break
@@ -458,34 +442,6 @@ end
 --
 -- Callback registration
 --
-
-local function make_registration()
-	local t = {}
-	local registerfunc = function(func)
-		t[#t + 1] = func
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
-			name = debug.getinfo(1, "n").name or "??"
-		}
-		--local origin = core.callback_origins[func]
-		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
-	end
-	return t, registerfunc
-end
-
-local function make_registration_reverse()
-	local t = {}
-	local registerfunc = function(func)
-		table.insert(t, 1, func)
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
-			name = debug.getinfo(1, "n").name or "??"
-		}
-		--local origin = core.callback_origins[func]
-		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
-	end
-	return t, registerfunc
-end
 
 local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	local list = {}
@@ -515,11 +471,17 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 end
 
 local function make_wrap_deregistration(reg_fn, clear_fn, list)
-	local unregister = function (unregistered_key)
+	local unregister = function (key)
+		if type(key) ~= "string" then
+			error("key is not a string", 2)
+		end
+		if not list[key] then
+			error("Attempt to unregister non-existent element - '" .. key .. "'", 2)
+		end
 		local temporary_list = table.copy(list)
 		clear_fn()
 		for k,v in pairs(temporary_list) do
-			if unregistered_key ~= k then
+			if key ~= k then
 				reg_fn(v)
 			end
 		end
@@ -530,7 +492,7 @@ end
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
 function core.registered_on_player_hpchange(player, hp_change, reason)
-	local last = false
+	local last
 	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
 		local func = core.registered_on_player_hpchanges.modifiers[i]
 		hp_change, last = func(player, hp_change, reason)
@@ -565,11 +527,17 @@ core.registered_biomes      = make_registration_wrap("register_biome",      "cle
 core.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
 core.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
 
-core.unregister_biome = make_wrap_deregistration(core.register_biome, core.clear_registered_biomes, core.registered_biomes)
+core.unregister_biome = make_wrap_deregistration(core.register_biome,
+		core.clear_registered_biomes, core.registered_biomes)
+
+local make_registration = builtin_shared.make_registration
+local make_registration_reverse = builtin_shared.make_registration_reverse
 
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
+core.registered_on_chatcommands, core.register_on_chatcommand = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()
 core.registered_playerevents, core.register_playerevent = make_registration()
+core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()
 core.registered_on_shutdown, core.register_on_shutdown = make_registration()
 core.registered_on_punchnodes, core.register_on_punchnode = make_registration()
 core.registered_on_placenodes, core.register_on_placenode = make_registration()
@@ -587,14 +555,28 @@ core.registered_on_crafts, core.register_on_craft = make_registration()
 core.registered_craft_predicts, core.register_craft_predict = make_registration()
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
 core.registered_on_item_eats, core.register_on_item_eat = make_registration()
+core.registered_on_item_pickups, core.register_on_item_pickup = make_registration()
 core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
 core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
 core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
+core.registered_on_authplayers, core.register_on_authplayer = make_registration()
 core.registered_can_bypass_userlimit, core.register_can_bypass_userlimit = make_registration()
 core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
-core.registered_on_auth_fail, core.register_on_auth_fail = make_registration()
 core.registered_on_player_inventory_actions, core.register_on_player_inventory_action = make_registration()
 core.registered_allow_player_inventory_actions, core.register_allow_player_inventory_action = make_registration()
+core.registered_on_rightclickplayers, core.register_on_rightclickplayer = make_registration()
+core.registered_on_liquid_transformed, core.register_on_liquid_transformed = make_registration()
+core.registered_on_mapblocks_changed, core.register_on_mapblocks_changed = make_registration()
+
+core.register_on_mods_loaded(function()
+	core.after(0, function()
+		setmetatable(core.registered_on_mapblocks_changed, {
+			__newindex = function()
+				error("on_mapblocks_changed callbacks must be registered at load time")
+			end,
+		})
+	end)
+end)
 
 --
 -- Compatibility for on_mapgen_init()

@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2014 sapier
 --
 --This program is free software; you can redistribute it and/or modify
@@ -17,52 +17,53 @@
 
 mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#6389FF"
+mt_color_lightblue  = "#99CCFF"
 mt_color_green = "#72FF63"
 mt_color_dark_green = "#25C191"
+mt_color_orange  = "#FF8800"
+mt_color_red = "#FF3300"
 
---for all other colors ask sfan5 to complete his work!
+MAIN_TAB_W = 15.5
+MAIN_TAB_H = 7.1
+TABHEADER_H = 0.85
+GAMEBAR_H = 1.25
+GAMEBAR_OFFSET_DESKTOP = 0.375
+GAMEBAR_OFFSET_TOUCH = 0.15
 
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
-local menustyle = core.settings:get("main_menu_style")
-if menustyle == "auto" then
-	menustyle = PLATFORM == "Android" and "simple" or "full"
-end
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
 
-dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
+dofile(menupath .. DIR_DELIM .. "async_event.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
-dofile(menupath .. DIR_DELIM .. "gamemgr.lua")
-dofile(menupath .. DIR_DELIM .. "modmgr.lua")
-dofile(menupath .. DIR_DELIM .. "textures.lua")
+dofile(menupath .. DIR_DELIM .. "serverlistmgr.lua")
+dofile(menupath .. DIR_DELIM .. "game_theme.lua")
+dofile(menupath .. DIR_DELIM .. "content" .. DIR_DELIM .. "init.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
-if menustyle ~= "simple" then
-	dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
-	dofile(menupath .. DIR_DELIM .. "dlg_delete_mod.lua")
-	dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
-	dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
-end
+dofile(basepath .. "common" .. DIR_DELIM .. "settings" .. DIR_DELIM .. "init.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_delete_content.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_register.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_version_info.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_reinstall_mtg.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_clients_list.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_server_list_mods.lua")
 
-local tabs = {}
-
-tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
-tabs.mods = dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
-tabs.credits = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
-if menustyle == "simple" then
-	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
-else
-	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
-	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
-	tabs.texturepacks = dofile(menupath .. DIR_DELIM .. "tab_texturepacks.lua")
-end
+local tabs = {
+	content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua"),
+	about = dofile(menupath .. DIR_DELIM .. "tab_about.lua"),
+	local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua"),
+	play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
+}
 
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
@@ -77,87 +78,62 @@ local function init_globals()
 	-- Init gamedata
 	gamedata.worldindex = 0
 
-	if menustyle == "simple" then
-		local world_list = core.get_worlds()
-		local world_index
-
-		local found_singleplayerworld = false
-		for i, world in ipairs(world_list) do
-			if world.name == "singleplayerworld" then
-				found_singleplayerworld = true
-				world_index = i
-				break
-			end
+	menudata.worldlist = filterlist.create(
+		core.get_worlds,
+		compare_worlds,
+		-- Unique id comparison function
+		function(element, uid)
+			return element.name == uid
+		end,
+		-- Filter function
+		function(element, gameid)
+			return element.gameid == gameid
 		end
+	)
 
-		if not found_singleplayerworld then
-			core.create_world("singleplayerworld", 1)
+	menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
+	menudata.worldlist:set_sortmode("alphabetic")
 
-			world_list = core.get_worlds()
-
-			for i, world in ipairs(world_list) do
-				if world.name == "singleplayerworld" then
-					world_index = i
-					break
-				end
-			end
-		end
-
-		gamedata.worldindex = world_index
-	else
-		menudata.worldlist = filterlist.create(
-			core.get_worlds,
-			compare_worlds,
-			-- Unique id comparison function
-			function(element, uid)
-				return element.name == uid
-			end,
-			-- Filter function
-			function(element, gameid)
-				return element.gameid == gameid
-			end
-		)
-
-		menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
-		menudata.worldlist:set_sortmode("alphabetic")
-
-		if not core.settings:get("menu_last_game") then
-			local default_game = core.settings:get("default_game") or "minetest"
-			core.settings:set("menu_last_game", default_game)
-		end
-
-		mm_texture.init()
-	end
+	mm_game_theme.init()
+	mm_game_theme.set_engine() -- This is just a fallback.
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
+	local tv_main = tabview_create("maintab", {x = MAIN_TAB_W, y = MAIN_TAB_H}, {x = 0, y = 0})
 
-	if menustyle == "simple" then
-		tv_main:add(tabs.simple_main)
-		tv_main:add(tabs.settings)
-	else
-		tv_main:set_autosave_tab(true)
-		tv_main:add(tabs.local_game)
-		tv_main:add(tabs.play_online)
-		tv_main:add(tabs.settings)
-		tv_main:add(tabs.texturepacks)
-	end
-
-	tv_main:add(tabs.mods)
-	tv_main:add(tabs.credits)
+	tv_main:set_autosave_tab(true)
+	tv_main:add(tabs.local_game)
+	tv_main:add(tabs.play_online)
+	tv_main:add(tabs.content)
+	tv_main:add(tabs.about)
 
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)
 
-	if menustyle ~= "simple" then
-		tv_main:set_tab(core.settings:get("maintab_LAST"))
+	local last_tab = core.settings:get("maintab_LAST")
+	if last_tab and tv_main.current_tab ~= last_tab then
+		tv_main:set_tab(last_tab)
 	end
+
+	tv_main:set_end_button({
+		icon = defaulttexturedir .. "settings_btn.png",
+		label = fgettext("Settings"),
+		name = "open_settings",
+		on_click = function(tabview)
+			local dlg = create_settings_dlg()
+			dlg:set_parent(tabview)
+			tabview:hide()
+			dlg:show()
+			return true
+		end,
+	})
+
 	ui.set_default("maintab")
 	tv_main:show()
-
 	ui.update()
 
-	core.sound_play("main_menu", true)
+	check_reinstall_mtg()
+	check_new_version()
 end
 
+assert(os.execute == nil)
 init_globals()

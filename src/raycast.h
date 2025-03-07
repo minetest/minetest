@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2016 juhdanad, Daniel Juhasz <juhdanad@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2016 juhdanad, Daniel Juhasz <juhdanad@gmail.com>
 
 #pragma once
 
@@ -38,7 +23,7 @@ public:
 	 * @param liquids pointable if false, liquid nodes won't be found
 	 */
 	RaycastState(const core::line3d<f32> &shootline, bool objects_pointable,
-		bool liquids_pointable);
+		bool liquids_pointable, const std::optional<Pointabilities> &pointabilities);
 
 	//! Shootline of the raycast.
 	core::line3d<f32> m_shootline;
@@ -55,6 +40,7 @@ public:
 
 	bool m_objects_pointable;
 	bool m_liquids_pointable;
+	const std::optional<Pointabilities> m_pointabilities;
 
 	//! The code needs to search these nodes around the center node.
 	core::aabbox3d<s16> m_search_range { 0, 0, 0, 0, 0, 0 };
@@ -73,5 +59,9 @@ public:
  * outwards of the surface. If start is in the box, zero vector.
  * @returns true if a collision point was found
  */
-bool boxLineCollision(const aabb3f &box, const v3f &start, const v3f &dir,
-	v3f *collision_point, v3s16 *collision_normal);
+bool boxLineCollision(const aabb3f &box, v3f start, v3f dir,
+	v3f *collision_point, v3f *collision_normal);
+
+bool boxLineCollision(const aabb3f &box, v3f box_rotation,
+	v3f start, v3f dir,
+	v3f *collision_point, v3f *collision_normal, v3f *raw_collision_normal);

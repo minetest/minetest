@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "cpp_api/s_node.h"
 #include "cpp_api/s_internal.h"
@@ -65,6 +50,9 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_COLORED_FACEDIR, "colorfacedir"},
 		{CPT2_COLORED_WALLMOUNTED, "colorwallmounted"},
 		{CPT2_GLASSLIKE_LIQUID_LEVEL, "glasslikeliquidlevel"},
+		{CPT2_COLORED_DEGROTATE, "colordegrotate"},
+		{CPT2_4DIR, "4dir"},
+		{CPT2_COLORED_4DIR, "color4dir"},
 		{0, NULL},
 	};
 
@@ -93,8 +81,16 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{0, NULL},
 	};
 
+struct EnumString ScriptApiNode::es_TextureAlphaMode[] =
+	{
+		{ALPHAMODE_OPAQUE, "opaque"},
+		{ALPHAMODE_CLIP, "clip"},
+		{ALPHAMODE_BLEND, "blend"},
+		{0, NULL},
+	};
+
 bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
-		ServerActiveObject *puncher, PointedThing pointed)
+		ServerActiveObject *puncher, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -108,7 +104,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
+	pushnode(L, node);
 	objectrefGetOrCreate(L, puncher);
 	pushPointedThing(pointed);
 	PCALL_RES(lua_pcall(L, 4, 0, error_handler));
@@ -131,11 +127,16 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
+	pushnode(L, node);
 	objectrefGetOrCreate(L, digger);
-	PCALL_RES(lua_pcall(L, 3, 0, error_handler));
-	lua_pop(L, 1);  // Pop error handler
-	return true;
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
+
+	// nil is treated as true for backwards compat
+	bool result = lua_isnil(L, -1) || lua_toboolean(L, -1);
+
+	lua_pop(L, 2);  // Pop error handler and result
+
+	return result;
 }
 
 void ScriptApiNode::node_on_construct(v3s16 p, MapNode node)
@@ -188,11 +189,11 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
-	pushnode(L, newnode, ndef);
+	pushnode(L, node);
+	pushnode(L, newnode);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	lua_remove(L, error_handler);
-	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1);
+	return readParam<bool>(L, -1, false);
 }
 
 void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
@@ -209,7 +210,7 @@ void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
+	pushnode(L, node);
 	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 }
@@ -231,7 +232,7 @@ bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 	lua_pushnumber(L,dtime);
 	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
 	lua_remove(L, error_handler);
-	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1);
+	return readParam<bool>(L, -1, false);
 }
 
 void ScriptApiNode::node_on_receive_fields(v3s16 p,
@@ -246,7 +247,7 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
-	MapNode node = getEnv()->getMap().getNodeNoEx(p);
+	MapNode node = getEnv()->getMap().getNode(p);
 	if (node.getContent() == CONTENT_IGNORE)
 		return;
 

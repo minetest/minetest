@@ -1,0 +1,11 @@
+*.iml
+.externalNativeBuild
+.gradle
+app/build
+app/release
+app/src/main/assets
+build
+local.properties
+native/.*
+native/build
+native/deps

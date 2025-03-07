@@ -1,26 +1,12 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "light.h"
+#include "util/pointer.h"
 #include <string>
 #include <vector>
 
@@ -34,6 +20,7 @@ class Map;
 	- Tile = TileSpec at some side of a node of some content type
 */
 typedef u16 content_t;
+#define CONTENT_MAX UINT16_MAX
 
 /*
 	The maximum node ID that can be registered by mods. This must
@@ -69,6 +56,25 @@ typedef u16 content_t;
 	out-of-map in the game map.
 */
 #define CONTENT_IGNORE 127
+
+/*
+	Content lighting information that fits into a single byte.
+*/
+struct ContentLightingFlags {
+	u8 light_source : 4;
+	bool has_light : 1;
+	bool light_propagates : 1;
+	bool sunlight_propagates : 1;
+
+	bool operator==(const ContentLightingFlags &other) const
+	{
+		return has_light == other.has_light && light_propagates == other.light_propagates &&
+				sunlight_propagates == other.sunlight_propagates &&
+				light_source == other.light_source;
+	}
+	bool operator!=(const ContentLightingFlags &other) const { return !(*this == other); }
+};
+static_assert(sizeof(ContentLightingFlags) == 1, "Unexpected ContentLightingFlags size");
 
 enum LightBank
 {
@@ -114,7 +120,7 @@ struct ContentFeatures;
 */
 
 
-struct MapNode
+struct alignas(u32) MapNode
 {
 	/*
 		Main content
@@ -139,46 +145,45 @@ struct MapNode
 
 	MapNode() = default;
 
-	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
+	constexpr MapNode(content_t content, u8 a_param1=0, u8 a_param2=0) noexcept
 		: param0(content),
 		  param1(a_param1),
 		  param2(a_param2)
 	{ }
 
-	// Create directly from a nodename
-	// If name is unknown, sets CONTENT_IGNORE
-	MapNode(const NodeDefManager *ndef, const std::string &name,
-			u8 a_param1=0, u8 a_param2=0);
-
-	bool operator==(const MapNode &other)
+	bool operator==(const MapNode &other) const noexcept
 	{
 		return (param0 == other.param0
 				&& param1 == other.param1
 				&& param2 == other.param2);
 	}
+	bool operator!=(const MapNode &other) const noexcept
+	{
+		return !(*this == other);
+	}
 
 	// To be used everywhere
-	content_t getContent() const
+	content_t getContent() const noexcept
 	{
 		return param0;
 	}
-	void setContent(content_t c)
+	void setContent(content_t c) noexcept
 	{
 		param0 = c;
 	}
-	u8 getParam1() const
+	u8 getParam1() const noexcept
 	{
 		return param1;
 	}
-	void setParam1(u8 p)
+	void setParam1(u8 p) noexcept
 	{
 		param1 = p;
 	}
-	u8 getParam2() const
+	u8 getParam2() const noexcept
 	{
 		return param2;
 	}
-	void setParam2(u8 p)
+	void setParam2(u8 p) noexcept
 	{
 		param2 = p;
 	}
@@ -191,61 +196,64 @@ struct MapNode
 	 */
 	void getColor(const ContentFeatures &f, video::SColor *color) const;
 
-	void setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f);
-
-	void setLight(enum LightBank bank, u8 a_light,
-		const NodeDefManager *nodemgr);
+	inline void setLight(LightBank bank, u8 a_light, ContentLightingFlags f) noexcept
+	{
+		// If node doesn't contain light data, ignore this
+		if (!f.has_light)
+			return;
+		if (bank == LIGHTBANK_DAY) {
+			param1 &= 0xf0;
+			param1 |= a_light & 0x0f;
+		} else {
+			assert(bank == LIGHTBANK_NIGHT);
+			param1 &= 0x0f;
+			param1 |= (a_light & 0x0f)<<4;
+		}
+	}
 
 	/**
 	 * Check if the light value for night differs from the light value for day.
 	 *
 	 * @return If the light values are equal, returns true; otherwise false
 	 */
-	bool isLightDayNightEq(const NodeDefManager *nodemgr) const;
+	inline bool isLightDayNightEq(ContentLightingFlags f) const noexcept
+	{
+		return !f.has_light || getLight(LIGHTBANK_DAY, f) == getLight(LIGHTBANK_NIGHT, f);
+	}
 
-	u8 getLight(enum LightBank bank, const NodeDefManager *nodemgr) const;
+	inline u8 getLight(LightBank bank, ContentLightingFlags f) const noexcept
+	{
+		u8 raw_light = getLightRaw(bank, f);
+		return MYMAX(f.light_source, raw_light);
+	}
 
 	/*!
 	 * Returns the node's light level from param1.
 	 * If the node emits light, it is ignored.
-	 * \param f the ContentFeatures of this node.
+	 * \param f the ContentLightingFlags of this node.
 	 */
-	u8 getLightRaw(enum LightBank bank, const ContentFeatures &f) const;
-
-	/**
-	 * This function differs from getLight(enum LightBank bank, NodeDefManager *nodemgr)
-	 * in that the ContentFeatures of the node in question are not retrieved by
-	 * the function itself.  Thus, if you have already called nodemgr->get() to
-	 * get the ContentFeatures you pass it to this function instead of the
-	 * function getting ContentFeatures itself.  Since NodeDefManager::get()
-	 * is relatively expensive this can lead to significant performance
-	 * improvements in some situations.  Call this function if (and only if)
-	 * you have already retrieved the ContentFeatures by calling
-	 * NodeDefManager::get() for the node you're working with and the
-	 * pre-conditions listed are true.
-	 *
-	 * @pre f != NULL
-	 * @pre f->param_type == CPT_LIGHT
-	 */
-	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const;
-
-	bool getLightBanks(u8 &lightday, u8 &lightnight,
-		const NodeDefManager *nodemgr) const;
+	inline u8 getLightRaw(LightBank bank, ContentLightingFlags f) const noexcept
+	{
+		if(f.has_light)
+			return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+		return 0;
+	}
 
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
-	u8 getLightBlend(u32 daylight_factor, const NodeDefManager *nodemgr) const
+	u8 getLightBlend(u32 daylight_factor, ContentLightingFlags f) const
 	{
-		u8 lightday = 0;
-		u8 lightnight = 0;
-		getLightBanks(lightday, lightnight, nodemgr);
+		u8 lightday = getLight(LIGHTBANK_DAY, f);
+		u8 lightnight = getLight(LIGHTBANK_NIGHT, f);
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
-	u8 getFaceDir(const NodeDefManager *nodemgr,
-		bool allow_wallmounted = false) const;
+	u8 getFaceDir(const NodeDefManager *nodemgr, bool allow_wallmounted = false) const;
 	u8 getWallMounted(const NodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(const NodeDefManager *nodemgr) const;
+
+	/// @returns Rotation in range 0–239 (in 1.5° steps)
+	u8 getDegRotate(const NodeDefManager *nodemgr) const;
 
 	void rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot);
 
@@ -254,41 +262,41 @@ struct MapNode
 	 *
 	 * \param p coordinates of the node
 	 */
-	u8 getNeighbors(v3s16 p, Map *map);
+	u8 getNeighbors(v3s16 p, Map *map) const;
 
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))
 	*/
 	void getNodeBoxes(const NodeDefManager *nodemgr, std::vector<aabb3f> *boxes,
-		u8 neighbors = 0);
+		u8 neighbors = 0) const;
 
 	/*
 		Gets list of selection boxes
 	*/
 	void getSelectionBoxes(const NodeDefManager *nodemg,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0);
+		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
 
 	/*
 		Gets list of collision boxes
 	*/
 	void getCollisionBoxes(const NodeDefManager *nodemgr,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0);
+		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
 
 	/*
-		Liquid helpers
+		Liquid/leveled helpers
 	*/
 	u8 getMaxLevel(const NodeDefManager *nodemgr) const;
 	u8 getLevel(const NodeDefManager *nodemgr) const;
-	u8 setLevel(const NodeDefManager *nodemgr, s8 level = 1);
-	u8 addLevel(const NodeDefManager *nodemgr, s8 add = 1);
+	s8 setLevel(const NodeDefManager *nodemgr, s16 level = 1);
+	s8 addLevel(const NodeDefManager *nodemgr, s16 add = 1);
 
 	/*
 		Serialization functions
 	*/
 
 	static u32 serializedLength(u8 version);
-	void serialize(u8 *dest, u8 version);
-	void deSerialize(u8 *source, u8 version);
+	void serialize(u8 *dest, u8 version) const;
+	void deSerialize(const u8 *source, u8 version);
 
 	// Serializes or deserializes a list of nodes in bulk format (first the
 	// content of all nodes, then the param1 of all nodes, then the param2
@@ -297,12 +305,12 @@ struct MapNode
 	//   content_width = the number of bytes of content per node
 	//   params_width = the number of bytes of params per node
 	//   compressed = true to zlib-compress output
-	static void serializeBulk(std::ostream &os, int version,
+	static Buffer<u8> serializeBulk(int version,
 			const MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
+			u8 content_width, u8 params_width);
 	static void deSerializeBulk(std::istream &is, int version,
 			MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
+			u8 content_width, u8 params_width);
 
 private:
 	// Deprecated serialization methods

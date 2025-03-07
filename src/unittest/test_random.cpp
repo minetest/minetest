@@ -1,21 +1,6 @@
- /*
-Minetest
-Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 #include "test.h"
 
@@ -38,7 +23,7 @@ public:
 	void testPcgRandomBytes();
 	void testPcgRandomNormalDist();
 
-	static const int expected_pseudorandom_results[256];
+	static const s32 expected_pseudorandom_results[256];
 	static const u32 expected_pcgrandom_results[256];
 	static const u8 expected_pcgrandom_bytes_result[24];
 	static const u8 expected_pcgrandom_bytes_result2[24];
@@ -63,24 +48,41 @@ void TestRandom::testPseudoRandom()
 	PseudoRandom pr(814538);
 
 	for (u32 i = 0; i != 256; i++)
-		UASSERTEQ(int, pr.next(), expected_pseudorandom_results[i]);
+		UASSERTEQ(s32, pr.next(), expected_pseudorandom_results[i]);
+
+	s32 state = pr.getState();
+	PseudoRandom pr2(state);
+
+	for (u32 i = 0; i != 256; i++) {
+		UASSERTEQ(s32, pr.next(), pr2.next());
+	}
+
+	PseudoRandom pr3(0);
+	UASSERTEQ(s32, pr3.next(), 0);
+	UASSERTEQ(s32, pr3.next(), 21469);
+	UASSERTEQ(s32, pr3.next(), 9989);
+
+	PseudoRandom pr4(-101);
+	UASSERTEQ(s32, pr4.next(), 3267);
+	UASSERTEQ(s32, pr4.next(), 2485);
+	UASSERTEQ(s32, pr4.next(), 30057);
 }
 
 
 void TestRandom::testPseudoRandomRange()
 {
-	PseudoRandom pr((int)time(NULL));
+	PseudoRandom pr((s32)time(NULL));
 
-	EXCEPTION_CHECK(PrngException, pr.range(2000, 6000));
+	EXCEPTION_CHECK(PrngException, pr.range(2000, 8600));
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
 	for (u32 i = 0; i != 32768; i++) {
-		int min = (pr.next() % 3000) - 500;
-		int max = (pr.next() % 3000) - 500;
+		s32 min = (pr.next() % 3000) - 500;
+		s32 max = (pr.next() % 3000) - 500;
 		if (min > max)
-			SWAP(int, min, max);
+			std::swap(min, max);
 
-		int randval = pr.range(min, max);
+		s32 randval = pr.range(min, max);
 		UASSERT(randval >= min);
 		UASSERT(randval <= max);
 	}
@@ -93,12 +95,21 @@ void TestRandom::testPcgRandom()
 
 	for (u32 i = 0; i != 256; i++)
 		UASSERTEQ(u32, pr.next(), expected_pcgrandom_results[i]);
+
+	PcgRandom pr2(0, 0);
+	u64 state[2];
+	pr.getState(state);
+	pr2.setState(state);
+
+	for (u32 i = 0; i != 256; i++) {
+		UASSERTEQ(u32, pr.next(), pr2.next());
+	}
 }
 
 
 void TestRandom::testPcgRandomRange()
 {
-	PcgRandom pr((int)time(NULL));
+	PcgRandom pr((u64)time(NULL));
 
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
@@ -106,12 +117,12 @@ void TestRandom::testPcgRandomRange()
 	pr.range(pr.RANDOM_MIN, pr.RANDOM_MAX);
 
 	for (u32 i = 0; i != 32768; i++) {
-		int min = (pr.next() % 3000) - 500;
-		int max = (pr.next() % 3000) - 500;
+		s32 min = (pr.next() % 3000) - 500;
+		s32 max = (pr.next() % 3000) - 500;
 		if (min > max)
-			SWAP(int, min, max);
+			std::swap(min, max);
 
-		int randval = pr.range(min, max);
+		s32 randval = pr.range(min, max);
 		UASSERT(randval >= min);
 		UASSERT(randval <= max);
 	}
@@ -137,8 +148,8 @@ void TestRandom::testPcgRandomBytes()
 
 void TestRandom::testPcgRandomNormalDist()
 {
-	static const int max = 120;
-	static const int min = -120;
+	static const s32 max = 120;
+	static const s32 min = -120;
 	static const int num_trials = 20;
 	static const u32 num_samples = 61000;
 	s32 bins[max - min + 1];
@@ -186,7 +197,7 @@ void TestRandom::testPcgRandomNormalDist()
 }
 
 
-const int TestRandom::expected_pseudorandom_results[256] = {
+const s32 TestRandom::expected_pseudorandom_results[256] = {
 	0x02fa, 0x60d5, 0x6c10, 0x606b, 0x098b, 0x5f1e, 0x4f56, 0x3fbd, 0x77af,
 	0x4fe9, 0x419a, 0x6fe1, 0x177b, 0x6858, 0x36f8, 0x6d83, 0x14fc, 0x2d62,
 	0x1077, 0x23e2, 0x041b, 0x7a7e, 0x5b52, 0x215d, 0x682b, 0x4716, 0x47e3,

@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -38,21 +23,21 @@ public:
 	~ObjectRef() = default;
 
 	// Creates an ObjectRef and leaves it on top of stack
-	// Not callable from Lua; all references are created on the C side.
+	// NOTE: do not call this, use `ScriptApiBase::objectrefGetOrCreate()`!
 	static void create(lua_State *L, ServerActiveObject *object);
 
-	static void set_null(lua_State *L);
+	// Clear the pointer in the ObjectRef (at -1).
+	// Throws an fatal error if the object pointer wasn't `expect`.
+	static void set_null(lua_State *L, void *expect);
 
 	static void Register(lua_State *L);
 
-	static ObjectRef *checkobject(lua_State *L, int narg);
-
 	static ServerActiveObject* getobject(ObjectRef *ref);
-private:
-	ServerActiveObject *m_object = nullptr;
 
 	static const char className[];
-	static const luaL_Reg methods[];
+private:
+	ServerActiveObject *m_object = nullptr;
+	static luaL_Reg methods[];
 
 
 	static LuaEntitySAO* getluaobject(ObjectRef *ref);
@@ -69,30 +54,31 @@ private:
 	// remove(self)
 	static int l_remove(lua_State *L);
 
+	// is_valid(self)
+	static int l_is_valid(lua_State *L);
+
 	// get_pos(self)
-	// returns: {x=num, y=num, z=num}
 	static int l_get_pos(lua_State *L);
 
 	// set_pos(self, pos)
 	static int l_set_pos(lua_State *L);
 
-	// move_to(self, pos, continuous=false)
+	// add_pos(self, pos)
+	static int l_add_pos(lua_State *L);
+
+	// move_to(self, pos, continuous)
 	static int l_move_to(lua_State *L);
 
 	// punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 	static int l_punch(lua_State *L);
 
-	// right_click(self, clicker); clicker = an another ObjectRef
+	// right_click(self, clicker)
 	static int l_right_click(lua_State *L);
 
-	// set_hp(self, hp)
-	// hp = number of hitpoints (2 * number of hearts)
-	// returns: nil
+	// set_hp(self, hp, reason)
 	static int l_set_hp(lua_State *L);
 
 	// get_hp(self)
-	// returns: number of hitpoints (2 * number of hearts)
-	// 0 if not applicable to this type of object
 	static int l_get_hp(lua_State *L);
 
 	// get_inventory(self)
@@ -107,7 +93,7 @@ private:
 	// get_wielded_item(self)
 	static int l_get_wielded_item(lua_State *L);
 
-	// set_wielded_item(self, itemstack or itemstring or table or nil)
+	// set_wielded_item(self, item)
 	static int l_set_wielded_item(lua_State *L);
 
 	// set_armor_groups(self, groups)
@@ -116,8 +102,7 @@ private:
 	// get_armor_groups(self)
 	static int l_get_armor_groups(lua_State *L);
 
-	// set_physics_override(self, physics_override_speed, physics_override_jump,
-	//                      physics_override_gravity, sneak, sneak_glitch, new_move)
+	// set_physics_override(self, override_table)
 	static int l_set_physics_override(lua_State *L);
 
 	// get_physics_override(self)
@@ -132,17 +117,29 @@ private:
 	// get_animation(self)
 	static int l_get_animation(lua_State *L);
 
-	// set_bone_position(self, std::string bone, v3f position, v3f rotation)
+	// set_bone_position(self, bone, position, rotation)
 	static int l_set_bone_position(lua_State *L);
 
 	// get_bone_position(self, bone)
 	static int l_get_bone_position(lua_State *L);
+
+	// set_bone_override(self, bone)
+	static int l_set_bone_override(lua_State *L);
+
+	// get_bone_override(self, bone)
+	static int l_get_bone_override(lua_State *L);
+
+	// get_bone_override(self)
+	static int l_get_bone_overrides(lua_State *L);
 
 	// set_attach(self, parent, bone, position, rotation)
 	static int l_set_attach(lua_State *L);
 
 	// get_attach(self)
 	static int l_get_attach(lua_State *L);
+
+	// get_children(self)
+	static int l_get_children(lua_State *L);
 
 	// set_detach(self)
 	static int l_set_detach(lua_State *L);
@@ -153,27 +150,42 @@ private:
 	// get_properties(self)
 	static int l_get_properties(lua_State *L);
 
+	// set_observers(self, observers)
+	static int l_set_observers(lua_State *L);
+
+	// get_observers(self)
+	static int l_get_observers(lua_State *L);
+
+	// get_effective_observers(self)
+	static int l_get_effective_observers(lua_State *L);
+
 	// is_player(self)
 	static int l_is_player(lua_State *L);
 
 	/* LuaEntitySAO-only */
 
-	// set_velocity(self, {x=num, y=num, z=num})
+	// set_velocity(self, velocity)
 	static int l_set_velocity(lua_State *L);
 
-	// add_velocity(self, {x=num, y=num, z=num})
+	// add_velocity(self, velocity)
 	static int l_add_velocity(lua_State *L);
 
 	// get_velocity(self)
 	static int l_get_velocity(lua_State *L);
 
-	// set_acceleration(self, {x=num, y=num, z=num})
+	// set_acceleration(self, acceleration)
 	static int l_set_acceleration(lua_State *L);
 
 	// get_acceleration(self)
 	static int l_get_acceleration(lua_State *L);
 
-	// set_yaw(self, radians)
+	// set_rotation(self, rotation)
+	static int l_set_rotation(lua_State *L);
+
+	// get_rotation(self)
+	static int l_get_rotation(lua_State *L);
+
+	// set_yaw(self, yaw)
 	static int l_set_yaw(lua_State *L);
 
 	// get_yaw(self)
@@ -185,8 +197,7 @@ private:
 	// l_get_texture_mod(self)
 	static int l_get_texture_mod(lua_State *L);
 
-	// set_sprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
-	//           select_horiz_by_yawpitch=false)
+	// set_sprite(self, start_frame, num_frames, framelength, select_x_by_camera)
 	static int l_set_sprite(lua_State *L);
 
 	// DEPRECATED
@@ -198,14 +209,11 @@ private:
 
 	/* Player-only */
 
-	// is_player_connected(self)
-	static int l_is_player_connected(lua_State *L);
-
 	// get_player_name(self)
 	static int l_get_player_name(lua_State *L);
 
-	// get_player_velocity(self)
-	static int l_get_player_velocity(lua_State *L);
+	// get_fov(self)
+	static int l_get_fov(lua_State *L);
 
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L);
@@ -223,6 +231,9 @@ private:
 
 	// get_look_yaw2(self)
 	static int l_get_look_horizontal(lua_State *L);
+
+	// set_fov(self, degrees, is_multiplier, transition_time)
+	static int l_set_fov(lua_State *L);
 
 	// set_look_vertical(self, radians)
 	static int l_set_look_vertical(lua_State *L);
@@ -244,9 +255,11 @@ private:
 	// get_breath(self, breath)
 	static int l_get_breath(lua_State *L);
 
+	// DEPRECATED
 	// set_attribute(self, attribute, value)
 	static int l_set_attribute(lua_State *L);
 
+	// DEPRECATED
 	// get_attribute(self, attribute)
 	static int l_get_attribute(lua_State *L);
 
@@ -256,13 +269,13 @@ private:
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);
 
-	// get_inventory_formspec(self) -> formspec
+	// get_inventory_formspec(self)
 	static int l_get_inventory_formspec(lua_State *L);
 
 	// set_formspec_prepend(self, formspec)
 	static int l_set_formspec_prepend(lua_State *L);
 
-	// get_formspec_prepend(self) -> formspec
+	// get_formspec_prepend(self)
 	static int l_get_formspec_prepend(lua_State *L);
 
 	// get_player_control(self)
@@ -285,6 +298,9 @@ private:
 
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
+
+	// hud_get_all(self)
+	static int l_hud_get_all(lua_State *L);
 
 	// hud_set_flags(self, flags)
 	static int l_hud_set_flags(lua_State *L);
@@ -310,13 +326,35 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
-	// set_sky(self, bgcolor, type, list, clouds = true)
+	// set_sky(self, sky_parameters)
 	static int l_set_sky(lua_State *L);
 
-	// get_sky(self)
+	// get_sky(self, as_table)
 	static int l_get_sky(lua_State *L);
 
-	// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
+	// DEPRECATED
+	// get_sky_color(self)
+	static int l_get_sky_color(lua_State* L);
+
+	// set_sun(self, sun_parameters)
+	static int l_set_sun(lua_State *L);
+
+	// get_sun(self)
+	static int l_get_sun(lua_State *L);
+
+	// set_moon(self, moon_parameters)
+	static int l_set_moon(lua_State *L);
+
+	// get_moon(self)
+	static int l_get_moon(lua_State *L);
+
+	// set_stars(self, star_parameters)
+	static int l_set_stars(lua_State *L);
+
+	// get_stars(self)
+	static int l_get_stars(lua_State *L);
+
+	// set_clouds(self, cloud_parameters)
 	static int l_set_clouds(lua_State *L);
 
 	// get_clouds(self)
@@ -328,17 +366,23 @@ private:
 	// get_day_night_ratio(self)
 	static int l_get_day_night_ratio(lua_State *L);
 
-	// set_local_animation(self, {stand/idle}, {walk}, {dig}, {walk+dig}, frame_speed)
+	// set_local_animation(self, idle, walk, dig, walk_while_dig, frame_speed)
 	static int l_set_local_animation(lua_State *L);
 
 	// get_local_animation(self)
 	static int l_get_local_animation(lua_State *L);
 
-	// set_eye_offset(self, v3f first pv, v3f third pv)
+	// set_eye_offset(self, firstperson, thirdperson, thirdperson_front)
 	static int l_set_eye_offset(lua_State *L);
 
 	// get_eye_offset(self)
 	static int l_get_eye_offset(lua_State *L);
+
+	// set_camera(self, {params})
+	static int l_set_camera(lua_State *L);
+
+	// get_camera(self)
+	static int l_get_camera(lua_State *L);
 
 	// set_nametag_attributes(self, attributes)
 	static int l_set_nametag_attributes(lua_State *L);
@@ -346,4 +390,24 @@ private:
 	// get_nametag_attributes(self)
 	static int l_get_nametag_attributes(lua_State *L);
 
+	// send_mapblock(pos)
+	static int l_send_mapblock(lua_State *L);
+
+	// set_minimap_modes(self, modes, wanted_mode)
+	static int l_set_minimap_modes(lua_State *L);
+
+	// set_lighting(self, lighting)
+	static int l_set_lighting(lua_State *L);
+
+	// get_lighting(self)
+	static int l_get_lighting(lua_State *L);
+
+	// respawn(self)
+	static int l_respawn(lua_State *L);
+
+	// set_flags(self, flags)
+	static int l_set_flags(lua_State *L);
+
+	// get_flags(self)
+	static int l_get_flags(lua_State *L);
 };

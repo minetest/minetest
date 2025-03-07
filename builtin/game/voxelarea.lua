@@ -1,11 +1,17 @@
+local math_floor = math.floor
+local vector_new = vector.new
+
 VoxelArea = {
-	MinEdge = {x=1, y=1, z=1},
-	MaxEdge = {x=0, y=0, z=0},
+	MinEdge = vector_new(1, 1, 1),
+	MaxEdge = vector_new(0, 0, 0),
 	ystride = 0,
 	zstride = 0,
 }
 
-function VoxelArea:new(o)
+local class_metatable = {}
+setmetatable(VoxelArea, class_metatable)
+
+local function new(self, o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
@@ -17,13 +23,19 @@ function VoxelArea:new(o)
 	return o
 end
 
+function class_metatable:__call(MinEdge, MaxEdge)
+	return new(self, {MinEdge = MinEdge, MaxEdge = MaxEdge})
+end
+
+VoxelArea.new = new
+
 function VoxelArea:getExtent()
 	local MaxEdge, MinEdge = self.MaxEdge, self.MinEdge
-	return {
-		x = MaxEdge.x - MinEdge.x + 1,
-		y = MaxEdge.y - MinEdge.y + 1,
-		z = MaxEdge.z - MinEdge.z + 1,
-	}
+	return vector_new(
+		MaxEdge.x - MinEdge.x + 1,
+		MaxEdge.y - MinEdge.y + 1,
+		MaxEdge.z - MinEdge.z + 1
+	)
 end
 
 function VoxelArea:getVolume()
@@ -36,7 +48,7 @@ function VoxelArea:index(x, y, z)
 	local i = (z - MinEdge.z) * self.zstride +
 			  (y - MinEdge.y) * self.ystride +
 			  (x - MinEdge.x) + 1
-	return math.floor(i)
+	return math_floor(i)
 end
 
 function VoxelArea:indexp(p)
@@ -44,24 +56,23 @@ function VoxelArea:indexp(p)
 	local i = (p.z - MinEdge.z) * self.zstride +
 			  (p.y - MinEdge.y) * self.ystride +
 			  (p.x - MinEdge.x) + 1
-	return math.floor(i)
+	return math_floor(i)
 end
 
 function VoxelArea:position(i)
-	local p = {}
 	local MinEdge = self.MinEdge
 
 	i = i - 1
 
-	p.z = math.floor(i / self.zstride) + MinEdge.z
+	local z = math_floor(i / self.zstride) + MinEdge.z
 	i = i % self.zstride
 
-	p.y = math.floor(i / self.ystride) + MinEdge.y
+	local y = math_floor(i / self.ystride) + MinEdge.y
 	i = i % self.ystride
 
-	p.x = math.floor(i) + MinEdge.x
+	local x = math_floor(i) + MinEdge.x
 
-	return p
+	return vector_new(x, y, z)
 end
 
 function VoxelArea:contains(x, y, z)

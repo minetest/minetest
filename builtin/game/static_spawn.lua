@@ -1,9 +1,7 @@
--- Minetest: builtin/static_spawn.lua
-
 local static_spawnpoint_string = core.settings:get("static_spawnpoint")
 if static_spawnpoint_string and
 		static_spawnpoint_string ~= "" and
-		not core.setting_get_pos("static_spawnpoint") then
+		not core.settings:get_pos("static_spawnpoint") then
 	error('The static_spawnpoint setting is invalid: "' ..
 			static_spawnpoint_string .. '"')
 end
@@ -15,7 +13,7 @@ local function put_player_in_spawn(player_obj)
 	end
 	core.log("action", "Moving " .. player_obj:get_player_name() ..
 		" to static spawnpoint at " .. core.pos_to_string(static_spawnpoint))
-	player_obj:setpos(static_spawnpoint)
+	player_obj:set_pos(static_spawnpoint)
 	return true
 end
 

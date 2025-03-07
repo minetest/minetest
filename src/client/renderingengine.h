@@ -1,30 +1,30 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #pragma once
 
 #include <vector>
 #include <memory>
 #include <string>
-#include "irrlichttypes_extrabloated.h"
+#include "client/inputhandler.h"
 #include "debug.h"
+#include "config.h"
+#include "client/shader.h"
+#include "client/render/core.h"
+// include the shadow mapper classes too
+#include "client/shadows/dynamicshadowsrender.h"
+#include <IVideoDriver.h>
+
+#if !IS_CLIENT_BUILD
+#error Do not include in server builds
+#endif
+
+struct VideoDriverInfo {
+	std::string name;
+	std::string friendly_name;
+};
 
 class ITextureSource;
 class Camera;
@@ -35,34 +35,70 @@ class Minimap;
 
 class RenderingCore;
 
+// Instead of a mechanism to disable fog we just set it to be really far away
+#define FOG_RANGE_ALL (100000 * BS)
+
+/* Helpers */
+
+struct FpsControl {
+	FpsControl() : last_time(0), busy_time(0), sleep_time(0) {}
+
+	void reset();
+
+	void limit(IrrlichtDevice *device, f32 *dtime);
+
+	u32 getBusyMs() const { return busy_time / 1000; }
+
+	// all values in microseconds (us)
+	u64 last_time, busy_time, sleep_time;
+};
+
+// Populates fogColor, fogDistance, fogShadingParameter with values from Irrlicht
+class FogShaderConstantSetterFactory : public IShaderConstantSetterFactory
+{
+public:
+	FogShaderConstantSetterFactory() {};
+	virtual IShaderConstantSetter *create();
+};
+
+/* Rendering engine class */
+
 class RenderingEngine
 {
 public:
-	RenderingEngine(IEventReceiver *eventReceiver);
+	static const video::SColor MENU_SKY_COLOR;
+
+	RenderingEngine(MyEventReceiver *eventReceiver);
 	~RenderingEngine();
 
-	v2u32 getWindowSize() const;
 	void setResizable(bool resize);
 
 	video::IVideoDriver *getVideoDriver() { return driver; }
 
-	static const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
-	static const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
+	static const VideoDriverInfo &getVideoDriverInfo(irr::video::E_DRIVER_TYPE type);
 	static float getDisplayDensity();
-	static v2u32 getDisplaySize();
 
-	static void setXorgClassHint(const video::SExposedVideoData &video_data,
-			const std::string &name);
+	bool setupTopLevelWindow();
 	bool setWindowIcon();
-	bool setXorgWindowIconFromPath(const std::string &icon_file);
-	static bool print_video_modes();
+	void cleanupMeshCache();
 
-	static RenderingEngine *get_instance() { return s_singleton; }
+	void removeMesh(const scene::IMesh* mesh);
 
-	static io::IFileSystem *get_filesystem()
+	/**
+	 * This takes 3d_mode into account - side-by-side will return a
+	 * halved horizontal size.
+	 *
+	 * @return "window" size
+	 */
+	static v2u32 getWindowSize()
 	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->getFileSystem();
+		sanity_check(s_singleton);
+		return s_singleton->_getWindowSize();
+	}
+
+	io::IFileSystem *get_filesystem()
+	{
+		return m_device->getFileSystem();
 	}
 
 	static video::IVideoDriver *get_video_driver()
@@ -71,16 +107,9 @@ public:
 		return s_singleton->m_device->getVideoDriver();
 	}
 
-	static scene::IMeshCache *get_mesh_cache()
+	scene::ISceneManager *get_scene_manager()
 	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->getSceneManager()->getMeshCache();
-	}
-
-	static scene::ISceneManager *get_scene_manager()
-	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->getSceneManager();
+		return m_device->getSceneManager();
 	}
 
 	static irr::IrrlichtDevice *get_raw_device()
@@ -89,73 +118,54 @@ public:
 		return s_singleton->m_device;
 	}
 
-	static u32 get_timer_time()
+	gui::IGUIEnvironment *get_gui_env()
 	{
-		sanity_check(s_singleton && s_singleton->m_device &&
-				s_singleton->m_device->getTimer());
-		return s_singleton->m_device->getTimer()->getTime();
+		return m_device->getGUIEnvironment();
 	}
 
-	static gui::IGUIEnvironment *get_gui_env()
-	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->getGUIEnvironment();
-	}
-
-	inline static void draw_load_screen(const std::wstring &text,
+	// If "indef_pos" is given, the value of "percent" is ignored and an indefinite
+	// progress bar is drawn.
+	void draw_load_screen(const std::wstring &text,
 			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
-			float dtime = 0, int percent = 0, bool clouds = true)
-	{
-		s_singleton->_draw_load_screen(
-				text, guienv, tsrc, dtime, percent, clouds);
-	}
+			float dtime = 0, int percent = 0, float *indef_pos = nullptr);
 
-	inline static void draw_menu_scene(
-			gui::IGUIEnvironment *guienv, float dtime, bool clouds)
-	{
-		s_singleton->_draw_menu_scene(guienv, dtime, clouds);
-	}
-
-	inline static void draw_scene(video::SColor skycolor, bool show_hud,
-			bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
-	{
-		s_singleton->_draw_scene(skycolor, show_hud, show_minimap,
-				draw_wield_tool, draw_crosshair);
-	}
-
-	inline static void initialize(Client *client, Hud *hud)
-	{
-		s_singleton->_initialize(client, hud);
-	}
-
-	inline static void finalize() { s_singleton->_finalize(); }
-
-	static bool run()
-	{
-		sanity_check(s_singleton && s_singleton->m_device);
-		return s_singleton->m_device->run();
-	}
-
-	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
-	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
-
-private:
-	void _draw_load_screen(const std::wstring &text, gui::IGUIEnvironment *guienv,
-			ITextureSource *tsrc, float dtime = 0, int percent = 0,
-			bool clouds = true);
-
-	void _draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime = 0,
-			bool clouds = true);
-
-	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
+	void draw_scene(video::SColor skycolor, bool show_hud,
 			bool draw_wield_tool, bool draw_crosshair);
 
-	void _initialize(Client *client, Hud *hud);
+	void initialize(Client *client, Hud *hud);
+	void finalize();
 
-	void _finalize();
+	bool run()
+	{
+		return m_device->run();
+	}
+
+	// FIXME: this is still global when it shouldn't be
+	static ShadowRenderer *get_shadow_renderer()
+	{
+		if (s_singleton && s_singleton->core)
+			return s_singleton->core->get_shadow_renderer();
+		return nullptr;
+	}
+	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
+
+	static void autosaveScreensizeAndCo(
+			const irr::core::dimension2d<u32> initial_screen_size,
+			const bool initial_window_maximized);
+
+	static PointerType getLastPointerType()
+	{
+		sanity_check(s_singleton && s_singleton->m_receiver);
+		return s_singleton->m_receiver->getLastPointerType();
+	}
+
+private:
+	static void settingChangedCallback(const std::string &name, void *data);
+	v2u32 _getWindowSize() const;
 
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;
 	irr::video::IVideoDriver *driver;
+	MyEventReceiver *m_receiver = nullptr;
 	static RenderingEngine *s_singleton;
 };

@@ -1,50 +1,48 @@
-/*
-Minetest
-Copyright (C) 2016 sfan5 <sfan5@live.de>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2016 sfan5 <sfan5@live.de>
 #include "tileanimation.h"
 #include "util/serialize.h"
 
-void TileAnimationParams::serialize(std::ostream &os, u8 tiledef_version) const
+void TileAnimationParams::serialize(std::ostream &os, u16 protocol_ver) const
 {
+	// The particle code overloads the length parameter so that negative numbers
+	// indicate an extra feature which old clients don't understand (crash).
+	// In hindsight it would have been better to use an extra parameter for this
+	// but we're stuck with this now.
+	const bool need_abs = protocol_ver < 40;
+
 	writeU8(os, type);
 	if (type == TAT_VERTICAL_FRAMES) {
 		writeU16(os, vertical_frames.aspect_w);
 		writeU16(os, vertical_frames.aspect_h);
-		writeF1000(os, vertical_frames.length);
+		writeF32(os, need_abs ? std::abs(vertical_frames.length) : vertical_frames.length);
 	} else if (type == TAT_SHEET_2D) {
 		writeU8(os, sheet_2d.frames_w);
 		writeU8(os, sheet_2d.frames_h);
-		writeF1000(os, sheet_2d.frame_length);
+		writeF32(os, need_abs ? std::abs(sheet_2d.frame_length) : sheet_2d.frame_length);
 	}
 }
 
-void TileAnimationParams::deSerialize(std::istream &is, u8 tiledef_version)
+void TileAnimationParams::deSerialize(std::istream &is, u16 protocol_ver)
 {
-	type = (TileAnimationType) readU8(is);
-
-	if (type == TAT_VERTICAL_FRAMES) {
-		vertical_frames.aspect_w = readU16(is);
-		vertical_frames.aspect_h = readU16(is);
-		vertical_frames.length = readF1000(is);
-	} else if (type == TAT_SHEET_2D) {
-		sheet_2d.frames_w = readU8(is);
-		sheet_2d.frames_h = readU8(is);
-		sheet_2d.frame_length = readF1000(is);
+	type = static_cast<TileAnimationType>(readU8(is));
+	switch(type) {
+		case TAT_NONE:
+			break;
+		case TAT_VERTICAL_FRAMES:
+			vertical_frames.aspect_w = readU16(is);
+			vertical_frames.aspect_h = readU16(is);
+			vertical_frames.length = readF32(is);
+			break;
+		case TAT_SHEET_2D:
+			sheet_2d.frames_w = readU8(is);
+			sheet_2d.frames_h = readU8(is);
+			sheet_2d.frame_length = readF32(is);
+			break;
+		default:
+			type = TAT_NONE;
+			break;
 	}
 }
 
@@ -59,7 +57,7 @@ void TileAnimationParams::determineParams(v2u32 texture_size, int *frame_count,
 		if (frame_count)
 			*frame_count = _frame_count;
 		if (frame_length_ms)
-			*frame_length_ms = 1000.0 * vertical_frames.length / _frame_count;
+			*frame_length_ms = 1000 * vertical_frames.length / _frame_count;
 		if (frame_size)
 			*frame_size = v2u32(texture_size.X, frame_height);
 	} else if (type == TAT_SHEET_2D) {
@@ -106,5 +104,5 @@ v2f TileAnimationParams::getTextureCoords(v2u32 texture_size, int frame) const
 		r = frame % sheet_2d.frames_w;
 		ret = v2u32(r * frame_size.X, q * frame_size.Y);
 	}
-	return v2f(ret.X / (float) texture_size.X, ret.Y / (float) texture_size.Y);
+	return v2f::from(ret) / v2f::from(texture_size);
 }

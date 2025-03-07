@@ -1,31 +1,20 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #include "gameui.h"
 #include <irrlicht_changes/static_text.h>
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
+#include "gui/guiChatConsole.h"
+#include "gui/touchcontrols.h"
+#include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
 #include "fontengine.h"
+#include "hud.h" // HUD_FLAG_*
 #include "nodedef.h"
 #include "profiler.h"
 #include "renderingengine.h"
@@ -33,7 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 inline static const char *yawToDirectionString(int yaw)
 {
-	static const char *direction[4] = {"N +Z", "W -X", "S -Z", "E +X"};
+	static const char *direction[4] =
+		{"North +Z", "West -X", "South -Z", "East +X"};
 
 	yaw = wrapDegrees_0_360(yaw);
 	yaw = (yaw + 45) % 360 / 90;
@@ -53,71 +43,90 @@ void GameUI::init()
 {
 	// First line of debug text
 	m_guitext = gui::StaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
-		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
+		core::rect<s32>(0, 0, 0, 0), false, true, guiroot);
 
 	// Second line of debug text
 	m_guitext2 = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
-		false, guiroot);
+		true, guiroot);
 
-	// At the middle of the screen
-	// Object infos are shown in this
+	// Chat text
+	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
+		//false, false); // Disable word wrap as of now
+		false, true, guiroot);
+	u16 chat_font_size = g_settings->getU16("chat_font_size");
+	if (chat_font_size != 0) {
+		m_guitext_chat->setOverrideFont(g_fontengine->getFont(
+			rangelim(chat_font_size, 5, 72), FM_Unspecified));
+	}
+
+
+	// Infotext of nodes and objects.
+	// If in debug mode, object debug infos shown here, too.
+	// Located on the left on the screen, below chat.
+	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
 	m_guitext_info = gui::StaticText::add(guienv, L"",
-		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5)
-			+ v2s32(100, 200), false, true, guiroot);
+		// Size is limited; text will be truncated after 6 lines.
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 6) +
+			v2s32(100, chat_font_height *
+			(g_settings->getU16("recent_chat_messages") + 3)),
+			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
 	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_status->setVisible(false);
 
-	// Chat text
-	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
-		//false, false); // Disable word wrap as of now
-		false, true, guiroot);
-
 	// Profiler text (size is updated when text is updated)
 	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
-	m_guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
+	m_guitext_profiler->setOverrideFont(g_fontengine->getFont(
+		g_fontengine->getDefaultFontSize() * 0.9f, FM_Mono));
 	m_guitext_profiler->setVisible(false);
-	m_guitext_profiler->setWordWrap(true);
 }
 
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
-	const CameraOrientation &cam, const PointedThing &pointed_old, float dtime)
+	const CameraOrientation &cam, const PointedThing &pointed_old,
+	const GUIChatConsole *chat_console, float dtime)
 {
-	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
+	v2u32 screensize = RenderingEngine::getWindowSize();
 
-	if (m_flags.show_debug) {
-		static float drawtime_avg = 0;
-		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
-		u16 fps = 1.0 / stats.dtime_jitter.avg;
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	s32 minimal_debug_height = 0;
+
+	// Minimal debug text must only contain info that can't give a gameplay advantage
+	if (m_flags.show_minimal_debug) {
+		const u16 fps = 1.0 / stats.dtime_jitter.avg;
+		m_drawtime_avg *= 0.95f;
+		m_drawtime_avg += 0.05f * (stats.drawtime / 1000);
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
 			<< PROJECT_NAME_C " " << g_version_hash
-			<< ", FPS: " << fps
-			<< std::setprecision(0)
-			<< ", drawtime: " << drawtime_avg << "ms"
+			<< " | FPS: " << fps
+			<< std::setprecision(fps >= 100 ? 1 : 0)
+			<< " | drawtime: " << m_drawtime_avg << "ms"
 			<< std::setprecision(1)
-			<< ", dtime jitter: "
-			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
+			<< " | dtime jitter: "
+			<< (stats.dtime_jitter.max_fraction * 100.0f) << "%"
 			<< std::setprecision(1)
-			<< ", view range: "
+			<< " | view range: "
 			<< (draw_control->range_all ? "All" : itos(draw_control->wanted_range))
-			<< std::setprecision(3)
-			<< ", RTT: " << client->getRTT() << "s";
+			<< std::setprecision(2)
+			<< " | RTT: " << (client->getRTT() * 1000.0f) << "ms";
+
+		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X, screensize.Y));
+
 		setStaticText(m_guitext, utf8_to_wide(os.str()).c_str());
 
-		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X,
-			5 + g_fontengine->getTextHeight()));
+		minimal_debug_height = m_guitext->getTextHeight();
 	}
 
 	// Finally set the guitext visible depending on the flag
-	m_guitext->setVisible(m_flags.show_debug);
+	m_guitext->setVisible(m_flags.show_minimal_debug);
 
-	if (m_flags.show_debug) {
-		LocalPlayer *player = client->getEnv().getLocalPlayer();
+	// Basic debug text also shows info that might give a gameplay advantage
+	if (m_flags.show_basic_debug) {
 		v3f player_position = player->getPosition();
 
 		std::ostringstream os(std::ios_base::binary);
@@ -125,32 +134,35 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< "pos: (" << (player_position.X / BS)
 			<< ", " << (player_position.Y / BS)
 			<< ", " << (player_position.Z / BS)
-			<< "), yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
+			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
 			<< yawToDirectionString(cam.camera_yaw)
-			<< ", seed: " << ((u64)client->getMapSeed());
+			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
+			<< " | seed: " << ((u64)client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {
 			ClientMap &map = client->getEnv().getClientMap();
 			const NodeDefManager *nodedef = client->getNodeDefManager();
-			MapNode n = map.getNodeNoEx(pointed_old.node_undersurface);
+			MapNode n = map.getNode(pointed_old.node_undersurface);
 
-			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
-				os << ", pointed: " << nodedef->get(n).name
-					<< ", param2: " << (u64) n.getParam2();
+			if (n.getContent() != CONTENT_IGNORE) {
+				if (nodedef->get(n).name == "unknown") {
+					os << ", pointed: <unknown node>";
+				} else {
+					os << ", pointed: " << nodedef->get(n).name;
+				}
+				os << ", param2: " << (u64) n.getParam2();
 			}
 		}
 
-		setStaticText(m_guitext2, utf8_to_wide(os.str()).c_str());
+		m_guitext2->setRelativePosition(core::rect<s32>(5, 5 + minimal_debug_height,
+				screensize.X, screensize.Y));
 
-		m_guitext2->setRelativePosition(core::rect<s32>(5,
-			5 + g_fontengine->getTextHeight(), screensize.X,
-			5 + g_fontengine->getTextHeight() * 2
-		));
+		setStaticText(m_guitext2, utf8_to_wide(os.str()).c_str());
 	}
 
-	m_guitext2->setVisible(m_flags.show_debug);
+	m_guitext2->setVisible(m_flags.show_basic_debug);
 
-	setStaticText(m_guitext_info, translate_string(m_infotext).c_str());
+	setStaticText(m_guitext_info, m_infotext.c_str());
 	m_guitext_info->setVisible(m_flags.show_hud && g_menumgr.menuCount() == 0);
 
 	static const float statustext_time_max = 1.5f;
@@ -164,101 +176,101 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		}
 	}
 
-	setStaticText(m_guitext_status, translate_string(m_statustext).c_str());
-	m_guitext_status->setVisible(!m_statustext.empty());
+	IGUIStaticText *guitext_status;
+	bool overriden = g_touchcontrols && g_touchcontrols->isStatusTextOverriden();
+	if (overriden) {
+		guitext_status = g_touchcontrols->getStatusText();
+		m_guitext_status->setVisible(false);
+	} else {
+		guitext_status = m_guitext_status;
+		if (g_touchcontrols)
+			g_touchcontrols->getStatusText()->setVisible(false);
+	}
+
+	setStaticText(guitext_status, m_statustext.c_str());
+	guitext_status->setVisible(!m_statustext.empty());
 
 	if (!m_statustext.empty()) {
-		s32 status_width  = m_guitext_status->getTextWidth();
-		s32 status_height = m_guitext_status->getTextHeight();
-		s32 status_y = screensize.Y - 150;
+		s32 status_width  = guitext_status->getTextWidth();
+		s32 status_height = guitext_status->getTextHeight();
+		s32 status_y = screensize.Y  - (overriden ? 15 : 150);
 		s32 status_x = (screensize.X - status_width) / 2;
 
-		m_guitext_status->setRelativePosition(core::rect<s32>(status_x ,
+		guitext_status->setRelativePosition(core::rect<s32>(status_x ,
 			status_y - status_height, status_x + status_width, status_y));
 
 		// Fade out
-		video::SColor final_color = m_statustext_initial_color;
-		final_color.setAlpha(0);
-		video::SColor fade_color = m_statustext_initial_color.getInterpolated_quadratic(
-			m_statustext_initial_color, final_color, m_statustext_time / statustext_time_max);
-		m_guitext_status->setOverrideColor(fade_color);
-		m_guitext_status->enableOverrideColor(true);
+		video::SColor fade_color = m_statustext_initial_color;
+		f32 d = m_statustext_time / statustext_time_max;
+		fade_color.setAlpha(static_cast<u32>(
+			fade_color.getAlpha() * (1.0f - d * d)));
+		guitext_status->setOverrideColor(fade_color);
+		guitext_status->enableOverrideColor(true);
 	}
+
+	// Hide chat when disabled by server or when console is visible
+	m_guitext_chat->setVisible(isChatVisible() && !chat_console->isVisible() && (player->hud_flags & HUD_FLAG_CHAT_VISIBLE));
 }
 
 void GameUI::initFlags()
 {
-	memset(&m_flags, 0, sizeof(GameUI::Flags));
-	m_flags.show_chat = true;
-	m_flags.show_hud = true;
-	m_flags.show_debug = g_settings->getBool("show_debug");
-}
-
-void GameUI::showMinimap(bool show)
-{
-	m_flags.show_minimap = show;
+	m_flags = GameUI::Flags();
 }
 
 void GameUI::showTranslatedStatusText(const char *str)
 {
-	const wchar_t *wmsg = wgettext(str);
-	showStatusText(wmsg);
-	delete[] wmsg;
+	showStatusText(wstrgettext(str));
 }
 
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 {
 	setStaticText(m_guitext_chat, chat_text);
 
+	m_recent_chat_count = recent_chat_count;
+}
+
+void GameUI::updateChatSize()
+{
 	// Update gui element size and position
 	s32 chat_y = 5;
 
-	if (m_flags.show_debug)
-		chat_y += 2 * g_fontengine->getLineHeight();
+	if (m_flags.show_minimal_debug)
+		chat_y += m_guitext->getTextHeight();
+	if (m_flags.show_basic_debug)
+		chat_y += m_guitext2->getTextHeight();
 
-	// first pass to calculate height of text to be set
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
-	s32 width = std::min(g_fontengine->getTextWidth(chat_text.c_str()) + 10,
-		window_size.X - 20);
-	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
-		chat_y + window_size.Y));
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
 
-	// now use real height of text and adjust rect according to this size
-	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
-		chat_y + m_guitext_chat->getTextHeight()));
+	core::rect<s32> chat_size(10, chat_y, window_size.X - 20, 0);
+	chat_size.LowerRightCorner.Y = std::min((s32)window_size.Y,
+			m_guitext_chat->getTextHeight() + chat_y);
 
-	// Don't show chat if disabled or empty or profiler is enabled
-	m_guitext_chat->setVisible(m_flags.show_chat &&
-		recent_chat_count != 0 && m_profiler_current_page == 0);
+	if (chat_size == m_current_chat_size)
+		return;
+	m_current_chat_size = chat_size;
+
+	m_guitext_chat->setRelativePosition(chat_size);
 }
 
 void GameUI::updateProfiler()
 {
 	if (m_profiler_current_page != 0) {
 		std::ostringstream os(std::ios_base::binary);
-		g_profiler->printPage(os, m_profiler_current_page, m_profiler_max_page);
+		os << "   Profiler page " << (int)m_profiler_current_page <<
+				", elapsed: " << g_profiler->getElapsedMs() << " ms)" << std::endl;
 
-		std::wstring text = translate_string(utf8_to_wide(os.str()));
-		setStaticText(m_guitext_profiler, text.c_str());
+		g_profiler->print(os, m_profiler_current_page, m_profiler_max_page);
 
-		s32 w = g_fontengine->getTextWidth(text);
+		EnrichedString str(utf8_to_wide(os.str()));
+		str.setBackground(video::SColor(120, 0, 0, 0));
+		setStaticText(m_guitext_profiler, str);
 
-		if (w < 400)
-			w = 400;
-
-		u32 text_height = g_fontengine->getTextHeight();
-
-		core::position2di upper_left, lower_right;
-
-		upper_left.X  = 6;
-		upper_left.Y  = (text_height + 5) * 2;
-		lower_right.X = 12 + w;
-		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
-
-		s32 screen_height = RenderingEngine::get_video_driver()->getScreenSize().Height;
-
-		if (lower_right.Y > screen_height * 2 / 3)
-			lower_right.Y = screen_height * 2 / 3;
+		core::dimension2d<u32> size = m_guitext_profiler->getOverrideFont()->
+				getDimension(str.c_str());
+		core::position2di upper_left(6, m_guitext->getTextHeight() * 2.5f);
+		core::position2di lower_right = upper_left;
+		lower_right.X += size.Width + 10;
+		lower_right.Y += size.Height;
 
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
 	}
@@ -266,13 +278,18 @@ void GameUI::updateProfiler()
 	m_guitext_profiler->setVisible(m_profiler_current_page != 0);
 }
 
-void GameUI::toggleChat()
+void GameUI::toggleChat(Client *client)
 {
-	m_flags.show_chat = !m_flags.show_chat;
-	if (m_flags.show_chat)
-		showTranslatedStatusText("Chat shown");
-	else
-		showTranslatedStatusText("Chat hidden");
+	if (client->getEnv().getLocalPlayer()->hud_flags & HUD_FLAG_CHAT_VISIBLE) {
+		m_flags.show_chat = !m_flags.show_chat;
+		if (m_flags.show_chat)
+			showTranslatedStatusText("Chat shown");
+		else
+			showTranslatedStatusText("Chat hidden");
+	} else {
+		showTranslatedStatusText("Chat currently disabled by game or mod");
+	}
+
 }
 
 void GameUI::toggleHud()
@@ -292,13 +309,43 @@ void GameUI::toggleProfiler()
 	updateProfiler();
 
 	if (m_profiler_current_page != 0) {
-		wchar_t buf[255];
-		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
-			m_profiler_current_page, m_profiler_max_page);
-		delete[] str;
-		showStatusText(buf);
+		std::wstring msg = fwgettext("Profiler shown (page %d of %d)",
+				m_profiler_current_page, m_profiler_max_page);
+		showStatusText(msg);
 	} else {
 		showTranslatedStatusText("Profiler hidden");
+	}
+}
+
+void GameUI::clearText()
+{
+	if (m_guitext_chat) {
+		m_guitext_chat->remove();
+		m_guitext_chat = nullptr;
+	}
+
+	if (m_guitext) {
+		m_guitext->remove();
+		m_guitext = nullptr;
+	}
+
+	if (m_guitext2) {
+		m_guitext2->remove();
+		m_guitext2 = nullptr;
+	}
+
+	if (m_guitext_info) {
+		m_guitext_info->remove();
+		m_guitext_info = nullptr;
+	}
+
+	if (m_guitext_status) {
+		m_guitext_status->remove();
+		m_guitext_status = nullptr;
+	}
+
+	if (m_guitext_profiler) {
+		m_guitext_profiler->remove();
+		m_guitext_profiler = nullptr;
 	}
 }

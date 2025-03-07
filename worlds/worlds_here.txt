@@ -1,0 +1,4 @@
+World directories are placed into this location. Each world should contain at least following files:
+
+ * map_meta.txt
+ * world.mt
