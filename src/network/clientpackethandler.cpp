@@ -1627,7 +1627,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	}
 
 	// create a downloader for this file
-	auto downloader(std::make_shared<SingleMediaDownloader>(cached));
+	auto downloader(std::make_shared<SingleMediaDownloader>(!ephemeral));
 	m_pending_media_downloads.emplace_back(token, downloader);
 	downloader->addFile(filename, raw_hash);
 	for (const auto &baseurl : m_remote_media_servers)
