@@ -1487,13 +1487,19 @@ void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 void Server::SendItemDef(session_t peer_id,
 		IItemDefManager *itemdef, u16 protocol_version)
 {
+	auto *client = m_clients.getClientNoEx(peer_id, CS_Created);
+	assert(client);
+
 	NetworkPacket pkt(TOCLIENT_ITEMDEF, 0, peer_id);
 
 	std::ostringstream tmp_os2(std::ios::binary);
 	{
 		std::ostringstream tmp_os(std::ios::binary);
 		itemdef->serialize(tmp_os, protocol_version);
-		compressZlib(tmp_os.str(), tmp_os2);
+		if (client->net_proto_version >= 48)
+			compressZstd(tmp_os.str(), tmp_os2);
+		else
+			compressZlib(tmp_os.str(), tmp_os2);
 	}
 	pkt.putLongString(tmp_os2.str());
 
@@ -1507,13 +1513,19 @@ void Server::SendItemDef(session_t peer_id,
 void Server::SendNodeDef(session_t peer_id,
 	const NodeDefManager *nodedef, u16 protocol_version)
 {
+	auto *client = m_clients.getClientNoEx(peer_id, CS_Created);
+	assert(client);
+
 	NetworkPacket pkt(TOCLIENT_NODEDEF, 0, peer_id);
 
 	std::ostringstream tmp_os2(std::ios::binary);
 	{
 		std::ostringstream tmp_os(std::ios::binary);
 		nodedef->serialize(tmp_os, protocol_version);
-		compressZlib(tmp_os.str(), tmp_os2);
+		if (client->net_proto_version >= 48)
+			compressZstd(tmp_os.str(), tmp_os2);
+		else
+			compressZlib(tmp_os.str(), tmp_os2);
 	}
 	pkt.putLongString(tmp_os2.str());
 
@@ -2643,7 +2655,7 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	};
 
 	// Make packet
-	auto client = m_clients.getClientNoEx(peer_id, CS_Created);
+	auto *client = m_clients.getClientNoEx(peer_id, CS_Created);
 	assert(client);
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 
@@ -2671,7 +2683,7 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 		{
 			std::ostringstream oss(std::ios::binary);
 			auto tmp = serializeString16Array(names);
-			compressZstd(tmp, oss, 1);
+			compressZstd(tmp, oss);
 			pkt.putLongString(oss.str());
 		}
 

@@ -193,7 +193,7 @@ enum ToClientCommand : u16
 	TOCLIENT_NODEDEF = 0x3a,
 	/*
 		u32 length of buffer
-		serialized NodeDefManager (zlib-compressed)
+		serialized NodeDefManager (zstd-compressed)
 	*/
 
 	TOCLIENT_ANNOUNCE_MEDIA = 0x3c,
@@ -210,7 +210,7 @@ enum ToClientCommand : u16
 	TOCLIENT_ITEMDEF = 0x3d,
 	/*
 		u32 length of buffer
-		serialized ItemDefManager (zlib-compressed)
+		serialized ItemDefManager (zstd-compressed)
 	*/
 
 	TOCLIENT_PLAY_SOUND = 0x3f,

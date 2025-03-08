@@ -737,7 +737,10 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	// Decompress node definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
 	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
-	decompressZlib(tmp_is, tmp_os);
+	if (m_proto_ver >= 48)
+		decompressZstd(tmp_is, tmp_os);
+	else
+		decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
 	m_nodedef->deSerialize(tmp_os, m_proto_ver);
@@ -756,7 +759,10 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	// Decompress item definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
 	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
-	decompressZlib(tmp_is, tmp_os);
+	if (m_proto_ver >= 48)
+		decompressZstd(tmp_is, tmp_os);
+	else
+		decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
 	m_itemdef->deSerialize(tmp_os, m_proto_ver);
