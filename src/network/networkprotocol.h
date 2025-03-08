@@ -33,24 +33,28 @@ enum ToClientCommand : u16
 		u32 supported auth methods
 		std::string unused (used to be username)
 	*/
+
 	TOCLIENT_AUTH_ACCEPT = 0x03,
 	/*
 		Message from server to accept auth.
 
-		v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
+		v3f unused
 		u64 map seed
 		f1000 recommended send interval
 		u32 : supported auth methods for sudo mode
 		      (where the user can change their password)
 	*/
+
 	TOCLIENT_ACCEPT_SUDO_MODE = 0x04,
 	/*
 		Sent to client to show it is in sudo mode now.
 	*/
+
 	TOCLIENT_DENY_SUDO_MODE = 0x05,
 	/*
 		Signals client that sudo mode auth failed.
 	*/
+
 	TOCLIENT_ACCESS_DENIED = 0x0A,
 	/*
 		u8 reason
@@ -59,18 +63,26 @@ enum ToClientCommand : u16
 	*/
 
 	TOCLIENT_BLOCKDATA = 0x20,
+	/*
+		v3s16 position
+		serialized MapBlock
+	*/
+
 	TOCLIENT_ADDNODE = 0x21,
 	/*
 		v3s16 position
 		serialized mapnode
-		u8 keep_metadata // Added in protocol version 22
+		u8 keep_metadata
 	*/
+
 	TOCLIENT_REMOVENODE = 0x22,
+	/*
+		v3s16 position
+	*/
 
 	TOCLIENT_INVENTORY = 0x27,
 	/*
-		[0] u16 command
-		[2] serialized inventory
+		serialized inventory
 	*/
 
 	TOCLIENT_TIME_OF_DAY = 0x29,
@@ -719,18 +731,16 @@ enum ToServerCommand : u16
 
 	TOSERVER_PLAYERPOS = 0x23,
 	/*
-		[0] u16 command
-		[2] v3s32 position*100
-		[2+12] v3s32 speed*100
-		[2+12+12] s32 pitch*100
-		[2+12+12+4] s32 yaw*100
-		[2+12+12+4+4] u32 keyPressed
-		[2+12+12+4+4+4] u8 fov*80
-		[2+12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
-		[2+12+12+4+4+4+1+1] u8 camera_inverted (bool)
-		[2+12+12+4+4+4+1+1+1] f32 movement_speed
-		[2+12+12+4+4+4+1+1+1+4] f32 movement_direction
-
+		v3s32 position*100
+		v3s32 speed*100
+		s32 pitch*100
+		s32 yaw*100
+		u32 keyPressed
+		u8 fov*80
+		u8 ceil(wanted_range / MAP_BLOCKSIZE)
+		u8 camera_inverted (bool)
+		f32 movement_speed
+		f32 movement_direction
 	*/
 
 	TOSERVER_GOTBLOCKS = 0x24,
