@@ -3708,7 +3708,6 @@ bool Server::dynamicAddMedia(const DynamicMediaArgs &a)
 	if (m_env) {
 		NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
 		pkt << raw_hash << filename << static_cast<bool>(a.ephemeral);
-		// The "ephemeral" field is called "cached" on the client, and its sense gets confusing for proto_ver < 40.
 
 		NetworkPacket legacy_pkt = pkt;
 
