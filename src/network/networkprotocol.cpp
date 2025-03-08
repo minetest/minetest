@@ -62,6 +62,7 @@
 	PROTOCOL VERSION 47
 		Add particle blend mode "clip"
 		[scheduled bump for 5.11.0]
+		Add colorflowingliquid param2.
 */
 
 // Note: Also update core.protocol_versions in builtin when bumping
