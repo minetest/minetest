@@ -144,7 +144,6 @@ private:
 
 	static void deSerializeHashSet(const std::string &data,
 			std::set<std::string> &result);
-	std::string serializeRequiredHashSet();
 
 	// Maps filename to file status
 	std::map<std::string, FileStatus*> m_files;
