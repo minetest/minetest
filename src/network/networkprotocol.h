@@ -167,40 +167,38 @@ enum ToClientCommand : u16
 
 	TOCLIENT_MEDIA = 0x38,
 	/*
-		u16 total number of texture bunches
+		u16 total number of bunches
 		u16 index of this bunch
 		u32 number of files in this bunch
 		for each file {
 			u16 length of name
 			string name
 			u32 length of data
-			data
+			data (zstd-compressed)
 		}
-		u16 length of remote media server url (if applicable)
-		string url
 	*/
 
 	TOCLIENT_NODEDEF = 0x3a,
 	/*
-		u32 length of the next item
-		serialized NodeDefManager
+		u32 length of buffer
+		serialized NodeDefManager (zlib-compressed)
 	*/
 
 	TOCLIENT_ANNOUNCE_MEDIA = 0x3c,
 	/*
-		u32 number of files
-		for each texture {
-			u16 length of name
-			string name
-			u16 length of sha1_digest
-			string sha1_digest
+		u32 length of name array
+		char[] name array (zstd-compressed)
+		for each file {
+			char[20] sha1_digest
 		}
+		u16 length of remote media server url
+		string url
 	*/
 
 	TOCLIENT_ITEMDEF = 0x3d,
 	/*
-		u32 length of next item
-		serialized ItemDefManager
+		u32 length of buffer
+		serialized ItemDefManager (zlib-compressed)
 	*/
 
 	TOCLIENT_PLAY_SOUND = 0x3f,
