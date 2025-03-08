@@ -2822,7 +2822,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 	if (compress && bytes_uncompressed != 0) {
 		int percent = bytes_compressed / (float)bytes_uncompressed * 100;
-		ssize_t diff = (ssize_t)bytes_compressed - (ssize_t)bytes_uncompressed;
+		int diff = (int)bytes_compressed - (int)bytes_uncompressed;
 		infostream << "Server::sendRequestedMedia(): size after compression "
 			<< percent << "% (" << (diff > 0 ? '+' : '-') << std::abs(diff)
 			<< " byte)" << std::endl;
