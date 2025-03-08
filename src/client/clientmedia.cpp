@@ -168,6 +168,15 @@ void ClientMediaDownloader::step(Client *client)
 	}
 }
 
+std::string ClientMediaDownloader::makeReferer(Client *client)
+{
+	std::string addr = client->getAddressName();
+	if (addr.find(':') != std::string::npos)
+		addr = '[' + addr + ']';
+	return std::string("minetest://") + addr + ':' +
+		std::to_string(client->getServerAddress().getPort());
+}
+
 void ClientMediaDownloader::initialStep(Client *client)
 {
 	std::wstring loading_text = wstrgettext("Media...");
@@ -239,10 +248,10 @@ void ClientMediaDownloader::initialStep(Client *client)
 		// requests, so if there are lots of remote servers that are
 		// not responding, those will stall new media file transfers.
 
-		for (u32 i = 0; i < m_remotes.size(); ++i) {
-			assert(m_httpfetch_next_id == i);
+		assert(m_httpfetch_next_id == 0);
 
-			RemoteServerStatus *remote = m_remotes[i];
+		for (u32 i = 0; i < m_remotes.size(); ++i) {
+			auto *remote = m_remotes[i];
 			actionstream << "Client: Contacting remote server \""
 				<< remote->baseurl << "\"" << std::endl;
 
@@ -255,15 +264,8 @@ void ClientMediaDownloader::initialStep(Client *client)
 			fetch_request.raw_data = required_hash_set;
 			fetch_request.extra_headers.emplace_back(
 				"Content-Type: application/octet-stream");
-
-			// Encapsulate possible IPv6 plain address in []
-			std::string addr = client->getAddressName();
-			if (addr.find(':', 0) != std::string::npos)
-				addr = '[' + addr + ']';
 			fetch_request.extra_headers.emplace_back(
-				std::string("Referer: minetest://") +
-				addr + ":" +
-				std::to_string(client->getServerAddress().getPort()));
+				"Referer: " + makeReferer(client));
 
 			httpfetch_async(fetch_request);
 
@@ -596,7 +598,7 @@ std::string ClientMediaDownloader::serializeRequiredHashSet()
 	// received (found in cache) yet
 	for (const auto &it : m_files) {
 		if (!it.second->received) {
-			FATAL_ERROR_IF(it.second->sha1.size() != 20, "Invalid SHA1 size");
+			sanity_check(it.second->sha1.size() != 20);
 			os << it.second->sha1;
 		}
 	}

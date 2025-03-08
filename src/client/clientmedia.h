@@ -119,6 +119,8 @@ protected:
 	bool loadMedia(Client *client, const std::string &data,
 			const std::string &name) override;
 
+	static std::string makeReferer(Client *client);
+
 private:
 	struct FileStatus {
 		bool received;
