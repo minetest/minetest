@@ -31,6 +31,7 @@
 #include "util/numeric.h"
 #include "util/string.h"
 #include "exceptions.h"
+#include "FastNoiseLite.h"
 
 #define NOISE_MAGIC_X    1619
 #define NOISE_MAGIC_Y    31337
@@ -44,7 +45,7 @@ const FlagDesc flagdesc_noiseparams[] = {
 	{"defaults",    NOISE_FLAG_DEFAULTS},
 	{"eased",       NOISE_FLAG_EASED},
 	{"absvalue",    NOISE_FLAG_ABSVALUE},
-	{"pointbuffer", NOISE_FLAG_POINTBUFFER},
+	{"perlin",      NOISE_FLAG_PERLIN},
 	{"simplex",     NOISE_FLAG_SIMPLEX},
 	{NULL,          0}
 };
@@ -310,6 +311,28 @@ float contour(float v)
 
 float NoiseFractal2D(const NoiseParams *np, float x, float y, s32 seed)
 {
+	// FastNoiseLite
+	if (np->flags & (NOISE_FLAG_PERLIN | NOISE_FLAG_SIMPLEX)) {
+		FastNoiseLite noise(seed + np->seed);
+		float scale = np->scale;
+		if (np->flags & NOISE_FLAG_PERLIN) {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
+			noise.SetFrequency(1.0); // Same scale as Luanti value noise
+		} else {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
+			noise.SetFrequency(0.87870); // Scale for average distance of samples
+			scale *= 0.75; // heuristic
+		}
+		if (np->flags & NOISE_FLAG_ABSVALUE)
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_Absolute);
+		else
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
+		noise.SetFractalOctaves(np->octaves);
+		noise.SetFractalLacunarity(np->lacunarity);
+		noise.SetFractalGain(np->persist);
+		return np->offset + noise.GetNoise(x / np->spread.X, y / np->spread.Y) * scale / noise.GetFractalBounding();
+	}
+	// Luanti value noise
 	float a = 0;
 	float f = 1.0;
 	float g = 1.0;
@@ -336,6 +359,28 @@ float NoiseFractal2D(const NoiseParams *np, float x, float y, s32 seed)
 
 float NoiseFractal3D(const NoiseParams *np, float x, float y, float z, s32 seed)
 {
+	// FastNoiseLite
+	if (np->flags & (NOISE_FLAG_PERLIN | NOISE_FLAG_SIMPLEX)) {
+		FastNoiseLite noise(seed + np->seed);
+		float scale = np->scale;
+		if (np->flags & NOISE_FLAG_PERLIN) {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
+			noise.SetFrequency(1.0); // Same scale as Luanti value noise
+		} else {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
+			noise.SetFrequency(0.77997); // Scale for average distance of samples
+			scale *= 0.75; // heuristic
+		}
+		if (np->flags & NOISE_FLAG_ABSVALUE)
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_Absolute);
+		else
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
+		noise.SetFractalOctaves(np->octaves);
+		noise.SetFractalLacunarity(np->lacunarity);
+		noise.SetFractalGain(np->persist);
+		return np->offset + noise.GetNoise(x / np->spread.X, y / np->spread.Y, z / np->spread.Z) * scale / noise.GetFractalBounding();
+	}
+	// Luanti value noise
 	float a = 0;
 	float f = 1.0;
 	float g = 1.0;
@@ -642,9 +687,36 @@ void Noise::valueMap3D(
 }
 #undef idx
 
-
 float *Noise::noiseMap2D(float x, float y, float *persistence_map)
 {
+	// FastNoiseLite
+	if (np.flags & (NOISE_FLAG_PERLIN | NOISE_FLAG_SIMPLEX)) {
+		FastNoiseLite noise(seed + np.seed);
+		float scale = np.scale;
+		if (np.flags & NOISE_FLAG_PERLIN) {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
+			noise.SetFrequency(1.0); // Same scale as Luanti value noise
+		} else {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
+			noise.SetFrequency(0.87870); // Scale for average distance of samples
+			scale *= 0.75; // heuristic
+		}
+		if (np.flags & NOISE_FLAG_ABSVALUE)
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_Absolute);
+		else
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
+		noise.SetFractalOctaves(np.octaves);
+		noise.SetFractalLacunarity(np.lacunarity);
+		noise.SetFractalGain(np.persist);
+		u32 index = 0;
+		for (u32 oy = 0; oy < sy; oy++)
+			for (u32 ox = 0; ox < sx; ox++) {
+				if (persistence_map) noise.SetFractalGain(persistence_map[index]);
+				result[index++] = np.offset + noise.GetNoise((x + ox) / np.spread.X, (y + oy) / np.spread.Y) * scale / noise.GetFractalBounding();
+			}
+		return result;
+	}
+	// Luanti value noise
 	float f = 1.0, g = 1.0;
 	size_t bufsize = sx * sy;
 
@@ -682,6 +754,34 @@ float *Noise::noiseMap2D(float x, float y, float *persistence_map)
 
 float *Noise::noiseMap3D(float x, float y, float z, float *persistence_map)
 {
+	// FastNoiseLite
+	if (np.flags & (NOISE_FLAG_PERLIN | NOISE_FLAG_SIMPLEX)) {
+		FastNoiseLite noise(seed + np.seed);
+		float scale = np.scale;
+		if (np.flags & NOISE_FLAG_PERLIN) {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
+			noise.SetFrequency(1.0); // Same scale as Luanti value noise
+		} else {
+			noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
+			noise.SetFrequency(0.77997); // Scale for average distance of samples
+			scale *= 0.75; // heuristic
+		}
+		if (np.flags & NOISE_FLAG_ABSVALUE)
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_Absolute);
+		else
+			noise.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
+		noise.SetFractalOctaves(np.octaves);
+		noise.SetFractalLacunarity(np.lacunarity);
+		noise.SetFractalGain(np.persist);
+		u32 index = 0;
+		for (u32 oz = 0; oz < sz; oz++)
+			for (u32 oy = 0; oy < sy; oy++)
+				for (u32 ox = 0; ox < sx; ox++) {
+					if (persistence_map) noise.SetFractalGain(persistence_map[index]);
+					result[index++] = np.offset + noise.GetNoise((x + ox) / np.spread.X, (y + oy) / np.spread.Y, (z + oz) / np.spread.Z) * scale / noise.GetFractalBounding();
+				}
+		return result;
+	}
 	float f = 1.0, g = 1.0;
 	size_t bufsize = sx * sy * sz;
 

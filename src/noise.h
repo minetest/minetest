@@ -111,9 +111,7 @@ private:
 #define NOISE_FLAG_DEFAULTS    0x01
 #define NOISE_FLAG_EASED       0x02
 #define NOISE_FLAG_ABSVALUE    0x04
-
-//// TODO(hmmmm): implement these!
-#define NOISE_FLAG_POINTBUFFER 0x08
+#define NOISE_FLAG_PERLIN      0x08
 #define NOISE_FLAG_SIMPLEX     0x10
 
 struct NoiseParams {
