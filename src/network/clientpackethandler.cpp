@@ -1590,6 +1590,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	bool cached;
 
 	*pkt >> raw_hash >> filename >> cached;
+	cached = !cached;	// The server actually sends us "ephemeral", we want the opposite.
 	if (m_proto_ver >= 40)
 		*pkt >> token;
 	else
