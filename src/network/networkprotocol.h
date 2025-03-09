@@ -94,7 +94,7 @@ enum ToClientCommand : u16
 		std::string raw_hash
 		std::string filename
 		u32 callback_token
-		bool should_be_cached
+		u8 ephemeral (bool)
 	*/
 
 	TOCLIENT_CHAT_MESSAGE = 0x2F,
