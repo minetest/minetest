@@ -1590,10 +1590,9 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	bool cached;
 
 	*pkt >> raw_hash >> filename >> cached;
-	if (m_proto_ver >= 40) {
+	if (m_proto_ver >= 40)
 		*pkt >> token;
-		cached = !cached;
-	} else
+	else
 		filedata = pkt->readLongString();
 
 	if (raw_hash.size() != 20 || filename.empty() ||
