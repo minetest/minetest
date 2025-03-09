@@ -3707,14 +3707,13 @@ bool Server::dynamicAddMedia(const DynamicMediaArgs &a)
 	// Push file to existing clients
 	if (m_env) {
 		NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
-		pkt << raw_hash << filename;
+		pkt << raw_hash << filename << static_cast<bool>(!a.ephemeral);
 
 		NetworkPacket legacy_pkt = pkt;
 
 		// Newer clients get asked to fetch the file (asynchronous)
-		pkt << static_cast<bool>(a.ephemeral) << a.token;
+		pkt << a.token;
 		// Older clients have an awful hack that just throws the data at them
-		legacy_pkt << static_cast<bool>(!a.ephemeral);	// The client calls this field "cached".
 		legacy_pkt.putLongString(filedata);
 
 		ClientInterface::AutoLock clientlock(m_clients);
