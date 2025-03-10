@@ -2696,7 +2696,7 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 		}
 	}
 
-	// and the remote media server
+	// and the remote media server(s)
 	pkt << g_settings->get("remote_media");
 	Send(&pkt);
 

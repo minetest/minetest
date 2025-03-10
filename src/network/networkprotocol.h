@@ -198,8 +198,8 @@ enum ToClientCommand : u16
 
 	TOCLIENT_ANNOUNCE_MEDIA = 0x3c,
 	/*
-		u32 length of name array
-		char[] name array (zstd-compressed)
+		u32 length of compressed name array
+		string16array names (zstd-compressed)
 		for each file {
 			char[20] sha1_digest
 		}
