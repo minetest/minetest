@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Korean (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-20 06:37+0000\n"
+"PO-Revision-Date: 2026-08-24 08:51+0000\n"
 "Last-Translator: \"김현수 (khstony)\" <a34253492@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
 "ko/>\n"
@@ -48,7 +48,7 @@ msgstr "외부 채팅 대기열이 비어있습니다."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "해당 명령어를 서버에서 비활성화했습니다."
+msgstr "이 명령어는 서버에서 차단된 명령어입니다."
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -616,7 +616,7 @@ msgstr "게임"
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/serverlistmgr.lua
 #: src/client/game.cpp
 msgid "Loading..."
-msgstr "불러오는 중..."
+msgstr "로딩 중..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Mods"
