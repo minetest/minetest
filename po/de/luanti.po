@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-15 12:51+0000\n"
-"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
+"PO-Revision-Date: 2026-08-27 08:14+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -2674,7 +2674,7 @@ msgstr "Wegwerfen"
 
 #: src/gui/touchscreenlayout.cpp
 msgid "Exit"
-msgstr "Ausgang"
+msgstr "Zurück"
 
 #: src/gui/touchscreenlayout.cpp
 msgid "Inventory"
