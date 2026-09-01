@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-06-19 11:01+0000\n"
+"PO-Revision-Date: 2026-09-03 12:51+0000\n"
 "Last-Translator: ninjum <ninhum@gmx.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/minetest/"
 "minetest/gl/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.9\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -527,7 +527,7 @@ msgstr "Produciuse un erro:"
 
 #: builtin/fstk/ui.lua
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Copiar ao portapapeis"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -628,7 +628,7 @@ msgstr "Cargando..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Mods"
-msgstr "Mods."
+msgstr "Mods"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "No packages could be retrieved"
@@ -771,7 +771,7 @@ msgstr "Valoracións"
 #. TRANSLATORS: Link to source code repository
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr "Orixe"
+msgstr "Fonte"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
@@ -1341,7 +1341,7 @@ msgstr "Desenvolvedores principais"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr "Equipo Central"
+msgstr "Equipo Principal"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1574,9 +1574,8 @@ msgid "Server Description"
 msgstr "Descripción do servidor"
 
 #: src/chat.cpp
-#, fuzzy
 msgid "Player names: "
-msgstr "Xogar"
+msgstr "Nomes dos xogadores: "
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1771,7 +1770,7 @@ msgstr "Modo rápido activado (nota: sen permiso 'rápido')"
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "Ficheiros: %d / %d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1802,14 +1801,12 @@ msgid "Item definitions..."
 msgstr "Definicións dos obxectos..."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "KiB"
-msgstr "KiB/s"
+msgstr "KiB"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "MiB"
-msgstr "MiB/s"
+msgstr "MiB"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1862,7 +1859,7 @@ msgstr "Un xogador"
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Tamaño: %.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -2088,19 +2085,16 @@ msgid "Profiler shown (page %d of %d)"
 msgstr "Análise do mundo visible (páx. %d de %d)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "A (Gamepad)"
-msgstr "Mandos"
+msgstr "A (Mando)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "B (Gamepad)"
-msgstr "Mandos"
+msgstr "B (Mando)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Back (Gamepad)"
-msgstr "Mandos"
+msgstr "Atrás (Mando)"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -2108,7 +2102,7 @@ msgstr "Retroceso"
 
 #: src/client/keycode.cpp
 msgid "Bottom Face Button (Gamepad)"
-msgstr ""
+msgstr "Botón inferior (mando)"
 
 #. TRANSLATORS: Usually paired with the Pause key
 #: src/client/keycode.cpp
@@ -2121,7 +2115,7 @@ msgstr "Bloq Maiús"
 
 #: src/client/keycode.cpp
 msgid "Circle (Gamepad)"
-msgstr ""
+msgstr "Círculo (mando)"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -2132,26 +2126,24 @@ msgid "Control Key"
 msgstr "Tecla de control"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Cross (Gamepad)"
-msgstr "Mandos"
+msgstr "Cruz (Mando)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "D-Pad Down"
-msgstr "Páxina abaixo"
+msgstr "Cruceta abaixo"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Left"
-msgstr ""
+msgstr "Cruceta esquerda"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Right"
-msgstr ""
+msgstr "Cruceta dereita"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Up"
-msgstr ""
+msgstr "Cruceta arriba"
 
 #: src/client/keycode.cpp
 msgid "Delete Key"
@@ -2166,24 +2158,23 @@ msgid "End Key"
 msgstr "Tecla Fin"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d +"
-msgstr "Mandos"
+msgstr "Eixe do mando %d +"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d -"
-msgstr "Mandos"
+msgstr "Eixe do mando %d -"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Button %d"
-msgstr "Botón do rato %d"
+msgstr "Botón do mando %d"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Guide (Gamepad)"
-msgstr "Mandos"
+msgstr "Guía (Mando)"
 
 #: src/client/keycode.cpp
 msgid "Help Key"
@@ -2211,32 +2202,27 @@ msgstr "Control Esquerdo"
 
 #: src/client/keycode.cpp
 msgid "Left Face Button (Gamepad)"
-msgstr ""
+msgstr "Botón esquerdo (mando)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Button"
-msgstr "Tipo de Panca de mando"
+msgstr "Botón do analóxico esquerdo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Down"
-msgstr "ID da Panca de mando"
+msgstr "Panca analóxica esquerda abaixo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Left"
-msgstr "Tipo de Panca de mando"
+msgstr "Analóxico esquerdo esquerda"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Right"
-msgstr "Tipo de Panca de mando"
+msgstr "Analóxico esquerdo dereita"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Up"
-msgstr "Tipo de Panca de mando"
+msgstr "Analóxico esquerdo arriba"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
@@ -2247,14 +2233,12 @@ msgid "Left Shift"
 msgstr "Shift esquerdo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Shoulder"
-msgstr "Shift esquerdo"
+msgstr "Botón superior esquerdo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Trigger"
-msgstr "Frecha esquerda"
+msgstr "Gatillo esquerdo"
 
 #. TRANSLATORS: Name of key
 #: src/client/keycode.cpp
@@ -2368,11 +2352,11 @@ msgstr "Xogar"
 
 #: src/client/keycode.cpp
 msgid "Primary Left Paddle"
-msgstr ""
+msgstr "Botón traseiro esquerdo principal"
 
 #: src/client/keycode.cpp
 msgid "Primary Right Paddle"
-msgstr ""
+msgstr "Botón traseiro dereito principal"
 
 #. TRANSLATORS: "Print screen" key
 #: src/client/keycode.cpp
@@ -2397,31 +2381,27 @@ msgstr "Control dereito"
 
 #: src/client/keycode.cpp
 msgid "Right Face Button (Gamepad)"
-msgstr ""
+msgstr "Botón dereito (mando)"
 
 #: src/client/keycode.cpp
 msgid "Right Joystick Button"
-msgstr ""
+msgstr "Botón da panca analóxica dereita"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Down"
-msgstr "ID da Panca de mando"
+msgstr "Panca analóxica dereita abaixo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Left"
-msgstr "Tipo de Panca de mando"
+msgstr "Analóxico dereito esquerda"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Right"
-msgstr "Tipo de Panca de mando"
+msgstr "Analóxico dereito dereita"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Up"
-msgstr "Tipo de Panca de mando"
+msgstr "Analóxico dereito arriba"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
@@ -2432,14 +2412,12 @@ msgid "Right Shift"
 msgstr "Shift dereito"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Shoulder"
-msgstr "Shift dereito"
+msgstr "Botón superior dereito"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Trigger"
-msgstr "Frecha dereita"
+msgstr "Gatillo dereito"
 
 #. TRANSLATORS: Name of key
 #: src/client/keycode.cpp
@@ -2457,11 +2435,11 @@ msgstr "Bloqueo de desprazamento"
 
 #: src/client/keycode.cpp
 msgid "Secondary Left Paddle"
-msgstr ""
+msgstr "Botón traseiro esquerdo secundario"
 
 #: src/client/keycode.cpp
 msgid "Secondary Right Paddle"
-msgstr ""
+msgstr "Botón traseiro dereito secundario"
 
 #: src/client/keycode.cpp
 msgid "Select Key"
@@ -2476,14 +2454,12 @@ msgid "Space"
 msgstr "Espazo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Square (Gamepad)"
-msgstr "Xogo do servidor"
+msgstr "Cadrado (mando)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Start (Gamepad)"
-msgstr "Xogar só"
+msgstr "Inicio (mando)"
 
 #: src/client/keycode.cpp
 msgid "Tab Key"
@@ -2491,29 +2467,27 @@ msgstr "Tecla Tab"
 
 #: src/client/keycode.cpp
 msgid "Top Face Button (Gamepad)"
-msgstr ""
+msgstr "Botón superior (mando)"
 
 #: src/client/keycode.cpp
 msgid "Touchpad Button (Gamepad)"
-msgstr ""
+msgstr "Botón do panel táctil (mando)"
 
 #: src/client/keycode.cpp
 msgid "Triangle (Gamepad)"
-msgstr ""
+msgstr "Triángulo (mando)"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
 msgstr "Frecha cara arriba"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "X (Gamepad)"
-msgstr "Mandos"
+msgstr "X (Mando)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Y (Gamepad)"
-msgstr "Mandos"
+msgstr "Y (Mando)"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2832,7 +2806,7 @@ msgstr ""
 
 #: src/script/lua_api/l_mainmenu.cpp
 msgid "Copied to clipboard!"
-msgstr ""
+msgstr "Copiado ao portapapeis!"
 
 #: src/server.cpp
 #, c-format
@@ -3025,9 +2999,8 @@ msgid "Acceleration of gravity, in nodes per second per second."
 msgstr "Aceleración da gravidade, en nós por segundo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Actions and Keybindings"
-msgstr "Engadir combinación de teclas"
+msgstr "Accións e combinacións de teclas"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -3209,7 +3182,7 @@ msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
 msgstr ""
-"Inercia do brazo proporciona un movementomáis realista\n"
+"Inercia do brazo proporciona un movemento máis realista\n"
 "do brazo cando a cámara se move."
 
 #: src/settings_translation_file.cpp
@@ -3244,7 +3217,6 @@ msgstr ""
 "Indicado en MapBlocks (16 nodos)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "At this distance the server will consider blocks as \"far away\".\n"
 "It will perform simpler and cheaper occlusion checks, update\n"
@@ -3253,13 +3225,16 @@ msgid ""
 "This is especially useful for very large viewing range (upwards of 500).\n"
 "Stated in MapBlocks (16 nodes)."
 msgstr ""
-"A esta distancia o servidor realizará unha comprobación de oclusión máis "
-"sinxela e económica.\n"
-"Valores máis pequenos poden mellorar o rendemento, a costa de fallos de\n"
-"renderización visibles temporalmente (bloques que faltan).\n"
-"Isto é especialmente útil para un rango de visualización moi grande (máis de "
-"500).\n"
-"Expresado en MapBlocks (16 nodos)."
+"A partir desta distancia, o servidor considerará os bloques como «afastados"
+"».\n"
+"Realizará comprobacións de oclusión máis sinxelas e menos custosas, "
+"actualizará\n"
+"os bloques de baixa prioridade de forma diferida e limitará os bloques "
+"enviados\n"
+"ao cliente nunha única comunicación.\n"
+"Isto é especialmente útil para distancias de visión moi grandes (superiores "
+"a 500).\n"
+"Indícase en MapBlocks (16 nodos)."
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
@@ -4587,11 +4562,11 @@ msgstr "Filtro de escala de IGU"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
+msgstr "Mandos e Pancas de mando"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gama"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -5237,14 +5212,12 @@ msgid "Joystick frustum sensitivity"
 msgstr "Sensibilidade do gatillo da Panca de mando"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick inner dead zone"
-msgstr "Zona morta da Panca de mando"
+msgstr "Zona morta interior da Panca de mando"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick outer dead zone"
-msgstr "Zona morta da Panca de mando"
+msgstr "Zona morta da exterior Panca de mando"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5349,6 +5322,8 @@ msgid ""
 "Key for opening the pause menu in-game.\n"
 "Pressing the escape key always opens the pause menu."
 msgstr ""
+"Tecla para abrir o menú de pausa durante o xogo.\n"
+"Ao premer a tecla Escape sempre se abre o menú de pausa."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5656,10 +5631,12 @@ msgid ""
 "Make volumetrics weaker against closer objects to emulate physical "
 "volumetrics."
 msgstr ""
+"Fai co efecto volumétrico sexa menos intenso nos obxectos máis próximos para "
+"simular o comportamento físico dos efectos volumétricos."
 
 #: src/settings_translation_file.cpp
 msgid "Makes the color of light fog more saturated."
-msgstr ""
+msgstr "Fai ca cor da néboa lixeira sexa máis saturada."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6293,7 +6270,7 @@ msgstr "Abrir inventario"
 
 #: src/settings_translation_file.cpp
 msgid "Open pause menu"
-msgstr ""
+msgstr "Abrir o menú de pausa"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6904,15 +6881,13 @@ msgstr ""
 "Un valor de 0 significa sen inclinación / órbita vertical."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation."
 msgstr ""
-"Axusta a compensación de exposición en unidades EV.\n"
-"O valor de 0.0 (predeterminado) significa que non hai compensación de "
-"exposición.\n"
-"Rango: de -1 a 1.0"
+"Establece a compensación da exposición en unidades EV.\n"
+"Un valor de 0,0 (predeterminado) significa que non se aplica ningunha "
+"compensación da exposición."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6934,6 +6909,8 @@ msgid ""
 "Set the post processing gamma value.\n"
 "Higher values give lower contrast and vice versa."
 msgstr ""
+"Establece o valor gama do posprocesado.\n"
+"Os valores máis altos producen menos contraste e viceversa."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7082,11 +7059,13 @@ msgstr ""
 "máis pequenos."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Simulate translucency when looking at foliage in the sunlight.\n"
 "It is recommended to use this with setting \"leaves_style\" set to \"fancy\"."
-msgstr "Simular a translucidez ao mirar a follaxe á luz do sol."
+msgstr ""
+"Simula a translucidez ao mirar a vexetación á luz do sol.\n"
+"Recoméndase utilizar esta opción coa configuración \"leaves_style\" "
+"establecida en \"fancy\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7626,16 +7605,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
+msgstr "Tinguir a luz solar durante o amencer e o solpor."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tinted fog"
-msgstr "Alt. néboa"
+msgstr "Néboa tinguidа"
 
 #: src/settings_translation_file.cpp
 msgid "Tinted sunlight"
-msgstr ""
+msgstr "Luz solar tinguidа"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8030,12 +8008,10 @@ msgid "Volume when unfocused"
 msgstr "Volume en segundo plano"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Depth Attenuation"
-msgstr "Iluminación volumétrica"
+msgstr "Atenuación de profundidade volumétrica"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "Iluminación volumétrica"
 
@@ -8111,6 +8087,8 @@ msgid ""
 "When enabled, crude liquid reflections are simulated.\n"
 "Wave height, length and speed will affect these reflections."
 msgstr ""
+"Cando está activado, simúlanse reflexións rudimentarias nos líquidos.\n"
+"A altura, a lonxitude e a velocidade das ondas afectarán estas reflexións."
 
 #: src/settings_translation_file.cpp
 msgid ""
