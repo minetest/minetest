@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label">Luanti</string>
+    <string name="loading">Ladataan…</string>
+    <string name="notification_channel_name">Yleinen ilmoitus</string>
+    <string name="notification_channel_description">Ilmoitukset Luantilta</string>
+    <string name="unzip_notification_title">Ladataan Luantia</string>
+    <string name="unzip_notification_description">Alle 1 minuutti…</string>
+    <string name="game_notification_title">Luanti on käynnissä</string>
+    <string name="ime_dialog_done">Valmis</string>
+    <string name="no_web_browser">Selainta ei löytynyt</string>
+</resources>
