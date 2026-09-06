@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-02-11 16:09+0000\n"
-"Last-Translator: MARCO ACORTE <macorte@gmail.com>\n"
+"PO-Revision-Date: 2026-09-06 19:29+0000\n"
+"Last-Translator: Xeno <xenoviga04@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16-dev\n"
+"X-Generator: Weblate 2026.9.1.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -342,7 +342,7 @@ msgstr "(Usa la lingua di sistema)"
 #. TRANSLATORS: Shown when a default setting is the empty string
 #: builtin/common/settings/dlg_settings.lua
 msgid "<empty>"
-msgstr ""
+msgstr "<empty>"
 
 #: builtin/common/settings/dlg_settings.lua
 msgid "Accessibility"
@@ -380,9 +380,8 @@ msgid "Controls"
 msgstr "Controlli"
 
 #: builtin/common/settings/dlg_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Damage"
-msgstr "Ferimento / PvP"
+msgstr "Danno"
 
 #: builtin/common/settings/dlg_settings.lua
 #: builtin/common/settings/shadows_component.lua
@@ -424,9 +423,8 @@ msgstr "Ripristina predefinito"
 
 #. TRANSLATORS: $1 will be replaced with a default setting value
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default: $1"
-msgstr "Ripristina l'impostazione predefinita ($1)"
+msgstr "Ripristina l'impostazione predefinita: $1"
 
 #: builtin/common/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -530,7 +528,7 @@ msgstr "Si è verificato un errore:"
 
 #: builtin/fstk/ui.lua
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Copia nella clipboard"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -1778,7 +1776,7 @@ msgstr "Modalità rapida abilitata (nota: privilegio 'fast' mancante)"
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "File: %d / %d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1809,14 +1807,12 @@ msgid "Item definitions..."
 msgstr "Definizione degli oggetti..."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "KiB"
-msgstr "KiB/s"
+msgstr "KiB"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "MiB"
-msgstr "MiB/s"
+msgstr "MiB"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1869,7 +1865,7 @@ msgstr "Gioco locale"
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Dimensione: %.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -2096,19 +2092,16 @@ msgid "Profiler shown (page %d of %d)"
 msgstr "Profilatore visualizzato (pagina %d di %d)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "A (Gamepad)"
-msgstr "Gamepad"
+msgstr "A (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "B (Gamepad)"
-msgstr "Gamepad"
+msgstr "B (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Back (Gamepad)"
-msgstr "Gamepad"
+msgstr "Indietro (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -2129,7 +2122,7 @@ msgstr "Blocco Maiusc."
 
 #: src/client/keycode.cpp
 msgid "Circle (Gamepad)"
-msgstr ""
+msgstr "Cerchio (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -2140,26 +2133,24 @@ msgid "Control Key"
 msgstr "Ctrl"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Cross (Gamepad)"
-msgstr "Gamepad"
+msgstr "Croce (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "D-Pad Down"
-msgstr "Pag. Giù"
+msgstr "D-Pad Giù"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Left"
-msgstr ""
+msgstr "D-Pad Sinistro"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Right"
-msgstr ""
+msgstr "D-Pad Destro"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Up"
-msgstr ""
+msgstr "D-Pad Su"
 
 #: src/client/keycode.cpp
 msgid "Delete Key"
@@ -2174,19 +2165,19 @@ msgid "End Key"
 msgstr "Fine"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d +"
-msgstr "Gamepad"
+msgstr "Asse gamepad %d +"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d -"
-msgstr "Gamepad"
+msgstr "Asse Gamepad %d -"
 
 #: src/client/keycode.cpp
 #, c-format
 msgid "Gamepad Button %d"
-msgstr ""
+msgstr "Pulsante %d del Gamepad"
 
 #: src/client/keycode.cpp
 #, fuzzy
