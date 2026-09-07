@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-19 14:13+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"PO-Revision-Date: 2026-09-07 19:51+0000\n"
+"Last-Translator: Nioh <niohiguess@mailfence.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.9.dev0\n"
+"X-Generator: Weblate 2026.9.1.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -5635,7 +5635,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes the color of light fog more saturated."
-msgstr ""
+msgstr "Rend la couleur du brouillard léger plus saturée."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
