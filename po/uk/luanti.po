@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-06 15:01+0000\n"
+"PO-Revision-Date: 2026-09-28 23:51+0000\n"
 "Last-Translator: winver <kirillstuzhuk@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.8.1.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1563,9 +1563,8 @@ msgid "Server Description"
 msgstr "Опис сервера"
 
 #: src/chat.cpp
-#, fuzzy
 msgid "Player names: "
-msgstr "Грати"
+msgstr "Імена гравців: "
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1759,7 +1758,7 @@ msgstr "Швидкий рух увімкнено (немає дозволу \"fa
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "Файли: %d / %d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1790,14 +1789,12 @@ msgid "Item definitions..."
 msgstr "Визначення предметів..."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "KiB"
-msgstr "КіБ/сек"
+msgstr "КіБ"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "MiB"
-msgstr "МіБ/сек"
+msgstr "МіБ"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1850,7 +1847,7 @@ msgstr "Одиночна гра"
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Розмір: %.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -2074,19 +2071,16 @@ msgid "Profiler shown (page %d of %d)"
 msgstr "Профайлер відображено (сторінка %d з %d)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "A (Gamepad)"
-msgstr "Контролери"
+msgstr "A (Геймпад)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "B (Gamepad)"
-msgstr "Контролери"
+msgstr "B (Геймпад)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Back (Gamepad)"
-msgstr "Контролери"
+msgstr "Назад (Геймпад)"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -2107,7 +2101,7 @@ msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
 msgid "Circle (Gamepad)"
-msgstr ""
+msgstr "Коло (Геймпад)"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -2118,9 +2112,8 @@ msgid "Control Key"
 msgstr "Ctrl"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Cross (Gamepad)"
-msgstr "Контролери"
+msgstr "Хрестовина (Геймпад)"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -2152,24 +2145,23 @@ msgid "End Key"
 msgstr "Клавіша End"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d +"
-msgstr "Контролери"
+msgstr "Вісь Геймпада %d +"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d -"
-msgstr "Контролери"
+msgstr "Вісь Геймпада %d -"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Button %d"
-msgstr "Кнопка миші %d"
+msgstr "Кнопка Геймпада %d"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Guide (Gamepad)"
-msgstr "Контролери"
+msgstr "Гід (Геймпад)"
 
 #: src/client/keycode.cpp
 msgid "Help Key"
