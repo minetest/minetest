@@ -55,7 +55,7 @@ struct MeshMakeData
 	const NodeDefManager *m_nodedef;
 
 	// Node positions are relative to m_blockpos * MAP_BLOCKSIZE.
-	AppliedNodeModifiersList m_node_modifiers;
+	AppliedNodeModifiersSnapshot m_node_modifiers;
 	const NodeModifierManager *m_nodemod;
 
 	MeshMakeData(const NodeDefManager *ndef, u16 side_lingth, MeshGrid mesh_grid,

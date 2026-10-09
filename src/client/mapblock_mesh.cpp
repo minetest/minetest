@@ -78,7 +78,7 @@ void MeshMakeData::setCrack(int crack_level, v3s16 crack_pos)
 ContentLightingFlags MeshMakeData::getLightingFlags(v3s16 p, const MapNode &node) const
 {
 	ContentLightingFlags base = m_nodedef->getLightingFlags(node);
-	if (m_node_modifiers.entries().empty())
+	if (m_node_modifiers.empty())
 		return base;
 	return m_node_modifiers.resolve(p - m_blockpos * MAP_BLOCKSIZE, *m_nodemod).apply(base);
 }

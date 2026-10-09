@@ -114,7 +114,8 @@ int NodeMetaRef::l_add_modifier(lua_State *L)
 		return 1;
 	}
 
-	bool result = ref->m_env->getMap().addNodeModifier(ref->m_p, id);
+	bool result = ref->m_env->getMap().addNodeModifier(ref->m_p, id,
+			lua_toboolean(L, 3));
 	lua_pushboolean(L, result);
 
 	return 1;

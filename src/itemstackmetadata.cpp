@@ -4,12 +4,12 @@
 
 
 #include "itemstackmetadata.h"
+#include "constants.h"
 #include "util/serialize.h"
 #include "util/string.h"
 
 #include <algorithm>
 #include <optional>
-#include <limits>
 #include <unordered_set>
 
 #define DESERIALIZE_START '\x01'
@@ -42,7 +42,7 @@ bool ItemStackMetadata::addModifier(const std::string &name)
 		}
 		return true;
 	}
-	if (m_modifiers.size() >= std::numeric_limits<u16>::max())
+	if (m_modifiers.size() >= MAX_NODE_MODIFIERS)
 		return false;
 	m_modifiers.push_back(name);
 	setModified(true);
@@ -60,9 +60,6 @@ void ItemStackMetadata::removeModifier(const std::string &name)
 }
 
 bool ItemStackMetadata::setModifiers(std::vector<std::string> &&modifiers) {
-	if (modifiers.size() > std::numeric_limits<u16>::max())
-		return false;
-
 	for (auto &it : modifiers) {
 		if (!isValidModScopedName(it))
 			return false;
@@ -75,6 +72,8 @@ bool ItemStackMetadata::setModifiers(std::vector<std::string> &&modifiers) {
 				return !seen.insert(name).second;
 			});
 	modifiers.erase(modifiers.begin(), unique_end.base());
+	if (modifiers.size() > MAX_NODE_MODIFIERS)
+		return false;
 
 	m_modifiers = std::move(modifiers);
 	setModified(true);
@@ -115,11 +114,13 @@ void ItemStackMetadata::serialize(std::ostream &os, bool with_modifiers) const
 {
 	std::ostringstream os2(std::ios_base::binary);
 	os2 << DESERIALIZE_START;
+
 	for (const auto &stringvar : m_stringvars) {
 		if (!stringvar.first.empty() || !stringvar.second.empty())
 			os2 << stringvar.first << DESERIALIZE_KV_DELIM
 				<< stringvar.second << DESERIALIZE_PAIR_DELIM;
 	}
+
 	if (with_modifiers && !m_modifiers.empty()) {
 		// A second start byte separates modifiers from ordinary fields.
 		// Field setters strip this byte, so legacy fields cannot collide.
@@ -127,10 +128,10 @@ void ItemStackMetadata::serialize(std::ostream &os, bool with_modifiers) const
 		for (const auto &name : m_modifiers)
 			os2 << name << DESERIALIZE_PAIR_DELIM;
 	}
+
 	os << serializeJsonStringIfNeeded(os2.str());
 }
 
-// To do: review more carefully (AI generated)
 void ItemStackMetadata::deSerialize(std::istream &is)
 {
 	std::string in = deSerializeJsonStringIfNeeded(is);
@@ -141,8 +142,10 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 	if (!in.empty()) {
 		if (in[0] == DESERIALIZE_START) {
 			std::string_view data(in.data() + 1, in.size() - 1);
-			const auto section = data.find(DESERIALIZE_START);
-			auto fields = data.substr(0, section);
+
+			const size_t modifiers_start = data.find(DESERIALIZE_START);
+			std::string_view fields = data.substr(0, modifiers_start);
+
 			// Preserve the legacy reader's handling of missing field delimiters.
 			auto next = [](std::string_view &remaining, char delimiter) {
 				const auto end = remaining.find(delimiter);
@@ -151,21 +154,25 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 						remaining.size() : end + 1);
 				return value;
 			};
+
 			while (!fields.empty()) {
 				auto name = next(fields, DESERIALIZE_KV_DELIM);
 				auto value = next(fields, DESERIALIZE_PAIR_DELIM);
 				m_stringvars[std::string(name)] = std::string(value);
 			}
-			if (section != std::string_view::npos) {
-				auto modifiers = data.substr(section + 1);
+
+			if (modifiers_start != std::string_view::npos) {
+				auto modifiers = data.substr(modifiers_start + 1);
 				std::unordered_set<std::string_view> seen;
 				while (!modifiers.empty()) {
 					if (modifiers.find(DESERIALIZE_PAIR_DELIM) == std::string_view::npos)
 						throw SerializationError("Unterminated ItemStack modifier name");
+
 					auto name = next(modifiers, DESERIALIZE_PAIR_DELIM);
 					if (!isValidModScopedName(name) || !seen.insert(name).second ||
-							m_modifiers.size() == std::numeric_limits<u16>::max())
+							m_modifiers.size() >= MAX_NODE_MODIFIERS)
 						throw SerializationError("Invalid ItemStack modifier list");
+
 					m_modifiers.emplace_back(name);
 				}
 			}
@@ -174,6 +181,7 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 			m_stringvars[""] = std::move(in);
 		}
 	}
+
 	updateToolCapabilities();
 	updateWearBarParams();
 }

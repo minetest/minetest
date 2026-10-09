@@ -4,6 +4,7 @@
 #include "test.h"
 
 #include <sstream>
+#include <map>
 #include "gamedef.h"
 #include "dummygamedef.h"
 #include "nodedef.h"
@@ -11,6 +12,7 @@
 #include "serialization.h"
 #include "noise.h"
 #include "inventory.h"
+#include "ididmapping.h"
 #include "util/serialize.h"
 #include "voxel.h"
 
@@ -30,8 +32,14 @@ public:
 	void testSave29(IGameDef *gamedef);
 	void testNodeModifiers();
 	void testSetNodeModifiers();
+	void testPruneNodeModifiers();
+	void testPackedNodeModifiers();
+	void testModifierIdWidths();
+	void testModifierEntryCount();
 	void testResolveNodeModifiers();
 	void testCollectNodeModifiers();
+	void testModifierSnapshot();
+	void testAdaptiveModifiers();
 
 	void testLoad29(IGameDef *gamedef);
 
@@ -54,8 +62,14 @@ void TestMapBlock::runTests(IGameDef *gamedef)
 	TEST(testSave29, gamedef);
 	TEST(testNodeModifiers);
 	TEST(testSetNodeModifiers);
+	TEST(testPruneNodeModifiers);
+	TEST(testPackedNodeModifiers);
+	TEST(testModifierIdWidths);
+	TEST(testModifierEntryCount);
 	TEST(testResolveNodeModifiers);
 	TEST(testCollectNodeModifiers);
+	TEST(testModifierSnapshot);
+	TEST(testAdaptiveModifiers);
 	TEST(testLoad29, gamedef);
 	TEST(testLoad20, gamedef);
 	TEST(testLoadNonStd, gamedef);
@@ -80,11 +94,11 @@ void TestMapBlock::testCollectNodeModifiers()
 	central.addNodeModifier(pos, dummy);
 	central.addNodeModifier({0, 0, 0}, 60000); // Unknown client-side ID.
 	neighbor.addNodeModifier(pos, second);
-	AppliedNodeModifiersList collected;
+	AppliedNodeModifiersSnapshot collected;
 	const v3s16 origin = central.getPosRelative();
 	central.copyNodeModifiersTo(collected, origin);
 	neighbor.copyNodeModifiersTo(collected, origin);
-	UASSERTEQ(size_t, collected.entries().size(), 5);
+	UASSERTEQ(size_t, collected.size(), 5);
 	auto [begin, end] = collected.findRange(pos);
 	UASSERTEQ(size_t, end - begin, 3);
 	UASSERTEQ(u16, begin[0].id, second);
@@ -130,11 +144,11 @@ void TestMapBlock::testNodeModifiers()
 		loaded.deSerialize(stream, 30, disk);
 		std::stringstream entries;
 		loaded.getNodeModifiers().serialize(entries, 30, false, NameIdMapping{});
-		UASSERTEQ(u16, readU16(entries), 2);
-		UASSERT(readV3S16(entries) == pos);
+		UASSERTEQ(u32, readU32(entries), 2);
+		UASSERTEQ(u16, readU16(entries),
+				0x1000 | (pos.Z << 8) | (pos.Y << 4) | pos.X);
 		u16 expected_second = disk ? target_manager->getId("test:second") : second;
 		UASSERTEQ(u16, readU16(entries), expected_second);
-		UASSERT(readV3S16(entries) == pos);
 		UASSERTEQ(u16, readU16(entries), disk ? target_first : first);
 		if (disk)
 			UASSERT(target_manager->get(expected_second).m_is_dummy);
@@ -146,7 +160,7 @@ void TestMapBlock::testNodeModifiers()
 		legacy_block.deSerialize(legacy, 29, disk);
 		std::stringstream empty;
 		legacy_block.getNodeModifiers().serialize(empty, 30, false, NameIdMapping{});
-		UASSERTEQ(u16, readU16(empty), 0);
+		UASSERTEQ(u32, readU32(empty), 0);
 	}
 
 	source.removeNodeModifier(pos, first);
@@ -159,7 +173,7 @@ void TestMapBlock::testNodeModifiers()
 	empty.deSerialize(stream, 30, true);
 	std::stringstream entries;
 	empty.getNodeModifiers().serialize(entries, 30, false, NameIdMapping{});
-	UASSERTEQ(u16, readU16(entries), 0);
+	UASSERTEQ(u32, readU32(entries), 0);
 }
 
 void TestMapBlock::testMonoblock(IGameDef *gamedef)
@@ -586,9 +600,9 @@ void TestMapBlock::testSetNodeModifiers()
 	UASSERT(list.add(before, 10));
 	UASSERT(list.add(after, 20));
 	auto check = [&](const std::vector<u16> &expected) {
-		UASSERT(list.entries().size() == expected.size() + 2);
-		UASSERT(list.entries().front().pos == before && list.entries().front().id == 10);
-		UASSERT(list.entries().back().pos == after && list.entries().back().id == 20);
+		UASSERT(list.size() == expected.size() + 2);
+		UASSERTEQ(u16, list.findRange(before).first->id, 10);
+		UASSERTEQ(u16, list.findRange(after).first->id, 20);
 		auto [first, last] = list.findRange(pos);
 		std::vector<u16> actual;
 		for (auto it = first; it != last; ++it)
@@ -610,7 +624,7 @@ void TestMapBlock::testSetNodeModifiers()
 		full.push_back(id);
 	UASSERT(!list.set(pos, full));
 	check({1, 2, 3, 4});
-	full.resize(MODIFIER_IGNORE - 2);
+	full.resize(MAX_NODE_MODIFIERS);
 	UASSERT(list.set(pos, full));
 	check(full);
 	UASSERT(list.set(pos, {}));
@@ -655,24 +669,445 @@ void TestMapBlock::testResolveNodeModifiers()
 	UASSERT(list.resolve(p, manager).apply(base) == expected);
 	UASSERT(list.set(v3s16(0, 0, 2), {dummy, unrelated, 60000}));
 	UASSERT(list.resolve(v3s16(0, 0, 2), manager).mask == 0);
-	UASSERT(list.set(v3s16(0, 1, -2), {bright}));
-	UASSERT(list.set(v3s16(1, -2, -2), {dim}));
+	UASSERT(list.set(v3s16(0, 1, 2), {bright}));
+	UASSERT(list.set(v3s16(1, 2, 2), {dim}));
 
-	// Gaps, negative coordinates, order transitions, and repeated positions.
+	// Gaps, out-of-block queries, order transitions, and repeated positions.
 	auto cursor = list.cursor(manager, false);
 	for (v3s16 pos : {v3s16(-1, 0, 0), p, p, v3s16(0, 0, 1),
-			v3s16(0, 0, 2), v3s16(0, 1, -2), v3s16(1, -2, -2),
+			v3s16(0, 0, 2), v3s16(0, 1, 2), v3s16(1, 2, 2),
 			v3s16(2, 0, 0), v3s16(2, 0, 0)}) {
 		NodePropertyOverrides actual = cursor.resolve(pos);
 		NodePropertyOverrides random = list.resolve(pos, manager);
 		UASSERT(actual.mask == random.mask && actual.apply(base) == random.apply(base));
 	}
 	auto skipping = list.cursor(manager, true);
-	UASSERT(skipping.resolve(v3s16(1, -2, -2)).light_source == 3);
-	UASSERT(skipping.resolve(v3s16(1, -2, -2)).light_source == 3);
+	UASSERT(skipping.resolve(v3s16(1, 2, 2)).light_source == 3);
+	UASSERT(skipping.resolve(v3s16(1, 2, 2)).light_source == 3);
 	UASSERT(skipping.resolve(v3s16(2, 0, 0)).mask == 0);
 	AppliedNodeModifiersList empty;
 	auto empty_cursor = empty.cursor(manager, false);
 	UASSERT(empty_cursor.resolve(p).apply(base) == base);
 	UASSERT(empty_cursor.resolve(p).mask == 0);
+}
+
+void TestMapBlock::testPackedNodeModifiers()
+{
+	AppliedNodeModifiersList list;
+	NameIdMapping names;
+	for (u16 id = 0; id < 16; ++id)
+		UASSERT(list.add({15, 15, 15}, id));
+	UASSERT(!list.add({15, 15, 15}, 16));
+	UASSERT(list.add({15, 15, 15}, 0));
+	for (bool disk : {false, true}) {
+		for (u16 id = 0; id < 16; ++id)
+			names.set(id, "test:modifier_" + std::to_string(id));
+		std::stringstream stream;
+		list.serialize(stream, 30, disk, names);
+		if (!disk) {
+			UASSERTEQ(size_t, stream.str().size(), 38);
+			UASSERTEQ(u32, readU32(stream), 16);
+			UASSERTEQ(u16, readU16(stream), 0xffff);
+			stream.seekg(0);
+		}
+		AppliedNodeModifiersList loaded;
+		loaded.deSerialize(stream, 30, disk, names);
+		UASSERTEQ(size_t, loaded.size(), 16);
+		UASSERTEQ(u16, loaded.findRange({15, 15, 15}).first->id, 1);
+		UASSERTEQ(u16, (loaded.findRange({15, 15, 15}).second - 1)->id, 0);
+	}
+	// The full block exceeds the old 16-bit total-entry limit.
+	for (s16 x = 0; x < 16; ++x)
+	for (s16 y = 0; y < 16; ++y)
+	for (s16 z = 0; z < 16; ++z)
+		for (u16 id = 0; id < 16; ++id)
+			UASSERT(list.add({x, y, z}, id));
+	std::stringstream stream;
+	list.serialize(stream, 30, false, names);
+	AppliedNodeModifiersList loaded;
+	loaded.deSerialize(stream, 30, false, names);
+	UASSERTEQ(size_t, loaded.size(), 65536);
+	std::stringstream invalid;
+	writeU32(invalid, 2);
+	for (int i = 0; i < 2; ++i) {
+		writeU16(invalid, 0);
+		writeU16(invalid, 1);
+	}
+	EXCEPTION_CHECK(SerializationError, loaded.deSerialize(invalid, 30, false, names));
+	std::stringstream truncated;
+	writeU32(truncated, 16);
+	writeU16(truncated, 0xf000);
+	writeU16(truncated, 1);
+	EXCEPTION_CHECK(SerializationError, loaded.deSerialize(truncated, 30, false, names));
+	std::stringstream overrun;
+	writeU32(overrun, 1);
+	writeU16(overrun, 0x1000); // Two entries when only one remains.
+	EXCEPTION_CHECK(SerializationError, loaded.deSerialize(overrun, 30, false, names));
+	std::stringstream oversized;
+	writeU32(oversized, 65537);
+	EXCEPTION_CHECK(SerializationError, loaded.deSerialize(oversized, 30, false, names));
+	AppliedNodeModifiersList outside;
+	UASSERT(!outside.add({16, 0, 0}, 1));
+	UASSERT(!outside.set({-1, 0, 0}, {1}));
+	UASSERT(outside.empty());
+	AppliedNodeModifiersList empty;
+	std::stringstream empty_stream;
+	empty.serialize(empty_stream, 30, false, names);
+	UASSERTEQ(size_t, empty_stream.str().size(), 4);
+	loaded.deSerialize(empty_stream, 30, false, names);
+	UASSERT(loaded.empty());
+
+}
+
+void TestMapBlock::testModifierEntryCount()
+{
+	auto check = [](const AppliedNodeModifiersList &list, u32 expected) {
+		std::stringstream stream;
+		NameIdMapping names;
+		list.serialize(stream, 30, false, names);
+		UASSERTEQ(u32, readU32(stream), expected);
+		stream.seekg(0);
+		AppliedNodeModifiersList loaded;
+		loaded.deSerialize(stream, 30, false, names);
+		UASSERTEQ(size_t, loaded.size(), list.size());
+		UASSERT(stream.peek() == std::char_traits<char>::eof());
+	};
+	const v3s16 a(0, 0, 0), b(1, 0, 0);
+	AppliedNodeModifiersList list;
+	check(list, 0);
+	list.add(a, 1);
+	list.add(a, 2);
+	list.add(a, 1);
+	check(list, 2);
+	UASSERT(!list.add(b, MODIFIER_IGNORE));
+	check(list, 2);
+	list.set(b, {3, 4, 3});
+	check(list, 4);
+	list.remove(a, 2);
+	check(list, 3);
+	list.remove(a, 1);
+	check(list, 2);
+	list.set(b, {});
+	check(list, 0);
+	list.set(a, {});
+	list.remove(b);
+	check(list, 0);
+	list.set(a, {1});
+	AppliedNodeModifiersList other;
+	other.set(a, {1});
+	other.add(b, 2);
+	check(other, 2);
+	other.remove(a);
+	check(other, 1);
+	check(list, 1);
+	list.clear();
+	check(list, 0);
+	list.clear();
+	UASSERT(list.add(a, 3));
+	check(list, 1);
+}
+
+void TestMapBlock::testModifierIdWidths()
+{
+	for (u16 count : {1, 256, 257}) {
+		for (bool disk : {false, true}) {
+			NameIdMapping names;
+			AppliedNodeModifiersList list;
+			for (u16 id = 0; id < count; ++id) {
+				names.set(id, "test:modifier_" + std::to_string(id));
+				UASSERT(list.add({s16(id / 256), s16((id / 16) % 16),
+						s16(id % 16)}, id));
+			}
+			std::stringstream mapping;
+			if (disk)
+				names.serialize(mapping);
+			std::stringstream stream;
+			list.serialize(stream, 30, disk, names);
+			const size_t width = disk && count <= 256 ? 1 : 2;
+			UASSERTEQ(size_t, stream.str().size(), 4 + mapping.str().size() + count * (2 + width));
+			writeU8(stream, 0xab); // Decoding must stop at the next field.
+			AppliedNodeModifiersList loaded;
+			loaded.deSerialize(stream, 30, disk, names);
+			UASSERTEQ(size_t, loaded.size(), count);
+			u16 id = 0;
+			loaded.forEach([&](const AppliedNodeModifier &entry) {
+				UASSERTEQ(u16, entry.id, id);
+				UASSERT(entry.pos == v3s16(id / 256, (id / 16) % 16, id % 16));
+				++id;
+			});
+			UASSERTEQ(u16, id, count);
+			UASSERTEQ(u8, readU8(stream), 0xab);
+		}
+	}
+}
+
+void TestMapBlock::testModifierSnapshot()
+{
+	NodeModifierManager manager;
+	NodeModifier bright("test:bright"), dim("test:dim");
+	bright.m_modified_props_mask = dim.m_modified_props_mask = MP_LightSource;
+	bright.m_light_source = 14;
+	dim.m_light_source = 3;
+	const u16 a = manager.add(std::move(bright));
+	const u16 b = manager.add(std::move(dim));
+	AppliedNodeModifiersList first, second;
+	UASSERT(first.set({1, 0, 0}, {a, b}));
+	UASSERT(second.add({1, 0, 0}, a));
+	AppliedNodeModifiersSnapshot snapshot;
+	UASSERT(snapshot.empty());
+	snapshot.append(first, {});
+	snapshot.append(second, {}); // Overlapping positions preserve append order.
+	snapshot.append(second, {-16, 0, 0});
+	snapshot.append(second, {16, 0, 0});
+	UASSERTEQ(size_t, snapshot.size(), 5);
+	auto [begin, end] = snapshot.findRange({1, 0, 0});
+	UASSERTEQ(size_t, end - begin, 3);
+	UASSERT(begin[0].id == a && begin[1].id == b && begin[2].id == a);
+	first.remove({1, 0, 0});
+	second.set({1, 0, 0}, {b});
+	UASSERTEQ(u8, snapshot.resolve({1, 0, 0}, manager).light_source, 14);
+	auto cursor = snapshot.cursor(manager);
+	for (v3s16 pos : {v3s16(-15, 0, 0), v3s16(), v3s16(1, 0, 0),
+			v3s16(1, 0, 0), v3s16(17, 0, 0), v3s16(18, 0, 0)}) {
+		auto expected = snapshot.resolve(pos, manager);
+		auto actual = cursor.resolve(pos);
+		UASSERT(expected.mask == actual.mask && expected.light_source == actual.light_source);
+	}
+	auto skipping = snapshot.cursor(manager, true);
+	UASSERTEQ(u8, skipping.resolve({17, 0, 0}).light_source, 14);
+	UASSERT(skipping.resolve({18, 0, 0}).mask == 0);
+}
+
+void TestMapBlock::testAdaptiveModifiers()
+{
+	NodeModifierManager manager;
+	for (u16 id = 0; id < 16; ++id) {
+		NodeModifier modifier("test:light_" + std::to_string(id));
+		modifier.m_modified_props_mask = MP_LightSource;
+		modifier.m_light_source = id % 14 + 1;
+		UASSERTEQ(u16, manager.add(std::move(modifier)), id);
+	}
+	using Model = std::map<v3s16, std::vector<u16>>;
+	Model model;
+	AppliedNodeModifiersList list;
+	auto verify = [&](const AppliedNodeModifiersList &actual, const Model &expected) {
+		std::vector<AppliedNodeModifier> flat;
+		for (const auto &[pos, ids] : expected)
+			for (u16 id : ids)
+				flat.push_back({pos, id});
+		UASSERTEQ(size_t, actual.size(), flat.size());
+		size_t index = 0;
+		actual.forEach([&](const AppliedNodeModifier &entry) {
+			UASSERT(index < flat.size());
+			UASSERT(entry.pos == flat[index].pos && entry.id == flat[index].id);
+			++index;
+		});
+		UASSERTEQ(size_t, index, flat.size());
+
+		auto cursor = actual.cursor(manager);
+		for (s16 x = 0; x < 16; ++x)
+		for (s16 y = 0; y < 16; ++y)
+		for (s16 z = 0; z < 16; ++z) {
+			const v3s16 pos(x, y, z);
+			auto it = expected.find(pos);
+			auto [first, last] = actual.findRange(pos);
+			if (it == expected.end()) {
+				UASSERT(first == last);
+				UASSERT(cursor.resolve(pos).mask == 0);
+			} else {
+				UASSERTEQ(size_t, last - first, it->second.size());
+				for (u16 id : it->second)
+					UASSERTEQ(u16, (first++)->id, id);
+				const u8 light = it->second.back() % 14 + 1;
+				UASSERTEQ(u8, actual.resolve(pos, manager).light_source, light);
+				UASSERTEQ(u8, cursor.resolve(pos).light_source, light);
+				UASSERTEQ(u8, cursor.resolve(pos).light_source, light);
+			}
+		}
+		auto skipping = actual.cursor(manager, true);
+		for (auto it = expected.rbegin(); it != expected.rend(); ++it) {
+			UASSERTEQ(u8, skipping.resolve(it->first).light_source, it->second.back() % 14 + 1);
+			break; // Jump across all preceding leaves.
+		}
+		UASSERT(skipping.resolve({16, 0, 0}).mask == 0);
+	};
+
+	// A dense row forces splitting through all three coordinates. Sparse
+	// siblings exercise branches containing a mixture of leaves and branches.
+	for (s16 z = 0; z < 16; ++z) {
+		const v3s16 pos(7, 9, z);
+		for (u16 id = 0; id < 16; ++id) {
+			UASSERT(list.add(pos, id));
+			model[pos].push_back(id);
+		}
+	}
+	for (s16 x = 0; x < 16; ++x)
+	for (s16 y = 0; y < 16; ++y) {
+		const v3s16 pos(x, y, 0);
+		if (!model.count(pos)) {
+			UASSERT(list.set(pos, {2, 1, 2}));
+			model[pos] = {1, 2};
+		}
+	}
+	verify(list, model);
+	UASSERT(!list.add({7, 9, 0}, 16));
+	UASSERT(!list.set({7, 9, 0}, {MODIFIER_IGNORE}));
+	UASSERT(!list.add({16, 0, 0}, 0));
+	UASSERT(!list.remove({-1, 0, 0}));
+
+	// Remapping IDs while writing must leave the original tree unchanged.
+	NameIdMapping disk_names;
+	auto &mapping = IdIdMapping::giveClearedThreadLocalInstance();
+	for (u16 id = 0; id < 16; ++id) {
+		mapping.set(id, 15 - id);
+		disk_names.set(15 - id, "test:light_" + std::to_string(id));
+	}
+	std::stringstream disk_stream;
+	list.serialize(disk_stream, 30, true, disk_names, &mapping);
+	AppliedNodeModifiersList copy;
+	copy.deSerialize(disk_stream, 30, true, disk_names);
+	auto remapped = model;
+	for (auto &[pos, ids] : remapped)
+		for (auto &id : ids)
+			id = 15 - id;
+	verify(copy, remapped);
+	verify(list, model);
+	copy.clear();
+	verify(copy, {});
+	verify(list, model);
+	UASSERT(copy.add({1, 2, 3}, 4));
+	verify(copy, {{{1, 2, 3}, {4}}});
+
+	// Bulk loading can choose a different shape, but must preserve wire order.
+	std::stringstream encoded;
+	NameIdMapping names;
+	list.serialize(encoded, 30, false, names);
+	AppliedNodeModifiersList loaded;
+	loaded.deSerialize(encoded, 30, false, names);
+	verify(loaded, model);
+	std::stringstream reencoded;
+	loaded.serialize(reencoded, 30, false, names);
+	UASSERT(encoded.str() == reencoded.str());
+
+	AppliedNodeModifiersSnapshot snapshot;
+	snapshot.append(loaded, {-16, 16, 0});
+	for (const auto &[pos, ids] : model) {
+		auto [first, last] = snapshot.findRange(pos + v3s16(-16, 16, 0));
+		UASSERTEQ(size_t, last - first, ids.size());
+		for (u16 id : ids)
+			UASSERTEQ(u16, (first++)->id, id);
+	}
+
+	// Exercise mixed edits against an independent ordered reference model.
+	u32 random = 1234567;
+	auto next = [&]() { random = random * 1664525 + 1013904223; return random >> 16; };
+	for (size_t i = 0; i < 2000; ++i) {
+		const v3s16 pos(next() % 16, next() % 16, next() % 16);
+		const u16 id = next() % 16;
+		auto found = model.find(pos);
+		switch (next() % 4) {
+		case 0: {
+			auto &ids = model[pos];
+			auto it = std::find(ids.begin(), ids.end(), id);
+			if (it != ids.end())
+				ids.erase(it);
+			ids.push_back(id);
+			UASSERT(loaded.add(pos, id));
+			break;
+		}
+		case 1:
+			UASSERT(loaded.set(pos, {id, u16((id + 1) % 16), id}));
+			model[pos] = {u16((id + 1) % 16), id};
+			break;
+		case 2: {
+			bool removed = false;
+			if (found != model.end()) {
+				auto &ids = found->second;
+				auto it = std::find(ids.begin(), ids.end(), id);
+				if (it != ids.end()) {
+					ids.erase(it);
+					removed = true;
+				}
+				if (ids.empty())
+					model.erase(found);
+			}
+			UASSERT(loaded.remove(pos, id) == removed);
+			break;
+		}
+		case 3:
+			UASSERT(loaded.remove(pos) == (found != model.end()));
+			model.erase(pos);
+			break;
+		}
+	}
+	verify(loaded, model);
+	for (const auto &[pos, ids] : model)
+		UASSERT(loaded.remove(pos));
+	verify(loaded, {}); // All retained branches are now empty.
+	UASSERT(loaded.set({15, 15, 15}, {1, 2}));
+	verify(loaded, {{{15, 15, 15}, {1, 2}}});
+}
+
+void TestMapBlock::testPruneNodeModifiers()
+{
+	DummyGameDef game;
+	auto *manager = game.getWritableNodeModifierManager();
+	auto define = [&](const char *name, u64 mask, bool dummy = false) {
+		NodeModifier modifier(name, dummy);
+		modifier.m_modified_props_mask = mask;
+		return manager->add(std::move(modifier));
+	};
+	// Synthetic bits exercise unions and partial coverage of future properties.
+	const u16 both = define("test:both", 3);
+	const u16 first = define("test:first", 1);
+	const u16 second = define("test:second", 2);
+	const u16 zero = define("test:zero", 0);
+	const u16 dummy = define("test:dummy", 3, true);
+	const u16 unknown = 60000;
+	MapBlock block({}, &game);
+	const v3s16 pos(7, 9, 1);
+	auto check = [&](std::initializer_list<u16> expected) {
+		auto [begin, end] = block.getNodeModifiers().findRange(pos);
+		UASSERTEQ(size_t, end - begin, expected.size());
+		for (u16 id : expected)
+			UASSERTEQ(u16, (begin++)->id, id);
+	};
+	UASSERT(block.setNodeModifiers(pos, {both, first}));
+	UASSERT(block.addNodeModifier(pos, second));
+	check({both, first, second}); // Opt-in only.
+	UASSERT(block.addNodeModifier(pos, second, true));
+	check({first, second}); // Union of later masks covers both.
+	UASSERT(block.setNodeModifiers(pos, {both}));
+	UASSERT(block.addNodeModifier(pos, first, true));
+	check({both, first}); // Partial coverage must retain the earlier modifier.
+	UASSERT(block.addNodeModifier(pos, both, true));
+	check({both}); // Reapplication moves the modifier to the end before pruning.
+	UASSERT(block.setNodeModifiers(pos, {both, zero, unknown}));
+	UASSERT(block.addNodeModifier(pos, dummy, true));
+	check({both, zero, unknown, dummy}); // Dummy masks provide no coverage.
+	UASSERT(block.addNodeModifier(pos, first, true));
+	UASSERT(block.addNodeModifier(pos, second, true));
+	check({zero, unknown, dummy, first, second});
+
+	std::vector<u16> full;
+	for (u16 i = 0; i < 16; ++i) {
+		NodeModifier modifier("test:full_" + std::to_string(i));
+		modifier.m_modified_props_mask = 1;
+		full.push_back(manager->add(std::move(modifier)));
+	}
+	UASSERT(block.setNodeModifiers(pos, full));
+	UASSERT(block.addNodeModifier(pos, first, true));
+	check({first}); // Pruning can make room in an already-full node.
+	for (u16 id : full) {
+		NodeModifier modifier(manager->get(id).m_name);
+		manager->add(std::move(modifier)); // Now all are propertyless.
+	}
+	UASSERT(block.setNodeModifiers(pos, full));
+	UASSERT(!block.addNodeModifier(pos, first, true));
+	auto [begin, end] = block.getNodeModifiers().findRange(pos);
+	UASSERTEQ(size_t, end - begin, full.size());
+	for (u16 id : full)
+		UASSERTEQ(u16, (begin++)->id, id);
+	UASSERT(!block.addNodeModifier(pos, MODIFIER_IGNORE, true));
+	UASSERTEQ(size_t, block.getNodeModifiers().size(), full.size());
 }

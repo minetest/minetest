@@ -199,7 +199,7 @@ bool Map::setNodeModifiers(v3s16 p, const std::vector<u16> &ids)
 	return true;
 }
 
-bool Map::addNodeModifier(v3s16 p, u16 id)
+bool Map::addNodeModifier(v3s16 p, u16 id, bool prune_overridden)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if (!block)
@@ -212,7 +212,7 @@ bool Map::addNodeModifier(v3s16 p, u16 id)
 
 	ContentLightingFlags old_flags = block->getLightingFlags(rel, node);
 
-	if (!block->addNodeModifier(rel, id))
+	if (!block->addNodeModifier(rel, id, prune_overridden))
 		return false;
 
 	updateNodeModifierLighting(block, rel, node, old_flags);

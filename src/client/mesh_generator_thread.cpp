@@ -240,6 +240,7 @@ void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 					data->m_blockpos * MAP_BLOCKSIZE);
 		}
 	}
+	data->m_node_modifiers.shrink_to_fit();
 
 	data->setCrack(q->crack_level, q->crack_pos);
 	data->m_generate_minimap = !!m_client->getMinimap();

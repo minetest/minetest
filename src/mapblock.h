@@ -16,6 +16,7 @@
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 
+class IdIdMapping;
 class Map;
 class IGameDef;
 class MapBlockMesh;
@@ -289,10 +290,10 @@ public:
 	void copyFrom(const VoxelManipulator &src);
 
 	// Keys are node offsets from origin (a world node position).
-	void copyNodeModifiersTo(AppliedNodeModifiersList &dst, v3s16 origin) const;
+	void copyNodeModifiersTo(AppliedNodeModifiersSnapshot &dst, v3s16 origin) const;
 
 	// Low-level modifier changes; use Map methods to update live map lighting.
-	bool addNodeModifier(v3s16 pos, u16 id);
+	bool addNodeModifier(v3s16 pos, u16 id, bool prune_overridden = false);
 	bool setNodeModifiers(v3s16 pos, const std::vector<u16> &ids);
 	bool removeNodeModifier(v3s16 pos, u16 id);
 	bool clearNodeModifiers(v3s16 pos);
@@ -465,7 +466,7 @@ private:
 
 	
 	void getNodeModifierIdMapping(NameIdMapping &nimap,
-			AppliedNodeModifiersList &modifiers) const;
+			IdIdMapping &mapping) const;
 	void correctNodeModifierIds(const NameIdMapping &nimap);
 
 	/*

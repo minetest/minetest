@@ -185,12 +185,13 @@ void MapBlock::copyFrom(const VoxelManipulator &src)
 	tryShrinkNodes();
 }
 
-bool MapBlock::addNodeModifier(v3s16 pos, u16 id)
+bool MapBlock::addNodeModifier(v3s16 pos, u16 id, bool prune_overridden)
 {
 	if (!isValidPosition(pos) || id == MODIFIER_IGNORE)
 		return false;
 
-	if (!m_node_modifiers.add(pos, id))
+	if (!m_node_modifiers.add(pos, id,
+			prune_overridden ? m_gamedef->getNodeModifierManager() : nullptr))
 		return false;
 
 	raiseModified(MOD_STATE_WRITE_NEEDED);
@@ -224,7 +225,7 @@ bool MapBlock::clearNodeModifiers(v3s16 pos)
 	return true;
 }
 
-void MapBlock::copyNodeModifiersTo(AppliedNodeModifiersList &dst, v3s16 origin) const
+void MapBlock::copyNodeModifiersTo(AppliedNodeModifiersSnapshot &dst, v3s16 origin) const
 {
 	dst.append(m_node_modifiers, m_pos_relative - origin);
 }
@@ -232,7 +233,7 @@ void MapBlock::copyNodeModifiersTo(AppliedNodeModifiersList &dst, v3s16 origin) 
 ContentLightingFlags MapBlock::getLightingFlags(v3s16 pos, const MapNode &node) const
 {
 	ContentLightingFlags base = m_gamedef->ndef()->getLightingFlags(node);
-	if (m_node_modifiers.entries().empty())
+	if (m_node_modifiers.empty())
 		return base;
 
 	return m_node_modifiers.resolve(pos, *m_gamedef->getNodeModifierManager()).apply(base);
@@ -391,22 +392,21 @@ void MapBlock::correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 }
 
 void MapBlock::getNodeModifierIdMapping(NameIdMapping &nimap,
-		AppliedNodeModifiersList &modifiers) const
+		IdIdMapping &mapping) const
 {
 	const auto *nmod = m_gamedef->getNodeModifierManager();
-	auto &mapping = IdIdMapping::giveClearedThreadLocalInstance();
 	u16 next_id = 0;
-	modifiers.remapIds([&](u16 global_id) -> u16 {
+	m_node_modifiers.forEach([&](const AppliedNodeModifier &entry) {
+		const u16 global_id = entry.id;
 		if (global_id >= nmod->size())
 			throw SerializationError("MapBlock::getNodeModifierIdMapping(): "
 					"Unknown global ID " + std::to_string(global_id));
-		if (auto cached = mapping.get(global_id); cached != MODIFIER_IGNORE)
-			return cached;
+		if (mapping.get(global_id) != MODIFIER_IGNORE)
+			return;
 
 		u16 local_id = next_id++;
 		nimap.set(local_id, nmod->get(global_id).m_name);
 		mapping.set(global_id, local_id);
-		return local_id;
 	});
 }
 
@@ -541,9 +541,9 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	if (version >= 30) {
 		NameIdMapping modifier_names;
 		if (disk) {
-			auto modifiers = m_node_modifiers;
-			getNodeModifierIdMapping(modifier_names, modifiers);
-			modifiers.serialize(os, version, true, modifier_names);
+			auto &mapping = IdIdMapping::giveClearedThreadLocalInstance();
+			getNodeModifierIdMapping(modifier_names, mapping);
+			m_node_modifiers.serialize(os, version, true, modifier_names, &mapping);
 		} else {
 			m_node_modifiers.serialize(os, version, false, modifier_names);
 		}

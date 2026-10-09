@@ -320,8 +320,11 @@ void TestMapblockMeshGenerator::testModifierLighting()
 				data.m_vmanip.setNode(origin, MapNode(neighbor ? dark : node));
 				if (neighbor)
 					data.m_vmanip.setNode(origin + modified_pos, MapNode(node));
-				if (modifier != MODIFIER_IGNORE)
-					UASSERT(data.m_node_modifiers.add(modified_pos, modifier));
+				if (modifier != MODIFIER_IGNORE) {
+					AppliedNodeModifiersList modifiers;
+					UASSERT(modifiers.add({}, modifier));
+					data.m_node_modifiers.append(modifiers, modified_pos);
+				}
 				MeshCollector collector{{}};
 				MapblockMeshGenerator generator(&data, &collector);
 				generator.generate();

@@ -164,6 +164,40 @@ void TestInventory::testFormats(IItemDefManager *idef)
 
 void TestInventory::testModifiers(IItemDefManager *idef)
 {
+	ItemStackMetadata limited;
+	std::vector<std::string> full;
+	for (int i = 0; i < 16; ++i) {
+		full.push_back("test:limit_" + std::to_string(i));
+		UASSERT(limited.addModifier(full.back()));
+	}
+	limited.setModified(false);
+	UASSERT(!limited.addModifier("test:extra"));
+	UASSERT(!limited.isModified());
+	UASSERT(limited.getModifiersList() == full);
+	UASSERT(limited.addModifier(full.front()));
+	auto repeated = full;
+	repeated.insert(repeated.end(), full.begin(), full.end());
+	UASSERT(limited.setModifiers(std::move(repeated)));
+	UASSERT(limited.getModifiersList() == full);
+	auto oversized = full;
+	oversized.push_back("test:extra");
+	limited.setModified(false);
+	UASSERT(!limited.setModifiers(std::move(oversized)));
+	UASSERT(!limited.isModified());
+	UASSERT(limited.getModifiersList() == full);
+
+	std::stringstream encoded;
+	limited.serialize(encoded, true);
+	ItemStackMetadata decoded;
+	decoded.deSerialize(encoded);
+	UASSERT(decoded.getModifiersList() == full);
+	std::string payload("\x01\x01");
+	for (const auto &name : full)
+		payload += name + '\x03';
+	payload += "test:extra\x03";
+	std::stringstream invalid(serializeJsonStringIfNeeded(payload));
+	EXCEPTION_CHECK(SerializationError, decoded.deSerialize(invalid));
+
 	ItemStackMetadata names;
 	UASSERT(names.addModifier("test_mod:Name_123"));
 	for (const std::string name : {"", "plain", ":name", "mod:", "Mod:name",

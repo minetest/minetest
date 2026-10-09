@@ -143,7 +143,7 @@ public:
 	AppliedNodeModifiersList::ConstRange getNodeModifiers(v3s16 p);
 	// Update modifiers, lighting, and notify clients of all affected blocks.
 	bool setNodeModifiers(v3s16 p, const std::vector<u16> &ids);
-	bool addNodeModifier(v3s16 p, u16 id);
+	bool addNodeModifier(v3s16 p, u16 id, bool prune_overridden = false);
 	void removeNodeModifier(v3s16 p, u16 id);
 
 	bool isValidPosition(v3s16 p);
