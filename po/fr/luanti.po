@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-09-07 19:51+0000\n"
-"Last-Translator: Nioh <niohiguess@mailfence.com>\n"
+"PO-Revision-Date: 2026-10-10 10:44+0000\n"
+"Last-Translator: Titouan Mandeville <titouan.mandeville@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.9.1.dev0\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -5632,6 +5632,8 @@ msgid ""
 "Make volumetrics weaker against closer objects to emulate physical "
 "volumetrics."
 msgstr ""
+"Rends les volumétriques plus faible contre les objects à proximité pour "
+"émuler les volumétriques physiques."
 
 #: src/settings_translation_file.cpp
 msgid "Makes the color of light fog more saturated."
@@ -6926,6 +6928,8 @@ msgid ""
 "Set the post processing gamma value.\n"
 "Higher values give lower contrast and vice versa."
 msgstr ""
+"Définir le calcul des valeurs gamma.\n"
+"Une valeur plus haute signifie une plus grande contraste et vice versa."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7623,9 +7627,8 @@ msgid "Tint sunlight during sunrise/sunset."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tinted fog"
-msgstr "Brouillard"
+msgstr "Brouillard teinté"
 
 #: src/settings_translation_file.cpp
 msgid "Tinted sunlight"
@@ -8034,9 +8037,8 @@ msgid "Volume when unfocused"
 msgstr "Volume fenêtre non sélectionnée"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Depth Attenuation"
-msgstr "Éclairage volumétrique"
+msgstr "Atténuation de l'éclairage volumétrique"
 
 #: src/settings_translation_file.cpp
 msgid "Volumetric Lighting"
