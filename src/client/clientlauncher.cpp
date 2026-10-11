@@ -475,10 +475,8 @@ bool ClientLauncher::launch_game(GameErrorData &errordata, GameStartData &start_
 		g_settings->set("name", start_data.name);
 	}
 
-	if (start_data.name.length() > PLAYERNAME_SIZE - 1) {
-		error_message = gettext("Player name too long.");
-		start_data.name.resize(PLAYERNAME_SIZE);
-		g_settings->set("name", start_data.name);
+	if (!is_valid_player_name(start_data.name)) {
+		error_message = gettext("Player name is invalid.");
 		return false;
 	}
 

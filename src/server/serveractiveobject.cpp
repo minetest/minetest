@@ -104,10 +104,10 @@ const Observers &ServerActiveObject::getEffectiveObservers()
 	if (m_effective_observers) // cached
 		return *m_effective_observers;
 
-	auto parent = getParent();
+	auto *parent = getParent();
 	if (parent == nullptr)
 		return *(m_effective_observers = m_observers);
-	auto parent_observers = parent->getEffectiveObservers();
+	const auto &parent_observers = parent->getEffectiveObservers();
 	if (!parent_observers) // parent is unmanaged
 		return *(m_effective_observers = m_observers);
 	if (!m_observers) // we are unmanaged
@@ -133,6 +133,6 @@ const Observers& ServerActiveObject::recalculateEffectiveObservers()
 
 bool ServerActiveObject::isEffectivelyObservedBy(const std::string &player_name)
 {
-	auto effective_observers = getEffectiveObservers();
+	const auto &effective_observers = getEffectiveObservers();
 	return !effective_observers || effective_observers->count(player_name) > 0;
 }

@@ -772,6 +772,7 @@ MapBlock *ServerMap::loadBlock(std::istream &is, v3s16 p3d, u8 version)
 		if(g_settings->getBool("ignore_world_load_errors")){
 			errorstream<<"Ignoring block load error. Duck and cover! "
 					<<"(ignore_world_load_errors)"<<std::endl;
+			return nullptr;
 		} else {
 			throw SerializationError("Invalid block data in database");
 		}

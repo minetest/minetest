@@ -96,7 +96,7 @@ int InvRef::l_set_size(lua_State *L)
 	Inventory *inv;
 	InventoryList *list;
 
-	int newsize = luaL_checknumber(L, 3);
+	int newsize = luaL_checkinteger(L, 3);
 	if (newsize < 0)
 		goto fail;
 
@@ -135,7 +135,7 @@ int InvRef::l_set_width(lua_State *L)
 	Inventory *inv;
 	InventoryList *list;
 
-	int newwidth = luaL_checknumber(L, 3);
+	int newwidth = luaL_checkinteger(L, 3);
 	if (newwidth < 0)
 		goto fail;
 
@@ -162,7 +162,7 @@ int InvRef::l_get_stack(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkObject<InvRef>(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
-	int i = luaL_checknumber(L, 3) - 1;
+	int i = luaL_checkinteger(L, 3) - 1;
 	InventoryList *list = getlist(L, ref, listname);
 	ItemStack item;
 	if(list != NULL && i >= 0 && i < (int) list->getSize())
@@ -177,7 +177,7 @@ int InvRef::l_set_stack(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkObject<InvRef>(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
-	int i = luaL_checknumber(L, 3) - 1;
+	int i = luaL_checkinteger(L, 3) - 1;
 	ItemStack newitem = read_item(L, 4, getGameDef(L)->idef());
 	InventoryList *list = getlist(L, ref, listname);
 	if(list != NULL && i >= 0 && i < (int) list->getSize()){
@@ -267,6 +267,7 @@ int InvRef::l_set_lists(lua_State *L)
 		lua_pop(L, 1);
 	}
 	*inv = tempInv;
+	reportInventoryChange(L, ref);
 	return 0;
 }
 

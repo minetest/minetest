@@ -246,11 +246,14 @@ public:
 	inline void setModified(bool dirty = true) { m_dirty = dirty; }
 
 	// Problem: C++ keeps references to InventoryList and ItemStack indices
-	// until a better solution is found, this serves as a guard to prevent side-effects
+	// Until a better solution is found, this serves as a guard to prevent UaF.
 	struct ResizeUnlocker {
 		void operator()(InventoryList *invlist)
 		{
-			invlist->m_resize_locks -= 1;
+			if (invlist) {
+				assert(invlist->m_resize_locks > 0);
+				invlist->m_resize_locks -= 1;
+			}
 		}
 	};
 	using ResizeLocked = std::unique_ptr<InventoryList, ResizeUnlocker>;
