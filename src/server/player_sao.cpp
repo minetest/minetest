@@ -360,7 +360,7 @@ void PlayerSAO::setPos(const v3f &pos)
 		return;
 
 	// Send mapblock of target location
-	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
+	v3s16 blockpos = getNodeBlockPos(floatToInt(pos, BS));
 	m_env->getServer()->SendBlock(getPeerID(), blockpos);
 
 	setBasePosition(pos);
