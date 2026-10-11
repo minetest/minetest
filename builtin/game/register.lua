@@ -668,6 +668,9 @@ core.register_on_mods_loaded(function()
 		core.unregister_item = function(name)
 			error("Refusing to unregister item " .. name .. " after load time")
 		end
+		core.clear_craft = function()
+			error("Tried to remove craft recipe after load time")
+		end
 		core.register_alias = generic_reg_error("alias")
 		core.register_alias_force = generic_reg_error("alias")
 		core.register_on_mapblocks_changed = generic_reg_error("on_mapblocks_changed callback")
