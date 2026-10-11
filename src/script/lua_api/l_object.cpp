@@ -1066,6 +1066,7 @@ int ObjectRef::l_set_observers(lua_State *L)
 
 	std::unordered_set<std::string> observer_names;
 	lua_pushnil(L);
+	luaL_checktype(L, 2, LUA_TTABLE);
 	while (lua_next(L, 2) != 0) {
 		std::string name = readParam<std::string>(L, -2);
 		if (!is_valid_player_name(name))

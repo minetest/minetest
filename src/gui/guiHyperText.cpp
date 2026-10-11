@@ -68,10 +68,11 @@ void ParsedText::Element::setStyle(StyleList &style)
 	// Build a new fontengine ?
 	this->font = g_fontengine->getFont(spec);
 
-	if (!this->font)
-		printf("No font found ! Size=%d, mode=%d, bold=%s, italic=%s\n",
-				font_size, font_mode, style["bold"].c_str(),
-				style["italic"].c_str());
+	if (!this->font) {
+		infostream << "No font found! size=" << font_size << ", mode="
+			<< font_mode << ", bold=" << style["bold"] << ", italic="
+			<< style["italic"] << std::endl;
+	}
 }
 
 void ParsedText::Paragraph::setStyle(StyleList &style)
@@ -387,15 +388,15 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 {
 	// Tag name
 	bool end = false;
-	std::string name = "";
+	std::string name;
 	wchar_t c = text[cursor];
 
 	if (c == L'/') {
 		end = true;
 		c = text[++cursor];
-		if (c == L'\0')
-			return 0;
 	}
+	if (c == L'\0')
+		return 0;
 
 	while (c != ' ' && c != '>') {
 		name += c;
@@ -475,7 +476,6 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 	++cursor; // Last ">"
 
 	// Tag specific processing
-	StyleList style;
 
 	if (name == "global") {
 		if (end)
@@ -486,8 +486,9 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		if (end) {
 			closeTag(name);
 		} else {
+			StyleList style;
 			parseStyles(attrs, style);
-			openTag(name, attrs)->style = style;
+			openTag(name, attrs)->style = std::move(style);
 		}
 		endElement();
 	} else if (name == "img" || name == "item") {

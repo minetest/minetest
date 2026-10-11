@@ -1260,7 +1260,13 @@ PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 
 	/* Add object to environment */
 	PlayerSAO *playersao = sao.get();
-	m_env->addActiveObject(std::move(sao));
+	if (m_env->addActiveObject(std::move(sao)) == 0) {
+		actionstream << "Server: Can't add SAO for player \"" << playername
+			<< "\"." << std::endl;
+		DenyAccess(peer_id, SERVER_ACCESSDENIED_SERVER_FAIL);
+		m_env->removePlayer(player);
+		return nullptr;
+	}
 
 	if (playersao->isNewPlayer())
 		m_script->on_newplayer(playersao);
@@ -1303,6 +1309,7 @@ PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 			actionstream << name << " ";
 		actionstream << player->getName() << std::endl;
 	}
+
 	return playersao;
 }
 

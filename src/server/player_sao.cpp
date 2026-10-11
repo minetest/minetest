@@ -460,10 +460,11 @@ u32 PlayerSAO::punch(v3f dir,
 	float time_from_last_punch,
 	u16 initial_wear)
 {
+	bool puncher_is_player = puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER;
+
 	// No effect if PvP disabled or if immortal
 	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
-		if (puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			// create message and add to list
+		if (puncher_is_player) {
 			sendPunchCommand();
 			return 0;
 		}
@@ -483,10 +484,8 @@ u32 PlayerSAO::punch(v3f dir,
 		setHP((s32)getHP() - (s32)hitparams.hp,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
-		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			// create message and add to list
+		if (puncher_is_player)
 			sendPunchCommand();
-		}
 	}
 
 	if (puncher) {

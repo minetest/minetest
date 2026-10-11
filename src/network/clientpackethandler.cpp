@@ -1781,7 +1781,8 @@ void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 		return;
 	}
 
-	m_script->on_modchannel_message(channel_name, sender, channel_msg);
+	if (modsLoaded())
+		m_script->on_modchannel_message(channel_name, sender, channel_msg);
 }
 
 void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
@@ -1850,7 +1851,7 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	}
 
 	// If signal is valid, forward it to client side mods
-	if (valid_signal)
+	if (valid_signal && modsLoaded())
 		m_script->on_modchannel_signal(channel, signal);
 }
 

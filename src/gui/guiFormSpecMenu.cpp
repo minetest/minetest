@@ -509,7 +509,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 	if (!startindex.empty())
 		start_i = stoi(startindex);
 
-	if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
+	if (geom.X <= 0 || geom.Y <= 0 || start_i < 0) {
 		errorstream << "Invalid list element: '" << element << "'"  << std::endl;
 		return;
 	}
@@ -1931,6 +1931,8 @@ void GUIFormSpecMenu::parseHyperTip(parserData *data, const std::string &element
 	for (const auto &f : m_fields) {
 		if (f.fname == fieldname) {
 			auto *e = getElementFromId(f.fid, true);
+			if (!e)
+				continue;
 			rect = e->getAbsoluteClippingRect();
 			break;
 		}

@@ -155,8 +155,9 @@ void showComboBoxDialog(const std::string *optionList, s32 listSize, s32 selecte
 	jint         jselectedIdx = selectedIdx;
 
 	for (s32 i = 0; i < listSize; i ++) {
-		jnienv->SetObjectArrayElement(jOptionList, i,
-				jnienv->NewStringUTF(optionList[i].c_str()));
+		jobject str = jnienv->NewStringUTF(optionList[i].c_str());
+		jnienv->SetObjectArrayElement(jOptionList, i, str);
+		jnienv->DeleteLocalRef(str);
 	}
 
 	jnienv->CallVoidMethod(activity, showdialog, jOptionList,

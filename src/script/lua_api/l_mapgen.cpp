@@ -1932,7 +1932,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	//// Create the Lua table
 	u32 numnodes = schem->size.X * schem->size.Y * schem->size.Z;
 	bool resolve_done = schem->isResolveDone();
-	const std::vector<std::string> &names = schem->m_nodenames;
+	auto &names = schem->m_nodenames;
 
 	lua_createtable(L, 0, (write_yslice == "none") ? 2 : 3);
 
@@ -1962,7 +1962,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	for (u32 i = 0; i < numnodes; ++i) {
 		MapNode node = schem->schemdata[i];
 		const std::string &name =
-				resolve_done ? ndef->get(node.getContent()).name : names[node.getContent()];
+				resolve_done ? ndef->get(node).name : names.at(node.getContent());
 		u8 probability   = node.param1 & MTSCHEM_PROB_MASK;
 		bool force_place = node.param1 & MTSCHEM_FORCE_PLACE;
 		lua_createtable(L, 0, force_place ? 4 : 3);
