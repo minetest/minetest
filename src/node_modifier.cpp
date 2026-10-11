@@ -92,7 +92,7 @@ void NodeModifierManager::deSerialize(std::istream &is, u16 protocol_version) {
 		}
 
 		m_name_id_mapping.set(m_modifiers.size(), name);
-		m_modifiers.push_back(NodeModifier(name));
+		m_modifiers.emplace_back(name);
 		m_modifiers[i].deSerialize(is, protocol_version);
 	}
 }

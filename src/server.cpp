@@ -454,6 +454,7 @@ Server::~Server()
 	delete m_rollback;
 	delete m_itemdef;
 	delete m_nodedef;
+	delete m_nodemod;
 	delete m_craftdef;
 	delete m_thread;
 
