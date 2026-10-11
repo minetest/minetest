@@ -180,7 +180,7 @@ void TestInventory::testModifiers(IItemDefManager *idef)
 	UASSERT(limited.setModifiers(std::move(repeated)));
 	UASSERT(limited.getModifiersList() == full);
 	auto oversized = full;
-	oversized.push_back("test:extra");
+	oversized.emplace_back("test:extra");
 	limited.setModified(false);
 	UASSERT(!limited.setModifiers(std::move(oversized)));
 	UASSERT(!limited.isModified());
