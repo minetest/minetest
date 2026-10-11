@@ -83,6 +83,7 @@
 		[scheduled bump for 5.17.0]
 	PROTOCOL VERSION 54
 		Versioned inventories and ItemStack node modifiers
+		[scheduled bump for 5.18.0]
 */
 
 // Note: Also update core.protocol_versions in builtin when bumping
