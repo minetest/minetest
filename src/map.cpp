@@ -225,7 +225,7 @@ void Map::removeNodeModifier(v3s16 p, u16 id)
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if (!block)
 		return;
-	
+
 	v3s16 rel = p - block->getPosRelative();
 	MapNode node = block->getNodeNoCheck(rel);
 	if (node.getContent() == CONTENT_IGNORE)

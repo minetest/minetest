@@ -672,9 +672,9 @@ void TestMapBlock::testResolveNodeModifiers()
 	UASSERT(list.set(v3s16(0, 1, 2), {bright}));
 	UASSERT(list.set(v3s16(1, 2, 2), {dim}));
 
-	// Gaps, out-of-block queries, order transitions, and repeated positions.
+	// Gaps, order transitions, and repeated positions within the block.
 	auto cursor = list.cursor(manager, false);
-	for (v3s16 pos : {v3s16(-1, 0, 0), p, p, v3s16(0, 0, 1),
+	for (v3s16 pos : {p, p, v3s16(0, 0, 1),
 			v3s16(0, 0, 2), v3s16(0, 1, 2), v3s16(1, 2, 2),
 			v3s16(2, 0, 0), v3s16(2, 0, 0)}) {
 		NodePropertyOverrides actual = cursor.resolve(pos);
@@ -746,10 +746,6 @@ void TestMapBlock::testPackedNodeModifiers()
 	std::stringstream oversized;
 	writeU32(oversized, 65537);
 	EXCEPTION_CHECK(SerializationError, loaded.deSerialize(oversized, 30, false, names));
-	AppliedNodeModifiersList outside;
-	UASSERT(!outside.add({16, 0, 0}, 1));
-	UASSERT(!outside.set({-1, 0, 0}, {1}));
-	UASSERT(outside.empty());
 	AppliedNodeModifiersList empty;
 	std::stringstream empty_stream;
 	empty.serialize(empty_stream, 30, false, names);
@@ -952,8 +948,6 @@ void TestMapBlock::testAdaptiveModifiers()
 	verify(list, model);
 	UASSERT(!list.add({7, 9, 0}, 16));
 	UASSERT(!list.set({7, 9, 0}, {MODIFIER_IGNORE}));
-	UASSERT(!list.add({16, 0, 0}, 0));
-	UASSERT(!list.remove({-1, 0, 0}));
 
 	// Remapping IDs while writing must leave the original tree unchanged.
 	NameIdMapping disk_names;

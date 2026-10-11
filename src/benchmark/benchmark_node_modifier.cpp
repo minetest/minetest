@@ -97,7 +97,7 @@ public:
 				return true;
 			}
 		}
-		if (last - first == AppliedNodeModifiersList::MAX_MODIFIERS_PER_NODE)
+		if (last - first == MAX_NODE_MODIFIERS)
 			return false;
 		entries.insert(last, {pos, id});
 		return true;

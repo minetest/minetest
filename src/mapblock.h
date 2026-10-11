@@ -464,7 +464,6 @@ private:
 	static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 			IGameDef *gamedef);
 
-	
 	void getNodeModifierIdMapping(NameIdMapping &nimap,
 			IdIdMapping &mapping) const;
 	void correctNodeModifierIds(const NameIdMapping &nimap);
