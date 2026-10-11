@@ -83,6 +83,7 @@ void Database_PostgreSQL::verifyDatabase()
 
 	PQreset(m_conn);
 	ping();
+	initStatements();
 }
 
 void Database_PostgreSQL::ping()
