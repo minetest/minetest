@@ -28,8 +28,10 @@ protected:
 
 	static bool readModifiers(lua_State *L, int table, std::vector<std::string> &modifiers);
 
+	static void readFields(lua_State *L, int table, IMetadata *meta);
+
 	virtual void handleToTable(lua_State *L, IMetadata *meta);
-	virtual bool handleFromTable(lua_State *L, int table, IMetadata *meta);
+	virtual bool handleFromTable(lua_State *L, int table);
 
 	template<class T>
 	static void registerMetadataClass(lua_State *L, const luaL_Reg *methods)

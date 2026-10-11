@@ -21,7 +21,7 @@ private:
 
 	virtual void clearMeta();
 	void handleToTable(lua_State *L, IMetadata *meta) override;
-	bool handleFromTable(lua_State *L, int table, IMetadata *meta) override;
+	bool handleFromTable(lua_State *L, int table) override;
 
 	virtual void reportMetadataChange(const std::string *name = nullptr);
 

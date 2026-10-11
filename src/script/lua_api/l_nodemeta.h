@@ -46,7 +46,7 @@ private:
 	virtual void reportMetadataChange(const std::string *name = nullptr);
 
 	virtual void handleToTable(lua_State *L, IMetadata *_meta);
-	virtual bool handleFromTable(lua_State *L, int table, IMetadata *_meta);
+	virtual bool handleFromTable(lua_State *L, int table);
 
 	// Exported functions
 	static int l_set_modifiers(lua_State *L);

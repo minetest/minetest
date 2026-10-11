@@ -11,7 +11,7 @@
 #include "constants.h"
 #include "irrlichttypes.h"
 #include "nameidmapping.h"
-#include "nodedef.h"
+#include "mapnode.h"
 
 class IdIdMapping;
 
@@ -82,13 +82,17 @@ public:
 
 	bool empty() const { return m_entries.empty(); }
 	void shrink_to_fit() { m_entries.shrink_to_fit(); }
-	void append(const AppliedNodeModifiersList &other, v3s16 offset);
 	static ContentLightingFlags resolveLighting(ConstRange range,
 			const NodeModifierManager &manager, ContentLightingFlags base);
 	size_t size() const { return m_entries.size(); }
 	ConstIterator begin() const { return m_entries.begin(); }
 	ConstIterator end() const { return m_entries.end(); }
 	ConstRange findRange(v3s16 pos) const;
+
+	// Snapshot-specific
+	void append(const AppliedNodeModifiersList &other, v3s16 offset);
+
+	// Leaf-specific
 	bool add(v3s16 pos, u16 id, const NodeModifierManager *prune_manager);
 	bool set(v3s16 pos, const std::vector<u16> &ids);
 	bool remove(v3s16 pos, u16 id);
@@ -131,12 +135,12 @@ class AppliedNodeModifiersList {
 		Bucket() = default;
 		Bucket(Bucket &&) noexcept = default;
 		Bucket &operator=(Bucket &&) noexcept = default;
+
 		// Split only overflowing leaves; deletion never coalesces branches.
 		void split(u8 depth);
-		// Partition the source range before allocating storage for final leaves.
 		void assignRange(Leaf::ConstIterator first, Leaf::ConstIterator last, u8 depth);
 		const Bucket &findLeaf(v3s16 pos, u8 &depth) const;
-		// Route edits to one leaf and update the owning list's entry count.
+
 		bool add(v3s16 pos, u16 id, size_t &total_size,
 				const NodeModifierManager *prune_manager, u8 depth = 0);
 		bool set(v3s16 pos, const std::vector<u16> &ids, size_t &total_size, u8 depth = 0);
@@ -182,8 +186,7 @@ public:
 	size_t size() const { return m_size; }
 	bool empty() const { return m_size == 0; }
 
-	// Visit entries in X/Y/Z order, preserving modifier order within each position.
-	// The callback must not mutate this list.
+	// Visit entries in X/Y/Z order
 	template <typename F>
 	void forEach(F &&callback) const {
 		m_root.forEachLeaf([&](const Leaf &leaf) {
@@ -195,8 +198,6 @@ public:
 	// Only block-local coordinates (0..15 on each axis) can be stored.
 	// Supplying a manager opts into removing fully overridden modifiers.
 	bool add(v3s16 pos, u16 id, const NodeModifierManager *prune_manager = nullptr);
-	// Replace one node's modifiers, keeping the last occurrence of duplicate IDs.
-	// Invalid positions/IDs or insufficient capacity leave the list unchanged.
 	bool set(v3s16 pos, const std::vector<u16> &ids);
 	bool remove(v3s16 pos, u16 id);
 	bool remove(v3s16 pos);
@@ -209,8 +210,7 @@ public:
 	void remapIds(const std::function<u16(u16)> &map_id);
 
 private:
-	// Bulk construction splits at N; live updates at 2N. Mutation benchmarks
-	// favor 32-64 over larger thresholds; keep 64 to delay branch allocation.
+	// Leaf splits when its size exceeded this value
 	static constexpr size_t LEAF_TARGET = 64;
 	Bucket m_root;
 	size_t m_size = 0;

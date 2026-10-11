@@ -426,6 +426,7 @@ void AppliedNodeModifiersList::serialize(std::ostream &os, u16 version,
 		nimap.serialize(os);
 
 	const bool narrow_ids = disk && nimap.size() <= 256;
+	s16 previous = 0;
 	m_root.forEachLeaf([&](const Leaf &leaf) {
 
 		auto first = leaf.begin();
@@ -441,7 +442,12 @@ void AppliedNodeModifiersList::serialize(std::ostream &os, u16 version,
 			assert(isInArea(p, MAP_BLOCKSIZE) &&
 					static_cast<size_t>(last - first) <= MAX_NODE_MODIFIERS);
 
-			writeU16(os, ((last - first - 1) << 12) | (p.Z << 8) | (p.Y << 4) | p.X);
+			// X/Y/Z order matches the sorted entries. The first delta is absolute.
+			const u16 index = (p.X << 8) | (p.Y << 4) | p.Z;
+			assert(index > previous || index == 0);
+			const u16 delta = index - previous;
+			writeU16(os, ((last - first - 1) << 12) | delta);
+			previous = index;
 
 			for (; first != last; ++first) {
 				const u16 id = id_mapping ? id_mapping->get(first->id) : first->id;
@@ -476,22 +482,26 @@ void AppliedNodeModifiersList::deSerialize(std::istream &is, u16 version,
 	std::vector<AppliedNodeModifier> entries;
 	entries.reserve(size);
 
-	v3s16 previous;
+	u16 previous = 0;
 	u32 remaining = size;
 	while (remaining) {
 		const u16 header = readU16(is);
-		const v3s16 pos(header & 15, (header >> 4) & 15, (header >> 8) & 15);
+		const u16 delta = header & 0x0fff;
+		const u16 index = previous + delta;
 		const u16 count = (header >> 12) + 1;
 
-		if (!entries.empty() && previous >= pos)
+		if (!entries.empty() && delta == 0)
 			throw SerializationError("Node modifier positions are not sorted or unique");
+		if (index > MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE)
+			throw SerializationError("Node modifier position exceeds block bounds");
+		const v3s16 pos(index >> 8, (index >> 4) & 15, index & 15);
 		if (count > remaining)
 			throw SerializationError("Node modifier group exceeds remaining entry count");
 
 		remaining -= count;
 		for (u16 j = 0; j < count; ++j)
 			entries.push_back({pos, narrow_ids ? u16(readU8(is)) : readU16(is)});
-		previous = pos;
+		previous = index;
 	}
 
 	if (entries.size() <= LEAF_TARGET)

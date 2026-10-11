@@ -146,7 +146,7 @@ void TestMapBlock::testNodeModifiers()
 		loaded.getNodeModifiers().serialize(entries, 30, false, NameIdMapping{});
 		UASSERTEQ(u32, readU32(entries), 2);
 		UASSERTEQ(u16, readU16(entries),
-				0x1000 | (pos.Z << 8) | (pos.Y << 4) | pos.X);
+				0x1000 | (pos.X << 8) | (pos.Y << 4) | pos.Z);
 		u16 expected_second = disk ? target_manager->getId("test:second") : second;
 		UASSERTEQ(u16, readU16(entries), expected_second);
 		UASSERTEQ(u16, readU16(entries), disk ? target_first : first);
@@ -698,6 +698,34 @@ void TestMapBlock::testPackedNodeModifiers()
 		UASSERTEQ(u16, loaded.findRange({15, 15, 15}).first->id, 1);
 		UASSERTEQ(u16, (loaded.findRange({15, 15, 15}).second - 1)->id, 0);
 	}
+	// Nonzero first position, consecutive groups, and coordinate-boundary crossings.
+	AppliedNodeModifiersList deltas;
+	for (v3s16 pos : {v3s16(0, 0, 14), v3s16(0, 0, 15), v3s16(0, 1, 0),
+			v3s16(1, 0, 0), v3s16(15, 15, 15)})
+		UASSERT(deltas.add(pos, 0));
+	std::stringstream delta_stream;
+	deltas.serialize(delta_stream, 30, false, names);
+	UASSERTEQ(u32, readU32(delta_stream), 5);
+	for (u16 delta : {14, 1, 1, 240, 3839}) {
+		UASSERTEQ(u16, readU16(delta_stream), delta);
+		UASSERTEQ(u16, readU16(delta_stream), 0);
+	}
+	delta_stream.seekg(0);
+	AppliedNodeModifiersList delta_loaded;
+	delta_loaded.deSerialize(delta_stream, 30, false, names);
+	deltas.forEach([&](const AppliedNodeModifier &entry) {
+		auto range = delta_loaded.findRange(entry.pos);
+		UASSERTEQ(size_t, range.second - range.first, 1);
+		UASSERTEQ(u16, range.first->id, entry.id);
+	});
+	std::stringstream overflow;
+	writeU32(overflow, 2);
+	writeU16(overflow, 0x0fff);
+	writeU16(overflow, 0);
+	writeU16(overflow, 1); // 4095 + 1 is outside the block.
+	writeU16(overflow, 0);
+	EXCEPTION_CHECK(SerializationError, delta_loaded.deSerialize(overflow, 30, false, names));
+
 	// The full block exceeds the old 16-bit total-entry limit.
 	for (s16 x = 0; x < 16; ++x)
 	for (s16 y = 0; y < 16; ++y)

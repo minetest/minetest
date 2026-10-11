@@ -225,21 +225,11 @@ void NodeMetaRef::handleToTable(lua_State *L, IMetadata *_meta)
 }
 
 // from_table(self, table)
-bool NodeMetaRef::handleFromTable(lua_State *L, int table, IMetadata *_meta)
+bool NodeMetaRef::handleFromTable(lua_State *L, int table)
 {
-	// fields
-	if (!MetaDataRef::handleFromTable(L, table, _meta))
-		return false;
-
-	std::vector<std::string> modifiers;
-	lua_getfield(L, table, "modifiers");
-	bool result = lua_isnil(L, -1) || readModifiers(L, -1, modifiers);
-	lua_pop(L, 1);
-	if (!result)
-		return false;
-
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(_meta);
-	assert(meta);
+	SANITY_CHECK(!m_is_local);
+	auto meta = std::make_unique<NodeMetadata>(m_env->getGameDef()->idef());
+	readFields(L, table, meta.get());
 
 	// inventory
 	Inventory *inv = meta->getInventory();
@@ -257,7 +247,22 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, IMetadata *_meta)
 	}
 	lua_pop(L, 1);
 
-	return setModifiers(modifiers);
+	std::vector<std::string> modifiers;
+	lua_getfield(L, table, "modifiers");
+	bool result = lua_isnil(L, -1) || readModifiers(L, -1, modifiers);
+	lua_pop(L, 1);
+	if (!result)
+		throw LuaError("from_table(): modifiers must be an array of valid modifier names");
+
+	// Ensure the block is available before changing either part of its state.
+	Map &map = m_env->getMap();
+	if (!map.emergeBlock(getNodeBlockPos(m_p), false) || !setModifiers(modifiers))
+		return false;
+	// setModifiers succeeded under the map lock, so this block still exists.
+	bool installed = map.setNodeMetadata(m_p, meta.get());
+	SANITY_CHECK(installed);
+	meta.release();
+	return true;
 }
 
 

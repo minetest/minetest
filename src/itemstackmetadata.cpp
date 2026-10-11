@@ -4,6 +4,7 @@
 
 
 #include "itemstackmetadata.h"
+#include "node_modifier.h"
 #include "constants.h"
 #include "util/serialize.h"
 #include "util/string.h"
@@ -30,10 +31,44 @@ bool ItemStackMetadata::equalsExtra(const IMetadata &other) const
 	return item ? m_modifiers == item->m_modifiers : m_modifiers.empty();
 }
 
-bool ItemStackMetadata::addModifier(const std::string &name)
+bool ItemStackMetadata::addModifier(const std::string &name,
+		const NodeModifierManager *prune_manager)
 {
 	if (!isValidModScopedName(name))
 		return false;
+
+	if (prune_manager) {
+		std::vector<std::string> survivors;
+		survivors.reserve(m_modifiers.size() + 1);
+		survivors.push_back(name);
+
+		const auto &added = prune_manager->get(prune_manager->getId(name));
+		u64 covered = added.m_is_dummy ? 0 : added.m_modified_props_mask;
+		for (auto it = m_modifiers.rbegin(); it != m_modifiers.rend(); ++it) {
+			if (*it == name)
+				continue;
+
+			const auto &modifier = prune_manager->get(prune_manager->getId(*it));
+			const u64 mask = modifier.m_is_dummy ? 0 : modifier.m_modified_props_mask;
+			if (mask != 0 && (covered | mask) == covered)
+				continue;
+
+			covered |= mask;
+			survivors.push_back(*it);
+		}
+
+		if (survivors.size() > MAX_NODE_MODIFIERS)
+			return false;
+
+		std::reverse(survivors.begin(), survivors.end());
+		if (survivors != m_modifiers) {
+			m_modifiers = std::move(survivors);
+			setModified(true);
+		}
+
+		return true;
+	}
+
 	auto it = std::find(m_modifiers.begin(), m_modifiers.end(), name);
 	if (it != m_modifiers.end()) {
 		if (it + 1 != m_modifiers.end()) {

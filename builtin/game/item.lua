@@ -285,11 +285,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		.. def.name .. " at " .. core.pos_to_string(place_to))
 
 	-- Add node and update
-	-- To do: check if it might return false here
-	if core.add_node(place_to, newnode) then
-		assert(core.get_meta(place_to):set_modifiers(
-			itemstack:get_meta():get_modifiers_list()))
-	end
+	assert(core.add_node(place_to, newnode))
+	assert(core.get_meta(place_to):set_modifiers(itemstack:get_meta():get_modifiers_list()))
 
 	-- Play sound if it was done by a player
 	if playername ~= "" and def.sounds and def.sounds.place then
@@ -501,10 +498,12 @@ function builtin_shared.preserve_node_modifiers(pos, node, drops, inherit_modifi
 	if not (def and def.preserve_node_modifiers) and #modifiers == 0 then
 		return drops
 	end
+
 	local stacks = {}
 	for k, drop in pairs(drops) do
 		stacks[k] = ItemStack(drop)
 	end
+
 	if def and def.preserve_node_modifiers then
 		def.preserve_node_modifiers(vector.copy(pos), table.copy(node), modifiers, stacks)
 	else
@@ -515,6 +514,7 @@ function builtin_shared.preserve_node_modifiers(pos, node, drops, inherit_modifi
 			end
 		end
 	end
+
 	return stacks
 end
 

@@ -1,5 +1,17 @@
 local builtin_shared = ...
 
+local function same_modifiers(a, b)
+	if #a ~= #b then
+		return false
+	end
+	for i, name in ipairs(a) do
+		if name ~= b[i] then
+			return false
+		end
+	end
+	return true
+end
+
 local facedir_to_euler = {
 	{y = 0, x = 0, z = 0},
 	{y = -math.pi/2, x = 0, z = 0},
@@ -169,18 +181,13 @@ core.register_entity(":__builtin:falling_node", {
 		-- Add levels if dropped on same leveled node
 		if bcd and bcd.paramtype2 == "leveled" and
 				bcn.name == self.node.name then
-			-- To do: investigate the whole functionality
 			-- Merging consumes the entity without restoring its metadata.
 			-- Different modifier lists must remain separate, including their order.
 			local modifiers = self.meta and self.meta.modifiers or {}
 			local target_modifiers = core.get_meta(bcp):get_modifiers_list()
-			if #modifiers ~= #target_modifiers then
+			-- Recheck at landing: the supporting node may have changed in flight.
+			if not same_modifiers(modifiers, target_modifiers) then
 				return false
-			end
-			for i, name in ipairs(modifiers) do
-				if name ~= target_modifiers[i] then
-					return false
-				end
 			end
 			local addlevel = self.node.level
 			if (addlevel or 0) <= 0 then
@@ -466,7 +473,9 @@ function core.check_single_for_falling(p)
 			-- Let leveled nodes fall if it can merge with the bottom node
 			if same and d_bottom.paramtype2 == "leveled" and
 					core.get_node_level(p_bottom) <
-					core.get_node_max_level(p_bottom) then
+					core.get_node_max_level(p_bottom) and
+					same_modifiers(core.get_meta(p):get_modifiers_list(),
+						core.get_meta(p_bottom):get_modifiers_list()) then
 				local success, _ = convert_to_falling_node(p, n)
 				return success
 			end

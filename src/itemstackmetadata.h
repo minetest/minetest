@@ -14,6 +14,8 @@ inline bool nodeModifiersSupportForProtocol(u16 protocol)
 	return protocol >= 54;
 }
 
+class NodeModifierManager;
+
 class ItemStackMetadata : public SimpleMetadata
 {
 public:
@@ -30,7 +32,8 @@ public:
 
 	// Persist names rather than runtime IDs, in application order.
 	// Re-adding a name moves it to the end; unknown names are preserved.
-	bool addModifier(const std::string &name);
+	bool addModifier(const std::string &name,
+			const NodeModifierManager *prune_manager = nullptr);
 	void removeModifier(const std::string &name);
 	bool setModifiers(std::vector<std::string> &&modifiers);
 	const std::vector<std::string> &getModifiersList() const { return m_modifiers; }

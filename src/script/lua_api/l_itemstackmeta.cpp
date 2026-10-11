@@ -32,19 +32,22 @@ void ItemStackMetaRef::handleToTable(lua_State *L, IMetadata *meta)
 	lua_setfield(L, -2, "modifiers");
 }
 
-bool ItemStackMetaRef::handleFromTable(lua_State *L, int table, IMetadata *meta)
+bool ItemStackMetaRef::handleFromTable(lua_State *L, int table)
 {
-	if (!MetaDataRef::handleFromTable(L, table, meta))
-		return false;
+	ItemStackMetadata replacement;
+	readFields(L, table, &replacement);
 
 	std::vector<std::string> modifiers;
 	lua_getfield(L, table, "modifiers");
 	bool result = lua_isnil(L, -1) || readModifiers(L, -1, modifiers);
 	lua_pop(L, 1);
 	if (!result)
-		return false;
+		throw LuaError("from_table(): modifiers must be an array of valid modifier names");
 
-	return istack->getItem().metadata.setModifiers(std::move(modifiers));
+	if (!replacement.setModifiers(std::move(modifiers)))
+		return false;
+	istack->getItem().metadata = std::move(replacement);
+	return true;
 }
 
 void ItemStackMetaRef::reportMetadataChange(const std::string *name)
@@ -74,7 +77,7 @@ int ItemStackMetaRef::l_add_modifier(lua_State *L)
 	const NodeModifierManager *manager = getGameDef(L)->getNodeModifierManager();
 	u16 id = manager->getId(name);
 	bool success = id != MODIFIER_IGNORE && !manager->get(id).m_is_dummy &&
-			ref->istack->getItem().metadata.addModifier(name);
+			ref->istack->getItem().metadata.addModifier(name, lua_toboolean(L, 3) ? manager : nullptr);
 
 	lua_pushboolean(L, success);
 	return 1;
