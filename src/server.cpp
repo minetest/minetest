@@ -732,23 +732,20 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 
 		// Step environment
 		m_env->step(dtime);
-	}
 
-	static const float map_timer_and_unload_dtime = 2.92;
-	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
-	{
-		EnvAutoLock lock(this);
 		// Run Map's timers and unload unused data
-		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
-		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
-			std::max(g_settings->getFloat("server_unload_unused_data_timeout"), 0.0f),
-			-1);
-	}
+		constexpr float map_timer_and_unload_dtime = 2.95f;
+		auto &map = m_env->getServerMap();
+		if (m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
+			ScopeProfiler sp(g_profiler, "Server: map timer and unload");
+			map.timerUpdate(map_timer_and_unload_dtime,
+				std::max(g_settings->getFloat("server_unload_unused_data_timeout"), 0.0f),
+				-1);
+		}
 
-	/*
-		Note: Orphan MapBlock ptrs become dangling after this call.
-	*/
-	m_env->getServerMap().step();
+		// Note: Orphan MapBlock pointers become dangling after this call
+		map.step();
+	}
 
 	/*
 		Listen to the admin chat, if available
