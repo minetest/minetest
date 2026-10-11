@@ -1279,8 +1279,9 @@ PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 	// Send inventory formspec
 	SendPlayerInventoryFormspec(peer_id);
 
-	// Send inventory
+	// Send inventories
 	SendInventory(player, false);
+	sendDetachedInventories(peer_id);
 
 	// Send HP
 	SendPlayerHP(playersao, false);
@@ -3023,19 +3024,43 @@ void Server::sendDetachedInventory(Inventory *inventory, const std::string &name
 		Send(&pkt);
 }
 
-void Server::sendDetachedInventories(session_t peer_id, bool incremental)
+void Server::sendDetachedInventories(session_t peer_id)
 {
-	// Lookup player name, to filter detached inventories just after
-	std::string peer_name;
-	if (peer_id != PEER_ID_INEXISTENT) {
-		peer_name = getClient(peer_id, CS_Created)->getName();
+	if (peer_id == PEER_ID_INEXISTENT) {
+		assert(false);
+		return;
 	}
 
-	auto send_cb = [this, peer_id](const std::string &name, Inventory *inv) {
+	std::string peer_name = getClient(peer_id, CS_Created)->getName();
+
+	auto send_cb = [&] (const std::string &name, Inventory *inv, const std::string &owner) {
+		// don't send what we don't own
+		if (!owner.empty() && owner != peer_name)
+			return;
+
+		assert(inv);
 		sendDetachedInventory(inv, name, peer_id);
 	};
 
-	m_inventory_mgr->sendDetachedInventories(peer_name, incremental, send_cb);
+	m_inventory_mgr->sendDetachedInventories(peer_name, false, send_cb);
+}
+
+void Server::sendDetachedInventories()
+{
+	auto send_cb = [this] (const std::string &name, Inventory *inv, const std::string &owner) {
+		session_t peer_id = PEER_ID_INEXISTENT;
+		if (!owner.empty()) {
+			auto *player = m_env->getPlayer(owner);
+			peer_id = player ? player->getPeerId() : PEER_ID_INEXISTENT;
+			if (peer_id == PEER_ID_INEXISTENT)
+				return; // owner is not online; skip
+		}
+
+		assert(inv);
+		sendDetachedInventory(inv, name, peer_id);
+	};
+
+	m_inventory_mgr->sendDetachedInventories("", true, send_cb);
 }
 
 /*
