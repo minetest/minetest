@@ -3111,6 +3111,7 @@ void Server::acceptAuth(session_t peer_id, bool forSudoMode)
 
 void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 {
+	EnvAutoLock envlock(this);
 	std::wstring message;
 	{
 		/*
@@ -3174,10 +3175,8 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 						new ChatEventNick(CET_NICK_REMOVE, name));
 			}
 		}
-		{
-			EnvAutoLock envlock(this);
-			m_clients.DeleteClient(peer_id);
-		}
+
+		m_clients.DeleteClient(peer_id);
 	}
 
 	// Send leave chat message to all remaining clients
