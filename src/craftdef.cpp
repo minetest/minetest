@@ -6,6 +6,7 @@
 
 #include "irrlichttypes.h"
 #include "log.h"
+#include "debug.h"
 #include <sstream>
 #include <unordered_set>
 #include <array>
@@ -1123,6 +1124,8 @@ public:
 			return false;
 
 		// Recipes are not yet hashed at this point
+		FATAL_ERROR_IF(m_hashed, "Tried to modify craft recipes after hashing");
+
 		for (auto def : to_clear->second) {
 			auto &defs = m_craft_defs[(int)CRAFT_HASH_TYPE_UNHASHED][0];
 			defs.erase(std::remove(defs.begin(), defs.end(), def), defs.end());
@@ -1138,6 +1141,8 @@ public:
 			return false;
 
 		// Recipes are not yet hashed at this point
+		FATAL_ERROR_IF(m_hashed, "Tried to modify craft recipes after hashing");
+
 		auto &defs = m_craft_defs[(int)CRAFT_HASH_TYPE_UNHASHED][0];
 		std::unordered_set<const CraftDefinition *> defs_to_remove;
 		CraftDefinitionVec new_defs;
@@ -1211,6 +1216,8 @@ public:
 			m_craft_defs[type].clear();
 		}
 		m_output_craft_definitions.clear();
+
+		m_hashed = false;
 	}
 
 	virtual void initHashes(IGameDef *gamedef)
@@ -1227,11 +1234,14 @@ public:
 			m_craft_defs[type][hash].push_back(def);
 		}
 		unhashed.clear();
+
+		m_hashed = true;
 	}
 
 private:
 	using CraftDefinitionVec = std::vector<CraftDefinition*>;
 
+	bool m_hashed = false;
 	std::array<std::unordered_map<u64, CraftDefinitionVec>, craft_hash_type_max + 1>
 		m_craft_defs;
 	std::unordered_map<std::string, CraftDefinitionVec>
