@@ -101,8 +101,8 @@ NodeModifierManager *createNodeModifierManager() {
 	return new NodeModifierManager();
 }
 
-static ContentLightingFlags resolveLightingInRange(
-		AppliedNodeModifiersList::ConstRange range, const NodeModifierManager &manager,
+ContentLightingFlags AppliedNodeModifiersVector::resolveLighting(
+		ConstRange range, const NodeModifierManager &manager,
 		ContentLightingFlags base)
 {
 	for (auto it = range.second; it != range.first;) {
@@ -119,12 +119,11 @@ static ContentLightingFlags resolveLightingInRange(
 ContentLightingFlags AppliedNodeModifiersList::resolveLighting(v3s16 pos,
 		const NodeModifierManager &manager, ContentLightingFlags base) const
 {
-	return resolveLightingInRange(findRange(pos), manager, base);
+	return AppliedNodeModifiersVector::resolveLighting(findRange(pos), manager, base);
 }
 
-// Shared by leaves and snapshots.
 template <typename Entries>
-static auto findModifierRange(Entries &entries, v3s16 pos)
+auto AppliedNodeModifiersVector::findRangeInEntries(Entries &entries, v3s16 pos)
 {
 	auto first = std::lower_bound(entries.begin(), entries.end(), pos,
 			[](const AppliedNodeModifier &entry, v3s16 pos) { return entry.pos < pos; });
@@ -182,18 +181,18 @@ const AppliedNodeModifiersList::Bucket &AppliedNodeModifiersList::Bucket::findLe
 	return *bucket;
 }
 
-AppliedNodeModifiersList::Leaf::ConstRange AppliedNodeModifiersList::Leaf::findRange(v3s16 pos) const
+AppliedNodeModifiersVector::ConstRange AppliedNodeModifiersVector::findRange(v3s16 pos) const
 {
-	return findModifierRange(m_entries, pos);
+	return findRangeInEntries(m_entries, pos);
 }
 
-void AppliedNodeModifiersList::Leaf::remapIds(const std::function<u16(u16)> &map_id)
+void AppliedNodeModifiersVector::remapIds(const std::function<u16(u16)> &map_id)
 {
 	for (auto &entry : m_entries)
 		entry.id = map_id(entry.id);
 }
 
-bool AppliedNodeModifiersList::Leaf::addWithPrune(v3s16 pos, u16 id,
+bool AppliedNodeModifiersVector::addWithPrune(v3s16 pos, u16 id,
 		const NodeModifierManager *prune_manager)
 {
 	// Keep survivors in reverse order until capacity has been checked.
@@ -201,7 +200,7 @@ bool AppliedNodeModifiersList::Leaf::addWithPrune(v3s16 pos, u16 id,
 	size_t count = 1;
 	ids[0] = id;
 
-	auto [first, last] = findModifierRange(m_entries, pos);
+	auto [first, last] = findRangeInEntries(m_entries, pos);
 
 	const auto &added = prune_manager->get(id);
 	u64 covered = added.m_is_dummy ? 0 : added.m_modified_props_mask;
@@ -239,7 +238,7 @@ bool AppliedNodeModifiersList::Leaf::addWithPrune(v3s16 pos, u16 id,
 	return true;
 }
 
-bool AppliedNodeModifiersList::Leaf::add(v3s16 pos, u16 id,
+bool AppliedNodeModifiersVector::add(v3s16 pos, u16 id,
 		const NodeModifierManager *prune_manager)
 {
 	if (id == MODIFIER_IGNORE)
@@ -249,7 +248,7 @@ bool AppliedNodeModifiersList::Leaf::add(v3s16 pos, u16 id,
 		return addWithPrune(pos, id, prune_manager);
 	}
 
-	auto [first, last] = findModifierRange(m_entries, pos);
+	auto [first, last] = findRangeInEntries(m_entries, pos);
 	for (auto it = first; it != last; ++it) {
 		if (it->id == id) {
 			std::rotate(it, it + 1, last);
@@ -265,7 +264,7 @@ bool AppliedNodeModifiersList::Leaf::add(v3s16 pos, u16 id,
 	return true;
 }
 
-bool AppliedNodeModifiersList::Leaf::set(v3s16 pos, const std::vector<u16> &ids)
+bool AppliedNodeModifiersVector::set(v3s16 pos, const std::vector<u16> &ids)
 {
 	std::array<u16, MAX_NODE_MODIFIERS> unique;
 	size_t count = 0;
@@ -283,7 +282,7 @@ bool AppliedNodeModifiersList::Leaf::set(v3s16 pos, const std::vector<u16> &ids)
 		unique[count++] = *it;
 	}
 
-	auto [first, last] = findModifierRange(m_entries, pos);
+	auto [first, last] = findRangeInEntries(m_entries, pos);
 	const size_t offset = first - m_entries.begin();
 	const size_t old_count = last - first;
 
@@ -297,7 +296,7 @@ bool AppliedNodeModifiersList::Leaf::set(v3s16 pos, const std::vector<u16> &ids)
 	return true;
 }
 
-bool AppliedNodeModifiersList::Leaf::remove(v3s16 pos, u16 id)
+bool AppliedNodeModifiersVector::remove(v3s16 pos, u16 id)
 {
 	auto it = std::lower_bound(m_entries.begin(), m_entries.end(), pos,
 			[](const AppliedNodeModifier &entry, v3s16 p) { return entry.pos < p; });
@@ -311,9 +310,9 @@ bool AppliedNodeModifiersList::Leaf::remove(v3s16 pos, u16 id)
 	return false;
 }
 
-bool AppliedNodeModifiersList::Leaf::remove(v3s16 pos)
+bool AppliedNodeModifiersVector::remove(v3s16 pos)
 {
-	auto [first, last] = findModifierRange(m_entries, pos);
+	auto [first, last] = findRangeInEntries(m_entries, pos);
 	if (first == last)
 		return false;
 
@@ -519,35 +518,40 @@ AppliedNodeModifiersList::ConstRange AppliedNodeModifiersList::findRange(v3s16 p
 }
 
 // Used for merging several block-specific lists into one mesh-specific list
-void AppliedNodeModifiersSnapshot::append(const AppliedNodeModifiersList &other, v3s16 offset)
+void AppliedNodeModifiersVector::append(const AppliedNodeModifiersList &other, v3s16 offset)
 {
 	auto cmp_func = [](const AppliedNodeModifier &a, const AppliedNodeModifier &b) {
 		return a.pos < b.pos;
 	};
 
-	const auto split = m_list.size();
-	if (split + other.size() > m_list.capacity()) {
-		/* `m_list.capacity() * 2` is to preserve geometric growth
+	const auto split = m_entries.size();
+	if (split + other.size() > m_entries.capacity()) {
+		/* `m_entries.capacity() * 2` is to preserve geometric growth
 		 * and avoid reallocation for each block */
-		m_list.reserve(std::max(split + other.size(), m_list.capacity() * 2));
+		m_entries.reserve(std::max(split + other.size(), m_entries.capacity() * 2));
 	}
 
 	other.forEach([&](const AppliedNodeModifier &entry) {
-		m_list.push_back({entry.pos + offset, entry.id});
+		m_entries.push_back({entry.pos + offset, entry.id});
 	});
 
-	if (split != 0 && split != m_list.size() &&
-			cmp_func(m_list[split], m_list[split - 1]))
-		std::inplace_merge(m_list.begin(), m_list.begin() + split, m_list.end(), cmp_func);
+	if (split != 0 && split != m_entries.size() &&
+			cmp_func(m_entries[split], m_entries[split - 1]))
+		std::inplace_merge(m_entries.begin(), m_entries.begin() + split, m_entries.end(), cmp_func);
+}
+
+void AppliedNodeModifiersSnapshot::append(const AppliedNodeModifiersList &other, v3s16 offset)
+{
+	m_modifiers.append(other, offset);
 }
 
 AppliedNodeModifiersSnapshot::ConstRange AppliedNodeModifiersSnapshot::findRange(v3s16 pos) const
 {
-	return findModifierRange(m_list, pos);
+	return m_modifiers.findRange(pos);
 }
 
 ContentLightingFlags AppliedNodeModifiersSnapshot::resolveLighting(v3s16 pos,
 		const NodeModifierManager &manager, ContentLightingFlags base) const
 {
-	return resolveLightingInRange(findRange(pos), manager, base);
+	return AppliedNodeModifiersVector::resolveLighting(findRange(pos), manager, base);
 }

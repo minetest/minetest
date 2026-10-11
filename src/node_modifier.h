@@ -61,38 +61,50 @@ private:
 
 NodeModifierManager *createNodeModifierManager();
 
-// Resolved overrides only; properties absent from mask retain the base definition.
 struct AppliedNodeModifier {
 	v3s16 pos;
 	u16 id;
 };
 
+class AppliedNodeModifiersList;
+
+// Sorted storage shared by block leaves and mesh snapshots. Coordinates are not
+// restricted to a block; per-node edits enforce the modifier limit, append does not.
+class AppliedNodeModifiersVector {
+public:
+	using ConstIterator = std::vector<AppliedNodeModifier>::const_iterator;
+	using ConstRange = std::pair<ConstIterator, ConstIterator>;
+
+	AppliedNodeModifiersVector() = default;
+	explicit AppliedNodeModifiersVector(std::vector<AppliedNodeModifier> entries) :
+			m_entries(std::move(entries)) {}
+	AppliedNodeModifiersVector(ConstIterator first, ConstIterator last) : m_entries(first, last) {}
+
+	bool empty() const { return m_entries.empty(); }
+	void shrink_to_fit() { m_entries.shrink_to_fit(); }
+	void append(const AppliedNodeModifiersList &other, v3s16 offset);
+	static ContentLightingFlags resolveLighting(ConstRange range,
+			const NodeModifierManager &manager, ContentLightingFlags base);
+	size_t size() const { return m_entries.size(); }
+	ConstIterator begin() const { return m_entries.begin(); }
+	ConstIterator end() const { return m_entries.end(); }
+	ConstRange findRange(v3s16 pos) const;
+	bool add(v3s16 pos, u16 id, const NodeModifierManager *prune_manager);
+	bool set(v3s16 pos, const std::vector<u16> &ids);
+	bool remove(v3s16 pos, u16 id);
+	bool remove(v3s16 pos);
+	void remapIds(const std::function<u16(u16)> &map_id);
+
+private:
+	template <typename Entries>
+	static auto findRangeInEntries(Entries &entries, v3s16 pos);
+	std::vector<AppliedNodeModifier> m_entries;
+
+	bool addWithPrune(v3s16 pos, u16 id, const NodeModifierManager *prune_manager);
+};
+
 class AppliedNodeModifiersList {
-	class Leaf {
-	public:
-		using ConstIterator = std::vector<AppliedNodeModifier>::const_iterator;
-		using ConstRange = std::pair<ConstIterator, ConstIterator>;
-
-		Leaf() = default;
-		explicit Leaf(std::vector<AppliedNodeModifier> entries) :
-				m_entries(std::move(entries)) {}
-		Leaf(ConstIterator first, ConstIterator last) : m_entries(first, last) {}
-
-		size_t size() const { return m_entries.size(); }
-		ConstIterator begin() const { return m_entries.begin(); }
-		ConstIterator end() const { return m_entries.end(); }
-		ConstRange findRange(v3s16 pos) const;
-		bool add(v3s16 pos, u16 id, const NodeModifierManager *prune_manager);
-		bool set(v3s16 pos, const std::vector<u16> &ids);
-		bool remove(v3s16 pos, u16 id);
-		bool remove(v3s16 pos);
-		void remapIds(const std::function<u16(u16)> &map_id);
-
-	private:
-		std::vector<AppliedNodeModifier> m_entries;
-
-		bool addWithPrune(v3s16 pos, u16 id, const NodeModifierManager *prune_manager);
-	};
+	using Leaf = AppliedNodeModifiersVector;
 
 	struct Bucket {
 		using TreeNode = std::unique_ptr<std::array<Bucket, MAP_BLOCKSIZE>>;
@@ -209,17 +221,17 @@ private:
 // appending invalidates ranges obtained from this snapshot.
 class AppliedNodeModifiersSnapshot {
 public:
-	using ConstIterator = std::vector<AppliedNodeModifier>::const_iterator;
+	using ConstIterator = AppliedNodeModifiersVector::ConstIterator;
 	using ConstRange = std::pair<ConstIterator, ConstIterator>;
 
 	void append(const AppliedNodeModifiersList &other, v3s16 offset);
-	size_t size() const { return m_list.size(); }
-	bool empty() const { return m_list.empty(); }
-	void shrink_to_fit() { m_list.shrink_to_fit(); }
+	size_t size() const { return m_modifiers.size(); }
+	bool empty() const { return m_modifiers.empty(); }
+	void shrink_to_fit() { m_modifiers.shrink_to_fit(); }
 	ConstRange findRange(v3s16 pos) const;
 	ContentLightingFlags resolveLighting(v3s16 pos, const NodeModifierManager &manager,
 			ContentLightingFlags base = {}) const;
 
 private:
-	std::vector<AppliedNodeModifier> m_list;
+	AppliedNodeModifiersVector m_modifiers;
 };
