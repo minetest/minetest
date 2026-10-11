@@ -397,7 +397,7 @@ inline void collide_with(const aabb3f &box_mov, const aabb3f &box_stat,
 	}
 }
 
-#define PROFILER_NAME(text) (dynamic_cast<ServerEnvironment*>(env) ? ("Server: " text) : ("Client: " text))
+#define PROFILER_NAME(text) (env->getGameDef()->isClient() ? ("Client: " text) : ("Server: " text))
 
 CollisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		const aabb3f &box_0,
@@ -409,13 +409,13 @@ CollisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 {
 	static bool time_notification_done = false;
 
-	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG, PRECISION_MICRO);
-
 	CollisionMoveResult result;
 
 	// Assume no collisions when no velocity and no acceleration
 	if (*speed_f == v3f() && accel_f == v3f())
 		return result;
+
+	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG, PRECISION_MICRO);
 
 	/*
 		Calculate new velocity
