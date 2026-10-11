@@ -118,7 +118,7 @@ protected:
 				sqlite_to_float(s, iCol + 2));
 	}
 
-	// Helper for verifying result of sqlite3_step() and such
+	// Helper for verifying result of sqlite3 calls
 	inline void sqlite3_vrfy(int s, std::string_view m = "", int r = SQLITE_OK) const
 	{
 		if (s != r) {
@@ -133,6 +133,18 @@ protected:
 	inline void sqlite3_vrfy(const int s, const int r, std::string_view m = "") const
 	{
 		sqlite3_vrfy(s, m, r);
+	}
+
+	/// Helper for verifying result of sqlite3_step()
+	/// @param s status from call
+	/// @param m text for error message
+	/// @return true if there's a row to read
+	inline bool sqlite3_vrfy_step(int s, std::string_view m = "") const
+	{
+		if (s == SQLITE_ROW)
+			return true;
+		sqlite3_vrfy(s, m, SQLITE_DONE);
+		return false;
 	}
 
 	// Called after opening a fresh database file. Should create tables and indices.
