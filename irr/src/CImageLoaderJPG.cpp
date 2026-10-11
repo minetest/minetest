@@ -89,7 +89,6 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 
 	core::stringc filename = file->getFileName();
 
-	u8 **rowPtr = 0;
 	const size_t inputSize = file->getSize();
 	u8 *input = new u8[inputSize];
 	file->read(input, inputSize);
@@ -108,6 +107,10 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 	cinfo.err->output_message = output_message;
 	jerr.filename = &filename;
 
+	// (volatile required due to setjmp)
+	u8 ** volatile rowPtr = nullptr;
+	u8 * volatile output = nullptr;
+
 	// compatibility fudge:
 	// we need to use setjmp/longjmp for error handling as gcc-linux
 	// crashes when throwing within external c code
@@ -119,6 +122,7 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 
 		delete[] input;
 		delete[] rowPtr;
+		delete[] output;
 
 		// return null pointer
 		return 0;
@@ -163,7 +167,7 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 	u32 height = cinfo.image_height;
 
 	// Allocate memory for buffer
-	u8 *output = new u8[rowspan * height];
+	output = new u8[rowspan * height];
 
 	// Here we use the library's state variable cinfo.output_scanline as the
 	// loop counter, so that we don't have to keep track ourselves.
@@ -179,6 +183,7 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 		rowsRead += jpeg_read_scanlines(&cinfo, &rowPtr[rowsRead], cinfo.output_height - rowsRead);
 
 	delete[] rowPtr;
+	rowPtr = nullptr;
 	// Finish decompression
 
 	jpeg_finish_decompress(&cinfo);
@@ -206,11 +211,14 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 			}
 		}
 		delete[] output;
-	} else
+		output = nullptr;
+	} else {
 		image = new CImage(ECF_R8G8B8,
 				core::dimension2d<u32>(width, height), output);
+	}
 
 	delete[] input;
+	input = nullptr;
 
 	return image;
 }
