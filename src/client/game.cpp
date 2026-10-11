@@ -684,6 +684,8 @@ void Game::shutdown()
 
 bool Game::init(GameStartData &start_data)
 {
+	g_settings->setBool("continuous_digging", false);
+
 	texture_src = createTextureSource();
 
 	showOverlayMessage(N_("Loading..."), 0, 0);

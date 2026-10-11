@@ -240,7 +240,8 @@ protected:
 	}
 	inline bool isKeyDown(GameKeyType k)
 	{
-		return input->isKeyDown(k);
+		return input->isKeyDown(k) ||
+			(k == KeyType::DIG && g_settings->getBool("continuous_digging"));
 	}
 	inline bool wasKeyDown(GameKeyType k)
 	{
@@ -252,7 +253,8 @@ protected:
 	}
 	inline bool wasKeyReleased(GameKeyType k)
 	{
-		return input->wasKeyReleased(k);
+		return input->wasKeyReleased(k) ||
+			(k == KeyType::DIG && runData.digging && !isKeyDown(k));
 	}
 
 #ifdef __ANDROID__
