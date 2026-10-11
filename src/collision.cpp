@@ -233,11 +233,13 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 
 	// Note: as the area used here is usually small, iterating entire blocks
 	// would actually be slower by factor of 10.
+	// Note #2: the >= min check will prevent an overflow from causing an
+	// infinite loop.
 
 	v3s16 p;
-	for (p.Z = min.Z; p.Z <= max.Z; p.Z++)
-	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
-	for (p.X = min.X; p.X <= max.X; p.X++) {
+	for (p.Z = min.Z; p.Z >= min.Z && p.Z <= max.Z; p.Z++)
+	for (p.Y = min.Y; p.Y >= min.Y && p.Y <= max.Y; p.Y++)
+	for (p.X = min.X; p.X >= min.X && p.X <= max.X; p.X++) {
 		v3s16 bp, relp;
 		getNodeBlockPosWithOffset(p, bp, relp);
 		if (bp != last_bp) {
