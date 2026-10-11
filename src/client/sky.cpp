@@ -634,7 +634,7 @@ void Sky::draw_moon(video::IVideoDriver *driver, const video::SColor &mooncolor,
 		// Another magic number that contributes to the ratio 1.57 sun/moon size
 		// difference.
 		float d = (moonsize * 1.9) * m_moon_params.scale;
-		video::SColor c = m_sun_tonemap ? m_materials[4].ColorParam :
+		video::SColor c = m_moon_tonemap ? m_materials[4].ColorParam :
 				video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
