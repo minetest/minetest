@@ -62,14 +62,6 @@ private:
 NodeModifierManager *createNodeModifierManager();
 
 // Resolved overrides only; properties absent from mask retain the base definition.
-struct NodePropertyOverrides {
-	u64 mask = 0;
-
-	u8 light_source = 0;
-
-	ContentLightingFlags apply(ContentLightingFlags base) const;
-};
-
 struct AppliedNodeModifier {
 	v3s16 pos;
 	u16 id;
@@ -172,13 +164,14 @@ public:
 	ConstRange findRange(v3s16 pos) const;
 
 	// At most three coordinate lookups, then search one sorted leaf.
-	NodePropertyOverrides resolve(v3s16 pos, const NodeModifierManager &manager) const;
+	ContentLightingFlags resolveLighting(v3s16 pos, const NodeModifierManager &manager,
+			ContentLightingFlags base = {}) const;
 
 	class Cursor {
 	public:
 		// Positions must be nondecreasing in X/Y/Z order. Repeated positions
-		// reuse the resolved value; leaves are traversed without allocation.
-		NodePropertyOverrides resolve(v3s16 pos);
+		// reuse the modifier range; leaves are traversed without allocation.
+		ContentLightingFlags resolveLighting(v3s16 pos, ContentLightingFlags base = {});
 
 	private:
 		friend class AppliedNodeModifiersList;
@@ -195,7 +188,7 @@ public:
 		bool m_allow_skipping;
 		bool m_has_position = false;
 		v3s16 m_position;
-		NodePropertyOverrides m_value;
+		ConstRange m_range;
 	};
 
 	// The list and manager must outlive the cursor and remain unchanged.
@@ -252,8 +245,8 @@ public:
 	class Cursor {
 	public:
 		// Positions must be nondecreasing in v3s16's X/Y/Z ordering.
-		// Repeated positions reuse the resolved value. A scan costs O(N + M).
-		NodePropertyOverrides resolve(v3s16 pos);
+		// Repeated positions reuse the modifier range. A scan costs O(N + M).
+		ContentLightingFlags resolveLighting(v3s16 pos, ContentLightingFlags base = {});
 
 	private:
 		friend class AppliedNodeModifiersSnapshot;
@@ -268,7 +261,7 @@ public:
 		bool m_allow_skipping;
 		bool m_has_position = false;
 		v3s16 m_position;
-		NodePropertyOverrides m_value;
+		ConstRange m_range;
 	};
 
 	void append(const AppliedNodeModifiersList &other, v3s16 offset);
@@ -276,7 +269,8 @@ public:
 	bool empty() const { return m_list.empty(); }
 	void shrink_to_fit() { m_list.shrink_to_fit(); }
 	ConstRange findRange(v3s16 pos) const;
-	NodePropertyOverrides resolve(v3s16 pos, const NodeModifierManager &manager) const;
+	ContentLightingFlags resolveLighting(v3s16 pos, const NodeModifierManager &manager,
+			ContentLightingFlags base = {}) const;
 	// The snapshot and manager must outlive the cursor and remain unchanged.
 	Cursor cursor(const NodeModifierManager &manager, bool allow_skipping = false) const {
 		return Cursor(m_list.begin(), m_list.end(), manager, allow_skipping);

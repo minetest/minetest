@@ -653,22 +653,22 @@ void TestMapBlock::testResolveNodeModifiers()
 
 	AppliedNodeModifiersList list;
 	const v3s16 p(0, 0, 0);
-	UASSERT(list.resolve(p, manager).mask == 0);
-	UASSERT(list.resolve(p, manager).apply(base) == base);
+	UASSERT(list.resolveLighting(p, manager).light_source == 0);
+	UASSERT(list.resolveLighting(p, manager, base) == base);
 	UASSERT(list.set(p, {bright, unrelated, dim, dummy}));
-	NodePropertyOverrides value = list.resolve(p, manager);
-	UASSERT(value.mask == MP_LightSource && value.light_source == 3);
+	ContentLightingFlags value = list.resolveLighting(p, manager, base);
+	UASSERT(value.light_source == 3);
 	ContentLightingFlags expected = base;
 	expected.light_source = 3;
-	UASSERT(value.apply(base) == expected);
+	UASSERT(value == expected);
 	UASSERT(base.light_source == 7);
 	UASSERT(list.add(p, bright)); // Reapplying changes precedence.
-	UASSERT(list.resolve(p, manager).light_source == 12);
+	UASSERT(list.resolveLighting(p, manager).light_source == 12);
 	UASSERT(list.add(p, off));
 	expected.light_source = 0;
-	UASSERT(list.resolve(p, manager).apply(base) == expected);
+	UASSERT(list.resolveLighting(p, manager, base) == expected);
 	UASSERT(list.set(v3s16(0, 0, 2), {dummy, unrelated, 60000}));
-	UASSERT(list.resolve(v3s16(0, 0, 2), manager).mask == 0);
+	UASSERT(list.resolveLighting(v3s16(0, 0, 2), manager).light_source == 0);
 	UASSERT(list.set(v3s16(0, 1, 2), {bright}));
 	UASSERT(list.set(v3s16(1, 2, 2), {dim}));
 
@@ -677,18 +677,22 @@ void TestMapBlock::testResolveNodeModifiers()
 	for (v3s16 pos : {p, p, v3s16(0, 0, 1),
 			v3s16(0, 0, 2), v3s16(0, 1, 2), v3s16(1, 2, 2),
 			v3s16(2, 0, 0), v3s16(2, 0, 0)}) {
-		NodePropertyOverrides actual = cursor.resolve(pos);
-		NodePropertyOverrides random = list.resolve(pos, manager);
-		UASSERT(actual.mask == random.mask && actual.apply(base) == random.apply(base));
+		ContentLightingFlags actual = cursor.resolveLighting(pos, base);
+		ContentLightingFlags random = list.resolveLighting(pos, manager, base);
+		UASSERT(actual == random);
+		ContentLightingFlags other_base{};
+		other_base.light_source = 9;
+		UASSERT(cursor.resolveLighting(pos, other_base) ==
+				list.resolveLighting(pos, manager, other_base));
 	}
 	auto skipping = list.cursor(manager, true);
-	UASSERT(skipping.resolve(v3s16(1, 2, 2)).light_source == 3);
-	UASSERT(skipping.resolve(v3s16(1, 2, 2)).light_source == 3);
-	UASSERT(skipping.resolve(v3s16(2, 0, 0)).mask == 0);
+	UASSERT(skipping.resolveLighting(v3s16(1, 2, 2)).light_source == 3);
+	UASSERT(skipping.resolveLighting(v3s16(1, 2, 2)).light_source == 3);
+	UASSERT(skipping.resolveLighting(v3s16(2, 0, 0)).light_source == 0);
 	AppliedNodeModifiersList empty;
 	auto empty_cursor = empty.cursor(manager, false);
-	UASSERT(empty_cursor.resolve(p).apply(base) == base);
-	UASSERT(empty_cursor.resolve(p).mask == 0);
+	UASSERT(empty_cursor.resolveLighting(p, base) == base);
+	UASSERT(empty_cursor.resolveLighting(p).light_source == 0);
 }
 
 void TestMapBlock::testPackedNodeModifiers()
@@ -861,17 +865,21 @@ void TestMapBlock::testModifierSnapshot()
 	UASSERT(begin[0].id == a && begin[1].id == b && begin[2].id == a);
 	first.remove({1, 0, 0});
 	second.set({1, 0, 0}, {b});
-	UASSERTEQ(u8, snapshot.resolve({1, 0, 0}, manager).light_source, 14);
+	UASSERTEQ(u8, snapshot.resolveLighting({1, 0, 0}, manager).light_source, 14);
 	auto cursor = snapshot.cursor(manager);
 	for (v3s16 pos : {v3s16(-15, 0, 0), v3s16(), v3s16(1, 0, 0),
 			v3s16(1, 0, 0), v3s16(17, 0, 0), v3s16(18, 0, 0)}) {
-		auto expected = snapshot.resolve(pos, manager);
-		auto actual = cursor.resolve(pos);
-		UASSERT(expected.mask == actual.mask && expected.light_source == actual.light_source);
+		auto expected = snapshot.resolveLighting(pos, manager);
+		auto actual = cursor.resolveLighting(pos);
+		UASSERT(expected == actual);
+		ContentLightingFlags base{};
+		base.light_source = 9;
+		base.sunlight_propagates = true;
+		UASSERT(cursor.resolveLighting(pos, base) == snapshot.resolveLighting(pos, manager, base));
 	}
 	auto skipping = snapshot.cursor(manager, true);
-	UASSERTEQ(u8, skipping.resolve({17, 0, 0}).light_source, 14);
-	UASSERT(skipping.resolve({18, 0, 0}).mask == 0);
+	UASSERTEQ(u8, skipping.resolveLighting({17, 0, 0}).light_source, 14);
+	UASSERT(skipping.resolveLighting({18, 0, 0}).light_source == 0);
 }
 
 void TestMapBlock::testAdaptiveModifiers()
@@ -909,23 +917,23 @@ void TestMapBlock::testAdaptiveModifiers()
 			auto [first, last] = actual.findRange(pos);
 			if (it == expected.end()) {
 				UASSERT(first == last);
-				UASSERT(cursor.resolve(pos).mask == 0);
+				UASSERT(cursor.resolveLighting(pos).light_source == 0);
 			} else {
 				UASSERTEQ(size_t, last - first, it->second.size());
 				for (u16 id : it->second)
 					UASSERTEQ(u16, (first++)->id, id);
 				const u8 light = it->second.back() % 14 + 1;
-				UASSERTEQ(u8, actual.resolve(pos, manager).light_source, light);
-				UASSERTEQ(u8, cursor.resolve(pos).light_source, light);
-				UASSERTEQ(u8, cursor.resolve(pos).light_source, light);
+				UASSERTEQ(u8, actual.resolveLighting(pos, manager).light_source, light);
+				UASSERTEQ(u8, cursor.resolveLighting(pos).light_source, light);
+				UASSERTEQ(u8, cursor.resolveLighting(pos).light_source, light);
 			}
 		}
 		auto skipping = actual.cursor(manager, true);
 		for (auto it = expected.rbegin(); it != expected.rend(); ++it) {
-			UASSERTEQ(u8, skipping.resolve(it->first).light_source, it->second.back() % 14 + 1);
+			UASSERTEQ(u8, skipping.resolveLighting(it->first).light_source, it->second.back() % 14 + 1);
 			break; // Jump across all preceding leaves.
 		}
-		UASSERT(skipping.resolve({16, 0, 0}).mask == 0);
+		UASSERT(skipping.resolveLighting({16, 0, 0}).light_source == 0);
 	};
 
 	// A dense row forces splitting through all three coordinates. Sparse

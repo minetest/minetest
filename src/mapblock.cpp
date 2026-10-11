@@ -236,7 +236,7 @@ ContentLightingFlags MapBlock::getLightingFlags(v3s16 pos, const MapNode &node) 
 	if (m_node_modifiers.empty())
 		return base;
 
-	return m_node_modifiers.resolve(pos, *m_gamedef->getNodeModifierManager()).apply(base);
+	return m_node_modifiers.resolveLighting(pos, *m_gamedef->getNodeModifierManager(), base);
 }
 
 void MapBlock::reallocate(u32 count, MapNode n)

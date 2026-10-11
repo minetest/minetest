@@ -101,42 +101,34 @@ NodeModifierManager *createNodeModifierManager() {
 	return new NodeModifierManager();
 }
 
-ContentLightingFlags NodePropertyOverrides::apply(ContentLightingFlags base) const
+static ContentLightingFlags resolveLightingInRange(
+		AppliedNodeModifiersList::ConstRange range, const NodeModifierManager &manager,
+		ContentLightingFlags base)
 {
-	if (mask & MP_LightSource)
-		base.light_source = light_source;
+	for (auto it = range.second; it != range.first;) {
+		const auto &modifier = manager.get((--it)->id);
+		if (!modifier.m_is_dummy && (modifier.m_modified_props_mask & MP_LightSource)) {
+			base.light_source = modifier.m_light_source;
+			break;
+		}
+	}
+
 	return base;
 }
 
-static NodePropertyOverrides resolveInRange(
-		AppliedNodeModifiersList::ConstRange range, const NodeModifierManager &manager)
+ContentLightingFlags AppliedNodeModifiersList::resolveLighting(v3s16 pos,
+		const NodeModifierManager &manager, ContentLightingFlags base) const
 {
-	NodePropertyOverrides result;
-	for (auto it = range.first; it != range.second; ++it) {
-		const NodeModifier &modifier = manager.get(it->id);
-		if (modifier.m_is_dummy)
-			continue;
-
-		if (modifier.m_modified_props_mask & MP_LightSource) {
-			result.mask |= MP_LightSource;
-			result.light_source = modifier.m_light_source;
-		}
-	}
-	return result;
+	return resolveLightingInRange(findRange(pos), manager, base);
 }
 
-NodePropertyOverrides AppliedNodeModifiersList::resolve(v3s16 pos,
-		const NodeModifierManager &manager) const
-{
-	return resolveInRange(findRange(pos), manager);
-}
-
-NodePropertyOverrides AppliedNodeModifiersSnapshot::Cursor::resolve(v3s16 pos)
+ContentLightingFlags AppliedNodeModifiersSnapshot::Cursor::resolveLighting(
+		v3s16 pos, ContentLightingFlags base)
 {
 	assert(!m_has_position || !(pos < m_position));
 
 	if (m_has_position && pos == m_position)
-		return m_value;
+		return resolveLightingInRange(m_range, m_manager, base);
 
 	if (m_allow_skipping) {
 		while (m_next != m_end && m_next->pos < pos)
@@ -150,11 +142,11 @@ NodePropertyOverrides AppliedNodeModifiersSnapshot::Cursor::resolve(v3s16 pos)
 	while (m_next != m_end && m_next->pos == pos)
 		++m_next;
 
-	m_value = resolveInRange({first, m_next}, m_manager);
+	m_range = {first, m_next};
 	m_position = pos;
 	m_has_position = true;
 
-	return m_value;
+	return resolveLightingInRange(m_range, m_manager, base);
 }
 
 // Shared by leaves and snapshots.
@@ -261,12 +253,13 @@ void AppliedNodeModifiersList::Cursor::nextLeaf()
 	m_finished = true;
 }
 
-NodePropertyOverrides AppliedNodeModifiersList::Cursor::resolve(v3s16 pos)
+ContentLightingFlags AppliedNodeModifiersList::Cursor::resolveLighting(
+		v3s16 pos, ContentLightingFlags base)
 {
 	assert(!m_has_position || pos >= m_position);
 
 	if (m_has_position && pos == m_position)
-		return m_value;
+		return resolveLightingInRange(m_range, m_manager, base);
 
 	if (m_allow_skipping) {
 		while (!m_finished && m_next->pos < pos) {
@@ -277,13 +270,13 @@ NodePropertyOverrides AppliedNodeModifiersList::Cursor::resolve(v3s16 pos)
 		assert(m_finished || m_next->pos >= pos);
 	}
 
-	m_value = {};
+	m_range = {m_next, m_next};
 	if (!m_finished && m_next->pos == pos) {
 		auto first = m_next;
 		while (m_next != m_end && m_next->pos == pos)
 			++m_next;
 
-		m_value = resolveInRange({first, m_next}, m_manager);
+		m_range = {first, m_next};
 		if (m_next == m_end)
 			nextLeaf();
 	}
@@ -291,7 +284,7 @@ NodePropertyOverrides AppliedNodeModifiersList::Cursor::resolve(v3s16 pos)
 	m_position = pos;
 	m_has_position = true;
 
-	return m_value;
+	return resolveLightingInRange(m_range, m_manager, base);
 }
 
 AppliedNodeModifiersList::Leaf::ConstRange AppliedNodeModifiersList::Leaf::findRange(v3s16 pos) const
@@ -658,8 +651,8 @@ AppliedNodeModifiersSnapshot::ConstRange AppliedNodeModifiersSnapshot::findRange
 	return findModifierRange(m_list, pos);
 }
 
-NodePropertyOverrides AppliedNodeModifiersSnapshot::resolve(v3s16 pos,
-		const NodeModifierManager &manager) const
+ContentLightingFlags AppliedNodeModifiersSnapshot::resolveLighting(v3s16 pos,
+		const NodeModifierManager &manager, ContentLightingFlags base) const
 {
-	return resolveInRange(findRange(pos), manager);
+	return resolveLightingInRange(findRange(pos), manager, base);
 }

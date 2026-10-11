@@ -1020,9 +1020,9 @@ bool Game::connectToServer(const GameStartData &start_data,
 		client = new Client(start_data.name.c_str(),
 				start_data.password,
 				*draw_control, texture_src, shader_src,
-				itemdef_manager, nodedef_manager, nodemod_manager,
-				sound_manager.get(), eventmgr,
-				m_rendering_engine,
+				itemdef_manager, nodedef_manager,
+				nodemod_manager, sound_manager.get(),
+				eventmgr, m_rendering_engine,
 				m_item_visuals_manager.get(),
 				start_data.allow_login_or_register);
 	} catch (const BaseException &e) {

@@ -80,7 +80,7 @@ ContentLightingFlags MeshMakeData::getLightingFlags(v3s16 p, const MapNode &node
 	ContentLightingFlags base = m_nodedef->getLightingFlags(node);
 	if (m_node_modifiers.empty())
 		return base;
-	return m_node_modifiers.resolve(p - m_blockpos * MAP_BLOCKSIZE, *m_nodemod).apply(base);
+	return m_node_modifiers.resolveLighting(p - m_blockpos * MAP_BLOCKSIZE, *m_nodemod, base);
 }
 
 /*

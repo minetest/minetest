@@ -30,7 +30,7 @@ TEST_CASE("benchmark_node_modifier_lookup")
 		BENCHMARK("mesh-order lookup, modifiers=" + std::to_string(count)) {
 			u32 sum = 0;
 			for (v3s16 pos : positions)
-				sum += list.resolve(pos, manager).light_source;
+				sum += list.resolveLighting(pos, manager).light_source;
 			return sum;
 		};
 		BENCHMARK("ordered cursor, modifiers=" + std::to_string(count)) {
@@ -39,7 +39,7 @@ TEST_CASE("benchmark_node_modifier_lookup")
 			for (s16 x = 0; x < MAP_BLOCKSIZE; ++x)
 			for (s16 y = 0; y < MAP_BLOCKSIZE; ++y)
 			for (s16 z = 0; z < MAP_BLOCKSIZE; ++z)
-				sum += cursor.resolve({x, y, z}).light_source;
+				sum += cursor.resolveLighting({x, y, z}).light_source;
 			return sum;
 		};
 
@@ -52,7 +52,7 @@ TEST_CASE("benchmark_node_modifier_lookup")
 					v3s16 sample((pos.X + (offset & 1)) % MAP_BLOCKSIZE,
 						(pos.Y + ((offset >> 1) & 1)) % MAP_BLOCKSIZE,
 						(pos.Z + ((offset >> 2) & 1)) % MAP_BLOCKSIZE);
-					sum += list.resolve(sample, manager).light_source;
+					sum += list.resolveLighting(sample, manager).light_source;
 				}
 			}
 			return sum;
@@ -64,7 +64,7 @@ TEST_CASE("benchmark_node_modifier_lookup")
 			for (s16 y = 0; y < MAP_BLOCKSIZE; ++y)
 			for (s16 z = 0; z < MAP_BLOCKSIZE; ++z)
 				sources[x + MAP_BLOCKSIZE * (y + MAP_BLOCKSIZE * z)] =
-						cursor.resolve({x, y, z}).light_source;
+						cursor.resolveLighting({x, y, z}).light_source;
 			u32 sum = 0;
 			for (v3s16 pos : positions) {
 				for (s16 offset = 0; offset < 8; ++offset) {
