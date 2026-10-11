@@ -167,36 +167,6 @@ public:
 	ContentLightingFlags resolveLighting(v3s16 pos, const NodeModifierManager &manager,
 			ContentLightingFlags base = {}) const;
 
-	class Cursor {
-	public:
-		// Positions must be nondecreasing in X/Y/Z order. Repeated positions
-		// reuse the modifier range; leaves are traversed without allocation.
-		ContentLightingFlags resolveLighting(v3s16 pos, ContentLightingFlags base = {});
-
-	private:
-		friend class AppliedNodeModifiersList;
-		Cursor(const Bucket &root, const NodeModifierManager &manager, bool allow_skipping);
-		void descend();
-		void nextLeaf();
-
-		std::array<const Bucket *, 4> m_path{};
-		std::array<u8, 3> m_child{};
-		u8 m_depth = 0;
-		bool m_finished = false;
-		ConstIterator m_next, m_end;
-		const NodeModifierManager &m_manager;
-		bool m_allow_skipping;
-		bool m_has_position = false;
-		v3s16 m_position;
-		ConstRange m_range;
-	};
-
-	// The list and manager must outlive the cursor and remain unchanged.
-	// All list mutations invalidate ranges and cursors.
-	Cursor cursor(const NodeModifierManager &manager, bool allow_skipping = false) const {
-		return Cursor(m_root, manager, allow_skipping);
-	}
-
 	size_t size() const { return m_size; }
 	bool empty() const { return m_size == 0; }
 
@@ -236,33 +206,11 @@ private:
 
 // Flat, independently owned data for mesh workers. Positions are relative to the
 // mesh origin and may lie outside a single block. Build by appending block lists;
-// appending invalidates ranges and cursors obtained from this snapshot.
+// appending invalidates ranges obtained from this snapshot.
 class AppliedNodeModifiersSnapshot {
 public:
 	using ConstIterator = std::vector<AppliedNodeModifier>::const_iterator;
 	using ConstRange = std::pair<ConstIterator, ConstIterator>;
-
-	class Cursor {
-	public:
-		// Positions must be nondecreasing in v3s16's X/Y/Z ordering.
-		// Repeated positions reuse the modifier range. A scan costs O(N + M).
-		ContentLightingFlags resolveLighting(v3s16 pos, ContentLightingFlags base = {});
-
-	private:
-		friend class AppliedNodeModifiersSnapshot;
-		Cursor(ConstIterator first, ConstIterator last, const NodeModifierManager &manager,
-				bool allow_skipping) :
-				m_next(first), m_end(last), m_manager(manager),
-				m_allow_skipping(allow_skipping) {}
-
-		ConstIterator m_next;
-		ConstIterator m_end;
-		const NodeModifierManager &m_manager;
-		bool m_allow_skipping;
-		bool m_has_position = false;
-		v3s16 m_position;
-		ConstRange m_range;
-	};
 
 	void append(const AppliedNodeModifiersList &other, v3s16 offset);
 	size_t size() const { return m_list.size(); }
@@ -271,10 +219,6 @@ public:
 	ConstRange findRange(v3s16 pos) const;
 	ContentLightingFlags resolveLighting(v3s16 pos, const NodeModifierManager &manager,
 			ContentLightingFlags base = {}) const;
-	// The snapshot and manager must outlive the cursor and remain unchanged.
-	Cursor cursor(const NodeModifierManager &manager, bool allow_skipping = false) const {
-		return Cursor(m_list.begin(), m_list.end(), manager, allow_skipping);
-	}
 
 private:
 	std::vector<AppliedNodeModifier> m_list;

@@ -122,33 +122,6 @@ ContentLightingFlags AppliedNodeModifiersList::resolveLighting(v3s16 pos,
 	return resolveLightingInRange(findRange(pos), manager, base);
 }
 
-ContentLightingFlags AppliedNodeModifiersSnapshot::Cursor::resolveLighting(
-		v3s16 pos, ContentLightingFlags base)
-{
-	assert(!m_has_position || !(pos < m_position));
-
-	if (m_has_position && pos == m_position)
-		return resolveLightingInRange(m_range, m_manager, base);
-
-	if (m_allow_skipping) {
-		while (m_next != m_end && m_next->pos < pos)
-			++m_next;
-	} else {
-		assert(m_next == m_end || m_next->pos >= pos);
-	}
-
-	ConstIterator first = m_next;
-
-	while (m_next != m_end && m_next->pos == pos)
-		++m_next;
-
-	m_range = {first, m_next};
-	m_position = pos;
-	m_has_position = true;
-
-	return resolveLightingInRange(m_range, m_manager, base);
-}
-
 // Shared by leaves and snapshots.
 template <typename Entries>
 static auto findModifierRange(Entries &entries, v3s16 pos)
@@ -207,84 +180,6 @@ const AppliedNodeModifiersList::Bucket &AppliedNodeModifiersList::Bucket::findLe
 		bucket = &children[coordinate(pos, depth++)];
 
 	return *bucket;
-}
-
-AppliedNodeModifiersList::Cursor::Cursor(const Bucket &root,
-		const NodeModifierManager &manager, bool allow_skipping) :
-		m_manager(manager), m_allow_skipping(allow_skipping)
-{
-	m_path[0] = &root;
-
-	descend();
-
-	if (m_next == m_end)
-		nextLeaf();
-}
-
-void AppliedNodeModifiersList::Cursor::descend()
-{
-	while (const auto *children = m_path[m_depth]->try_get_children()) {
-		assert(m_depth < 3);
-		m_child[m_depth] = 0;
-		m_path[++m_depth] = children;
-	}
-
-	const auto &leaf = m_path[m_depth]->get_leaf();
-	m_next = leaf.begin();
-	m_end = leaf.end();
-}
-
-void AppliedNodeModifiersList::Cursor::nextLeaf()
-{
-	while (m_depth) {
-		const u8 parent = m_depth - 1;
-		if (++m_child[parent] < MAP_BLOCKSIZE) {
-			m_path[m_depth] = &m_path[parent]->try_get_children()[m_child[parent]];
-
-			descend();
-
-			if (m_next != m_end)
-				return;
-		} else {
-			--m_depth;
-		}
-	}
-
-	m_finished = true;
-}
-
-ContentLightingFlags AppliedNodeModifiersList::Cursor::resolveLighting(
-		v3s16 pos, ContentLightingFlags base)
-{
-	assert(!m_has_position || pos >= m_position);
-
-	if (m_has_position && pos == m_position)
-		return resolveLightingInRange(m_range, m_manager, base);
-
-	if (m_allow_skipping) {
-		while (!m_finished && m_next->pos < pos) {
-			if (++m_next == m_end)
-				nextLeaf();
-		}
-	} else {
-		assert(m_finished || m_next->pos >= pos);
-	}
-
-	m_range = {m_next, m_next};
-	if (!m_finished && m_next->pos == pos) {
-		auto first = m_next;
-		while (m_next != m_end && m_next->pos == pos)
-			++m_next;
-
-		m_range = {first, m_next};
-		if (m_next == m_end)
-			nextLeaf();
-	}
-
-	m_position = pos;
-	m_has_position = true;
-
-	return resolveLightingInRange(m_range, m_manager, base);
 }
 
 AppliedNodeModifiersList::Leaf::ConstRange AppliedNodeModifiersList::Leaf::findRange(v3s16 pos) const

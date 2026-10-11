@@ -671,28 +671,6 @@ void TestMapBlock::testResolveNodeModifiers()
 	UASSERT(list.resolveLighting(v3s16(0, 0, 2), manager).light_source == 0);
 	UASSERT(list.set(v3s16(0, 1, 2), {bright}));
 	UASSERT(list.set(v3s16(1, 2, 2), {dim}));
-
-	// Gaps, order transitions, and repeated positions within the block.
-	auto cursor = list.cursor(manager, false);
-	for (v3s16 pos : {p, p, v3s16(0, 0, 1),
-			v3s16(0, 0, 2), v3s16(0, 1, 2), v3s16(1, 2, 2),
-			v3s16(2, 0, 0), v3s16(2, 0, 0)}) {
-		ContentLightingFlags actual = cursor.resolveLighting(pos, base);
-		ContentLightingFlags random = list.resolveLighting(pos, manager, base);
-		UASSERT(actual == random);
-		ContentLightingFlags other_base{};
-		other_base.light_source = 9;
-		UASSERT(cursor.resolveLighting(pos, other_base) ==
-				list.resolveLighting(pos, manager, other_base));
-	}
-	auto skipping = list.cursor(manager, true);
-	UASSERT(skipping.resolveLighting(v3s16(1, 2, 2)).light_source == 3);
-	UASSERT(skipping.resolveLighting(v3s16(1, 2, 2)).light_source == 3);
-	UASSERT(skipping.resolveLighting(v3s16(2, 0, 0)).light_source == 0);
-	AppliedNodeModifiersList empty;
-	auto empty_cursor = empty.cursor(manager, false);
-	UASSERT(empty_cursor.resolveLighting(p, base) == base);
-	UASSERT(empty_cursor.resolveLighting(p).light_source == 0);
 }
 
 void TestMapBlock::testPackedNodeModifiers()
@@ -866,20 +844,6 @@ void TestMapBlock::testModifierSnapshot()
 	first.remove({1, 0, 0});
 	second.set({1, 0, 0}, {b});
 	UASSERTEQ(u8, snapshot.resolveLighting({1, 0, 0}, manager).light_source, 14);
-	auto cursor = snapshot.cursor(manager);
-	for (v3s16 pos : {v3s16(-15, 0, 0), v3s16(), v3s16(1, 0, 0),
-			v3s16(1, 0, 0), v3s16(17, 0, 0), v3s16(18, 0, 0)}) {
-		auto expected = snapshot.resolveLighting(pos, manager);
-		auto actual = cursor.resolveLighting(pos);
-		UASSERT(expected == actual);
-		ContentLightingFlags base{};
-		base.light_source = 9;
-		base.sunlight_propagates = true;
-		UASSERT(cursor.resolveLighting(pos, base) == snapshot.resolveLighting(pos, manager, base));
-	}
-	auto skipping = snapshot.cursor(manager, true);
-	UASSERTEQ(u8, skipping.resolveLighting({17, 0, 0}).light_source, 14);
-	UASSERT(skipping.resolveLighting({18, 0, 0}).light_source == 0);
 }
 
 void TestMapBlock::testAdaptiveModifiers()
@@ -907,33 +871,6 @@ void TestMapBlock::testAdaptiveModifiers()
 			++index;
 		});
 		UASSERTEQ(size_t, index, flat.size());
-
-		auto cursor = actual.cursor(manager);
-		for (s16 x = 0; x < 16; ++x)
-		for (s16 y = 0; y < 16; ++y)
-		for (s16 z = 0; z < 16; ++z) {
-			const v3s16 pos(x, y, z);
-			auto it = expected.find(pos);
-			auto [first, last] = actual.findRange(pos);
-			if (it == expected.end()) {
-				UASSERT(first == last);
-				UASSERT(cursor.resolveLighting(pos).light_source == 0);
-			} else {
-				UASSERTEQ(size_t, last - first, it->second.size());
-				for (u16 id : it->second)
-					UASSERTEQ(u16, (first++)->id, id);
-				const u8 light = it->second.back() % 14 + 1;
-				UASSERTEQ(u8, actual.resolveLighting(pos, manager).light_source, light);
-				UASSERTEQ(u8, cursor.resolveLighting(pos).light_source, light);
-				UASSERTEQ(u8, cursor.resolveLighting(pos).light_source, light);
-			}
-		}
-		auto skipping = actual.cursor(manager, true);
-		for (auto it = expected.rbegin(); it != expected.rend(); ++it) {
-			UASSERTEQ(u8, skipping.resolveLighting(it->first).light_source, it->second.back() % 14 + 1);
-			break; // Jump across all preceding leaves.
-		}
-		UASSERT(skipping.resolveLighting({16, 0, 0}).light_source == 0);
 	};
 
 	// A dense row forces splitting through all three coordinates. Sparse
