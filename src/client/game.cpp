@@ -3186,9 +3186,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			// depending on the player's height
 			aabb3f collisionbox = player->getCollisionbox();
 			int player_height = ceilf((collisionbox.MaxEdge.Y - collisionbox.MinEdge.Y) / BS);
-			// Check 5 nodes at most so we don't check a huge number of nodes
-			// in case of faulty collisionboxes
-			player_height = rangelim(player_height, 1, 5);
+			player_height = MYMAX(player_height, 1);
 			v3s16 diff = neighborpos - player->getStandingNodePos();
 			stands_inside = (diff.X == 0 && diff.Z == 0 && diff.Y >= 1 && diff.Y <= player_height);
 		}
