@@ -6989,8 +6989,6 @@ Environment access
       ensures compatibility.
 * `core.place_node(pos, node[, placer])`
     * Calls the `on_place` function of a node definition
-    * Not recommended, use other placement functions
-    * Bypasses `on_secondary_use` or node formspec
     * `pos`: Specifies placement position for `on_place` (see below)
     * `node`: Node table of the node to place (`param1`/`param2` are ignored)
     * `placer`: The ObjectRef that places the node (optional)
