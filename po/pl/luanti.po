@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-07-13 21:01+0000\n"
-"Last-Translator: Maja Bauer <majabauer0108@gmail.com>\n"
+"PO-Revision-Date: 2026-10-14 03:53+0000\n"
+"Last-Translator: SaltyJoe <saltyjoe@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.8.dev0\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -525,7 +525,7 @@ msgstr "Wystąpił błąd:"
 
 #: builtin/fstk/ui.lua
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Skopiuj do schowka"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -1767,7 +1767,7 @@ msgstr "Tryb szybki włączony (uwaga: nie masz uprawnień \"trybu szybkiego\")"
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "Pliki: %d /%d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1858,7 +1858,7 @@ msgstr "Pojedynczy gracz"
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Rozmiar:%.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -2105,7 +2105,7 @@ msgstr "Backspace"
 
 #: src/client/keycode.cpp
 msgid "Bottom Face Button (Gamepad)"
-msgstr ""
+msgstr "Dolny przycisk (Kontroler)"
 
 #. TRANSLATORS: Usually paired with the Pause key
 #: src/client/keycode.cpp
@@ -2118,7 +2118,7 @@ msgstr "Klawisz Caps Lock"
 
 #: src/client/keycode.cpp
 msgid "Circle (Gamepad)"
-msgstr ""
+msgstr "Koło (Kontroler)"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -2140,15 +2140,15 @@ msgstr "Page Down"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Left"
-msgstr ""
+msgstr "Pad kierunkowy w lewo"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Right"
-msgstr ""
+msgstr "Pad kieruonkowy w prawo"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Up"
-msgstr ""
+msgstr "Pad kierunkwoy w górę"
 
 #: src/client/keycode.cpp
 msgid "Delete Key"
@@ -2208,7 +2208,7 @@ msgstr "Lewy Control"
 
 #: src/client/keycode.cpp
 msgid "Left Face Button (Gamepad)"
-msgstr ""
+msgstr "Lewy przycisk (Kontroler)"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -2365,11 +2365,11 @@ msgstr "Graj"
 
 #: src/client/keycode.cpp
 msgid "Primary Left Paddle"
-msgstr ""
+msgstr "Główna lewa łopatka"
 
 #: src/client/keycode.cpp
 msgid "Primary Right Paddle"
-msgstr ""
+msgstr "Główna prawa łopatka"
 
 #. TRANSLATORS: "Print screen" key
 #: src/client/keycode.cpp
@@ -2394,11 +2394,11 @@ msgstr "Prawy Control"
 
 #: src/client/keycode.cpp
 msgid "Right Face Button (Gamepad)"
-msgstr ""
+msgstr "Prawy przycisk (Kontroler)"
 
 #: src/client/keycode.cpp
 msgid "Right Joystick Button"
-msgstr ""
+msgstr "Przycisk prawego drążka"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -2454,11 +2454,11 @@ msgstr "Scroll Lock"
 
 #: src/client/keycode.cpp
 msgid "Secondary Left Paddle"
-msgstr ""
+msgstr "Dodatkowa lewa łopatka"
 
 #: src/client/keycode.cpp
 msgid "Secondary Right Paddle"
-msgstr ""
+msgstr "Dodatkowa prawa łopatka"
 
 #: src/client/keycode.cpp
 msgid "Select Key"
@@ -2488,15 +2488,15 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Top Face Button (Gamepad)"
-msgstr ""
+msgstr "Górny przycisk (Kontroler)"
 
 #: src/client/keycode.cpp
 msgid "Touchpad Button (Gamepad)"
-msgstr ""
+msgstr "Przycisk panelu dotykowego (Kontroler)"
 
 #: src/client/keycode.cpp
 msgid "Triangle (Gamepad)"
-msgstr ""
+msgstr "Trójkąt (Kontroler)"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
@@ -2831,7 +2831,7 @@ msgstr ""
 
 #: src/script/lua_api/l_mainmenu.cpp
 msgid "Copied to clipboard!"
-msgstr ""
+msgstr "Skopiowano do schowka!"
 
 #: src/server.cpp
 #, c-format
@@ -4575,11 +4575,11 @@ msgstr "Filtr skalowania GUI"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
+msgstr "Kontrolery i joysticki"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -5367,6 +5367,8 @@ msgid ""
 "Key for opening the pause menu in-game.\n"
 "Pressing the escape key always opens the pause menu."
 msgstr ""
+"Klawisz do otwierania menu pauzy w grze.\n"
+"Naciśnięcie klawisza Esc zawsze otwiera menu pauzy."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5675,10 +5677,12 @@ msgid ""
 "Make volumetrics weaker against closer objects to emulate physical "
 "volumetrics."
 msgstr ""
+"Osłabiaj efekty wolumetryczne dla bliskich obiektów, aby emulować fizyczną "
+"wolumetrię."
 
 #: src/settings_translation_file.cpp
 msgid "Makes the color of light fog more saturated."
-msgstr ""
+msgstr "Zwiększa nasycenie kolorów mgły."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6319,7 +6323,7 @@ msgstr "Otwórz ekwipunek"
 
 #: src/settings_translation_file.cpp
 msgid "Open pause menu"
-msgstr ""
+msgstr "Otwórz menu pauzy"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6969,6 +6973,8 @@ msgid ""
 "Set the post processing gamma value.\n"
 "Higher values give lower contrast and vice versa."
 msgstr ""
+"Ustaw wartość gammy postprocesingu.\n"
+"Większe wartości dają mniejszy kontrast i na odwrót."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7673,7 +7679,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
+msgstr "Zabarwiaj światło słoneczne podczas wschodu/zachodu słońca."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7682,7 +7688,7 @@ msgstr "Przełącz mgłę"
 
 #: src/settings_translation_file.cpp
 msgid "Tinted sunlight"
-msgstr ""
+msgstr "Zabarwione światło słoneczne"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -8171,6 +8177,8 @@ msgid ""
 "When enabled, crude liquid reflections are simulated.\n"
 "Wave height, length and speed will affect these reflections."
 msgstr ""
+"Gdy włączone, symulowane są uproszczone odbicia cieczy.\n"
+"Wysokość, długość i prędkość fal będą miały wpływ na te odbicia."
 
 #: src/settings_translation_file.cpp
 msgid ""
