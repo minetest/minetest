@@ -217,13 +217,15 @@ bool read_schematic_def(lua_State *L, int index,
 	v3s16 size = check_v3s16(L, -1);
 	lua_pop(L, 1);
 
+	if (size.X < 0 || size.Y < 0 || size.Z < 0)
+		throw LuaError("Schematic has invalid size");
 	schem->size = size;
 
 	//// Get schematic data
 	lua_getfield(L, index, "data");
 	luaL_checktype(L, -1, LUA_TTABLE);
 
-	u32 numnodes = size.X * size.Y * size.Z;
+	u32 numnodes = size.X * size.Y * size.Z; // FIXME: can overflow
 	schem->schemdata = new MapNode[numnodes];
 
 	size_t names_base = names->size();
