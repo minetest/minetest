@@ -220,7 +220,7 @@ local function get_formspec(tabview, name, tabdata)
 				end
 			else
 				table.insert_all(retval, {
-					"button[7.1,4.7;8,0.9;btn_mod_mgr_use_txp;",
+					"button[7.1,4.7;4,0.9;btn_mod_mgr_use_txp;",
 					fgettext("Enable Texture Pack"), "]"
 				})
 			end
