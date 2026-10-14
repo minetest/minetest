@@ -83,12 +83,12 @@ return {
 		hypertext = table.concat(hypertext):sub(1, -2)
 
 		local fs = {
-			"image[1.5,0.6;2.5,2.5;", core.formspec_escape(logofile), "]",
+			"image[1,0.5;3.4,3.4;", core.formspec_escape(logofile), "]",
 			"style_type[label;valign=center;halign=center;font=mono;font_size=*1.1]",
-			"label[0.1,3.4;5.4,0.5;",
+			"label[0.1,4;5.4,0.8;",
 			core.formspec_escape(version.project .. " " .. version.string), "]",
 			"style_type[button_url;border=false;textcolor=#4cd9f9]",
-			"button_url[1.5,4.1;2.5,0.8;homepage;luanti.org;https://www.luanti.org/]"
+			"button_url[1.5,4.6;2.5,0.5;homepage;luanti.org;https://www.luanti.org/]"
 		}
 
 		if PLATFORM == "Android" then
