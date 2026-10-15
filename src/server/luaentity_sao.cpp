@@ -424,7 +424,7 @@ std::string LuaEntitySAO::getDescription()
 
 void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 {
-	m_hp = rangelim(hp, 0, U16_MAX);
+	m_hp = rangelim(hp, 0, m_prop.hp_max);
 
 	sendPunchCommand();
 
