@@ -1593,8 +1593,8 @@ void GenericCAO::applyTrackAnimation(scene::TrackId &&track_id, scene::TrackAnim
 		updateAnimation(*track_nr);
 	} else {
 		const auto &local_anims = m_env->getLocalPlayer()->local_animations;
-		bool is_known = track_nr == 0 && std::any_of(local_anims.begin(), local_anims.end(),
-				[&](v2f range) {
+		bool is_known = track_nr == 0 && (anim.min_frame != 0.0f || anim.max_frame != 0.0f) &&
+				std::any_of(local_anims.begin(), local_anims.end(), [&](v2f range) {
 					return anim.min_frame == range.X && anim.max_frame == range.Y;
 				});
 		// Apply the animation if it is not a known local animation
