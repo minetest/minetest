@@ -104,7 +104,8 @@ TEST_CASE("test translations")
 	SECTION("PO file parser")
 	{
 		Translations translations;
-		translations.loadTranslation(TEST_PO_NAME, read_translation_file(TEST_PO_NAME), "fr");
+		translations.setTargetLanguage("fr");
+		translations.loadTranslation(TEST_PO_NAME, read_translation_file(TEST_PO_NAME));
 
 		CHECK(translations.size() == 5);
 		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"foo") == L"bar");
@@ -122,7 +123,8 @@ TEST_CASE("test translations")
 	SECTION("MO file parser")
 	{
 		Translations translations;
-		translations.loadTranslation(TEST_MO_NAME, read_translation_file(TEST_MO_NAME), "fr");
+		translations.setTargetLanguage("fr");
+		translations.loadTranslation(TEST_MO_NAME, read_translation_file(TEST_MO_NAME));
 
 		CHECK(translations.size() == 2);
 		CHECK(translations.getTranslation(CONTEXT, L"With context") == L"Has context");

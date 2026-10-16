@@ -4396,7 +4396,8 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 		if (file_lang == lang_code || file_lang == "en") {
 			std::string data;
 			if (fs::ReadFile(i.second.path, data, true)) {
-				translations->loadTranslation(i.first, data, lang_code);
+				translations->setTargetLanguage(lang_code);
+				translations->loadTranslation(i.first, data);
 			}
 		}
 	}

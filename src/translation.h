@@ -18,8 +18,8 @@ extern Translations *g_client_translations;
 class Translations
 {
 public:
-	void loadTranslation(const std::string &filename, const std::string &data,
-			const std::string &target_lang);
+	void setTargetLanguage(const std::string &lang);
+	void loadTranslation(const std::string &filename, const std::string &data);
 	void clear();
 
 	const std::wstring &getTranslation(
@@ -47,6 +47,7 @@ public:
 	}
 
 private:
+	std::string m_target_lang;
 	std::unordered_map<std::wstring, std::wstring> m_translations;
 	std::unordered_map<std::wstring,
 		std::pair<GettextPluralForm::Ptr, std::vector<std::wstring>>> m_plural_translations;
@@ -71,10 +72,9 @@ private:
 			const std::string &original,
 			const std::string &translated,
 			bool is_fallback);
-	void loadTrTranslation(const std::string &data, bool is_fallback,
-			const std::string &target_lang);
-	void loadPoTranslation(const std::string &basefilename, const std::string &data,
-			bool is_fallback, const std::string &target_lang);
-	void loadMoTranslation(const std::string &basefilename, const std::string &data,
-			bool is_fallback, const std::string &target_lang);
+	void loadTrTranslation(const std::string &data, bool is_fallback);
+	void loadPoTranslation(const std::string &basefilename,
+			const std::string &data, bool is_fallback);
+	void loadMoTranslation(const std::string &basefilename,
+			const std::string &data, bool is_fallback);
 };

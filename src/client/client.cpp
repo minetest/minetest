@@ -891,9 +891,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		TRACESTREAM(<< "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl);
 
-		std::string lang = gettext_get_lang_code();
-
-		g_client_translations->loadTranslation(filename, data, lang);
+		g_client_translations->setTargetLanguage(gettext_get_lang_code());
+		g_client_translations->loadTranslation(filename, data);
 		return true;
 	}
 
