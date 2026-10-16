@@ -2885,6 +2885,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 		auto &s = lighting.static_;
 		lua_getfield(L, -1, "light_curve");
 		if (!lua_isnil(L, -1)) {
+			luaL_checktype(L, -1, LUA_TTABLE);
 			bool any = false;
 			for (int i = 0; i < StaticLighting::LIGHT_CURVE_SIZE; i++) {
 				lua_rawgeti(L, -1, i + 1);
