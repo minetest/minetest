@@ -4903,9 +4903,13 @@ msgstr "Bonjour le monde!"
 Monolingual Translations (Non-English Source Locale)
 ----------------------------------------------------
 
-By default, Luanti assumes that the source strings in mods are written in English. Starting from version 5.18, mod developers can specify any source language for their mod by writing the original source strings in that language.
+By default, Luanti assumes that the source strings in mods are written in English.
+Starting from version 5.18.0, mod developers can specify any source language for
+their mod by writing the original source strings in that language.
 
-To declare the source language, you must add a `Source-Language` field to the **English** translation file (specifying the source language in files for other locales will be ignored).
+To declare the source language, you must add a `Source-Language` field
+to the **English** translation file (specifying the source language in files
+for other locales will be ignored).
 
 For `.po` and `.mo` files, the source language is specified in the header entry:
 ```po
@@ -4920,7 +4924,8 @@ For the old `.tr` format, add a comment immediately after the `textdomain` decla
 # Source-Language: de
 ```
 
-**Note:** For clients running version 5.18 or newer, the English translation is used as a fallback. This means if you write your mod in German, clients using French (for which you have no specific translation) will see the English strings, not the German source strings. Older clients (< 5.18) will simply see the original source strings (in this case, German).
+**Note:** Starting from version 5.18.0, the English translation is provided [server] and
+used [client] as a fallback if no specific translation is available for the current language.
 
 Escapes
 -------
