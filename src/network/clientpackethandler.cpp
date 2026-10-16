@@ -334,9 +334,14 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 	}
 
 	// Add it to mesh update queue
-	addUpdateMeshTaskWithEdge(p, false);
+	addUpdateMeshTaskWithEdge(p);
 
-	sendGotBlocks({ p }); // TODO
+	// Ack it to the server
+	if (m_got_blocks.size() == U8_MAX) {
+		sendGotBlocks(m_got_blocks);
+		m_got_blocks.clear();
+	}
+	m_got_blocks.push_back(p);
 }
 
 void Client::handleCommand_Inventory(NetworkPacket* pkt)
