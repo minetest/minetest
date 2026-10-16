@@ -676,22 +676,8 @@ void Client::step(float dtime)
 				}
 			}
 
-			// TODO?: it's really weird and complicates things how we only ack
-			// blocks after they've been through the meshgen queue...
-			for (auto p : r.ack_list) {
-				if (blocks_to_ack.size() == 255) {
-					sendGotBlocks(blocks_to_ack);
-					blocks_to_ack.clear();
-				}
-
-				blocks_to_ack.emplace_back(p);
-			}
-
+			sanity_check(r.ack_list.empty());
 			r.dropBlocks();
-		}
-		if (blocks_to_ack.size() > 0) {
-				// Acknowledge block(s)
-				sendGotBlocks(blocks_to_ack);
 		}
 
 		if (num_processed_meshes > 0)

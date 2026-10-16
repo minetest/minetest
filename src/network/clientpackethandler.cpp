@@ -333,10 +333,10 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 		ServerMap::saveBlock(block, m_localdb.get());
 	}
 
-	/*
-		Add it to mesh update queue and set it to be acknowledged after update.
-	*/
-	addUpdateMeshTaskWithEdge(p, true);
+	// Add it to mesh update queue
+	addUpdateMeshTaskWithEdge(p, false);
+
+	sendGotBlocks({ p }); // TODO
 }
 
 void Client::handleCommand_Inventory(NetworkPacket* pkt)
