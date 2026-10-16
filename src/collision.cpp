@@ -720,11 +720,13 @@ f32 getNodeBoxSupportHeight(const std::vector<aabb3f> &nodeboxes,
 		const v3f box_min = node_pos + box.MinEdge;
 		const v3f box_max = node_pos + box.MaxEdge;
 
+        // if top of box is above player's feet, or box is not under player
 		if (box_max.Y > max_support_y ||
 				box_max.X <= player_min.X || box_min.X >= player_max.X ||
 				box_max.Z <= player_min.Z || box_min.Z >= player_max.Z)
 			continue;
 
+        // otherwise box is under player, consider it for sneak support
 		support_y = std::max(support_y, box_max.Y);
 	}
 
