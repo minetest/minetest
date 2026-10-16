@@ -234,12 +234,6 @@ public:
 		return t;
 	}
 
-	void clear()
-	{
-		MutexAutoLock lock(m_mutex);
-		m_queue.clear();
-	}
-
 	auto iterLocked()
 	{
 		return IterationHelper(this);

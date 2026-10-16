@@ -417,9 +417,11 @@ void MeshUpdateManager::clearAllQueues()
 	m_queue_in.clear();
 
 	const auto &do_it = [] (ResultQueue &queue) {
-		for (auto &it : queue.iterLocked())
-			it.dropBlocks();
-		queue.clear();
+		auto helper = queue.iterLocked();
+		for (auto it = helper.begin(); it != helper.end(); ) {
+			it->dropBlocks();
+			it = helper.erase(it);
+		}
 	};
 	do_it(m_queue_out_urgent);
 	do_it(m_queue_out);
