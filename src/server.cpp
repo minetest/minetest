@@ -4389,6 +4389,7 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 
 	// [] will create an entry
 	auto *translations = &server_translations[lang_code];
+	translations->setTargetLanguage(lang_code);
 
 	for (const auto &i : m_media) {
 		auto file_lang = Translations::getFileLanguage(i.first);
@@ -4396,7 +4397,6 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 		if (file_lang == lang_code || file_lang == "en") {
 			std::string data;
 			if (fs::ReadFile(i.second.path, data, true)) {
-				translations->setTargetLanguage(lang_code);
 				translations->loadTranslation(i.first, data);
 			}
 		}
