@@ -230,3 +230,11 @@ void init_gettext(const char *path, const std::string &configured_language,
 	infostream << "Message locale is now set to: "
 			<< setlocale(LC_ALL, 0) << std::endl;
 }
+
+std::string gettext_get_lang_code()
+{
+	std::string lang = gettext("LANG_CODE");
+	if (lang == "LANG_CODE")
+		return "en";
+	return lang;
+}
