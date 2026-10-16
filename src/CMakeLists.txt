@@ -483,6 +483,7 @@ set(independent_SRCS
 	${database_SRCS}
 	${threading_SRCS}
 	${util_SRCS}
+		cast.h
 )
 
 file(GLOB common_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
