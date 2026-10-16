@@ -34,6 +34,19 @@ public:
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
 	IAnimatedMesh *createMesh(io::IReadFile *file) override;
+};
+
+//! Per-load worker holding all transient state for a single .b3d file. The
+//! registered CB3DMeshFileLoader creates a fresh instance for each createMesh()
+//! call and discards it when the load finishes, so no state can ever leak from
+//! one load into the next.
+class B3DMeshReader
+{
+public:
+	explicit B3DMeshReader(io::IReadFile *file) :
+			B3DFile(file) {}
+
+	IAnimatedMesh *createMesh();
 
 private:
 	bool load();
@@ -68,16 +81,16 @@ private:
 
 	core::array<video::S3DVertex2TCoords> BaseVertices;
 
-	SkinnedMeshBuilder AnimatedMesh;
+	SkinnedMeshBuilder AnimatedMesh{SkinnedMesh::SourceFormat::B3D};
 	io::IReadFile *B3DFile;
 
 	// B3Ds have Vertex ID's local within the mesh I don't want this
 	//  Variable needs to be class member due to recursion in calls
-	u32 VerticesStart;
+	u32 VerticesStart = 0;
 
-	bool NormalsInFile;
-	bool HasVertexColors;
-	bool ShowWarning;
+	bool NormalsInFile = false;
+	bool HasVertexColors = false;
+	bool ShowWarning = true;
 };
 
 } // end namespace scene
