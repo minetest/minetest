@@ -233,6 +233,9 @@ void init_gettext(const char *path, const std::string &configured_language,
 
 std::string gettext_get_lang_code()
 {
+	/* TRANSLATORS: DO NOT TRANSLATE THIS LITERALLY!
+	This is a special string which needs to contain the translation's
+	language code (e.g. "de" for German). */
 	std::string lang = gettext("LANG_CODE");
 	if (lang == "LANG_CODE")
 		return "en";
