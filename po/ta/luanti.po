@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: luanti\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-03-02 16:10+0000\n"
 "Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -350,6 +350,13 @@ msgstr ""
 msgid "Accessibility"
 msgstr "அணுகல்"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -620,7 +627,7 @@ msgstr "பதிவிறக்கம் ..."
 msgid "Featured"
 msgstr "இடம்பெற்றது"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "விளையாட்டுகள்"
 
@@ -631,7 +638,7 @@ msgstr "விளையாட்டுகள்"
 msgid "Loading..."
 msgstr "ஏற்றுகிறது ..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "மோட்ச்"
 
@@ -805,10 +812,6 @@ msgstr "$1 மூலம்"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "$ 1 -$ 2 பதிவிறக்கங்கள் - +$ 3 / $ 4 / -$ 5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$ 1 (இயக்கப்பட்டது)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1390,8 +1393,27 @@ msgid "Disable Texture Pack"
 msgstr "அமைப்பு பேக்கை முடக்கு"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "நிறுவப்பட்ட தொகுப்புகள்:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "அமைப்பு பேக்கை முடக்கு"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "பக்கம் கீழே"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "இடதுபுறம் நகர்த்தவும்"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1406,12 +1428,13 @@ msgid "Rename"
 msgstr "மறுபெயரிடுங்கள்"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "புதுப்பிப்பு கிடைக்குமா?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "அமைப்பு பொதிகள்"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "அமைப்பு பேக் பயன்படுத்தவும்"
+msgid "Update available?"
+msgstr "புதுப்பிப்பு கிடைக்குமா?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1625,8 +1648,9 @@ msgstr ""
 "எந்த உலகமும் தேர்ந்தெடுக்கப்படவில்லை, முகவரி எதுவும் வழங்கப்படவில்லை. செய்ய எதுவும் இல்லை."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "வீரர் பெயர் மிக நீளமானது."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "விளையாட்டு விளையாடுங்கள்"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2524,13 +2548,13 @@ msgid "Minimap hidden"
 msgstr "மினிமாப் மறைக்கப்பட்டுள்ளது"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "ரேடார் பயன்முறையில் மினிமேப், பெரிதாக்கு x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "மேற்பரப்பு பயன்முறையில் மினிமாப், பெரிதாக்க x%d"
 
 #: src/client/minimap.cpp
@@ -3117,10 +3141,6 @@ msgid "Always fly fast"
 msgstr "எப்போதும் வேகமாக பறக்க"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "சுற்றுப்புற மறைவு காமா"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "பள்ளத்தாக்குகளை பெருக்குகிறது."
 
@@ -3585,17 +3605,19 @@ msgstr ""
 "காண்க"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "HTTP பநிஇ களை அணுக அனுமதிக்கப்பட்ட மோட்களின் கமாவால் பிரிக்கப்பட்ட பட்டியல், இது\n"
 " இணையத்திலிருந்து/தரவைப் பதிவேற்றவும் பதிவிறக்கவும் அவர்களை அனுமதிக்கவும்."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "பாதுகாப்பற்றதை அணுக அனுமதிக்கப்பட்ட நம்பகமான மோட்களின் கமாவால் பிரிக்கப்பட்ட பட்டியல்\n"
 " மோட் பாதுகாப்பு இயக்கத்தில் இருக்கும்போது கூட செயல்பாடுகள் "
@@ -3961,6 +3983,10 @@ msgid "Developer Options"
 msgstr "உருவாக்குபவர் விருப்பங்கள்"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "ட்ரேசியுடன் கருவியை மட்டும் பயன்படுத்த விரும்பினால் முடக்கவும்."
 
@@ -4137,10 +4163,6 @@ msgstr "மாறும் நிழல்களை இயக்கு"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "மோட் சேனல்கள் ஆதரவை இயக்கவும்."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "மோட் பாதுகாப்பை இயக்கவும்"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4563,10 +4585,6 @@ msgstr "GUI அளவிடுதல் வடிகட்டி"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5028,9 +5046,10 @@ msgstr ""
 " கண்ணுக்கு தெரியாத தொகுதிகள், இதனால் NOCLIP பயன்முறையின் பயன்பாடு குறைக்கப்படுகிறது."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "இயக்கப்பட்டால், நீங்கள் நிற்கும் இடத்தில் (அடி + கண் நிலை) முனைகளில் முனைகளை வைக்கலாம்.\n"
@@ -5604,16 +5623,6 @@ msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
 "மூடுபனி மற்றும் வான வண்ணங்கள் பகல்நேரத்தை (விடியல்/சூரிய அச்தமனம்) சார்ந்து திசையைக் காண்க."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6228,6 +6237,24 @@ msgid "Occlusion Culling"
 msgstr "மறைவு குறைத்தல்"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Acclusion_culler வகை\n"
+"\n"
+" \"லூப்ச்\" என்பது உள்ளமைக்கப்பட்ட சுழல்கள் மற்றும் ஓ (n³) சிக்கலான மரபு வழிமுறை\n"
+" \"பி.எஃப்.எச்\" என்பது அகலம்-முதல் தேடல் மற்றும் பக்கக் குறைப்பை அடிப்படையாகக் கொண்ட "
+"புதிய வழிமுறையாகும்\n"
+"\n"
+" உங்களுக்கு செயல்திறன் சிக்கல்கள் இருந்தால் மட்டுமே இந்த அமைப்பை மாற்ற வேண்டும்."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "எழுத்துருவின் பின்னால் உள்ள நிழலின் ஒளிபுகாநிலை (ஆல்பா)."
 
@@ -6353,12 +6380,6 @@ msgstr ""
 "அந்தந்த பொத்தான்களை வைத்திருக்கும்போது தோண்டுவதையும் மறுநிகழ்வை தடு.\n"
 " தற்செயலாக நீங்கள் அடிக்கடி தோண்டும்போது அல்லது வைக்கும்போது இதை இயக்கு.\n"
 " தொடுதிரைகளில், இது தோண்டுவதை மட்டுமே பாதிக்கிறது."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"செல் கட்டளைகளை இயக்குவது போன்ற பாதுகாப்பற்ற விசயங்களைச் செய்வதிலிருந்து மோட்சைத் "
-"தடுக்கவும்."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6867,12 +6888,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6990,6 +7005,10 @@ msgid ""
 msgstr ""
 "நிறுவன தேர்வு பெட்டிகளைக் காட்டு\n"
 " இதை மாற்றிய பின் மறுதொடக்கம் தேவை."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7451,18 +7470,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"முனை சுற்றுப்புற-மறுப்பு நிழலின் வலிமை (இருள்).\n"
-" கீழ் இருண்டது, உயர்ந்தது இலகுவானது. இதற்கான மதிப்புகளின் சரியான வரம்பு\n"
-" அமைப்பு 0.25 முதல் 4.0 ஆகியவை அடங்கும். மதிப்பு வரம்பில்லாமல் இருந்தால் அது இருக்கும்\n"
-" அருகிலுள்ள செல்லுபடியாகும் மதிப்புக்கு அமைக்கவும்."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7535,19 +7542,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "பயன்படுத்தப்படாத வரைபடத் தரவை நினைவகத்திலிருந்து நொடிகளில் அகற்ற கிளையன்ட் நேரம் "
 "முடிந்தது."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "மூடுபனி மாற்று"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7691,23 +7685,6 @@ msgstr "நம்பகமான மோட்ச்"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Acclusion_culler வகை\n"
-"\n"
-" \"லூப்ச்\" என்பது உள்ளமைக்கப்பட்ட சுழல்கள் மற்றும் ஓ (n³) சிக்கலான மரபு வழிமுறை\n"
-" \"பி.எஃப்.எச்\" என்பது அகலம்-முதல் தேடல் மற்றும் பக்கக் குறைப்பை அடிப்படையாகக் கொண்ட "
-"புதிய வழிமுறையாகும்\n"
-"\n"
-" உங்களுக்கு செயல்திறன் சிக்கல்கள் இருந்தால் மட்டுமே இந்த அமைப்பை மாற்ற வேண்டும்."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7794,13 +7771,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"புதிய குல்லரில் ரேச்ட்ரேச் க்ளூசன் குறைப்பைப் பயன்படுத்தவும்.\n"
-" இந்த கொடி ரேச்ட்ரேச் க்ளூசன் க்ளிங் சோதனையைப் பயன்படுத்த உதவுகிறது\n"
-" கிளையன்ட் மெச் அளவுகள் 4x4x4 வரைபடத் தொகுதிகளை விட சிறியவை."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7943,11 +7917,6 @@ msgstr "கவனம் செலுத்தாதபோது தொகுத�
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "அளவீட்டு விளக்குகள்"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "அளவீட்டு விளக்குகள்"
 
@@ -8019,9 +7988,7 @@ msgid "Weblink color"
 msgstr "வெப்லிங்க் நிறம்"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8252,23 +8219,55 @@ msgstr ""
 msgid "Failed to save screenshot to \"%s\""
 msgstr "ச்கிரீன்சாட்டை \"%s\" இல் சேமிக்க முடியவில்லை"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "சாய்ச்டிக்சை இயக்கவும்"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$ 1 (இயக்கப்பட்டது)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "சாய்ச்டிக்சை இயக்கவும். நடைமுறைக்கு வர மறுதொடக்கம் தேவை"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "சுற்றுப்புற மறைவு காமா"
 
-#~ msgid "Keybindings"
-#~ msgstr "விசைப்பலகைகள்"
+#~ msgid "Enable mod security"
+#~ msgstr "மோட் பாதுகாப்பை இயக்கவும்"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "சாய்ச்டிக்கின் இறந்த மண்டலம்"
+#~ msgid "Installed Packages:"
+#~ msgstr "நிறுவப்பட்ட தொகுப்புகள்:"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "பயன்படுத்த சாய்ச்டிக்கின் அடையாளங்காட்டி"
+#~ msgid "Player name too long."
+#~ msgstr "வீரர் பெயர் மிக நீளமானது."
 
-#~ msgid "The type of joystick"
-#~ msgstr "சாய்ச்டிக் வகை"
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "செல் கட்டளைகளை இயக்குவது போன்ற பாதுகாப்பற்ற விசயங்களைச் செய்வதிலிருந்து மோட்சைத் "
+#~ "தடுக்கவும்."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "இயக்கப்பட்டால், திரவ பிரதிபலிப்புகள் உருவகப்படுத்தப்படுகின்றன."
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "முனை சுற்றுப்புற-மறுப்பு நிழலின் வலிமை (இருள்).\n"
+#~ " கீழ் இருண்டது, உயர்ந்தது இலகுவானது. இதற்கான மதிப்புகளின் சரியான வரம்பு\n"
+#~ " அமைப்பு 0.25 முதல் 4.0 ஆகியவை அடங்கும். மதிப்பு வரம்பில்லாமல் இருந்தால் அது "
+#~ "இருக்கும்\n"
+#~ " அருகிலுள்ள செல்லுபடியாகும் மதிப்புக்கு அமைக்கவும்."
+
+#, fuzzy
+#~ msgid "Tinted fog"
+#~ msgstr "மூடுபனி மாற்று"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "அமைப்பு பேக் பயன்படுத்தவும்"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "புதிய குல்லரில் ரேச்ட்ரேச் க்ளூசன் குறைப்பைப் பயன்படுத்தவும்.\n"
+#~ " இந்த கொடி ரேச்ட்ரேச் க்ளூசன் க்ளிங் சோதனையைப் பயன்படுத்த உதவுகிறது\n"
+#~ " கிளையன்ட் மெச் அளவுகள் 4x4x4 வரைபடத் தொகுதிகளை விட சிறியவை."
+
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "அளவீட்டு விளக்குகள்"

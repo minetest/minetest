@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -343,6 +343,13 @@ msgstr ""
 msgid "Accessibility"
 msgstr ""
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -623,7 +630,7 @@ msgstr "Inapakia..."
 msgid "Featured"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Michezo"
 
@@ -634,7 +641,7 @@ msgstr "Michezo"
 msgid "Loading..."
 msgstr "Inapakia..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Mods"
 
@@ -819,11 +826,6 @@ msgstr ""
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr ""
-
-#: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
-msgid "$1 (Enabled)"
-msgstr "Kuwezeshwa"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 #, fuzzy
@@ -1431,8 +1433,26 @@ msgstr "Chagua Kipeto cha unamu:"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
-msgid "Installed Packages:"
-msgstr "Mods zilizosakinishwa:"
+msgid "Enable Texture Pack"
+msgstr "Chagua Kipeto cha unamu:"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Chini"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Kutembea haraka"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1448,13 +1468,13 @@ msgid "Rename"
 msgstr "Ita jina jipya"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr ""
+#, fuzzy
+msgid "Texture packs"
+msgstr "Texturepacks"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
-msgid "Use Texture Pack"
-msgstr "Texturepacks"
+msgid "Update available?"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
@@ -1685,8 +1705,9 @@ msgstr ""
 "Duniani hakuna iliyoteuliwa na hakuna anwani iliyotolewa. Kitu cha kufanya."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Mchezaji jina refu."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Jina la mchezaji"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2620,14 +2641,14 @@ msgid "Minimap hidden"
 msgstr "Ufunguo wa minimap"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
-msgstr ""
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
+msgstr "Unamu wa kima cha chini cha ukubwa wa Vichujio"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
-msgstr ""
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
+msgstr "Unamu wa kima cha chini cha ukubwa wa Vichujio"
 
 #: src/client/minimap.cpp
 #, fuzzy
@@ -3198,10 +3219,6 @@ msgid "Always fly fast"
 msgstr "Daima kuruka na kufunga"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Occlusion iliyoko gamma"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Amplifies the valleys."
 msgstr "Inaangazia mabonde"
@@ -3656,17 +3673,19 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Iliyotenganishwa orodha ya mods kwamba wanaruhusiwa kufikia HTTP APIs, "
 "ambayo kuwaruhusu kupakia na kupakua data/toka kwenye tovuti."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Iliyotenganishwa orodha ya mods kuaminika kwamba wanaruhusiwa kufikia kazi "
 "zisizo hata wakati usalama Moduli ni juu (kupitia "
@@ -3999,6 +4018,10 @@ msgid "Developer Options"
 msgstr "Instrumentation"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr ""
 
@@ -4159,10 +4182,6 @@ msgstr "Kivuli cha fonti"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable mod channels support."
-msgstr "Kuwezesha usalama Moduli"
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
 msgstr "Kuwezesha usalama Moduli"
 
 #: src/settings_translation_file.cpp
@@ -4570,10 +4589,6 @@ msgstr "GUI kipimo Kichujio"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5034,8 +5049,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Ikiwa imewezeshwa, unaweza mahali vitalu katika nafasi (miguu + jicho "
@@ -5588,16 +5603,6 @@ msgid ""
 msgstr ""
 "Kufanya rangi wa ukungu na anga hutegemea mchana (alfajiri/machweo) na "
 "kuonyesha mwelekeo."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6219,6 +6224,16 @@ msgid "Occlusion Culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr ""
 
@@ -6333,10 +6348,6 @@ msgid ""
 "Enable this when you dig or place too often by accident.\n"
 "On touchscreens, this only affects digging."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr "Kuzuia mods kufanya mambo zisizo kama kuendesha amri ya Sheli."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6821,12 +6832,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6942,6 +6947,10 @@ msgid ""
 msgstr ""
 "Seti lugha. Acha tupu kwa kutumia lugha ya mfumo.\n"
 "Kuanza upya inahitajika baada ya kubadilisha hii."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7333,18 +7342,6 @@ msgstr "Unyeti wa Jira kifimbocheza kwa kuzunguka Mwoneko ingame frustum."
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Nguvu (giza) ya fundo iliyoko occlusion kivuli.\n"
-"Chini ni nyeusi, juu ni hafifu. Masafa halali ya thamani kwa ajili ya kipimo "
-"hiki ni 0.25 kwa 4.0 jumuishi. Kama thamani iko nje ya masafa ni itasetiwa "
-"kwenye ya karibu Thamani halali."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7413,19 +7410,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Muda wa kuisha kwa mteja kuondoa data ya ramani zisizotumika kutoka kwa "
 "kumbukumbu."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Togoa kuruka"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7588,16 +7572,6 @@ msgstr "Mods aminifu"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7670,9 +7644,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7814,11 +7788,6 @@ msgstr "Ramprogrammen juu wakati mchezo umesitishwa."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Taa laini"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "Taa laini"
 
@@ -7894,9 +7863,7 @@ msgid "Weblink color"
 msgstr "Uteuzi kikasha rangi"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8114,5 +8081,45 @@ msgid "Failed to save screenshot to \"%s\""
 msgstr ""
 
 #, fuzzy
-#~ msgid "Enable joysticks"
-#~ msgstr "Wezesha vifimbocheza"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "Kuwezeshwa"
+
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Occlusion iliyoko gamma"
+
+#~ msgid "Enable mod security"
+#~ msgstr "Kuwezesha usalama Moduli"
+
+#, fuzzy
+#~ msgid "Installed Packages:"
+#~ msgstr "Mods zilizosakinishwa:"
+
+#~ msgid "Player name too long."
+#~ msgstr "Mchezaji jina refu."
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr "Kuzuia mods kufanya mambo zisizo kama kuendesha amri ya Sheli."
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Nguvu (giza) ya fundo iliyoko occlusion kivuli.\n"
+#~ "Chini ni nyeusi, juu ni hafifu. Masafa halali ya thamani kwa ajili ya "
+#~ "kipimo hiki ni 0.25 kwa 4.0 jumuishi. Kama thamani iko nje ya masafa ni "
+#~ "itasetiwa kwenye ya karibu Thamani halali."
+
+#, fuzzy
+#~ msgid "Tinted fog"
+#~ msgstr "Togoa kuruka"
+
+#, fuzzy
+#~ msgid "Use Texture Pack"
+#~ msgstr "Texturepacks"
+
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Taa laini"

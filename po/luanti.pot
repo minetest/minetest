@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: luanti\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -333,6 +333,13 @@ msgstr ""
 msgid "Damage"
 msgstr ""
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: "automatic exposure" refers to light. This note
 #. will be displayed for the graphics setting 'enable_auto_exposure'
 #: builtin/common/settings/dlg_settings.lua
@@ -495,11 +502,11 @@ msgid "(The game will need to enable shadows as well)"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-msgid "OK"
+msgid "Copy to clipboard"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-msgid "Copy to clipboard"
+msgid "OK"
 msgstr ""
 
 #: builtin/fstk/ui.lua
@@ -587,11 +594,11 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr ""
 
@@ -776,10 +783,6 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Error loading reviews"
-msgstr ""
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
 msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
@@ -1328,11 +1331,19 @@ msgid "Browse online content [$1]"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
+msgid "Texture packs"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Update available?"
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
@@ -1352,7 +1363,15 @@ msgid "Disable Texture Pack"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
+msgid "Move Up"
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Move Down"
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enable Texture Pack"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
@@ -1569,7 +1588,7 @@ msgid "Please choose a name!"
 msgstr ""
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
+msgid "Player name is invalid."
 msgstr ""
 
 #: src/client/clientlauncher.cpp
@@ -1907,6 +1926,10 @@ msgid ""
 " --> place single item to slot\n"
 msgstr ""
 
+#: src/client/game_formspec.cpp
+msgid "Game paused"
+msgstr ""
+
 #. TRANSLATORS: Pause menu button, try to keep the translation short
 #: src/client/game_formspec.cpp
 msgid "Continue"
@@ -1915,10 +1938,6 @@ msgstr ""
 #. TRANSLATORS: Pause menu button, try to keep the translation short
 #: src/client/game_formspec.cpp
 msgid "Change Password"
-msgstr ""
-
-#: src/client/game_formspec.cpp
-msgid "Game paused"
 msgstr ""
 
 #. TRANSLATORS: Pause menu button, try to keep the translation short
@@ -2422,12 +2441,12 @@ msgstr ""
 
 #: src/client/minimap.cpp
 #, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr ""
 
 #: src/client/minimap.cpp
 #, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr ""
 
 #: src/client/minimap.cpp
@@ -2752,8 +2771,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 
@@ -3565,18 +3584,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Screenshots"
 msgstr ""
 
@@ -3812,9 +3819,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
+"Occlusion culler to prefer\n"
 "\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
 "\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
 "\n"
 "This setting should only be changed if you have performance problems."
@@ -3826,9 +3833,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3879,6 +3886,14 @@ msgstr ""
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4036,24 +4051,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Liquid reflections"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Post Processing"
 msgstr ""
 
@@ -4075,16 +4072,6 @@ msgid ""
 "Simulates the tone curve of photographic film and how this approximates the\n"
 "appearance of high dynamic range images. Mid-range contrast is slightly\n"
 "enhanced, highlights and shadows are gradually compressed."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4143,25 +4130,7 @@ msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Volumetric Depth Attenuation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Other Effects"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Tinted fog"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4172,6 +4141,14 @@ msgstr ""
 msgid ""
 "Simulate translucency when looking at foliage in the sunlight.\n"
 "It is recommended to use this with setting \"leaves_style\" set to \"fancy\"."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Liquid reflections"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6026,21 +6003,13 @@ msgid "Mod Security"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Trusted mods"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6049,8 +6018,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 
 #: src/settings_translation_file.cpp

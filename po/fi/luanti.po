@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-09-21 03:51+0000\n"
 "Last-Translator: Jouni Järvinen <rautajunk@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/minetest/"
@@ -348,6 +348,13 @@ msgstr "<tyhjä>"
 msgid "Accessibility"
 msgstr "Esteettömyys"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -618,7 +625,7 @@ msgstr "Ladataan..."
 msgid "Featured"
 msgstr "Esilletuotu"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Pelit"
 
@@ -629,7 +636,7 @@ msgstr "Pelit"
 msgid "Loading..."
 msgstr "Ladataan..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Lisäosat"
 
@@ -803,10 +810,6 @@ msgstr "tehnyt $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "tehnyt $1  —  $2 latauskertaa  —  +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Käytössä)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1391,8 +1394,27 @@ msgid "Disable Texture Pack"
 msgstr "Poista kuviointipaketti käytöstä"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Asennetut paketit:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Poista kuviointipaketti käytöstä"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Liiku vasemmalle"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1407,12 +1429,13 @@ msgid "Rename"
 msgstr "Nimeä uudelleen"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Päivitys saatavilla?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Muokatut kuvioinnit"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Ota kuviointipaketti käyttöön"
+msgid "Update available?"
+msgstr "Päivitys saatavilla?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1624,8 +1647,9 @@ msgstr ""
 "Ei ole valittu maailmaa eikä annettu osoitetta. Ei ole mitään tehtävää."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Pelaajanimi on liian pitkä."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Pelaajien nimet: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1826,7 +1850,8 @@ msgstr "Koskemattomuustila päällä"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "Koskemattomuustila päällä (huomautus: sinulla ei ole ’noclip’-oikeutta)"
+msgstr ""
+"Koskemattomuustila päällä (huomautus: sinulla ei ole ’noclip’-oikeutta)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -2496,13 +2521,13 @@ msgid "Minimap hidden"
 msgstr "Pienoiskartta piilotettu"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Pienoiskartta tutkatilassa, %d-kertainen suurennus"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Pienoiskartta pintatilassa, %d-kertainen suurennus"
 
 #: src/client/minimap.cpp
@@ -3106,10 +3131,6 @@ msgid "Always fly fast"
 msgstr "Lennä aina nopeasti"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Ympäristövarjostuksen gamma"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "Kasvattaa laaksoja."
 
@@ -3576,18 +3597,20 @@ msgstr ""
 "täyden luettelon osoitteessa https://content.luanti.org/help/content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Pilkuin erotettu luettelo lisäosista, joilla on lupa käyttää HTTP-"
 "rajapintoja, mikä\n"
 "antaa niille mahdollisuuden lähettää sisältöä verkkoon ja ladata verkosta."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Pilkuin erotettu luettelo luotetuista lisäosista, joilla on lupa käyttää "
 "turvattomia\n"
@@ -3951,6 +3974,10 @@ msgid "Developer Options"
 msgstr "Kehittäjäasetukset"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "Kytke pois päältä, jos haluat mitata käyttäen vain Tracya."
 
@@ -4127,10 +4154,6 @@ msgstr "Ota dynaamiset varjot käyttöön"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Ota lisäosakanavatuki käyttöön."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Ota lisäosien turvallisuus käyttöön"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4581,10 +4604,6 @@ msgstr "Graafisen käyttöliittymän laajuuden suodatin"
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
 msgstr "Peliohjaimet ja ohjaussauvat"
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -5053,9 +5072,10 @@ msgstr ""
 "näkymättömiä kuutioita, joten koskemattomuustila on vähemmän hyödyllinen."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Jos asetus on päällä, kuutioita voi sijoittaa paikkaan, jossa seisoo (jalat "
@@ -5652,18 +5672,6 @@ msgid ""
 msgstr ""
 "Sumun ja taivaan väri riippuu vuorokaudenajasta (auringonnousu/-lasku) ja "
 "katseen suunnasta."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-"Tee volumetrioista heikompia lähempänä olevia kohteita vasten "
-"jäljitelläksesi fyysisiä volumetrioita."
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr "Tekee vaalean sumun väristä kylläisemmän."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6291,6 +6299,25 @@ msgid "Occlusion Culling"
 msgstr "Peittyvien asioiden karsiminen"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Peittyvien asioiden karsimisen tapa\n"
+"\n"
+"\"loops\" on perinteinen algoritmi, jossa on sisäkkäisiä toistorakenteita ja "
+"O(n³)-kompleksisuus\n"
+"\"bfs\" on uusi algoritmi, joka perustuu leveyssuuntaiseen läpikäyntiin ja "
+"sivuttaiskarsintaan\n"
+"\n"
+"Tätä asetusta tulee muuttaa vain, jos on suorituskykyongelmia."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Fontin takana olevan varjon läpinäkymättömyys (alfa)."
 
@@ -6418,11 +6445,6 @@ msgstr ""
 "näppäimiä painaa pohjassa.\n"
 "Kytke tämä päälle, mikäli kaivat tai sijoitat liian usein vahingossa.\n"
 "Kosketusnäyttöjen kohdalla tämä koskee vain kaivamista."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"Estä lisäosia tekemästä turvattomia asioita kuten ajamasta kuorikomentoja."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6562,8 +6584,8 @@ msgstr ""
 "ominaisuuksia\n"
 "tai aseta arvoon 0, jolloin rajoituksia ei ole:\n"
 "LOAD_CLIENT_MODS: 1 (kytkee pois asiakkaan mahdollisuus ladata lisäosia)\n"
-"CHAT_MESSAGES: 2 (kytkee pois ”send_chat_message”-kutsut asiakkaan puolelta)"
-"\n"
+"CHAT_MESSAGES: 2 (kytkee pois ”send_chat_message”-kutsut asiakkaan "
+"puolelta)\n"
 "READ_ITEMDEFS: 4 (kytkee pois ”get_item_def”-kutsut asiakkaan puolelta)\n"
 "READ_NODEDEFS: 8 (kytkee pois ”get_node_def”-kutsut asiakkaan puolelta)\n"
 "LOOKUP_NODES_LIMIT: 16 (rajoittaa ”get_node”-kutsun asiakkaan puolelta\n"
@@ -6938,14 +6960,6 @@ msgstr "Aseta asiakkaan lähettämän keskuteluviestin suurin pituus (merkkeinä
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-"Aseta jälkikäsittelyn gamma-arvo.\n"
-"Suuremmat arvot antavat pienemmän kontrastin ja päinvastoin."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -7064,6 +7078,10 @@ msgid ""
 msgstr ""
 "Näytä olioiden valintalaatikot\n"
 "Tämän muuttamisen jälkeen tarvitaan uudelleenkäynnistys."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7540,18 +7558,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Kuutioiden ympäristövarjostuksen voimakkuus (tummuus).\n"
-"Pienempi arvo on tummempi, suurempi arvo hailakkaampi.\n"
-"Tämän asetuksen käypä vaihteluväli on 0.25 - 4.0. Jos arvo ei ole\n"
-"näiden rajojen sisällä, se asetetaan lähimpään käypään arvoon."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7630,18 +7636,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Sekunteina ilmoitettu aikaraja, jolloin asiakas poistaa käyttämättömät "
 "maailmatiedot muistista."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr "Sävytä auringonvalo auringonnousun/-laskun aikana."
-
-#: src/settings_translation_file.cpp
-msgid "Tinted fog"
-msgstr "Sävytetty sumu"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr "Sävytetty auringonvalo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7785,24 +7779,6 @@ msgstr "Luotetut lisäosat"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Peittyvien asioiden karsimisen tapa\n"
-"\n"
-"\"loops\" on perinteinen algoritmi, jossa on sisäkkäisiä toistorakenteita ja "
-"O(n³)-kompleksisuus\n"
-"\"bfs\" on uusi algoritmi, joka perustuu leveyssuuntaiseen läpikäyntiin ja "
-"sivuttaiskarsintaan\n"
-"\n"
-"Tätä asetusta tulee muuttaa vain, jos on suorituskykyongelmia."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7888,14 +7864,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Käytä säteenseurantaa uusimmassa karsimistavassa.\n"
-"Tämä asetus kytkee säteenseurannan avulla suoritettavan\n"
-"karsintatarkastuksen alle 4 x 4 x 4 maailmakuution kokoisille asiakkaan "
-"silmukoille."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -8036,10 +8008,6 @@ msgid "Volume when unfocused"
 msgstr "Äänenvoimakkuus kun ei kohdistettu"
 
 #: src/settings_translation_file.cpp
-msgid "Volumetric Depth Attenuation"
-msgstr "Tilavuussyvyyden vaimennus"
-
-#: src/settings_translation_file.cpp
 msgid "Volumetric Lighting"
 msgstr "Tilavuudellinen valaistus"
 
@@ -8112,12 +8080,8 @@ msgid "Weblink color"
 msgstr "Verkkolinkin väri"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
-"Kun asetus on päällä, simuloidaan raakoja nesteen heijastuksia.\n"
-"Aallonkorkeus, pituus ja nopeus vaikuttavat näihin heijastuksiin."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8362,24 +8326,85 @@ msgstr "cURLin välityspalvelimen osoite"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Kuvankaappauksen tallentaminen kohteeseen \"%s\" epäonnistui"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Ota peliohjaimet käyttöön"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (Käytössä)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Ympäristövarjostuksen gamma"
+
+#~ msgid "Enable mod security"
+#~ msgstr "Ota lisäosien turvallisuus käyttöön"
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Installed Packages:"
+#~ msgstr "Asennetut paketit:"
+
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
 #~ msgstr ""
-#~ "Ota peliohjaimet käyttöön. Tarvitsee uudelleenkäynnistyksen toimiakseen"
+#~ "Tee volumetrioista heikompia lähempänä olevia kohteita vasten "
+#~ "jäljitelläksesi fyysisiä volumetrioita."
 
-#~ msgid "Keybindings"
-#~ msgstr "Näppäinasetukset"
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "Tekee vaalean sumun väristä kylläisemmän."
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "Peliohjaimen kuollut vyöhyke"
+#~ msgid "Player name too long."
+#~ msgstr "Pelaajanimi on liian pitkä."
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "Käytettävän ohjaimen tunniste"
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Estä lisäosia tekemästä turvattomia asioita kuten ajamasta kuorikomentoja."
 
-#~ msgid "The type of joystick"
-#~ msgstr "Peliohjaimen tyyppi"
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "Aseta jälkikäsittelyn gamma-arvo.\n"
+#~ "Suuremmat arvot antavat pienemmän kontrastin ja päinvastoin."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "Kun asetus on päällä, nesteiden heijastuksia jäljitellään."
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Kuutioiden ympäristövarjostuksen voimakkuus (tummuus).\n"
+#~ "Pienempi arvo on tummempi, suurempi arvo hailakkaampi.\n"
+#~ "Tämän asetuksen käypä vaihteluväli on 0.25 - 4.0. Jos arvo ei ole\n"
+#~ "näiden rajojen sisällä, se asetetaan lähimpään käypään arvoon."
+
+#~ msgid "Tint sunlight during sunrise/sunset."
+#~ msgstr "Sävytä auringonvalo auringonnousun/-laskun aikana."
+
+#~ msgid "Tinted fog"
+#~ msgstr "Sävytetty sumu"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "Sävytetty auringonvalo"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Ota kuviointipaketti käyttöön"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Käytä säteenseurantaa uusimmassa karsimistavassa.\n"
+#~ "Tämä asetus kytkee säteenseurannan avulla suoritettavan\n"
+#~ "karsintatarkastuksen alle 4 x 4 x 4 maailmakuution kokoisille asiakkaan "
+#~ "silmukoille."
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Tilavuussyvyyden vaimennus"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "Kun asetus on päällä, simuloidaan raakoja nesteen heijastuksia.\n"
+#~ "Aallonkorkeus, pituus ja nopeus vaikuttavat näihin heijastuksiin."

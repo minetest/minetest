@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-08-13 17:23+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -337,6 +337,13 @@ msgstr "<なし>"
 msgid "Accessibility"
 msgstr "アクセシビリティ"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -605,7 +612,7 @@ msgstr "ダウンロード中..."
 msgid "Featured"
 msgstr "注目作"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "ゲーム"
 
@@ -616,7 +623,7 @@ msgstr "ゲーム"
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Mod"
 
@@ -790,10 +797,6 @@ msgstr "$1 によって"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "by $1  —  $2 ダウンロード  —  +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (有効)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1373,8 +1376,27 @@ msgid "Disable Texture Pack"
 msgstr "テクスチャパック無効化"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "インストール済みのパッケージ:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "テクスチャパック無効化"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page Down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "左へ移動"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1389,12 +1411,13 @@ msgid "Rename"
 msgstr "名前を変更"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "更新可能？"
+#, fuzzy
+msgid "Texture packs"
+msgstr "テクスチャパック"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "テクスチャパック使用"
+msgid "Update available?"
+msgstr "更新可能？"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1604,8 +1627,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "ワールドが選択されていないか存在しないアドレスです。続行できません。"
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "プレイヤー名が長過ぎます。"
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "プレイヤー名: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2471,13 +2495,13 @@ msgid "Minimap hidden"
 msgstr "ミニマップ 非表示"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "ミニマップ レーダーモード、ズーム x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "ミニマップ 表面モード、ズーム x%d"
 
 #: src/client/minimap.cpp
@@ -3055,10 +3079,6 @@ msgid "Always fly fast"
 msgstr "常に高速で飛行"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "アンビエントオクルージョンガンマ"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "谷を増幅します。"
 
@@ -3523,17 +3543,19 @@ msgstr ""
 "https://content.minetest.net/help/content_flags/ 参照"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "HTTP APIへのアクセスが許可され、インターネットでデータをアップロード\n"
 "およびダウンロードできるようにするModのカンマ区切りリストです。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Modのセキュリティが有効の場合でも (request_insecure_environment() \n"
 "を介して) 安全でない機能へのアクセスが許可されている信頼できる\n"
@@ -3889,6 +3911,10 @@ msgid "Developer Options"
 msgstr "開発者向けオプション"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "トレイシーのみで計測する場合は無効にします。"
 
@@ -4060,10 +4086,6 @@ msgstr "動的な影を有効にする"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Modチャンネルのサポートを有効にします。"
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Modのセキュリティを有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4485,10 +4507,6 @@ msgstr "GUI拡大縮小フィルタ"
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
 msgstr "ゲームパッドとジョイスティック"
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr "ガンマ"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -4949,9 +4967,10 @@ msgstr ""
 "非表示ブロックを受信しなくなるため、すり抜けモードの有用性は低下します。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "有効になっている場合は、立っている位置 (足と目の高さ) にブロックを\n"
@@ -5517,18 +5536,6 @@ msgstr "メインメニュースクリプト"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr "霧と空の色を日中(夜明け/日没)と視線方向に依存させます。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-"体積をエミュレートするために、より近いオブジェクトに対して、体積を弱くします"
-"。"
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr "淡い霧の色をより鮮やかにします。"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6136,6 +6143,23 @@ msgid "Occlusion Culling"
 msgstr "オクルージョンカリング"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"オクルージョンカラーの種類\n"
+"\n"
+"「loops」は、ネストされたループと O(n³) の複雑性を持つレガシーアルゴリズム\n"
+"「bfs」は、幅優先探索とサイド・カリングに基づく新しいアルゴリズム\n"
+"\n"
+"パフォーマンスの問題がある場合のみ、この設定を変更する必要があります。"
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "フォントの背後にある影の不透明度(アルファ)。"
 
@@ -6260,10 +6284,6 @@ msgstr ""
 "思いがけずあまりにも頻繁に掘ったり置いたりしてしまうときは有効にしてくださ"
 "い。\n"
 "タッチスクリーンでは、これは掘削にのみ影響します。"
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr "Modがシェルコマンドを実行するような安全でないことをするのを防ぎます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6771,14 +6791,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-"投稿処理のガンマ値を設定します。\n"
-"値が高いと、より低いコントラストと、その逆になります。"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6894,6 +6906,10 @@ msgid ""
 msgstr ""
 "エンティティの選択ボックスを表示\n"
 "変更後は再起動が必要です。"
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7351,17 +7367,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"ノードのアンビエントオクルージョンシェーディングの強度 (暗さ)です。\n"
-"低いほど暗く、高いほど明るくなります。設定の有効範囲は 0.25～4.0 です。\n"
-"値が範囲外の場合は、最も近い有効な値に設定されます。"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7431,18 +7436,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "クライアントがメモリから未使用のマップデータを削除するためのタイムアウト (秒"
 "単位)。"
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr "日の出/日没時の太陽光に色をつけます。"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted fog"
-msgstr "色付きの霧"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr "色付きの太陽光"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7587,22 +7580,6 @@ msgstr "信頼するMod"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"オクルージョンカラーの種類\n"
-"\n"
-"「loops」は、ネストされたループと O(n³) の複雑性を持つレガシーアルゴリズム\n"
-"「bfs」は、幅優先探索とサイド・カリングに基づく新しいアルゴリズム\n"
-"\n"
-"パフォーマンスの問題がある場合のみ、この設定を変更する必要があります。"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7685,13 +7662,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"新しいカラーでレイトレーシングによるオクルージョンカリングを使用します。\n"
-"このフラグは、4x4x4 のマップブロックより小さいクライアントメッシュ サイズに\n"
-"対するレイトレースオクルージョンカリング テストの使用を有効にします。"
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7832,10 +7806,6 @@ msgid "Volume when unfocused"
 msgstr "フォーカスされていないときの音量"
 
 #: src/settings_translation_file.cpp
-msgid "Volumetric Depth Attenuation"
-msgstr "体積深度減衰"
-
-#: src/settings_translation_file.cpp
 msgid "Volumetric Lighting"
 msgstr "ボリュームライティング"
 
@@ -7906,12 +7876,8 @@ msgid "Weblink color"
 msgstr "ウェブリンクの色"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
-"有効にすると、原液の反射がシミュレートされます。\n"
-"波の高さ、長さおよび速度はこれらの反射に影響を与えます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8151,23 +8117,84 @@ msgstr "cURLプロキシアドレス"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "スクリーンショットを%sに保存失敗"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "ジョイスティック作動"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (有効)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "ジョイスティックを有効にします。変更には再起動が必要"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "アンビエントオクルージョンガンマ"
 
-#~ msgid "Keybindings"
-#~ msgstr "キー割り当て"
+#~ msgid "Enable mod security"
+#~ msgstr "Modのセキュリティを有効化"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "ジョイスティックのデッドゾーン"
+#~ msgid "Gamma"
+#~ msgstr "ガンマ"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "使用するジョイスティックの識別子"
+#~ msgid "Installed Packages:"
+#~ msgstr "インストール済みのパッケージ:"
 
-#~ msgid "The type of joystick"
-#~ msgstr "ジョイスティックの種類"
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
+#~ msgstr ""
+#~ "体積をエミュレートするために、より近いオブジェクトに対して、体積を弱くしま"
+#~ "す。"
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "有効にすると、液体の反射がシミュレートされます。"
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "淡い霧の色をより鮮やかにします。"
+
+#~ msgid "Player name too long."
+#~ msgstr "プレイヤー名が長過ぎます。"
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Modがシェルコマンドを実行するような安全でないことをするのを防ぎます。"
+
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "投稿処理のガンマ値を設定します。\n"
+#~ "値が高いと、より低いコントラストと、その逆になります。"
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "ノードのアンビエントオクルージョンシェーディングの強度 (暗さ)です。\n"
+#~ "低いほど暗く、高いほど明るくなります。設定の有効範囲は 0.25～4.0 です。\n"
+#~ "値が範囲外の場合は、最も近い有効な値に設定されます。"
+
+#~ msgid "Tint sunlight during sunrise/sunset."
+#~ msgstr "日の出/日没時の太陽光に色をつけます。"
+
+#~ msgid "Tinted fog"
+#~ msgstr "色付きの霧"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "色付きの太陽光"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "テクスチャパック使用"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "新しいカラーでレイトレーシングによるオクルージョンカリングを使用します。\n"
+#~ "このフラグは、4x4x4 のマップブロックより小さいクライアントメッシュ サイズ"
+#~ "に\n"
+#~ "対するレイトレースオクルージョンカリング テストの使用を有効にします。"
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "体積深度減衰"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "有効にすると、原液の反射がシミュレートされます。\n"
+#~ "波の高さ、長さおよび速度はこれらの反射に影響を与えます。"

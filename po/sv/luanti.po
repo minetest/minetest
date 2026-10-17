@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-08-14 11:58+0000\n"
 "Last-Translator: Jonatan Nyberg <nickwick@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
@@ -342,6 +342,13 @@ msgstr "<tomt>"
 msgid "Accessibility"
 msgstr "Tillgänglighet"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -610,7 +617,7 @@ msgstr "Laddar ner..."
 msgid "Featured"
 msgstr "Presenterad"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Spel"
 
@@ -621,7 +628,7 @@ msgstr "Spel"
 msgid "Loading..."
 msgstr "Laddar..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "moddar"
 
@@ -795,10 +802,6 @@ msgstr "av $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "av $1  —  $2 nerladdningar  —  +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Aktiverad)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1381,8 +1384,27 @@ msgid "Disable Texture Pack"
 msgstr "Inaktivera Texturpaket"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Installerade paket:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Inaktivera Texturpaket"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page Down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Gå vänster"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1397,12 +1419,13 @@ msgid "Rename"
 msgstr "Byt namn"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Uppdatering tillgänglig?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Texturpaket"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Använd Texturpaket"
+msgid "Update available?"
+msgstr "Uppdatering tillgänglig?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1612,8 +1635,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "Ingen värld vald och ingen adress anginven. Inget att göra."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Spelarnamn för långt."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Spelarnamn: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2484,13 +2508,13 @@ msgid "Minimap hidden"
 msgstr "Minimapp gömd"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Minimapp i radarläge, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Minimapp i ytläge, Zoom x%d"
 
 #: src/client/minimap.cpp
@@ -3073,10 +3097,6 @@ msgid "Always fly fast"
 msgstr "Flyg alltid snabbt"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Ambient ocklusion gamma"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "Amplifierar dalgångarna."
 
@@ -3535,18 +3555,20 @@ msgstr ""
 "så en full lista finns på https://content.luanti.org/help/content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Kommaseparerad lista av moddar som är tillåtna åtkomst till HTTP API:er, "
 "vilket\n"
 "tillåter dem att ladda upp och ned data till och från internet."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Kommaseparerad lista över betrodda moddar som får åtkomst till osäkra\n"
 "funktioner även när moddsäkerhet är aktiverad (via "
@@ -3909,6 +3931,10 @@ msgid "Developer Options"
 msgstr "Utvecklarinställningar"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "Inaktivera om du endast vill instrumentera med Tracy."
 
@@ -4082,10 +4108,6 @@ msgstr "Aktivera dynamiska skuggor"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Aktivera stöd för moddkanaler."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Aktivera moddsäkerhet"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4511,10 +4533,6 @@ msgstr "Filter för Gränssnittsskalning"
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
 msgstr "Spelkontroller och styrspakar"
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -4979,9 +4997,10 @@ msgstr ""
 "minskar nyttan av noclip-läget."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Om detta är aktiverat kan du placera noder på positionen (fötter + ögonhöjd) "
@@ -5029,7 +5048,8 @@ msgstr "Ignorera världfel"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
-msgstr "Alfa (opacitet, mellan 0 och 255) för chattkonsolens bakgrund i spelet."
+msgstr ""
+"Alfa (opacitet, mellan 0 och 255) för chattkonsolens bakgrund i spelet."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
@@ -5554,18 +5574,6 @@ msgid ""
 msgstr ""
 "Låt dimmans och himlens färger bero på tid på dygnet (gryning/solnedgång) "
 "och visningsriktning."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-"Gör volymetriska effekter svagare mot närliggande objekt för att efterlikna "
-"fysisk volymetrik."
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr "Gör färgen på ljusdimman mer mättad."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6176,6 +6184,25 @@ msgid "Occlusion Culling"
 msgstr "Ocklusionsgallring"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Typ av occlusion_culler\n"
+"\n"
+"\"loops\" är den äldre algoritmen med nästlade slingor och O(n³)-"
+"komplexitet\n"
+"\"bfs\" är den nya algoritmen baserad på bredden-först-sökning och "
+"sidogallring\n"
+"\n"
+"Den här inställningen bör endast ändras om du har prestandaproblem."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Opacitet (alfa) för skuggan bakom teckensnittet."
 
@@ -6301,12 +6328,6 @@ msgstr ""
 "ned.\n"
 "Aktivera detta om du ofta gräver eller placerar av misstag.\n"
 "På pekskärmar påverkar detta endast grävning."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"Förhindra moddar från att göra osäkra saker, till exempel att köra "
-"skalkommandon."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6819,14 +6840,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-"Ange gammavärdet för efterbehandling.\n"
-"Högre värden ger lägre kontrast och vice versa."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6942,6 +6955,10 @@ msgid ""
 msgstr ""
 "Visa markeringsrutor för entiteter\n"
 "En omstart krävs efter ändring."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7398,18 +7415,6 @@ msgstr "Känsligheten för styrspaksaxlarna när synfältet i spelet flyttas."
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Styrkan (mörkheten) för noders omgivningsocklusion.\n"
-"Lägre värde är mörkare, högre värde ljusare. Giltigt intervall för denna\n"
-"inställning är 0,25 till och med 4,0. Om värdet ligger utanför intervallet\n"
-"används närmaste giltiga värde."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7484,18 +7489,6 @@ msgstr "Tidshastighet"
 msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Tidsgräns i sekunder innan klienten tar bort oanvänd kartdata från minnet."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr "Färga solljuset vid soluppgång/solnedgång."
-
-#: src/settings_translation_file.cpp
-msgid "Tinted fog"
-msgstr "Färgad dimma"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr "Färgat solljus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7639,24 +7632,6 @@ msgstr "Betrodda moddar"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Typ av occlusion_culler\n"
-"\n"
-"\"loops\" är den äldre algoritmen med nästlade slingor och O(n³)-"
-"komplexitet\n"
-"\"bfs\" är den nya algoritmen baserad på bredden-först-sökning och "
-"sidogallring\n"
-"\n"
-"Den här inställningen bör endast ändras om du har prestandaproblem."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7740,13 +7715,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Använd strålspårad ocklusionsgallring i den nya gallraren.\n"
-"Denna flagga aktiverar strålspårad ocklusionstestning för\n"
-"klientmeshstorlekar mindre än 4×4×4 kartblock."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7887,10 +7859,6 @@ msgid "Volume when unfocused"
 msgstr "Volym när ofokuserad"
 
 #: src/settings_translation_file.cpp
-msgid "Volumetric Depth Attenuation"
-msgstr "Volymetrisk djupdämpning"
-
-#: src/settings_translation_file.cpp
 msgid "Volumetric Lighting"
 msgstr "Volymetrisk belysning"
 
@@ -7961,12 +7929,8 @@ msgid "Weblink color"
 msgstr "Färg på webblänkar"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
-"När detta är aktiverat simuleras enkla vätskereflektioner.\n"
-"Våghöjd, våglängd och hastighet påverkar reflektionerna."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8200,11 +8164,86 @@ msgstr "cURL-proxyadress"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Misslyckades med att spara skärmdump till \"%s\""
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Aktivera joysticks"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (Aktiverad)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "Aktivera joysticks. Kräver en omstart för att fungera"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Ambient ocklusion gamma"
 
-#~ msgid "Keybindings"
-#~ msgstr "Tangentbindningar"
+#~ msgid "Enable mod security"
+#~ msgstr "Aktivera moddsäkerhet"
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Installed Packages:"
+#~ msgstr "Installerade paket:"
+
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
+#~ msgstr ""
+#~ "Gör volymetriska effekter svagare mot närliggande objekt för att "
+#~ "efterlikna fysisk volymetrik."
+
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "Gör färgen på ljusdimman mer mättad."
+
+#~ msgid "Player name too long."
+#~ msgstr "Spelarnamn för långt."
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Förhindra moddar från att göra osäkra saker, till exempel att köra "
+#~ "skalkommandon."
+
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "Ange gammavärdet för efterbehandling.\n"
+#~ "Högre värden ger lägre kontrast och vice versa."
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Styrkan (mörkheten) för noders omgivningsocklusion.\n"
+#~ "Lägre värde är mörkare, högre värde ljusare. Giltigt intervall för denna\n"
+#~ "inställning är 0,25 till och med 4,0. Om värdet ligger utanför "
+#~ "intervallet\n"
+#~ "används närmaste giltiga värde."
+
+#~ msgid "Tint sunlight during sunrise/sunset."
+#~ msgstr "Färga solljuset vid soluppgång/solnedgång."
+
+#~ msgid "Tinted fog"
+#~ msgstr "Färgad dimma"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "Färgat solljus"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Använd Texturpaket"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Använd strålspårad ocklusionsgallring i den nya gallraren.\n"
+#~ "Denna flagga aktiverar strålspårad ocklusionstestning för\n"
+#~ "klientmeshstorlekar mindre än 4×4×4 kartblock."
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Volymetrisk djupdämpning"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "När detta är aktiverat simuleras enkla vätskereflektioner.\n"
+#~ "Våghöjd, våglängd och hastighet påverkar reflektionerna."
