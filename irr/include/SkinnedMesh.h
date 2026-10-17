@@ -387,8 +387,8 @@ class SkinnedMeshBuilder {
 
 public:
 
-	// HACK the .x and .b3d loader do not separate the "loader" class from an "extractor" class
-	// used and destroyed in a specific loading process (contrast with the .gltf mesh loader).
+	// HACK the .x loader does not separate the "loader" class from an "extractor" class
+	// used and destroyed in a specific loading process (contrast with the .gltf and .b3d mesh loaders).
 	// This means we need an empty skinned mesh builder.
 	SkinnedMeshBuilder() {}
 
