@@ -43,8 +43,9 @@ int ModApiNodeModifier::l_register_node_modifier_raw(lua_State *L)
 	NodeModifier mod(name);
 	read_node_modifier(L, mod, table);
 	u16 inserted_id = nmod->add(std::move(mod));
-	if (inserted_id == MODIFIER_IGNORE) {
-		warningstream << "Failed to register node modifier " << name << "." << std::endl;
+	if (inserted_id == MODIFIER_IGNORE || inserted_id >= MAX_REGISTERED_NODE_MODIFIERS) {
+		throw LuaError("Number of registerable node modifiers (about "
+				+ itos(MAX_REGISTERED_NODE_MODIFIERS) + ") exceeded: " + name);
 	}
 
 	return 0;

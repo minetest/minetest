@@ -391,16 +391,18 @@ void MapBlock::correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::getNodeModifierIdMapping(NameIdMapping &nimap,
-		IdIdMapping &mapping) const
+void MapBlock::getNodeModifierIdMapping(NameIdMapping &nimap, IdIdMapping &mapping) const
 {
 	const auto *nmod = m_gamedef->getNodeModifierManager();
 	u16 next_id = 0;
+
 	m_node_modifiers.forEach([&](const AppliedNodeModifier &entry) {
 		const u16 global_id = entry.id;
+
 		if (global_id >= nmod->size())
 			throw SerializationError("MapBlock::getNodeModifierIdMapping(): "
 					"Unknown global ID " + std::to_string(global_id));
+
 		if (mapping.get(global_id) != MODIFIER_IGNORE)
 			return;
 
@@ -414,6 +416,7 @@ void MapBlock::correctNodeModifierIds(const NameIdMapping &nimap)
 {
 	const auto *nmod = m_gamedef->getNodeModifierManager();
 	auto &mapping = IdIdMapping::giveClearedThreadLocalInstance();
+
 	m_node_modifiers.remapIds([&](u16 local_id) -> u16 {
 		if (auto cached = mapping.get(local_id); cached != MODIFIER_IGNORE)
 			return cached;
@@ -430,7 +433,9 @@ void MapBlock::correctNodeModifierIds(const NameIdMapping &nimap)
 				throw SerializationError("MapBlock::correctNodeModifierIds(): "
 						"Cannot allocate ID for modifier " + name);
 		}
+
 		mapping.set(local_id, global_id);
+
 		return global_id;
 	});
 }

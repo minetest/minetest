@@ -15,8 +15,9 @@
 
 class IdIdMapping;
 
-#define MODIFIER_IGNORE ((u16)-1)
+static constexpr u16 MODIFIER_IGNORE = UINT16_MAX;
 
+static constexpr u16 MAX_REGISTERED_NODE_MODIFIERS = UINT16_MAX - UINT16_MAX / 10;
 
 enum ModifiedProperty : u64 {
 	MP_LightSource = u64{1} << 0,
