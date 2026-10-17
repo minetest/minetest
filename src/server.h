@@ -542,7 +542,7 @@ private:
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
 		u16 protocol_version);
-	void SendNodeModifier(session_t peer_id, const NodeModifierManager *nodemod_mgr,
+	void SendNodeModifiers(session_t peer_id, const NodeModifierManager *nodemod_mgr,
 		u16 protocol_version);
 
 

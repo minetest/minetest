@@ -172,7 +172,7 @@ AppliedNodeModifiersStorage::ConstRange Map::getNodeModifiers(v3s16 p)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if (block)
-		return block->getNodeModifiers().findRange(p - block->getPosRelative());
+		return block->getNodeModifiers(p - block->getPosRelative());
 
 	static const AppliedNodeModifiersStorage empty;
 	return empty.findRange(v3s16());

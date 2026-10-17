@@ -142,14 +142,14 @@ void TestMapBlock::testNodeModifiers()
 		source.serialize(stream, 30, disk, -1);
 		MapBlock loaded({}, disk ? &target_game : &source_game);
 		loaded.deSerialize(stream, 30, disk);
-		std::stringstream entries;
-		loaded.getNodeModifiers().serialize(entries, 30, false, NameIdMapping{});
-		UASSERTEQ(u32, readU32(entries), 2);
-		UASSERTEQ(u16, readU16(entries),
-				0x1000 | (pos.X << 8) | (pos.Y << 4) | pos.Z);
+		AppliedNodeModifiersSnapshot entries;
+		loaded.copyNodeModifiersTo(entries, loaded.getPosRelative());
+		UASSERTEQ(size_t, entries.size(), 2);
+		auto [begin, end] = entries.findRange(pos);
+		UASSERTEQ(size_t, end - begin, 2);
 		u16 expected_second = disk ? target_manager->getId("test:second") : second;
-		UASSERTEQ(u16, readU16(entries), expected_second);
-		UASSERTEQ(u16, readU16(entries), disk ? target_first : first);
+		UASSERTEQ(u16, begin->id, expected_second);
+		UASSERTEQ(u16, (begin + 1)->id, disk ? target_first : first);
 		if (disk)
 			UASSERT(target_manager->get(expected_second).m_is_dummy);
 
@@ -158,9 +158,9 @@ void TestMapBlock::testNodeModifiers()
 		source.serialize(legacy, 29, disk, -1);
 		MapBlock legacy_block({}, disk ? &target_game : &source_game);
 		legacy_block.deSerialize(legacy, 29, disk);
-		std::stringstream empty;
-		legacy_block.getNodeModifiers().serialize(empty, 30, false, NameIdMapping{});
-		UASSERTEQ(u32, readU32(empty), 0);
+		AppliedNodeModifiersSnapshot empty;
+		legacy_block.copyNodeModifiersTo(empty, legacy_block.getPosRelative());
+		UASSERT(empty.empty());
 	}
 
 	source.removeNodeModifier(pos, first);
@@ -171,9 +171,9 @@ void TestMapBlock::testNodeModifiers()
 	source.serialize(stream, 30, true, -1);
 	MapBlock empty({}, &target_game);
 	empty.deSerialize(stream, 30, true);
-	std::stringstream entries;
-	empty.getNodeModifiers().serialize(entries, 30, false, NameIdMapping{});
-	UASSERTEQ(u32, readU32(entries), 0);
+	AppliedNodeModifiersSnapshot entries;
+	empty.copyNodeModifiersTo(entries, empty.getPosRelative());
+	UASSERT(entries.empty());
 }
 
 void TestMapBlock::testMonoblock(IGameDef *gamedef)
@@ -1034,7 +1034,7 @@ void TestMapBlock::testPruneNodeModifiers()
 	MapBlock block({}, &game);
 	const v3s16 pos(7, 9, 1);
 	auto check = [&](std::initializer_list<u16> expected) {
-		auto [begin, end] = block.getNodeModifiers().findRange(pos);
+		auto [begin, end] = block.getNodeModifiers(pos);
 		UASSERTEQ(size_t, end - begin, expected.size());
 		for (u16 id : expected)
 			UASSERTEQ(u16, (begin++)->id, id);
@@ -1071,10 +1071,11 @@ void TestMapBlock::testPruneNodeModifiers()
 	}
 	UASSERT(block.setNodeModifiers(pos, full));
 	UASSERT(!block.addNodeModifier(pos, first, true));
-	auto [begin, end] = block.getNodeModifiers().findRange(pos);
+	auto [begin, end] = block.getNodeModifiers(pos);
 	UASSERTEQ(size_t, end - begin, full.size());
 	for (u16 id : full)
 		UASSERTEQ(u16, (begin++)->id, id);
 	UASSERT(!block.addNodeModifier(pos, MODIFIER_IGNORE, true));
-	UASSERTEQ(size_t, block.getNodeModifiers().size(), full.size());
+	auto unchanged = block.getNodeModifiers(pos);
+	UASSERTEQ(size_t, unchanged.second - unchanged.first, full.size());
 }

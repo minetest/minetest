@@ -105,7 +105,8 @@ ContentLightingFlags AppliedNodeModifiersVector::resolveLighting(
 		ConstRange range, const NodeModifierManager &manager,
 		ContentLightingFlags base)
 {
-	for (auto it = range.second; it != range.first;) {
+	auto it = range.second;
+	while (it != range.first) {
 		const auto &modifier = manager.get((--it)->id);
 		if (!modifier.m_is_dummy && (modifier.m_modified_props_mask & MP_LightSource)) {
 			base.light_source = modifier.m_light_source;
@@ -205,7 +206,8 @@ bool AppliedNodeModifiersVector::addWithPrune(v3s16 pos, u16 id,
 	const auto &added = prune_manager->get(id);
 	u64 covered = added.m_is_dummy ? 0 : added.m_modified_props_mask;
 
-	for (auto it = last; it != first;) {
+	auto it = last;
+	while (it != first) {
 		const u16 current = (--it)->id;
 		if (current == id)
 			continue;

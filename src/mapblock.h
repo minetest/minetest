@@ -297,8 +297,11 @@ public:
 	bool setNodeModifiers(v3s16 pos, const std::vector<u16> &ids);
 	bool removeNodeModifier(v3s16 pos, u16 id);
 	bool clearNodeModifiers(v3s16 pos);
-	// To do: check if needed (it was generated for the test)
-	const AppliedNodeModifiersStorage &getNodeModifiers() const { return m_node_modifiers; }
+	// Modifiers at a block-relative node position.
+	AppliedNodeModifiersStorage::ConstRange getNodeModifiers(v3s16 pos) const
+	{
+		return m_node_modifiers.findRange(pos);
+	}
 
 	ContentLightingFlags getLightingFlags(v3s16 pos, const MapNode &node) const;
 

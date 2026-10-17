@@ -1587,7 +1587,7 @@ void Server::SendNodeDef(session_t peer_id,
 	Send(&pkt);
 }
 
-void Server::SendNodeModifier(session_t peer_id,
+void Server::SendNodeModifiers(session_t peer_id,
 	const NodeModifierManager *nodemod_mgr, u16 protocol_version)
 {
 	NetworkPacket pkt(TOCLIENT_NODEMOD, 0, peer_id);

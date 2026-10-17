@@ -166,8 +166,8 @@ void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, 
 {
 	const NodeDefManager *ndef = data->m_nodedef;
 	const ContentFeatures &f = ndef->get(mn);
-	bool has_crack = p == data->m_crack_pos_relative;
 	tile = f.visuals->tiles[tileindex];
+	bool has_crack = p == data->m_crack_pos_relative;
 	for (TileLayer &layer : tile.layers) {
 		if (layer.empty())
 			continue;

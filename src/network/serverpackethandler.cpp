@@ -298,7 +298,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Send node definitions
 	SendNodeDef(peer_id, m_nodedef, protocol_version);
 
-	SendNodeModifier(peer_id, m_nodemod, protocol_version);
+	SendNodeModifiers(peer_id, m_nodemod, protocol_version);
 
 	m_clients.event(peer_id, CSE_SetDefinitionsSent);
 
