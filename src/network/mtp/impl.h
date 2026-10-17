@@ -218,6 +218,17 @@ class Peer : public IPeer {
 
 class UDPPeer;
 
+struct RealConnection
+{
+private:
+	Connection *connection_;
+public:
+	constexpr RealConnection(Connection *connection) : connection_(connection) {
+		assert(connection != NULL);
+	}
+	constexpr operator Connection*() const { return connection_; }
+};
+
 class Connection final : public IConnection
 {
 public:

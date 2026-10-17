@@ -255,19 +255,19 @@ void unspread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 		// For all nodes that need unlighting
 
 		// There is no brightest neighbor
-		source_dir = 6;
+		source_dir = DIRECTION_LIMIT;
 		// The current node
 		const MapNode &node = current.block->getNodeNoCheck(current.rel_position);
 		ContentLightingFlags f = nodemgr->getLightingFlags(node);
 		// If the node emits light, it behaves like it had a
 		// brighter neighbor.
 		u8 brightest_neighbor_light = f.light_source + 1;
-		for (direction i = 0; i < 6; i++) {
+		for (direction i = 0; i < DIRECTION_LIMIT; i++) {
 			//For each neighbor
 
 			// The node that changed this node has already zero light
 			// and it can't give light to this node
-			if (current.source_direction + i == 5) {
+			if (current.source_direction + i == DIRECTION_MAX) {
 				continue;
 			}
 			// Get the neighbor's position and block
@@ -352,9 +352,9 @@ void spread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	relative_v3 neighbor_rel_pos;
 	while (light_sources.next(spreading_light, current)) {
 		spreading_light--;
-		for (direction i = 0; i < 6; i++) {
+		for (direction i = 0; i < DIRECTION_LIMIT; i++) {
 			// This node can't light up its light source
-			if (current.source_direction + i == 5) {
+			if (current.source_direction + i == DIRECTION_MAX) {
 				continue;
 			}
 			// Get the neighbor's position and block
@@ -687,7 +687,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 		disappearing_lights.clear();
 		light_sources.clear();
 		// Get incorrect lights
-		for (direction d = 0; d < 6; d++) {
+		for (direction d = 0; d < DIRECTION_LIMIT; d++) {
 			// For each direction
 			// Get neighbor block
 			v3s16 otherpos = block->getPos() + neighbor_dirs[d];
@@ -697,14 +697,14 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 			}
 			// Only update if lighting was not completed.
 			if (block->isLightingComplete(bank, d) &&
-					other->isLightingComplete(bank, 5 - d))
+					other->isLightingComplete(bank, DIRECTION_MAX - d))
 				continue;
 			// Reset flags
 			block->setLightingComplete(bank, d, true);
-			other->setLightingComplete(bank, 5 - d, true);
+			other->setLightingComplete(bank, DIRECTION_MAX - d, true);
 			// The two blocks and their connecting surfaces
 			MapBlock *blocks[] = {block, other};
-			VoxelArea areas[] = {block_borders[d], block_borders[5 - d]};
+			VoxelArea areas[] = {block_borders[d], block_borders[DIRECTION_MAX - d]};
 			// For both blocks
 			for (u8 blocknum = 0; blocknum < 2; blocknum++) {
 				MapBlock *b = blocks[blocknum];
@@ -727,7 +727,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 							modified_blocks[b->getPos()]=b;
 							disappearing_lights.push(light,
 								relative_v3(x, y, z), b->getPos(), b,
-								6);
+								DIRECTION_LIMIT);
 						}
 					}
 				}

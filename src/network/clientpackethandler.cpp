@@ -355,8 +355,7 @@ void Client::handleCommand_Inventory(NetworkPacket* pkt)
 
 	std::istringstream is(datastring, std::ios_base::binary);
 
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	player->inventory.deSerialize(is);
 
@@ -489,8 +488,7 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 
 void Client::handleCommand_Movement(NetworkPacket* pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	float mad, maa, maf, msw, mscr, msf, mscl, msj, lf, lfs, ls, g;
 
@@ -524,16 +522,14 @@ void Client::handleCommand_Fov(NetworkPacket *pkt)
 		*pkt >> transition_time;
 	}
 
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 	player->setFov({ fov, is_multiplier, transition_time });
 	m_camera->notifyFovChange();
 }
 
 void Client::handleCommand_HP(NetworkPacket *pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	u16 oldhp = player->hp;
 
@@ -562,8 +558,7 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 
 void Client::handleCommand_Breath(NetworkPacket* pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	u16 breath;
 
@@ -574,8 +569,7 @@ void Client::handleCommand_Breath(NetworkPacket* pkt)
 
 void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	v3f pos;
 	f32 pitch, yaw;
@@ -609,8 +603,7 @@ void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
 
 	*pkt >> added_pos;
 
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 	player->addPosition(added_pos);
 }
 
@@ -920,8 +913,7 @@ void Client::handleCommand_Privileges(NetworkPacket* pkt)
 
 void Client::handleCommand_InventoryFormSpec(NetworkPacket* pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	// Store formspec in LocalPlayer
 	player->inventory_formspec = pkt->readLongString();
@@ -1312,8 +1304,7 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 
 	*pkt >> flags >> mask;
 
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	bool was_minimap_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
@@ -1341,8 +1332,7 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 
 	*pkt >> param >> value;
 
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	if (param == HUD_PARAM_HOTBAR_ITEMCOUNT && value.size() == 4) {
 		s32 hotbar_itemcount = readS32((u8*) value.c_str());
@@ -1566,8 +1556,7 @@ void Client::handleCommand_OverrideDayNightRatio(NetworkPacket* pkt)
 
 void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	for (int i = 0; i < 4; ++i) {
 		if (getProtoVersion() >= 46) {
@@ -1586,8 +1575,7 @@ void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 
 void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	*pkt >> player->eye_offset_first >> player->eye_offset_third;
 
@@ -1602,8 +1590,7 @@ void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 
 void Client::handleCommand_Camera(NetworkPacket* pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	u8 tmp;
 	*pkt >> tmp;
@@ -1671,8 +1658,7 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 
 void Client::handleCommand_FormspecPrepend(NetworkPacket *pkt)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 
 	// Store formspec in LocalPlayer
 	*pkt >> player->formspec_prepend;
@@ -1693,8 +1679,7 @@ void Client::handleCommand_PlayerSpeed(NetworkPacket *pkt)
 
 	*pkt >> added_vel;
 
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 	player->addVelocity(added_vel);
 }
 

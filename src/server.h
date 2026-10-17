@@ -174,6 +174,24 @@ struct ModIPCStore {
 	inline void signal() { condvar.notify_all(); }
 };
 
+struct PeerID {
+private:
+	session_t id;
+public:
+	constexpr PeerID(const session_t id) : id(id) { assert(id != PEER_ID_INEXISTENT); }
+	constexpr operator session_t() const { return id; }
+};
+
+struct RealProtocolVersion {
+private:
+	u16 protocol_version;
+public:
+	constexpr RealProtocolVersion(const u16 protocol_version) : protocol_version(protocol_version) {
+		assert(protocol_version != 0);
+	}
+	constexpr operator u16() const { return protocol_version; }
+};
+
 class Server : public con::PeerHandler, public MapEventReceiver,
 		public IGameDef
 {
@@ -608,7 +626,7 @@ private:
 		const std::string &exclude_player,
 		const ParticleSpawnerParameters &p, u16 attached_id, u32 id);
 	/// @brief send particle spawner to one client (internal)
-	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
+	void SendAddParticleSpawner(PeerID peer_id, RealProtocolVersion protocol_version,
 		const ParticleSpawnerParameters &p, u16 attached_id, u32 id);
 
 	void SendDeleteParticleSpawner(session_t peer_id, u32 id);

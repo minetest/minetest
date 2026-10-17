@@ -3,22 +3,23 @@
 // Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "settings.h"
-#include "irrlichttypes_bloated.h"
+#include "between.h"
+#include "debug.h"
 #include "exceptions.h"
+#include "filesys.h"
+#include "irrlichttypes_bloated.h"
+#include "log.h"
+#include "noise.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/numeric.h" // rangelim
-#include "util/string.h"
 #include "util/strfnd.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include "debug.h"
-#include "log.h"
-#include "filesys.h"
-#include "noise.h"
-#include <cctype>
-#include <set>
+#include "util/string.h"
 #include <algorithm>
+#include <cctype>
+#include <fstream>
+#include <iostream>
+#include <set>
+#include <sstream>
 
 // multi-line settings begin and end with this string (on its own line)
 #define MULTILINE_MARKER "\"\"\""
@@ -49,7 +50,7 @@ Settings *SettingsHierarchy::getLayer(int layer) const
 
 Settings *SettingsHierarchy::getParent(int layer) const
 {
-	assert(layer >= 0 && layer < (int)layers.size());
+	assert_between_inc_min(layer, 0, (int)layers.size());
 	// iterate towards the origin (0) to find the next fallback layer
 	for (int i = layer - 1; i >= 0; --i) {
 		if (layers[i])
@@ -78,9 +79,9 @@ void SettingsHierarchy::onLayerCreated(int layer, Settings *obj)
 }
 
 
-void SettingsHierarchy::onLayerRemoved(int layer)
+void SettingsHierarchy::onLayerRemoved(int layer_)
 {
-	assert(layer >= 0 && layer < (int)layers.size());
+	Layer layer(layer_, layers.size());
 	layers[layer] = nullptr;
 	if (this == &g_hierarchy && layer == (int)SL_GLOBAL)
 		g_settings = nullptr;
