@@ -168,13 +168,13 @@ ContentLightingFlags Map::getLightingFlags(v3s16 p, const MapNode &node)
 		return m_nodedef->getLightingFlags(node);
 }
 
-AppliedNodeModifiersList::ConstRange Map::getNodeModifiers(v3s16 p)
+AppliedNodeModifiersStorage::ConstRange Map::getNodeModifiers(v3s16 p)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if (block)
 		return block->getNodeModifiers().findRange(p - block->getPosRelative());
 
-	static const AppliedNodeModifiersList empty;
+	static const AppliedNodeModifiersStorage empty;
 	return empty.findRange(v3s16());
 }
 

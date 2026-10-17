@@ -10,10 +10,11 @@ local incorrect = "incorrect"
 local function test_modifier_methods(meta)
 	
 	assert(not meta:add_modifier(unregistered))
-	assert(not meta:add_modifier(""))
-	assert(not meta:add_modifier(incorrect))
+	assert(not pcall(meta.add_modifier, meta, ""))
+	assert(not pcall(meta.add_modifier, meta, incorrect))
 	assert(#meta:get_modifiers_list() == 0)
-	meta:remove_modifier(incorrect)
+	assert(not pcall(meta.remove_modifier, meta, incorrect))
+	meta:remove_modifier(unregistered)
 	assert(meta:add_modifier(first))
 	assert(meta:add_modifier(second))
 	-- Since the modifier is already applied, it should be moved to the end
@@ -32,16 +33,22 @@ local function test_modifier_methods(meta)
 	meta:remove_modifier(first)
 	assert(#meta:get_modifiers_list() == 0)
 
+	for _, invalid in ipairs({"", incorrect, 42, false, {}}) do
+		assert(not pcall(meta.add_modifier, meta, invalid))
+		assert(not pcall(meta.remove_modifier, meta, invalid))
+		assert(#meta:get_modifiers_list() == 0)
+	end
+
 	meta:set_string("keep", "value")
 	assert(meta:set_modifiers({first, second, first, unregistered}))
 	names = meta:get_modifiers_list()
 	assert(#names == 3 and names[1] == second and names[2] == first and names[3] == unregistered)
 	for _, invalid in ipairs({{first, "invalid"}, {first, 42}, "invalid", false}) do
-		assert(not meta:set_modifiers(invalid))
+		assert(not pcall(meta.set_modifiers, meta, invalid))
 		assert(#meta:get_modifiers_list() == 3)
 		assert(meta:get_modifiers_list()[3] == unregistered)
 	end
-	assert(not meta:set_modifiers(nil))
+	assert(not pcall(meta.set_modifiers, meta, nil))
 	assert(#meta:get_modifiers_list() == 3)
 	assert(meta:get_string("keep") == "value")
 	assert(meta:set_modifiers({first}))
@@ -392,7 +399,7 @@ local function check_failed_metadata_import(meta)
 		if modifiers == too_many then
 			assert(ok and result == false)
 		else
-			assert(not ok and tostring(result):find("modifiers"))
+			assert(not ok and tostring(result):lower():find("modifier"))
 		end
 		assert(meta:get_string("keep") == "original")
 		assert(meta:get_string("extra") == "")

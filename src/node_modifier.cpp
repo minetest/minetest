@@ -116,7 +116,7 @@ ContentLightingFlags AppliedNodeModifiersVector::resolveLighting(
 	return base;
 }
 
-ContentLightingFlags AppliedNodeModifiersList::resolveLighting(v3s16 pos,
+ContentLightingFlags AppliedNodeModifiersStorage::resolveLighting(v3s16 pos,
 		const NodeModifierManager &manager, ContentLightingFlags base) const
 {
 	return AppliedNodeModifiersVector::resolveLighting(findRange(pos), manager, base);
@@ -135,14 +135,14 @@ auto AppliedNodeModifiersVector::findRangeInEntries(Entries &entries, v3s16 pos)
 	return std::make_pair(first, last);
 }
 
-void AppliedNodeModifiersList::Bucket::split(u8 depth)
+void AppliedNodeModifiersStorage::Bucket::split(u8 depth)
 {
 	auto *leaf = std::get_if<Leaf>(&data);
 
 	assignRange(leaf->begin(), leaf->end(), depth);
 }
 
-void AppliedNodeModifiersList::Bucket::assignRange(
+void AppliedNodeModifiersStorage::Bucket::assignRange(
 		Leaf::ConstIterator first, Leaf::ConstIterator last, u8 depth)
 {
 	if (static_cast<size_t>(last - first) <= LEAF_TARGET || depth == 3) {
@@ -171,7 +171,7 @@ void AppliedNodeModifiersList::Bucket::assignRange(
 	data = std::move(children);
 }
 
-const AppliedNodeModifiersList::Bucket &AppliedNodeModifiersList::Bucket::findLeaf(
+const AppliedNodeModifiersStorage::Bucket &AppliedNodeModifiersStorage::Bucket::findLeaf(
 		v3s16 pos, u8 &depth) const
 {
 	const Bucket *bucket = this;
@@ -321,7 +321,7 @@ bool AppliedNodeModifiersVector::remove(v3s16 pos)
 	return true;
 }
 
-bool AppliedNodeModifiersList::Bucket::add(v3s16 pos, u16 id, size_t &total_size,
+bool AppliedNodeModifiersStorage::Bucket::add(v3s16 pos, u16 id, size_t &total_size,
 		const NodeModifierManager *prune_manager, u8 depth)
 {
 	if (auto *branch = try_get_children())
@@ -339,7 +339,7 @@ bool AppliedNodeModifiersList::Bucket::add(v3s16 pos, u16 id, size_t &total_size
 	return true;
 }
 
-bool AppliedNodeModifiersList::Bucket::set(v3s16 pos, const std::vector<u16> &ids,
+bool AppliedNodeModifiersStorage::Bucket::set(v3s16 pos, const std::vector<u16> &ids,
 		size_t &total_size, u8 depth)
 {
 	if (auto *branch = try_get_children())
@@ -357,7 +357,7 @@ bool AppliedNodeModifiersList::Bucket::set(v3s16 pos, const std::vector<u16> &id
 	return true;
 }
 
-bool AppliedNodeModifiersList::Bucket::remove(v3s16 pos, u16 id, size_t &total_size, u8 depth)
+bool AppliedNodeModifiersStorage::Bucket::remove(v3s16 pos, u16 id, size_t &total_size, u8 depth)
 {
 	if (auto *branch = try_get_children())
 		return branch[coordinate(pos, depth)].remove(pos, id, total_size, depth + 1);
@@ -372,7 +372,7 @@ bool AppliedNodeModifiersList::Bucket::remove(v3s16 pos, u16 id, size_t &total_s
 	return true;
 }
 
-bool AppliedNodeModifiersList::Bucket::remove(v3s16 pos, size_t &total_size, u8 depth)
+bool AppliedNodeModifiersStorage::Bucket::remove(v3s16 pos, size_t &total_size, u8 depth)
 {
 	if (auto *branch = try_get_children())
 		return branch[coordinate(pos, depth)].remove(pos, total_size, depth + 1);
@@ -387,32 +387,32 @@ bool AppliedNodeModifiersList::Bucket::remove(v3s16 pos, size_t &total_size, u8 
 	return true;
 }
 
-bool AppliedNodeModifiersList::add(v3s16 pos, u16 id,
+bool AppliedNodeModifiersStorage::add(v3s16 pos, u16 id,
 		const NodeModifierManager *prune_manager)
 {
 	assert(isInArea(pos, MAP_BLOCKSIZE));
 	return m_root.add(pos, id, m_size, prune_manager);
 }
 
-bool AppliedNodeModifiersList::set(v3s16 pos, const std::vector<u16> &ids)
+bool AppliedNodeModifiersStorage::set(v3s16 pos, const std::vector<u16> &ids)
 {
 	assert(isInArea(pos, MAP_BLOCKSIZE));
 	return m_root.set(pos, ids, m_size);
 }
 
-bool AppliedNodeModifiersList::remove(v3s16 pos, u16 id)
+bool AppliedNodeModifiersStorage::remove(v3s16 pos, u16 id)
 {
 	assert(isInArea(pos, MAP_BLOCKSIZE));
 	return m_root.remove(pos, id, m_size);
 }
 
-bool AppliedNodeModifiersList::remove(v3s16 pos)
+bool AppliedNodeModifiersStorage::remove(v3s16 pos)
 {
 	assert(isInArea(pos, MAP_BLOCKSIZE));
 	return m_root.remove(pos, m_size);
 }
 
-void AppliedNodeModifiersList::serialize(std::ostream &os, u16 version,
+void AppliedNodeModifiersStorage::serialize(std::ostream &os, u16 version,
 		bool disk, const NameIdMapping &nimap, const IdIdMapping *id_mapping) const
 {
 	assert(m_size <= MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAX_NODE_MODIFIERS);
@@ -442,7 +442,9 @@ void AppliedNodeModifiersList::serialize(std::ostream &os, u16 version,
 			assert(isInArea(p, MAP_BLOCKSIZE) &&
 					static_cast<size_t>(last - first) <= MAX_NODE_MODIFIERS);
 
-			// X/Y/Z order matches the sorted entries. The first delta is absolute.
+			/* Store positions relative to position of the previous modifier to
+			 * potentially allow better compression in case of repeated pattern.
+			 * X/Y/Z order matches the sorted entries. The first delta is absolute. */
 			const u16 index = (p.X << 8) | (p.Y << 4) | p.Z;
 			assert(index > previous || index == 0);
 			const u16 delta = index - previous;
@@ -462,7 +464,7 @@ void AppliedNodeModifiersList::serialize(std::ostream &os, u16 version,
 	});
 }
 
-void AppliedNodeModifiersList::deSerialize(std::istream &is, u16 version,
+void AppliedNodeModifiersStorage::deSerialize(std::istream &is, u16 version,
 		bool disk, NameIdMapping &nimap)
 {
 	const u32 size = readU32(is);
@@ -492,7 +494,7 @@ void AppliedNodeModifiersList::deSerialize(std::istream &is, u16 version,
 
 		if (!entries.empty() && delta == 0)
 			throw SerializationError("Node modifier positions are not sorted or unique");
-		if (index > MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE)
+		if (index >= MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE)
 			throw SerializationError("Node modifier position exceeds block bounds");
 		const v3s16 pos(index >> 8, (index >> 4) & 15, index & 15);
 		if (count > remaining)
@@ -511,14 +513,14 @@ void AppliedNodeModifiersList::deSerialize(std::istream &is, u16 version,
 	m_size = size;
 }
 
-void AppliedNodeModifiersList::remapIds(const std::function<u16(u16)> &map_id)
+void AppliedNodeModifiersStorage::remapIds(const std::function<u16(u16)> &map_id)
 {
 	m_root.forEachLeaf([&](Leaf &leaf) {
 		leaf.remapIds(map_id);
 	});
 }
 
-AppliedNodeModifiersList::ConstRange AppliedNodeModifiersList::findRange(v3s16 pos) const
+AppliedNodeModifiersStorage::ConstRange AppliedNodeModifiersStorage::findRange(v3s16 pos) const
 {
 	assert(isInArea(pos, MAP_BLOCKSIZE));
 
@@ -528,7 +530,7 @@ AppliedNodeModifiersList::ConstRange AppliedNodeModifiersList::findRange(v3s16 p
 }
 
 // Used for merging several block-specific lists into one mesh-specific list
-void AppliedNodeModifiersVector::append(const AppliedNodeModifiersList &other, v3s16 offset)
+void AppliedNodeModifiersVector::append(const AppliedNodeModifiersStorage &other, v3s16 offset)
 {
 	auto cmp_func = [](const AppliedNodeModifier &a, const AppliedNodeModifier &b) {
 		return a.pos < b.pos;
@@ -550,7 +552,7 @@ void AppliedNodeModifiersVector::append(const AppliedNodeModifiersList &other, v
 		std::inplace_merge(m_entries.begin(), m_entries.begin() + split, m_entries.end(), cmp_func);
 }
 
-void AppliedNodeModifiersSnapshot::append(const AppliedNodeModifiersList &other, v3s16 offset)
+void AppliedNodeModifiersSnapshot::append(const AppliedNodeModifiersStorage &other, v3s16 offset)
 {
 	m_modifiers.append(other, offset);
 }

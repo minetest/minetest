@@ -94,8 +94,8 @@ int NodeMetaRef::l_set_modifiers(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
 	std::vector<std::string> names;
-	bool result = readModifiers(L, 2, names) &&
-			ref->setModifiers(names);
+	readModifiers(L, 2, names);
+	bool result = ref->setModifiers(names);
 	lua_pushboolean(L, result);
 	return 1;
 }
@@ -105,10 +105,10 @@ int NodeMetaRef::l_add_modifier(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
-	luaL_checktype(L, 2, LUA_TSTRING);
+	std::string name = readModifierName(L, 2);
 
 	const NodeModifierManager *manager = ref->m_env->getGameDef()->getNodeModifierManager();
-	u16 id = manager->getId(readParam<std::string>(L, 2));
+	u16 id = manager->getId(name);
 	if (id == MODIFIER_IGNORE || manager->get(id).m_is_dummy) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -126,10 +126,10 @@ int NodeMetaRef::l_remove_modifier(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
-	luaL_checktype(L, 2, LUA_TSTRING);
+	std::string name = readModifierName(L, 2);
 
 	const NodeModifierManager *manager = ref->m_env->getGameDef()->getNodeModifierManager();
-	u16 id = manager->getId(readParam<std::string>(L, 2));
+	u16 id = manager->getId(name);
 	if (id == MODIFIER_IGNORE)
 		return 0;
 
@@ -249,10 +249,9 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table)
 
 	std::vector<std::string> modifiers;
 	lua_getfield(L, table, "modifiers");
-	bool result = lua_isnil(L, -1) || readModifiers(L, -1, modifiers);
+	if (!lua_isnil(L, -1))
+		readModifiers(L, -1, modifiers);
 	lua_pop(L, 1);
-	if (!result)
-		throw LuaError("from_table(): modifiers must be an array of valid modifier names");
 
 	// Ensure the block is available before changing either part of its state.
 	Map &map = m_env->getMap();

@@ -595,7 +595,7 @@ void TestMapBlock::testLoadNonStd(IGameDef *gamedef)
 
 void TestMapBlock::testSetNodeModifiers()
 {
-	AppliedNodeModifiersList list;
+	AppliedNodeModifiersStorage list;
 	const v3s16 before(0, 0, 0), pos(1, 0, 0), after(2, 0, 0);
 	UASSERT(list.add(before, 10));
 	UASSERT(list.add(after, 20));
@@ -651,7 +651,7 @@ void TestMapBlock::testResolveNodeModifiers()
 	base.light_propagates = true;
 	base.sunlight_propagates = false;
 
-	AppliedNodeModifiersList list;
+	AppliedNodeModifiersStorage list;
 	const v3s16 p(0, 0, 0);
 	UASSERT(list.resolveLighting(p, manager).light_source == 0);
 	UASSERT(list.resolveLighting(p, manager, base) == base);
@@ -675,7 +675,7 @@ void TestMapBlock::testResolveNodeModifiers()
 
 void TestMapBlock::testPackedNodeModifiers()
 {
-	AppliedNodeModifiersList list;
+	AppliedNodeModifiersStorage list;
 	NameIdMapping names;
 	for (u16 id = 0; id < 16; ++id)
 		UASSERT(list.add({15, 15, 15}, id));
@@ -692,14 +692,14 @@ void TestMapBlock::testPackedNodeModifiers()
 			UASSERTEQ(u16, readU16(stream), 0xffff);
 			stream.seekg(0);
 		}
-		AppliedNodeModifiersList loaded;
+		AppliedNodeModifiersStorage loaded;
 		loaded.deSerialize(stream, 30, disk, names);
 		UASSERTEQ(size_t, loaded.size(), 16);
 		UASSERTEQ(u16, loaded.findRange({15, 15, 15}).first->id, 1);
 		UASSERTEQ(u16, (loaded.findRange({15, 15, 15}).second - 1)->id, 0);
 	}
 	// Nonzero first position, consecutive groups, and coordinate-boundary crossings.
-	AppliedNodeModifiersList deltas;
+	AppliedNodeModifiersStorage deltas;
 	for (v3s16 pos : {v3s16(0, 0, 14), v3s16(0, 0, 15), v3s16(0, 1, 0),
 			v3s16(1, 0, 0), v3s16(15, 15, 15)})
 		UASSERT(deltas.add(pos, 0));
@@ -711,7 +711,7 @@ void TestMapBlock::testPackedNodeModifiers()
 		UASSERTEQ(u16, readU16(delta_stream), 0);
 	}
 	delta_stream.seekg(0);
-	AppliedNodeModifiersList delta_loaded;
+	AppliedNodeModifiersStorage delta_loaded;
 	delta_loaded.deSerialize(delta_stream, 30, false, names);
 	deltas.forEach([&](const AppliedNodeModifier &entry) {
 		auto range = delta_loaded.findRange(entry.pos);
@@ -734,7 +734,7 @@ void TestMapBlock::testPackedNodeModifiers()
 			UASSERT(list.add({x, y, z}, id));
 	std::stringstream stream;
 	list.serialize(stream, 30, false, names);
-	AppliedNodeModifiersList loaded;
+	AppliedNodeModifiersStorage loaded;
 	loaded.deSerialize(stream, 30, false, names);
 	UASSERTEQ(size_t, loaded.size(), 65536);
 	std::stringstream invalid;
@@ -756,7 +756,7 @@ void TestMapBlock::testPackedNodeModifiers()
 	std::stringstream oversized;
 	writeU32(oversized, 65537);
 	EXCEPTION_CHECK(SerializationError, loaded.deSerialize(oversized, 30, false, names));
-	AppliedNodeModifiersList empty;
+	AppliedNodeModifiersStorage empty;
 	std::stringstream empty_stream;
 	empty.serialize(empty_stream, 30, false, names);
 	UASSERTEQ(size_t, empty_stream.str().size(), 4);
@@ -767,19 +767,19 @@ void TestMapBlock::testPackedNodeModifiers()
 
 void TestMapBlock::testModifierEntryCount()
 {
-	auto check = [](const AppliedNodeModifiersList &list, u32 expected) {
+	auto check = [](const AppliedNodeModifiersStorage &list, u32 expected) {
 		std::stringstream stream;
 		NameIdMapping names;
 		list.serialize(stream, 30, false, names);
 		UASSERTEQ(u32, readU32(stream), expected);
 		stream.seekg(0);
-		AppliedNodeModifiersList loaded;
+		AppliedNodeModifiersStorage loaded;
 		loaded.deSerialize(stream, 30, false, names);
 		UASSERTEQ(size_t, loaded.size(), list.size());
 		UASSERT(stream.peek() == std::char_traits<char>::eof());
 	};
 	const v3s16 a(0, 0, 0), b(1, 0, 0);
-	AppliedNodeModifiersList list;
+	AppliedNodeModifiersStorage list;
 	check(list, 0);
 	list.add(a, 1);
 	list.add(a, 2);
@@ -799,7 +799,7 @@ void TestMapBlock::testModifierEntryCount()
 	list.remove(b);
 	check(list, 0);
 	list.set(a, {1});
-	AppliedNodeModifiersList other;
+	AppliedNodeModifiersStorage other;
 	other.set(a, {1});
 	other.add(b, 2);
 	check(other, 2);
@@ -818,7 +818,7 @@ void TestMapBlock::testModifierIdWidths()
 	for (u16 count : {1, 256, 257}) {
 		for (bool disk : {false, true}) {
 			NameIdMapping names;
-			AppliedNodeModifiersList list;
+			AppliedNodeModifiersStorage list;
 			for (u16 id = 0; id < count; ++id) {
 				names.set(id, "test:modifier_" + std::to_string(id));
 				UASSERT(list.add({s16(id / 256), s16((id / 16) % 16),
@@ -832,7 +832,7 @@ void TestMapBlock::testModifierIdWidths()
 			const size_t width = disk && count <= 256 ? 1 : 2;
 			UASSERTEQ(size_t, stream.str().size(), 4 + mapping.str().size() + count * (2 + width));
 			writeU8(stream, 0xab); // Decoding must stop at the next field.
-			AppliedNodeModifiersList loaded;
+			AppliedNodeModifiersStorage loaded;
 			loaded.deSerialize(stream, 30, disk, names);
 			UASSERTEQ(size_t, loaded.size(), count);
 			u16 id = 0;
@@ -856,7 +856,7 @@ void TestMapBlock::testModifierSnapshot()
 	dim.m_light_source = 3;
 	const u16 a = manager.add(std::move(bright));
 	const u16 b = manager.add(std::move(dim));
-	AppliedNodeModifiersList first, second;
+	AppliedNodeModifiersStorage first, second;
 	UASSERT(first.set({1, 0, 0}, {a, b}));
 	UASSERT(second.add({1, 0, 0}, a));
 	AppliedNodeModifiersSnapshot snapshot;
@@ -885,8 +885,8 @@ void TestMapBlock::testAdaptiveModifiers()
 	}
 	using Model = std::map<v3s16, std::vector<u16>>;
 	Model model;
-	AppliedNodeModifiersList list;
-	auto verify = [&](const AppliedNodeModifiersList &actual, const Model &expected) {
+	AppliedNodeModifiersStorage list;
+	auto verify = [&](const AppliedNodeModifiersStorage &actual, const Model &expected) {
 		std::vector<AppliedNodeModifier> flat;
 		for (const auto &[pos, ids] : expected)
 			for (u16 id : ids)
@@ -931,7 +931,7 @@ void TestMapBlock::testAdaptiveModifiers()
 	}
 	std::stringstream disk_stream;
 	list.serialize(disk_stream, 30, true, disk_names, &mapping);
-	AppliedNodeModifiersList copy;
+	AppliedNodeModifiersStorage copy;
 	copy.deSerialize(disk_stream, 30, true, disk_names);
 	auto remapped = model;
 	for (auto &[pos, ids] : remapped)
@@ -949,7 +949,7 @@ void TestMapBlock::testAdaptiveModifiers()
 	std::stringstream encoded;
 	NameIdMapping names;
 	list.serialize(encoded, 30, false, names);
-	AppliedNodeModifiersList loaded;
+	AppliedNodeModifiersStorage loaded;
 	loaded.deSerialize(encoded, 30, false, names);
 	verify(loaded, model);
 	std::stringstream reencoded;

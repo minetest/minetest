@@ -140,7 +140,7 @@ public:
 	// World-position lookup; unloaded blocks return an empty range.
 	// Entries retain block-relative positions. Iterators are invalidated by
 	// modifier-list mutations or unloading the owning block.
-	AppliedNodeModifiersList::ConstRange getNodeModifiers(v3s16 p);
+	AppliedNodeModifiersStorage::ConstRange getNodeModifiers(v3s16 p);
 	// Update modifiers, lighting, and notify clients of all affected blocks.
 	bool setNodeModifiers(v3s16 p, const std::vector<u16> &ids);
 	bool addNodeModifier(v3s16 p, u16 id, bool prune_overridden = false);

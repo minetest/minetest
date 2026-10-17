@@ -39,10 +39,9 @@ bool ItemStackMetaRef::handleFromTable(lua_State *L, int table)
 
 	std::vector<std::string> modifiers;
 	lua_getfield(L, table, "modifiers");
-	bool result = lua_isnil(L, -1) || readModifiers(L, -1, modifiers);
+	if (!lua_isnil(L, -1))
+		readModifiers(L, -1, modifiers);
 	lua_pop(L, 1);
-	if (!result)
-		throw LuaError("from_table(): modifiers must be an array of valid modifier names");
 
 	if (!replacement.setModifiers(std::move(modifiers)))
 		return false;
@@ -60,8 +59,8 @@ int ItemStackMetaRef::l_set_modifiers(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	ItemStackMetaRef *ref = checkObject<ItemStackMetaRef>(L, 1);
 	std::vector<std::string> names;
-	bool success = readModifiers(L, 2, names) &&
-			ref->istack->getItem().metadata.setModifiers(std::move(names));
+	readModifiers(L, 2, names);
+	bool success = ref->istack->getItem().metadata.setModifiers(std::move(names));
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -71,9 +70,8 @@ int ItemStackMetaRef::l_add_modifier(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	ItemStackMetaRef *ref = checkObject<ItemStackMetaRef>(L, 1);
-	luaL_checktype(L, 2, LUA_TSTRING);
+	std::string name = readModifierName(L, 2);
 
-	std::string name = readParam<std::string>(L, 2);
 	const NodeModifierManager *manager = getGameDef(L)->getNodeModifierManager();
 	u16 id = manager->getId(name);
 	bool success = id != MODIFIER_IGNORE && !manager->get(id).m_is_dummy &&
@@ -86,9 +84,8 @@ int ItemStackMetaRef::l_add_modifier(lua_State *L)
 int ItemStackMetaRef::l_remove_modifier(lua_State *L)
 {
 	ItemStackMetaRef *ref = checkObject<ItemStackMetaRef>(L, 1);
-	luaL_checktype(L, 2, LUA_TSTRING);
+	std::string name = readModifierName(L, 2);
 
-	std::string name = readParam<std::string>(L, 2);
 	ref->istack->getItem().metadata.removeModifier(name);
 
 	return 0;

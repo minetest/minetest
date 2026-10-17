@@ -321,7 +321,7 @@ void TestMapblockMeshGenerator::testModifierLighting()
 				if (neighbor)
 					data.m_vmanip.setNode(origin + modified_pos, MapNode(node));
 				if (modifier != MODIFIER_IGNORE) {
-					AppliedNodeModifiersList modifiers;
+					AppliedNodeModifiersStorage modifiers;
 					UASSERT(modifiers.add({}, modifier));
 					data.m_node_modifiers.append(modifiers, modified_pos);
 				}

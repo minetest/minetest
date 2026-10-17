@@ -769,9 +769,8 @@ void Client::handleCommand_NodeMod(NetworkPacket* pkt)
 	infostream << "Client: Received node modifiers: packet size: "
 			<< pkt->getSize() << std::endl;
 
-	// To do: check if needed
 	// Mesh update thread must be stopped while
-	// updating content definitions
+	// updating node modifiers
 	sanity_check(!m_mesh_update_manager->isRunning());
 
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);

@@ -463,6 +463,7 @@ set(independent_SRCS
 	modchannels.cpp
 	nameidmapping.cpp
 	nodemetadata.cpp
+	node_modifier.cpp
 	nodetimer.cpp
 	noise.cpp
 	objdef.cpp
@@ -508,7 +509,6 @@ set(common_SRCS
 	mapnode.cpp
 	mapsector.cpp
 	nodedef.cpp
-	node_modifier.cpp # To do: maybe move to independent_SRCS
 	pathfinder.cpp
 	player.cpp
 	porting.cpp

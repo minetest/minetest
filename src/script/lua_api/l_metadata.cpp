@@ -321,37 +321,29 @@ int MetaDataRef::l_equals(lua_State *L)
 	return 1;
 }
 
-bool MetaDataRef::readModifiers(lua_State *L, int table, std::vector<std::string> &modifiers)
+std::string MetaDataRef::readModifierName(lua_State *L, int index)
+{
+	if (lua_type(L, index) != LUA_TSTRING)
+		throw LuaError("Modifier name must be a string");
+	std::string name = readParam<std::string>(L, index);
+	if (!isValidModScopedName(name))
+		throw LuaError("Invalid modifier name: " + name);
+	return name;
+}
+
+void MetaDataRef::readModifiers(lua_State *L, int table, std::vector<std::string> &modifiers)
 {
 	assert(modifiers.empty());
 	lua_pushvalue(L, table);
+	if (!lua_istable(L, -1))
+		throw LuaError("modifiers must be an array of valid modifier names");
 
-	if (!lua_istable(L, -1)) {
-		lua_pop(L, 1);
-		return false;
-	}
-
-	bool res = true;
 	const size_t count = lua_objlen(L, -1);
 	modifiers.reserve(count);
 	for (size_t i = 1; i <= count; ++i) {
 		lua_rawgeti(L, -1, i);
-
-		if (lua_type(L, -1) != LUA_TSTRING) {
-			lua_pop(L, 1);
-			res = false;
-			break;
-		}
-
-		std::string name = readParam<std::string>(L, -1);
-		if (!isValidModScopedName(name)) {
-			lua_pop(L, 1);
-			res = false;
-			break;
-		}
-		modifiers.push_back(std::move(name));
+		modifiers.push_back(readModifierName(L, -1));
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
-	return res;
 }

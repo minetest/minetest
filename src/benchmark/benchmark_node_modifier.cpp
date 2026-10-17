@@ -22,8 +22,8 @@ TEST_CASE("benchmark_node_modifier_lookup")
 	for (s16 x = 0; x < MAP_BLOCKSIZE; ++x)
 		positions.emplace_back(x, y, z);
 
-	for (size_t count : {16, 256, 4096}) {
-		AppliedNodeModifiersList list;
+	for (size_t count : {16, 64, 128, 256, 512, 1024, 4096}) {
+		AppliedNodeModifiersStorage list;
 		for (size_t i = 0; i < count; ++i)
 			REQUIRE(list.add(positions[i * positions.size() / count], id));
 
@@ -132,13 +132,13 @@ size_t churnModifiers(List &list, const std::vector<AppliedNodeModifier> &entrie
 TEST_CASE("benchmark_node_modifier_mutation")
 {
 	for (bool clustered : {false, true})
-	for (size_t nodes : {16, 64, 128, 256, 4096}) {
+	for (size_t nodes : {16, 64, 128, 256, 512, 1024, 4096}) {
 		for (u16 per_node : {1, 4}) {
 			auto entries = mutationEntries(nodes, per_node, clustered);
 			const auto label = std::string(clustered ? ", clustered" : ", spread") +
 					", nodes=" + std::to_string(nodes) +
 					", modifiers/node=" + std::to_string(per_node);
-			AppliedNodeModifiersList adaptive;
+			AppliedNodeModifiersStorage adaptive;
 			FlatModifiers flat;
 			fillModifiers(adaptive, entries);
 			fillModifiers(flat, entries);
@@ -148,7 +148,7 @@ TEST_CASE("benchmark_node_modifier_mutation")
 			REQUIRE(churnModifiers(flat, entries) == 2 * entries.size());
 
 			BENCHMARK("adaptive build" + label) {
-				AppliedNodeModifiersList list;
+				AppliedNodeModifiersStorage list;
 				fillModifiers(list, entries);
 				return list.size();
 			};

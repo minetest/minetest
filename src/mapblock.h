@@ -298,7 +298,7 @@ public:
 	bool removeNodeModifier(v3s16 pos, u16 id);
 	bool clearNodeModifiers(v3s16 pos);
 	// To do: check if needed (it was generated for the test)
-	const AppliedNodeModifiersList &getNodeModifiers() const { return m_node_modifiers; }
+	const AppliedNodeModifiersStorage &getNodeModifiers() const { return m_node_modifiers; }
 
 	ContentLightingFlags getLightingFlags(v3s16 pos, const MapNode &node) const;
 
@@ -581,7 +581,7 @@ public:
 
 private:
 	NodeTimerList m_node_timers;
-	AppliedNodeModifiersList m_node_modifiers;
+	AppliedNodeModifiersStorage m_node_modifiers;
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;

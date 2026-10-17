@@ -8850,7 +8850,7 @@ Can be obtained via `item:get_meta()`.
     * Appends a registered [node modifier](#node-modifiers), or moves it to the end
       if already present
     * Returns `true` on success, `false` for an unknown modifier or insufficient capacity.
-    * Failure leaves the modifier list unchanged.
+    * Raises an error for a malformed name. Failure leaves the modifier list unchanged.
     * `prune_overridden` defaults to `false`. If `true`, removes earlier modifiers
       whose properties are all overridden by later modifiers. Unknown modifiers and
       modifiers with no overridden properties are preserved. Pruned modifiers are
@@ -8860,10 +8860,11 @@ Can be obtained via `item:get_meta()`.
     * Replaces the current list of node modifiers
     * An empty array clears it; duplicates keep their last occurrence. Valid unknown
       names are preserved.
-    * Returns `false` for invalid input or more than 16 distinct names, leaving
+    * Raises an error for malformed input. Returns `false` for more than 16 distinct names, leaving
       the list unchanged; otherwise returns `true`.
 * `remove_modifier(name)`
     * Removes the modifier; does nothing if absent
+    * Raises an error for a malformed name.
 * `get_modifiers_list()`
     * Returns the array of modifier names in application order
 
@@ -9005,16 +9006,18 @@ Can be obtained via `core.get_meta(pos)`.
 * `add_modifier(name, [prune_overridden])`: appends a registered modifier, or moves
   it to the end if already present. Returns `true` on success, `false` for an
   unknown modifier, an unavailable node, or reaching the maximum number of modifiers.
+  Raises an error for a malformed name.
     * `prune_overridden` defaults to `false`. If `true`, removes earlier modifiers
       which properties are all overridden by later modifiers. Unknown modifiers
       and modifiers with no overridden properties are preserved. Pruned modifiers
       are not restored when later ones are removed.
 * `set_modifiers(list)`: replaces the modifier list without changing fields or
   inventory. An empty array clears it; duplicates keep their last occurrence.
-  Valid unknown names are preserved. Returns `false` for invalid input, an
+  Valid unknown names are preserved. Raises an error for malformed input. Returns `false` for an
   unavailable node, or more than 16 distinct names, leaving the list unchanged;
   otherwise returns `true`.
 * `remove_modifier(name)`: removes the named modifier; does nothing if absent.
+  Raises an error for a malformed name.
 * `get_modifiers_list()`: returns a new array of modifier names in application order.
 
 `NodeTimerRef`

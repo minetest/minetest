@@ -66,7 +66,7 @@ struct AppliedNodeModifier {
 	u16 id;
 };
 
-class AppliedNodeModifiersList;
+class AppliedNodeModifiersStorage;
 
 // Sorted storage shared by block leaves and mesh snapshots. Coordinates are not
 // restricted to a block; per-node edits enforce the modifier limit, append does not.
@@ -90,7 +90,7 @@ public:
 	ConstRange findRange(v3s16 pos) const;
 
 	// Snapshot-specific
-	void append(const AppliedNodeModifiersList &other, v3s16 offset);
+	void append(const AppliedNodeModifiersStorage &other, v3s16 offset);
 
 	// Leaf-specific
 	bool add(v3s16 pos, u16 id, const NodeModifierManager *prune_manager);
@@ -107,9 +107,15 @@ private:
 	bool addWithPrune(v3s16 pos, u16 id, const NodeModifierManager *prune_manager);
 };
 
-class AppliedNodeModifiersList {
+/* Storage of applied node modifiers specific to a separate mapblock.
+ * Node modifiers are stored as a tree of vectors. Each tree node points
+ * to 16 child elements. When the number of modifiers in one vector exceeds
+ * LEAF_TARGET, it's transformed into a node, and the data about modifiers
+ * are moved to its child vectors. */
+class AppliedNodeModifiersStorage {
 	using Leaf = AppliedNodeModifiersVector;
 
+	// Corresponds to one element of the tree (either tree node or leaf)
 	struct Bucket {
 		using TreeNode = std::unique_ptr<std::array<Bucket, MAP_BLOCKSIZE>>;
 
@@ -168,8 +174,8 @@ class AppliedNodeModifiersList {
 	};
 
 public:
-	AppliedNodeModifiersList() = default;
-	AppliedNodeModifiersList(const AppliedNodeModifiersList &) = delete;
+	AppliedNodeModifiersStorage() = default;
+	AppliedNodeModifiersStorage(const AppliedNodeModifiersStorage &) = delete;
 	void clear() noexcept {
 		m_root.data.emplace<Leaf>();
 		m_size = 0;
@@ -210,8 +216,8 @@ public:
 	void remapIds(const std::function<u16(u16)> &map_id);
 
 private:
-	// Leaf splits when its size exceeded this value
-	static constexpr size_t LEAF_TARGET = 64;
+	// Split above this entry count; deletion does not merge branches.
+	static constexpr size_t LEAF_TARGET = 128;
 	Bucket m_root;
 	size_t m_size = 0;
 };
@@ -224,7 +230,7 @@ public:
 	using ConstIterator = AppliedNodeModifiersVector::ConstIterator;
 	using ConstRange = std::pair<ConstIterator, ConstIterator>;
 
-	void append(const AppliedNodeModifiersList &other, v3s16 offset);
+	void append(const AppliedNodeModifiersStorage &other, v3s16 offset);
 	size_t size() const { return m_modifiers.size(); }
 	bool empty() const { return m_modifiers.empty(); }
 	void shrink_to_fit() { m_modifiers.shrink_to_fit(); }
