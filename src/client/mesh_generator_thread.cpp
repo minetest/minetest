@@ -235,9 +235,7 @@ void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 	for (auto *block : q->map_blocks) {
 		if (block) {
 			block->copyTo(data->m_vmanip);
-			// To do: maybe store modifiers in the format relative to blocks
-			block->copyNodeModifiersTo(data->m_node_modifiers,
-					data->m_blockpos * MAP_BLOCKSIZE);
+			block->copyNodeModifiersToSnapshot(data->m_node_modifiers, data->m_blockpos);
 		}
 	}
 	data->m_node_modifiers.shrink_to_fit();

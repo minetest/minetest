@@ -225,9 +225,9 @@ bool MapBlock::clearNodeModifiers(v3s16 pos)
 	return true;
 }
 
-void MapBlock::copyNodeModifiersTo(AppliedNodeModifiersSnapshot &dst, v3s16 origin) const
+void MapBlock::copyNodeModifiersToSnapshot(AppliedNodeModifiersSnapshot &dst, v3s16 origin_block) const
 {
-	dst.append(m_node_modifiers, m_pos_relative - origin);
+	dst.append(m_node_modifiers, m_pos_relative - origin_block * MAP_BLOCKSIZE);
 }
 
 ContentLightingFlags MapBlock::getLightingFlags(v3s16 pos, const MapNode &node) const

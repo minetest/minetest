@@ -96,8 +96,8 @@ void TestMapBlock::testCollectNodeModifiers()
 	neighbor.addNodeModifier(pos, second);
 	AppliedNodeModifiersSnapshot collected;
 	const v3s16 origin = central.getPosRelative();
-	central.copyNodeModifiersTo(collected, origin);
-	neighbor.copyNodeModifiersTo(collected, origin);
+	central.copyNodeModifiersToSnapshot(collected, origin);
+	neighbor.copyNodeModifiersToSnapshot(collected, origin);
 	UASSERTEQ(size_t, collected.size(), 5);
 	auto [begin, end] = collected.findRange(pos);
 	UASSERTEQ(size_t, end - begin, 3);
@@ -143,7 +143,7 @@ void TestMapBlock::testNodeModifiers()
 		MapBlock loaded({}, disk ? &target_game : &source_game);
 		loaded.deSerialize(stream, 30, disk);
 		AppliedNodeModifiersSnapshot entries;
-		loaded.copyNodeModifiersTo(entries, loaded.getPosRelative());
+		loaded.copyNodeModifiersToSnapshot(entries, loaded.getPosRelative());
 		UASSERTEQ(size_t, entries.size(), 2);
 		auto [begin, end] = entries.findRange(pos);
 		UASSERTEQ(size_t, end - begin, 2);
@@ -159,7 +159,7 @@ void TestMapBlock::testNodeModifiers()
 		MapBlock legacy_block({}, disk ? &target_game : &source_game);
 		legacy_block.deSerialize(legacy, 29, disk);
 		AppliedNodeModifiersSnapshot empty;
-		legacy_block.copyNodeModifiersTo(empty, legacy_block.getPosRelative());
+		legacy_block.copyNodeModifiersToSnapshot(empty, legacy_block.getPosRelative());
 		UASSERT(empty.empty());
 	}
 
@@ -172,7 +172,7 @@ void TestMapBlock::testNodeModifiers()
 	MapBlock empty({}, &target_game);
 	empty.deSerialize(stream, 30, true);
 	AppliedNodeModifiersSnapshot entries;
-	empty.copyNodeModifiersTo(entries, empty.getPosRelative());
+	empty.copyNodeModifiersToSnapshot(entries, empty.getPosRelative());
 	UASSERT(entries.empty());
 }
 

@@ -290,7 +290,7 @@ public:
 	void copyFrom(const VoxelManipulator &src);
 
 	// Keys are node offsets from origin (a world node position).
-	void copyNodeModifiersTo(AppliedNodeModifiersSnapshot &dst, v3s16 origin) const;
+	void copyNodeModifiersToSnapshot(AppliedNodeModifiersSnapshot &dst, v3s16 origin_block) const;
 
 	// Low-level modifier changes; use Map methods to update live map lighting.
 	bool addNodeModifier(v3s16 pos, u16 id, bool prune_overridden = false);
