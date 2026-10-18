@@ -121,8 +121,8 @@ void TestInventory::testFormats(IItemDefManager *idef)
 		loaded.deSerialize(stream);
 		const auto &meta = loaded.getList("main")->getItem(0).metadata;
 		UASSERTEQ(std::string, meta.getString("description"), "ordinary metadata");
-		UASSERT(meta.getModifiersList().empty() == (protocol < 54));
-		if (protocol < 54) {
+		UASSERT(meta.getModifiersList().empty() == (protocol < 55));
+		if (protocol < 55) {
 			ItemStack plain = stack;
 			plain.metadata.removeModifier("test:modifier");
 			UASSERTEQ(std::string, stack.getItemString(true, false), plain.getItemString());
@@ -141,7 +141,7 @@ void TestInventory::testFormats(IItemDefManager *idef)
 		UASSERT(loaded.textures == props.textures);
 		ItemStack item;
 		item.deSerialize(loaded.wield_item, idef);
-		UASSERT(item.metadata.getModifiersList().empty() == (protocol < 54));
+		UASSERT(item.metadata.getModifiersList().empty() == (protocol < 55));
 		UASSERTEQ(std::string, item.metadata.getString("description"), "ordinary metadata");
 	}
 
@@ -172,9 +172,9 @@ void TestInventory::testFormats(IItemDefManager *idef)
 		ItemStack item;
 		item.deSerialize(loaded.wield_item, idef);
 		UASSERTEQ(std::string, item.metadata.getString("description"), "ordinary metadata");
-		UASSERT(item.metadata.getModifiersList().empty() == (protocol < 54));
+		UASSERT(item.metadata.getModifiersList().empty() == (protocol < 55));
 
-		std::string &previous = protocol < 54 ? legacy_payload : current_payload;
+		std::string &previous = protocol < 55 ? legacy_payload : current_payload;
 		if (!previous.empty())
 			UASSERTEQ(std::string, payload, previous);
 		previous = payload;
