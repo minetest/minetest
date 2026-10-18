@@ -46,7 +46,9 @@ bool ItemStackMetaRef::handleFromTable(lua_State *L, int table)
 
 	if (!replacement.setModifiers(std::move(modifiers)))
 		return false;
+
 	istack->getItem().metadata = std::move(replacement);
+
 	return true;
 }
 
@@ -58,7 +60,7 @@ void ItemStackMetaRef::reportMetadataChange(const std::string *name)
 int ItemStackMetaRef::l_get_modifiers(lua_State *L)
 {
 	auto *ref = checkObject<ItemStackMetaRef>(L, 1);
-	NodeModifiersRef::create(L, new NodeModifiersRef(ref->istack));
+	NodeModifiersRef::create(L, ref->istack);
 	return 1;
 }
 
@@ -119,7 +121,6 @@ void ItemStackMetaRef::Register(lua_State *L)
 
 const char ItemStackMetaRef::className[] = "ItemStackMetaRef";
 const luaL_Reg ItemStackMetaRef::methods[] = {
-	luamethod(ItemStackMetaRef, get_modifiers),
 	luamethod(MetaDataRef, contains),
 	luamethod(MetaDataRef, get),
 	luamethod(MetaDataRef, get_string),
@@ -132,6 +133,7 @@ const luaL_Reg ItemStackMetaRef::methods[] = {
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
 	luamethod(MetaDataRef, equals),
+	luamethod(ItemStackMetaRef, get_modifiers),
 	luamethod(ItemStackMetaRef, set_tool_capabilities),
 	luamethod(ItemStackMetaRef, set_wear_bar_params),
 	{0,0}

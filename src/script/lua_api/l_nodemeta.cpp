@@ -71,8 +71,10 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 
 int NodeMetaRef::l_get_modifiers(lua_State *L)
 {
+	MAP_LOCK_REQUIRED;
+
 	auto *ref = checkObject<NodeMetaRef>(L, 1);
-	NodeModifiersRef::create(L, new NodeModifiersRef(ref->m_p, ref->m_env));
+	NodeModifiersRef::create(L, ref->m_p, ref->m_env);
 	return 1;
 }
 

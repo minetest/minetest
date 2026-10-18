@@ -150,13 +150,13 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 				if (start != end) {
 					const NodeModifierManager *nodemod = client->getNodeModifierManager();
 
-					os << ", modifiers: (";
+					os << ", modifiers: [";
 					for (auto it = start; it != end; ++it) {
 						if (it != start)
 							os << ", ";
 						os << nodemod->get(it->id).m_name;
 					}
-					os << ")";
+					os << "]";
 				}
 			}
 		}

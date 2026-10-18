@@ -247,6 +247,7 @@ int MetaDataRef::l_from_table(lua_State *L)
 	bool was_successful = ref->handleFromTable(L, base);
 	if (was_successful)
 		ref->reportMetadataChange();
+
 	lua_pushboolean(L, was_successful);
 	return 1;
 }

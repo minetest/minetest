@@ -199,6 +199,16 @@ int NodeModifiersRef::gc_object(lua_State *L)
 
 const char NodeModifiersRef::className[] = "NodeModifiersRef";
 
+void NodeModifiersRef::create(lua_State *L, LuaItemStack *stack)
+{
+	create(L, new NodeModifiersRef(stack));
+}
+
+void NodeModifiersRef::create(lua_State *L, v3s16 pos, ServerEnvironment *env)
+{
+	create(L, new NodeModifiersRef(pos, env));
+}
+
 void NodeModifiersRef::create(lua_State *L, NodeModifiersRef *ref)
 {
 	luaL_getmetatable(L, className);

@@ -23,6 +23,7 @@ class NodeModifiersRef : public ModApiBase {
 	static int l_set_list(lua_State *L);
 	static int l_get_list(lua_State *L);
 	static int gc_object(lua_State *L);
+	static void create(lua_State *L, NodeModifiersRef *ref);
 public:
 	explicit NodeModifiersRef(LuaItemStack *stack);
 	NodeModifiersRef(v3s16 pos, ServerEnvironment *env) : m_env(env), m_pos(pos) {}
@@ -32,6 +33,7 @@ public:
 	void pushList(lua_State *L) const;
 	static std::string readName(lua_State *L, int index);
 	static void readList(lua_State *L, int table, std::vector<std::string> &names);
-	static void create(lua_State *L, NodeModifiersRef *ref);
+	static void create(lua_State *L, LuaItemStack *stack);
+	static void create(lua_State *L, v3s16 pos, ServerEnvironment *env);
 	static const char className[];
 };
