@@ -35,5 +35,6 @@ public:
 	static void readList(lua_State *L, int table, std::vector<std::string> &names);
 	static void create(lua_State *L, LuaItemStack *stack);
 	static void create(lua_State *L, v3s16 pos, ServerEnvironment *env);
+	static void Register(lua_State *L);
 	static const char className[];
 };

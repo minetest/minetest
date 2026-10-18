@@ -7797,6 +7797,8 @@ Classes:
 
 * `AreaStore`
 * `ItemStack`
+    * Modifier operations are supported, but `prune_overridden = true` raises
+      an error.
 * `ValueNoise`
 * `ValueNoiseMap`
 * `PseudoRandom`
@@ -7879,6 +7881,7 @@ Classes:
 
 * `AreaStore`
 * `ItemStack`
+    * Modifier operations have the same restrictions as in the async environment.
 * `ValueNoise`
 * `ValueNoiseMap`
 * `PseudoRandom`
@@ -8998,11 +9001,15 @@ Obtaining a reference does not create metadata or change the modifier list.
 ### Methods
 
 * `add(name, [prune_overridden])`
-    * Appends a registered [node modifier](#node-modifiers), or moves it to the end
+    * Appends a [node modifier](#node-modifiers), or moves it to the end
       if already present
-    * Returns `true` on success, `false` for an unknown modifier, an unavailable
-      node, or insufficient capacity.
+    * Valid unknown names are accepted and preserved, but have no effect until
+      their definitions are available.
+    * Returns `true` on success, `false` for an unavailable node, insufficient
+      capacity, or failure to allocate a modifier ID (for nodes).
     * Raises an error for a malformed name. Failure leaves the modifier list unchanged.
+    * In async and mapgen environments, requesting `prune_overridden = true`
+      raises an error.
     * `prune_overridden` defaults to `false`. If `true`, removes earlier modifiers
       whose properties are all overridden by later modifiers. Unknown modifiers and
       modifiers with no overridden properties are preserved. Pruned modifiers are

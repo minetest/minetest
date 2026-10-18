@@ -1,5 +1,6 @@
 #include "lua_api/l_node_modifier.h"
 #include "lua_api/l_internal.h"
+#include "cpp_api/s_base.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
 #include "node_modifier.h"
@@ -139,15 +140,37 @@ int NodeModifiersRef::l_add(lua_State *L)
 	assert(ref->m_stack || ref->m_env);
 
 	const std::string name = readName(L, 2);
+	bool prune = lua_toboolean(L, 3);
 
-	const NodeModifierManager *manager = getGameDef(L)->getNodeModifierManager();
-	u16 id = manager->getId(name);
+	ScriptingType type = getScriptApiBase(L)->getType();
+	if (type == ScriptingType::Async || type == ScriptingType::Emerge) {
+		if (!ref->m_stack)
+			throw LuaError("Node modifier access is unavailable in worker environments");
 
-	bool result = false;
-	if (id != MODIFIER_IGNORE && !manager->get(id).m_is_dummy) {
-		bool prune = lua_toboolean(L, 3);
-		result = ref->m_stack ?
-				ref->m_stack->getItem().metadata.addModifier(name, prune ? manager : nullptr) :
+		if (prune)
+			throw LuaError("Modifier pruning is unavailable in async and mapgen environments");
+
+		bool result = ref->m_stack->getItem().metadata.addModifier(name);
+
+		lua_pushboolean(L, result);
+		return 1;
+	}
+
+	bool result;
+	if (ref->m_stack) {
+		const NodeModifierManager *manager = prune ?
+				getGameDef(L)->getNodeModifierManager() : nullptr;
+
+		result = ref->m_stack->getItem().metadata.addModifier(name, manager);
+	} else {
+		IGameDef *gamedef = ref->m_env->getGameDef();
+		const NodeModifierManager *manager = gamedef->getNodeModifierManager();
+
+		u16 id = manager->getId(name);
+		if (id == MODIFIER_IGNORE)
+			id = gamedef->allocateUnknownNodeModifierId(name);
+
+		result = id != MODIFIER_IGNORE &&
 				ref->m_env->getMap().addNodeModifier(ref->m_pos, id, prune);
 	}
 
@@ -184,9 +207,9 @@ int NodeModifiersRef::l_set_list(lua_State *L)
 	std::vector<std::string> names;
 	readList(L, 2, names);
 
-	bool success = ref->set(std::move(names));
+	bool result = ref->set(std::move(names));
 
-	lua_pushboolean(L, success);
+	lua_pushboolean(L, result);
 	return 1;
 }
 
@@ -240,27 +263,24 @@ void NodeModifiersRef::create(lua_State *L, v3s16 pos, ServerEnvironment *env)
 
 void NodeModifiersRef::create(lua_State *L, NodeModifiersRef *ref)
 {
-	luaL_getmetatable(L, className);
-	bool registered = !lua_isnil(L, -1);
-	lua_pop(L, 1);
-
-	if (!registered) {
-		static const luaL_Reg methods[] = {
-			luamethod(NodeModifiersRef, add),
-			luamethod(NodeModifiersRef, remove),
-			luamethod(NodeModifiersRef, set_list),
-			luamethod(NodeModifiersRef, get_list),
-			{nullptr, nullptr}
-		};
-
-		static const luaL_Reg metamethods[] = {
-			{"__gc", gc_object}, {nullptr, nullptr}
-		};
-
-		registerClass<NodeModifiersRef>(L, methods, metamethods);
-	}
-
 	*(void **)lua_newuserdata(L, sizeof(void *)) = ref;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
+}
+
+void NodeModifiersRef::Register(lua_State *L)
+{
+	static const luaL_Reg methods[] = {
+		luamethod(NodeModifiersRef, add),
+		luamethod(NodeModifiersRef, remove),
+		luamethod(NodeModifiersRef, set_list),
+		luamethod(NodeModifiersRef, get_list),
+		{nullptr, nullptr}
+	};
+
+	static const luaL_Reg metamethods[] = {
+		{"__gc", gc_object}, {nullptr, nullptr}
+	};
+
+	registerClass<NodeModifiersRef>(L, methods, metamethods);
 }

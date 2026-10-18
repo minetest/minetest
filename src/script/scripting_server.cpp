@@ -134,6 +134,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	// Register reference classes (userdata)
 	InvRef::Register(L);
 	ItemStackMetaRef::Register(L);
+	NodeModifiersRef::Register(L);
 	LuaAreaStore::Register(L);
 	LuaItemStack::Register(L);
 	LuaValueNoise::Register(L);
@@ -174,6 +175,7 @@ void ServerScripting::InitializeAsync(lua_State *L, int top)
 {
 	// classes
 	ItemStackMetaRef::Register(L);
+	NodeModifiersRef::Register(L);
 	LuaAreaStore::Register(L);
 	LuaItemStack::Register(L);
 	LuaValueNoise::Register(L);

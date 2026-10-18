@@ -9,7 +9,21 @@ local incorrect = "incorrect"
 
 local function test_modifier_methods(meta)
 	
-	assert(not meta:get_modifiers():add(unregistered))
+	assert(meta:get_modifiers():add(unregistered))
+	assert(meta:get_modifiers():get_list()[1] == unregistered)
+	assert(meta:get_modifiers():add(unregistered))
+	assert(#meta:get_modifiers():get_list() == 1)
+	meta:get_modifiers():remove(unregistered)
+	assert(meta:get_modifiers():add(first))
+	assert(meta:get_modifiers():add(unregistered, true))
+	local unknown_names = meta:get_modifiers():get_list()
+	assert(#unknown_names == 2 and unknown_names[1] == first
+			and unknown_names[2] == unregistered)
+	assert(meta:get_modifiers():add(second, true))
+	unknown_names = meta:get_modifiers():get_list()
+	assert(#unknown_names == 2 and unknown_names[1] == unregistered
+			and unknown_names[2] == second)
+	assert(meta:get_modifiers():set_list({}))
 	assert(not pcall(meta:get_modifiers().add, meta:get_modifiers(), ""))
 	assert(not pcall(meta:get_modifiers().add, meta:get_modifiers(), incorrect))
 	assert(#meta:get_modifiers():get_list() == 0)
