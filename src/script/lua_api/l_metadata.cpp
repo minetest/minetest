@@ -270,17 +270,12 @@ void MetaDataRef::handleToTable(lua_State *L, IMetadata *meta)
 
 bool MetaDataRef::handleFromTable(lua_State *L, int table)
 {
-	SimpleMetadata replacement;
-
-	readFields(L, table, &replacement);
-
 	auto *meta = getmeta(true);
 	if (!meta)
 		return false;
 
 	meta->clear();
-	for (const auto &[name, value] : replacement.getStrings())
-		meta->setString(name, value);
+	readFields(L, table, meta);
 
 	return true;
 }
