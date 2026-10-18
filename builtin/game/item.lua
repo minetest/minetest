@@ -286,7 +286,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 
 	-- Add node and update
 	assert(core.add_node(place_to, newnode))
-	assert(core.get_meta(place_to):set_modifiers(itemstack:get_meta():get_modifiers_list()))
+	assert(core.get_meta(place_to):get_modifiers():set_list(itemstack:get_meta():get_modifiers():get_list()))
 
 	-- Play sound if it was done by a player
 	if playername ~= "" and def.sounds and def.sounds.place then
@@ -494,7 +494,7 @@ end
 function builtin_shared.preserve_node_modifiers(pos, node, drops, inherit_modifiers, saved_modifiers)
 	local def = core.registered_nodes[node.name]
 	local modifiers = saved_modifiers and table.copy(saved_modifiers) or
-		core.get_meta(pos):get_modifiers_list()
+		core.get_meta(pos):get_modifiers():get_list()
 	if not (def and def.preserve_node_modifiers) and #modifiers == 0 then
 		return drops
 	end
@@ -510,7 +510,7 @@ function builtin_shared.preserve_node_modifiers(pos, node, drops, inherit_modifi
 		for k, stack in pairs(stacks) do
 			if (def and def.drop == nil) or
 					(inherit_modifiers and inherit_modifiers[k]) then
-				assert(stack:get_meta():set_modifiers(modifiers))
+				assert(stack:get_meta():get_modifiers():set_list(modifiers))
 			end
 		end
 	end

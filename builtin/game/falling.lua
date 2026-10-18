@@ -184,7 +184,7 @@ core.register_entity(":__builtin:falling_node", {
 			-- Merging consumes the entity without restoring its metadata.
 			-- Different modifier lists must remain separate, including their order.
 			local modifiers = self.meta and self.meta.modifiers or {}
-			local target_modifiers = core.get_meta(bcp):get_modifiers_list()
+			local target_modifiers = core.get_meta(bcp):get_modifiers():get_list()
 			-- Recheck at landing: the supporting node may have changed in flight.
 			if not same_modifiers(modifiers, target_modifiers) then
 				return false
@@ -474,8 +474,8 @@ function core.check_single_for_falling(p)
 			if same and d_bottom.paramtype2 == "leveled" and
 					core.get_node_level(p_bottom) <
 					core.get_node_max_level(p_bottom) and
-					same_modifiers(core.get_meta(p):get_modifiers_list(),
-						core.get_meta(p_bottom):get_modifiers_list()) then
+					same_modifiers(core.get_meta(p):get_modifiers():get_list(),
+						core.get_meta(p_bottom):get_modifiers():get_list()) then
 				local success, _ = convert_to_falling_node(p, n)
 				return success
 			end

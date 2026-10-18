@@ -46,10 +46,7 @@ private:
 	}
 
 	// Exported functions
-	static int l_set_modifiers(lua_State *L);
-	static int l_add_modifier(lua_State *L);
-	static int l_remove_modifier(lua_State *L);
-	static int l_get_modifiers_list(lua_State *L);
+	static int l_get_modifiers(lua_State *L);
 	static int l_set_tool_capabilities(lua_State *L);
 	static int l_set_wear_bar_params(lua_State *L);
 public:

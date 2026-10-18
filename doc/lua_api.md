@@ -4200,10 +4200,12 @@ Example:
 
 ```lua
 -- Apply to an existing node:
-core.get_meta(pos):add_modifier("example:glowing")
+local modifiers_ref = core.get_meta(pos):get_modifiers()
+modifiers_ref:add("example:glowing")
 
 -- Or store on a node item for placement:
-stack:get_meta():add_modifier("example:glowing")
+local modifiers_ref = stack:get_meta(pos):get_modifiers()
+modifiers_ref:add("example:glowing")
 ```
 
 The definition currently supports overriding the `light_source` property only.
@@ -8846,27 +8848,7 @@ Can be obtained via `item:get_meta()`.
     * Overrides the item's wear bar parameters (see "Wear Bar Color" section)
     * A nil value will clear the override data and restore the original
       behavior.
-* `add_modifier(name, [prune_overridden])`
-    * Appends a registered [node modifier](#node-modifiers), or moves it to the end
-      if already present
-    * Returns `true` on success, `false` for an unknown modifier or insufficient capacity.
-    * Raises an error for a malformed name. Failure leaves the modifier list unchanged.
-    * `prune_overridden` defaults to `false`. If `true`, removes earlier modifiers
-      whose properties are all overridden by later modifiers. Unknown modifiers and
-      modifiers with no overridden properties are preserved. Pruned modifiers are
-      not restored when later ones are removed. Pruning happens before the capacity
-      check.
-* `set_modifiers(list)`
-    * Replaces the current list of node modifiers
-    * An empty array clears it; duplicates keep their last occurrence. Valid unknown
-      names are preserved.
-    * Raises an error for malformed input. Returns `false` for more than 16 distinct names, leaving
-      the list unchanged; otherwise returns `true`.
-* `remove_modifier(name)`
-    * Removes the modifier; does nothing if absent
-    * Raises an error for a malformed name.
-* `get_modifiers_list()`
-    * Returns the array of modifier names in application order
+* `get_modifiers()`: returns a live [`NodeModifiersRef`](#nodemodifiersref).
 
 `MetaDataRef`
 -------------
@@ -9003,22 +8985,38 @@ Can be obtained via `core.get_meta(pos)`.
   status will only be remembered if an associated key-value pair exists,
   meaning it's best to call this when initializing all other meta (e.g.
   `on_construct`).
-* `add_modifier(name, [prune_overridden])`: appends a registered modifier, or moves
-  it to the end if already present. Returns `true` on success, `false` for an
-  unknown modifier, an unavailable node, or reaching the maximum number of modifiers.
-  Raises an error for a malformed name.
+* `get_modifiers()`: returns a live [`NodeModifiersRef`](#nodemodifiersref).
+
+`NodeModifiersRef`
+------------------
+
+Obtained through `NodeMetaRef:get_modifiers()` or `ItemStackMetaRef:get_modifiers()`.
+Obtaining a reference does not create metadata or change the modifier list.
+
+### Methods
+
+* `add(name, [prune_overridden])`
+    * Appends a registered [node modifier](#node-modifiers), or moves it to the end
+      if already present
+    * Returns `true` on success, `false` for an unknown modifier, an unavailable
+      node, or insufficient capacity.
+    * Raises an error for a malformed name. Failure leaves the modifier list unchanged.
     * `prune_overridden` defaults to `false`. If `true`, removes earlier modifiers
-      which properties are all overridden by later modifiers. Unknown modifiers
-      and modifiers with no overridden properties are preserved. Pruned modifiers
-      are not restored when later ones are removed.
-* `set_modifiers(list)`: replaces the modifier list without changing fields or
-  inventory. An empty array clears it; duplicates keep their last occurrence.
-  Valid unknown names are preserved. Raises an error for malformed input. Returns `false` for an
-  unavailable node, or more than 16 distinct names, leaving the list unchanged;
-  otherwise returns `true`.
-* `remove_modifier(name)`: removes the named modifier; does nothing if absent.
-  Raises an error for a malformed name.
-* `get_modifiers_list()`: returns a new array of modifier names in application order.
+      whose properties are all overridden by later modifiers. Unknown modifiers and
+      modifiers with no overridden properties are preserved. Pruned modifiers are
+      not restored when later ones are removed.
+* `remove(name)`
+    * Removes the modifier; does nothing if absent
+    * Raises an error for a malformed name.
+* `get_list()`
+    * Returns a copy of the modifier names as an array in application order
+* `set_list(list)`
+    * Replaces the current list of node modifiers
+    * An empty array clears it; duplicates keep their last occurrence. Valid unknown
+      names are preserved.
+    * Raises an error for malformed input. Returns `false` for an unavailable node
+      or more than 16 distinct names, leaving the list unchanged; otherwise returns
+      `true`.
 
 `NodeTimerRef`
 --------------

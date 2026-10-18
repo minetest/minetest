@@ -320,30 +320,3 @@ int MetaDataRef::l_equals(lua_State *L)
 		lua_pushboolean(L, *data1 == *data2);
 	return 1;
 }
-
-std::string MetaDataRef::readModifierName(lua_State *L, int index)
-{
-	if (lua_type(L, index) != LUA_TSTRING)
-		throw LuaError("Modifier name must be a string");
-	std::string name = readParam<std::string>(L, index);
-	if (!isValidModScopedName(name))
-		throw LuaError("Invalid modifier name: " + name);
-	return name;
-}
-
-void MetaDataRef::readModifiers(lua_State *L, int table, std::vector<std::string> &modifiers)
-{
-	assert(modifiers.empty());
-	lua_pushvalue(L, table);
-	if (!lua_istable(L, -1))
-		throw LuaError("modifiers must be an array of valid modifier names");
-
-	const size_t count = lua_objlen(L, -1);
-	modifiers.reserve(count);
-	for (size_t i = 1; i <= count; ++i) {
-		lua_rawgeti(L, -1, i);
-		modifiers.push_back(readModifierName(L, -1));
-		lua_pop(L, 1);
-	}
-	lua_pop(L, 1);
-}
