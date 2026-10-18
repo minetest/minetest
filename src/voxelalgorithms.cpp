@@ -577,8 +577,8 @@ void update_lighting_nodes(Map *map,
 						relative_v3 rel_pos2;
 						mapblock_v3 block_pos2;
 						getNodeBlockPosWithOffset(n2pos, block_pos2, rel_pos2);
-						MapBlock *block2 = map->getBlockNoCreateNoEx(
-							block_pos2);
+						MapBlock *block2 = map->getBlockNoCreateNoEx(block_pos2);
+						modified_blocks[block_pos2] = block2;
 						disappearing_lights.push(LIGHT_SUN, rel_pos2,
 							block_pos2, block2,
 							4 /* The node above caused the change */);
@@ -611,8 +611,8 @@ void update_lighting_nodes(Map *map,
 						relative_v3 rel_pos2;
 						mapblock_v3 block_pos2;
 						getNodeBlockPosWithOffset(n2pos, block_pos2, rel_pos2);
-						MapBlock *block2 = map->getBlockNoCreateNoEx(
-							block_pos2);
+						MapBlock *block2 = map->getBlockNoCreateNoEx(block_pos2);
+						modified_blocks[block_pos2] = block2;
 						// Mark node for lighting.
 						light_sources.push(LIGHT_SUN, rel_pos2, block_pos2,
 							block2, 4);

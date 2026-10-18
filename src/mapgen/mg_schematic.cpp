@@ -532,18 +532,23 @@ bool Schematic::saveSchematicToFile(const std::string &filename,
 
 bool Schematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2)
 {
-	MMVManip *vm = new MMVManip(map);
+	assert(p2 >= p1);
+	const v3s32 size_l = v3s32::from(p2) - v3s32::from(p1) + 1;
+	if (core::min_(size_l.X, size_l.Y, size_l.Z) < 0 ||
+		core::max_(size_l.X, size_l.Y, size_l.Z) > S16_MAX)
+		return false;
+	size = v3s16::from(size_l);
 
 	v3s16 bp1 = getNodeBlockPos(p1);
 	v3s16 bp2 = getNodeBlockPos(p2);
+	MMVManip *vm = new MMVManip(map);
 	vm->initialEmerge(bp1, bp2);
-
-	size = p2 - p1 + 1;
 
 	slice_probs = new u8[size.Y];
 	for (s16 y = 0; y != size.Y; y++)
 		slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
+	// FIXME: can overflow
 	schemdata = new MapNode[size.X * size.Y * size.Z];
 
 	u32 i = 0;
@@ -569,10 +574,11 @@ void Schematic::applyProbabilities(v3s16 p0,
 	std::vector<std::pair<v3s16, u8> > *plist,
 	std::vector<std::pair<s16, u8> > *splist)
 {
+	const size_t zstride = size.Y * size.X, volume = zstride * size.Z;
 	for (size_t i = 0; i != plist->size(); i++) {
 		v3s16 p = (*plist)[i].first - p0;
-		int index = p.Z * (size.Y * size.X) + p.Y * size.X + p.X;
-		if (index < size.Z * size.Y * size.X) {
+		s32 index = p.Z * zstride + p.Y * size.X + p.X;
+		if (index >= 0 && static_cast<u32>(index) < volume) {
 			u8 prob = (*plist)[i].second;
 			schemdata[index].param1 = prob;
 
@@ -584,7 +590,7 @@ void Schematic::applyProbabilities(v3s16 p0,
 
 	for (size_t i = 0; i != splist->size(); i++) {
 		s16 slice = (*splist)[i].first;
-		if (slice < size.Y)
+		if (slice >= 0 && slice < size.Y)
 			slice_probs[slice] = (*splist)[i].second;
 	}
 }

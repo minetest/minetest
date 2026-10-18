@@ -432,7 +432,10 @@ public:
 			std::vector<MinimapMode> &modes,
 			size_t wanted_mode);
 
-	void sendDetachedInventories(session_t peer_id, bool incremental);
+	// Send detached inventories to one player (for init)
+	void sendDetachedInventories(session_t peer_id);
+	// Send detached inventory updates to everyone
+	void sendDetachedInventories();
 
 	bool joinModChannel(const std::string &channel) override;
 	bool leaveModChannel(const std::string &channel) override;

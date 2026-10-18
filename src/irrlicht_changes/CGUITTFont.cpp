@@ -923,10 +923,6 @@ core::vector2di CGUITTFont::getKerning(const char32_t thisLetter, const char32_t
 	if (tt_face == 0 || thisLetter == 0 || previousLetter == 0)
 		return core::vector2di();
 
-	// Set the size of the face.
-	// This is because we cache faces and the face may have been set to a different size.
-	FT_Set_Pixel_Sizes(tt_face, 0, size);
-
 	core::vector2di ret(GlobalKerningWidth, GlobalKerningHeight);
 
 	u32 n = getGlyphIndexByChar(thisLetter);
@@ -942,6 +938,10 @@ core::vector2di CGUITTFont::getKerning(const char32_t thisLetter, const char32_t
 	// If we don't have kerning, no point in continuing.
 	if (!FT_HAS_KERNING(tt_face))
 		return ret;
+
+	// Set the size of the face.
+	// This is because we cache faces and the face may have been set to a different size.
+	FT_Set_Pixel_Sizes(tt_face, 0, size);
 
 	// Get the kerning information.
 	FT_Vector v;

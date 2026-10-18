@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-02-03 04:56+0000\n"
 "Last-Translator: GeekSteak <lpdj@ik.me>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -335,6 +335,13 @@ msgstr ""
 msgid "Accessibility"
 msgstr ""
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -614,7 +621,7 @@ msgstr "โหลด ..."
 msgid "Featured"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "เกม"
 
@@ -625,7 +632,7 @@ msgstr "เกม"
 msgid "Loading..."
 msgstr "กำลังโหลด..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "ม็อด"
 
@@ -806,10 +813,6 @@ msgstr "$1 โดย $2"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr ""
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (เปิดใช้งาน)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1388,8 +1391,27 @@ msgid "Disable Texture Pack"
 msgstr "ปิดการใช้งานพื้นผิว Texture"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "ติดตั้งแพคเกจ:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "ปิดการใช้งานพื้นผิว Texture"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "เพลง"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "การเคลื่อนไหวเร็ว"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1405,12 +1427,13 @@ msgstr "เปลี่ยนชื่อ"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
-msgid "Update available?"
-msgstr "<ไม่มี>"
+msgid "Texture packs"
+msgstr "เทกซ์เจอร์แพ็ค"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "ใช้พื้นผิว Texture"
+#, fuzzy
+msgid "Update available?"
+msgstr "<ไม่มี>"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1627,8 +1650,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "โลกไม่เลือกและไม่มีที่อยู่ที่ให้ไว้. ไม่มีอะไรทำ."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "ชื่อเล่นนานเกินไป."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "เล่นเกม"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2545,13 +2569,13 @@ msgid "Minimap hidden"
 msgstr "แผนที่ย่อซ่อนอยู่"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "แผนที่ย่อในโหมดเรดาร์, ซูม x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "แผนที่ย่อในโหมด surface, ซูม x%d"
 
 #: src/client/minimap.cpp
@@ -3141,10 +3165,6 @@ msgid "Always fly fast"
 msgstr "บินเสมอ และรวดเร็ว"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "แกมมาบดเคี้ยวโดยรอบ"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "ขยายหุบเขา."
 
@@ -3601,17 +3621,19 @@ msgstr ""
 "เพื่อดูรายการทั้งหมดที่ https://content.minetest.net/help/content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "รายการม็อดคั่นด้วยเครื่องหมายจุลภาคที่อนุญาตให้เข้าถึง HTTP API ซึ่ง\n"
 "อนุญาตให้อัปโหลดและดาวน์โหลดข้อมูลไปยัง/จากอินเทอร์เน็ต"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "รายการที่คั่นด้วยเครื่องหมายจุลภาคของม็อดที่เชื่อถือได้ซึ่งได้รับอนุญาตให้เข้าถึงที่ไม่ปลอดภัย\n"
 "ทำงานแม้ในขณะที่การรักษาความปลอดภัย mod เปิดอยู่ (ผ่าน "
@@ -3957,6 +3979,10 @@ msgid "Developer Options"
 msgstr "ของตกแต่ง"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr ""
 
@@ -4123,10 +4149,6 @@ msgstr "เงาแบบไดนามิก"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "เปิดใช้งานการรองรับช่องสัญญาณ mod."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "เปิดใช้งานการรักษาความปลอดภัยม็อด"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4543,10 +4565,6 @@ msgstr "ตัวกรองมาตราส่วน GUI"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5037,8 +5055,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "ถ้าเปิดใช้งาน คุณสามารถทำบล็อกที่ตำแหน่ง (ระดับเท้าสายตา) คุณยืน . \n"
@@ -5604,16 +5622,6 @@ msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
 "ทำให้หมอกและสีของท้องฟ้าขึ้นอยู่กับเวลากลางวัน (รุ่งอรุณ / พระอาทิตย์ตก) และทิศทางการดู."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6219,6 +6227,16 @@ msgid "Occlusion Culling"
 msgstr "การคัดแยกการบดเคี้ยวทางฝั่งเซิร์ฟเวอร์"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "ความทึบ (อัลฟา) ของเงาด้านหลังแบบอักษรเริ่มต้น ระหว่าง 0 ถึง 255."
@@ -6344,10 +6362,6 @@ msgid ""
 msgstr ""
 "ป้องกันการขุดและวางจากการทำซ้ำเมื่อถือปุ่มเมาส์.\n"
 "เปิดใช้งานสิ่งนี้เมื่อคุณขุดหรือวางบ่อยเกินไปโดยไม่ได้ตั้งใจ."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr "ป้องกันไม่ให้ม็อดทำสิ่งต่าง ๆ ที่ไม่ปลอดภัย เช่น การรันคำสั่งเชลล์."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6838,12 +6852,6 @@ msgid ""
 msgstr "กำหนดความยาวอักขระสูงสุดของข้อความแชทที่ส่งโดยลูกค้า."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Set the shadow strength gamma.\n"
@@ -6967,6 +6975,10 @@ msgid ""
 msgstr ""
 "แสดงกล่องการเลือกเอนทิตี\n"
 "จำเป็นต้องรีสตาร์ทหลังจากเปลี่ยนแปลงสิ่งนี้."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7404,18 +7416,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"ความเข้ม (ความมืด) ของการแรเงารอบโหนด - การบัง\n"
-"ด้านล่างมืดกว่าและสูงกว่าเบากว่า ช่วงของค่าที่ใช้ได้สำหรับสิ่งนี้\n"
-"การตั้งค่าเป็น 0.25 ถึง 4.0 รวม หากค่าอยู่นอกช่วงจะเป็น\n"
-"ตั้งเป็นค่าที่ถูกต้องที่ใกล้ที่สุด"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7487,19 +7487,6 @@ msgstr "ความเร็วของเวลา"
 #, fuzzy
 msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr "หมดเวลาสำหรับไคลเอ็นต์เพื่อลบข้อมูลแผนที่ที่ไม่ได้ใช้ออกจากหน่วยความจำ."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "สลับหมอก"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7659,16 +7646,6 @@ msgstr "ม็อดที่เชื่อถือได้"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7748,9 +7725,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7894,11 +7871,6 @@ msgstr "เฟรมต่อวินาที (FPS) สูงสุดเม�
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "แสงที่ราบรื่น"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "แสงที่ราบรื่น"
 
@@ -7969,9 +7941,7 @@ msgid "Weblink color"
 msgstr "สีของกล่องที่เลือก"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8206,14 +8176,43 @@ msgstr ""
 msgid "Failed to save screenshot to \"%s\""
 msgstr ""
 
-#~ msgid "Enable joysticks"
-#~ msgstr "เปิดใช้งานจอยสติ๊ก"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (เปิดใช้งาน)"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "ตัวระบุของจอยสติ๊กที่จะใช้"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "แกมมาบดเคี้ยวโดยรอบ"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "ตัวระบุของจอยสติ๊กที่จะใช้"
+#~ msgid "Enable mod security"
+#~ msgstr "เปิดใช้งานการรักษาความปลอดภัยม็อด"
 
-#~ msgid "The type of joystick"
-#~ msgstr "ประเภทของจอยสติ๊ก"
+#~ msgid "Installed Packages:"
+#~ msgstr "ติดตั้งแพคเกจ:"
+
+#~ msgid "Player name too long."
+#~ msgstr "ชื่อเล่นนานเกินไป."
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr "ป้องกันไม่ให้ม็อดทำสิ่งต่าง ๆ ที่ไม่ปลอดภัย เช่น การรันคำสั่งเชลล์."
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "ความเข้ม (ความมืด) ของการแรเงารอบโหนด - การบัง\n"
+#~ "ด้านล่างมืดกว่าและสูงกว่าเบากว่า ช่วงของค่าที่ใช้ได้สำหรับสิ่งนี้\n"
+#~ "การตั้งค่าเป็น 0.25 ถึง 4.0 รวม หากค่าอยู่นอกช่วงจะเป็น\n"
+#~ "ตั้งเป็นค่าที่ถูกต้องที่ใกล้ที่สุด"
+
+#, fuzzy
+#~ msgid "Tinted fog"
+#~ msgstr "สลับหมอก"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "ใช้พื้นผิว Texture"
+
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "แสงที่ราบรื่น"

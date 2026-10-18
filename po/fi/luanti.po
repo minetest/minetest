@@ -2,10 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-05-12 02:11+0000\n"
-"Last-Translator: Johannes Palola "
-"<jopasuomi@users.noreply.hosted.weblate.org>\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
+"PO-Revision-Date: 2026-09-21 03:51+0000\n"
+"Last-Translator: Jouni Järvinen <rautajunk@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/minetest/"
 "minetest/fi/>\n"
 "Language: fi\n"
@@ -13,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -72,7 +71,7 @@ msgstr "Ohjeita komentojen käyttöön (-t: Lähetä viesti keskustelukenttään
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
-"Käytä '.help <cmd>' saadaksesi lisätietoja komennosta, tai '.help all' "
+"Käytä '.help <komento>' saadaksesi lisätietoja komennosta, tai '.help all' "
 "listataksesi kaiken."
 
 #. TRANSLATORS: Syntax of 'help' command. Don't translate anything except 'cmd' (=command)
@@ -82,7 +81,7 @@ msgstr "[all | <komento>] [-t]"
 
 #: builtin/common/settings/components.lua
 msgid "Add keybinding"
-msgstr "Lisää näppäin"
+msgstr "Lisää näppäinyhdistelmä"
 
 #: builtin/common/settings/components.lua
 msgid "Browse"
@@ -98,7 +97,7 @@ msgstr "Muokkaa"
 
 #: builtin/common/settings/components.lua
 msgid "Remove keybinding"
-msgstr "Poista näppäin"
+msgstr "Poista näppäinyhdistelmä"
 
 #: builtin/common/settings/components.lua
 msgid "Select directory"
@@ -349,6 +348,13 @@ msgstr "<tyhjä>"
 msgid "Accessibility"
 msgstr "Esteettömyys"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -529,7 +535,7 @@ msgstr "Tapahtui virhe:"
 
 #: builtin/fstk/ui.lua
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Kopioi leikepöydälle"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -619,7 +625,7 @@ msgstr "Ladataan..."
 msgid "Featured"
 msgstr "Esilletuotu"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Pelit"
 
@@ -630,7 +636,7 @@ msgstr "Pelit"
 msgid "Loading..."
 msgstr "Ladataan..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Lisäosat"
 
@@ -806,10 +812,6 @@ msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "tehnyt $1  —  $2 latauskertaa  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Käytössä)"
-
-#: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
 msgstr "Pelin $1 osat"
 
@@ -843,13 +845,13 @@ msgid ""
 "Players connected to\n"
 "$1"
 msgstr ""
-"Pelaajat on yhdistetty kohteeseen\n"
+"Pelaajat palvelimella\n"
 "$1"
 
 #. TRANSLATORS: Message in the mod list when a mod is enabled with error
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr "(Käytössä, sisältää virheitä)"
+msgstr "(Käytössä, tapahtui virheitä)"
 
 #. TRANSLATORS: Displayed when a mod dependency is unsatisfied
 #: builtin/mainmenu/dlg_config_world.lua
@@ -882,7 +884,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Löydä muitakin lisäosia"
+msgstr "Lataa lisäosia"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -904,7 +906,7 @@ msgstr "Pelin kuvausta ei ole annettu."
 #. TRANSLATORS: About mod dependencies
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "Ei ohittamattomia riippuvuuksia"
+msgstr "Ei pakollisia riippuvuuksia"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -967,7 +969,7 @@ msgstr "Biomit"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr "Luolat"
+msgstr "Luolastot"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
@@ -1392,8 +1394,27 @@ msgid "Disable Texture Pack"
 msgstr "Poista kuviointipaketti käytöstä"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Asennetut paketit:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Poista kuviointipaketti käytöstä"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Liiku vasemmalle"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1408,12 +1429,13 @@ msgid "Rename"
 msgstr "Nimeä uudelleen"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Päivitys saatavilla?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Muokatut kuvioinnit"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Ota kuviointipaketti käyttöön"
+msgid "Update available?"
+msgstr "Päivitys saatavilla?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1575,9 +1597,8 @@ msgid "Server Description"
 msgstr "Palvelimen kuvaus"
 
 #: src/chat.cpp
-#, fuzzy
 msgid "Player names: "
-msgstr "Pelaa peliä"
+msgstr "Pelaajien nimet: "
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1626,8 +1647,9 @@ msgstr ""
 "Ei ole valittu maailmaa eikä annettu osoitetta. Ei ole mitään tehtävää."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Pelaajanimi on liian pitkä."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Pelaajien nimet: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1767,12 +1789,12 @@ msgstr "Nopeutustila päällä"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr "Nopeutustila päällä (huomautus: sinulla ei ole \"fast\"-oikeutta)"
+msgstr "Nopeutustila päällä (huomautus: sinulla ei ole ’fast’-oikeutta)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "Tiedostot: %d / %d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1784,7 +1806,7 @@ msgstr "Lentotila päällä"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "Lentotila päällä (huomautus: sinulla ei ole \"fly\"-oikeutta)"
+msgstr "Lentotila päällä (huomautus: sinulla ei ole ’fly’-oikeutta)"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
@@ -1803,14 +1825,12 @@ msgid "Item definitions..."
 msgstr "Esinemääritelmät..."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "KiB"
-msgstr "KiB/s"
+msgstr "KiB"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "MiB"
-msgstr "MiB/s"
+msgstr "MiB"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1831,7 +1851,7 @@ msgstr "Koskemattomuustila päällä"
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
 msgstr ""
-"Koskemattomuustila päällä (huomautus: sinulla ei ole \"noclip\"-oikeutta)"
+"Koskemattomuustila päällä (huomautus: sinulla ei ole ’noclip’-oikeutta)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1864,7 +1884,7 @@ msgstr "Yksinpeli"
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Koko: %.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -2092,19 +2112,16 @@ msgid "Profiler shown (page %d of %d)"
 msgstr "Näytetään tekninen seuranta (sivu %d / %d)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "A (Gamepad)"
-msgstr "Videopeliohjaimet"
+msgstr "A (peliohjain)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "B (Gamepad)"
-msgstr "Videopeliohjaimet"
+msgstr "B (peliohjain)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Back (Gamepad)"
-msgstr "Videopeliohjaimet"
+msgstr "Takaisin (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -2112,7 +2129,7 @@ msgstr "Peruutusnäppäin"
 
 #: src/client/keycode.cpp
 msgid "Bottom Face Button (Gamepad)"
-msgstr ""
+msgstr "Alanappipainike (peliohjain)"
 
 #. TRANSLATORS: Usually paired with the Pause key
 #: src/client/keycode.cpp
@@ -2125,7 +2142,7 @@ msgstr "Caps lock"
 
 #: src/client/keycode.cpp
 msgid "Circle (Gamepad)"
-msgstr ""
+msgstr "Ympyrä (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -2136,26 +2153,24 @@ msgid "Control Key"
 msgstr "Control"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Cross (Gamepad)"
-msgstr "Videopeliohjaimet"
+msgstr "Rasti (peliohjain)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "D-Pad Down"
-msgstr "Page down"
+msgstr "Suuntaohjain alas"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Left"
-msgstr ""
+msgstr "Suuntaohjain vasemmalle"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Right"
-msgstr ""
+msgstr "Suuntaohjain oikealle"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Up"
-msgstr ""
+msgstr "Suuntaohjain ylös"
 
 #: src/client/keycode.cpp
 msgid "Delete Key"
@@ -2170,24 +2185,23 @@ msgid "End Key"
 msgstr "End"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d +"
-msgstr "Videopeliohjaimet"
+msgstr "Peliohjaimen akseli %d +"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d -"
-msgstr "Videopeliohjaimet"
+msgstr "Peliohjaimen akseli %d -"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Button %d"
-msgstr "Hiirennäppäin %d"
+msgstr "Peliohjaimen painike %d"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Guide (Gamepad)"
-msgstr "Videopeliohjaimet"
+msgstr "Ohje (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Help Key"
@@ -2215,32 +2229,27 @@ msgstr "Vasen control"
 
 #: src/client/keycode.cpp
 msgid "Left Face Button (Gamepad)"
-msgstr ""
+msgstr "Vasen kasvopainike (peliohjain)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Button"
-msgstr "Ohjaimen tyyppi"
+msgstr "Vasen ohjaussauvapainike"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Down"
-msgstr "Ohjaimen tunniste"
+msgstr "Vasen ohjaussauva alas"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Left"
-msgstr "Ohjaimen tyyppi"
+msgstr "Vasen ohjaussauva vasemmalle"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Right"
-msgstr "Ohjaimen tyyppi"
+msgstr "Vasen ohjaussauva oikealle"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Up"
-msgstr "Ohjaimen tyyppi"
+msgstr "Vasen ohjaussauva ylös"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
@@ -2251,14 +2260,12 @@ msgid "Left Shift"
 msgstr "Vasen vaihto"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Shoulder"
-msgstr "Vasen vaihto"
+msgstr "Vasen olkapainike"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Trigger"
-msgstr "Nuoli vasemmalle"
+msgstr "Vasen liipaisin"
 
 #. TRANSLATORS: Name of key
 #: src/client/keycode.cpp
@@ -2372,11 +2379,11 @@ msgstr "Toista"
 
 #: src/client/keycode.cpp
 msgid "Primary Left Paddle"
-msgstr ""
+msgstr "Ensisijainen vasen mela"
 
 #: src/client/keycode.cpp
 msgid "Primary Right Paddle"
-msgstr ""
+msgstr "Ensisijainen oikea mela"
 
 #. TRANSLATORS: "Print screen" key
 #: src/client/keycode.cpp
@@ -2401,31 +2408,27 @@ msgstr "Oikea control"
 
 #: src/client/keycode.cpp
 msgid "Right Face Button (Gamepad)"
-msgstr ""
+msgstr "Oikea kasvopainike (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Right Joystick Button"
-msgstr ""
+msgstr "Oikea ohjaussauvapainike"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Down"
-msgstr "Ohjaimen tunniste"
+msgstr "Oikea ohjaussauva alas"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Left"
-msgstr "Ohjaimen tyyppi"
+msgstr "Oikea ohjaussauva vasemmalle"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Right"
-msgstr "Ohjaimen tyyppi"
+msgstr "Oikea ohjaussauva oikealle"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Up"
-msgstr "Ohjaimen tyyppi"
+msgstr "Oikea ohjaussauva ylös"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
@@ -2436,14 +2439,12 @@ msgid "Right Shift"
 msgstr "Oikea vaihto"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Shoulder"
-msgstr "Oikea vaihto"
+msgstr "Oikea olkapainike"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Trigger"
-msgstr "Nuoli oikealle"
+msgstr "Oikea liipaisin"
 
 #. TRANSLATORS: Name of key
 #: src/client/keycode.cpp
@@ -2461,11 +2462,11 @@ msgstr "Scroll lock"
 
 #: src/client/keycode.cpp
 msgid "Secondary Left Paddle"
-msgstr ""
+msgstr "Toissijainen vasen mela"
 
 #: src/client/keycode.cpp
 msgid "Secondary Right Paddle"
-msgstr ""
+msgstr "Toissijainen oikea mela"
 
 #: src/client/keycode.cpp
 msgid "Select Key"
@@ -2480,14 +2481,12 @@ msgid "Space"
 msgstr "Välilyönti"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Square (Gamepad)"
-msgstr "Palvelinpelaaminen"
+msgstr "Neliö (peliohjain)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Start (Gamepad)"
-msgstr "Aloita peli"
+msgstr "Start (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Tab Key"
@@ -2495,42 +2494,40 @@ msgstr "Sarkain"
 
 #: src/client/keycode.cpp
 msgid "Top Face Button (Gamepad)"
-msgstr ""
+msgstr "Ylänappipainike (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Touchpad Button (Gamepad)"
-msgstr ""
+msgstr "Kosketuslevyn painike (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Triangle (Gamepad)"
-msgstr ""
+msgstr "Kolmio (peliohjain)"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
 msgstr "Nuoli ylös"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "X (Gamepad)"
-msgstr "Videopeliohjaimet"
+msgstr "X (peliohjain)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Y (Gamepad)"
-msgstr "Videopeliohjaimet"
+msgstr "Y (peliohjain)"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
 msgstr "Pienoiskartta piilotettu"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Pienoiskartta tutkatilassa, %d-kertainen suurennus"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Pienoiskartta pintatilassa, %d-kertainen suurennus"
 
 #: src/client/minimap.cpp
@@ -2617,7 +2614,7 @@ msgstr "Avaa linkki?"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Unable to open URL"
-msgstr "Linkin avaaminen ei onnistu"
+msgstr "Linkin avaaminen epäonnistui"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2654,7 +2651,7 @@ msgstr "Valmis"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Remove"
-msgstr "Ota pois"
+msgstr "Poista"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Reset"
@@ -2701,7 +2698,7 @@ msgstr "Tavaraluettelo"
 
 #: src/gui/touchscreenlayout.cpp
 msgid "Joystick"
-msgstr "Peliohjain"
+msgstr "Ohjaussauva"
 
 #: src/gui/touchscreenlayout.cpp src/settings_translation_file.cpp
 msgid "Jump"
@@ -2839,7 +2836,7 @@ msgstr ""
 
 #: src/script/lua_api/l_mainmenu.cpp
 msgid "Copied to clipboard!"
-msgstr ""
+msgstr "Kopioitu leikepöydälle!"
 
 #: src/server.cpp
 #, c-format
@@ -3021,11 +3018,11 @@ msgstr "Viesti, joka näytetään kaikille asiakkaille palvelimen sammuessa."
 
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
-msgstr "ABM-väliaika"
+msgstr "Aktiivisten kuutioiden muuttajan (ABM) väliaika"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr "ABM:n aikamääre"
+msgstr "Aktiivisten kuutioiden muuttajan (ABM) aikamääre"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -3040,9 +3037,8 @@ msgid "Acceleration of gravity, in nodes per second per second."
 msgstr "Painovoiman kiihtyvyys; palikoita sekunnissa sekuntia kohden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Actions and Keybindings"
-msgstr "Lisää näppäin"
+msgstr "Toiminnot ja näppäinyhdistelmät"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -3058,7 +3054,7 @@ msgstr "Aktiivisten kuutioiden kantavuus"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr "Aktiivisten kohteiden kantavuus"
+msgstr "Aktiivisten objektien lähetyskantavuus"
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
@@ -3133,10 +3129,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Always fly fast"
 msgstr "Lennä aina nopeasti"
-
-#: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Ympäristövarjostuksen gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
@@ -3605,18 +3597,20 @@ msgstr ""
 "täyden luettelon osoitteessa https://content.luanti.org/help/content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Pilkuin erotettu luettelo lisäosista, joilla on lupa käyttää HTTP-"
 "rajapintoja, mikä\n"
-"antaa niille mahdollisuuden ladata sisältöä verkkoon ja verkosta."
+"antaa niille mahdollisuuden lähettää sisältöä verkkoon ja ladata verkosta."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Pilkuin erotettu luettelo luotetuista lisäosista, joilla on lupa käyttää "
 "turvattomia\n"
@@ -3703,7 +3697,7 @@ msgid ""
 msgstr ""
 "Säätää vuorokauden pituuden.\n"
 "Esimerkkejä:\n"
-"72 = 20 min, 360 = 4 min, 1 = 24 tuntia, 0 = päivä / yö / mikä onkaan pysyy "
+"72 = 20 min, 360 = 4 min, 1 = 24 tuntia, 0 = päivä/yö/mikä onkaan pysyy "
 "muuttumattomana."
 
 #: src/settings_translation_file.cpp
@@ -3810,7 +3804,7 @@ msgid ""
 "Set this to -1 to disable the limit."
 msgstr ""
 "Oletusarvoinen väkisin ladattujen maailmakuutioiden suurin määrä.\n"
-"Aseta tämä arvoon -1 kytkeäksesi rajoituksen pois päältä."
+"Aseta tämä arvoon -1 poistaaksesi rajoituksen."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3912,7 +3906,7 @@ msgid ""
 "Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
 "Määrittää FSAA- ja SSAA-reunanpehmennyskeinojen näyteruudukon koon.\n"
-"Arvo 2 tarkoittaa, että näytteitä otetaan 2 x 2 eli 4."
+"Arvo 2 tarkoittaa, että näytteitä otetaan 2x2 eli 4."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3941,7 +3935,7 @@ msgstr "Kuutioiden lähettämisen viive rakentaessa"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr "Esineselosteen näyttämisen viive. Ilmoitetaan millisekunteina."
+msgstr "Esineselosteen näyttämisen viive millisekunteina."
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
@@ -3978,6 +3972,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Developer Options"
 msgstr "Kehittäjäasetukset"
+
+#: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
@@ -4105,7 +4103,7 @@ msgid ""
 "filtering."
 msgstr ""
 "Kytke Poisson disk -suodatus päälle.\n"
-"Poisson disk -menetelmää käytetään luomaan pehmeitä varjoja. Jos asetus on "
+"Poisson disk -menetelmää käytetään luomaan ”pehmeitä varjoja”. Jos asetus on "
 "pois, käytetään PCF-suodatusta."
 
 #: src/settings_translation_file.cpp
@@ -4156,10 +4154,6 @@ msgstr "Ota dynaamiset varjot käyttöön"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Ota lisäosakanavatuki käyttöön."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Ota lisäosien turvallisuus käyttöön"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4242,11 +4236,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr "Kytkee päälle tavaraluetteloesineiden animaation."
+msgstr "Kytkee tavaraluetteloesineiden animaation päälle."
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
-msgstr "Kytkee OpenGL-ajureiden virheenetsinnän ja virhetarkastuksen."
+msgstr "Kytkee OpenGL-ajureiden virheenetsinnän ja virhetarkastuksen päälle."
 
 #: src/settings_translation_file.cpp
 msgid "Enables smooth scrolling."
@@ -4609,11 +4603,7 @@ msgstr "Graafisen käyttöliittymän laajuuden suodatin"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr ""
+msgstr "Peliohjaimet ja ohjaussauvat"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -5082,9 +5072,10 @@ msgstr ""
 "näkymättömiä kuutioita, joten koskemattomuustila on vähemmän hyödyllinen."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Jos asetus on päällä, kuutioita voi sijoittaa paikkaan, jossa seisoo (jalat "
@@ -5264,14 +5255,12 @@ msgid "Joystick frustum sensitivity"
 msgstr "Ohjaimen näkymäherkkyys"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick inner dead zone"
-msgstr "Ohjaimen kuollut vyöhyke"
+msgstr "Ohjaussauvan sisempi kuollut vyöhyke"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick outer dead zone"
-msgstr "Ohjaimen kuollut vyöhyke"
+msgstr "Ohjaussauvan ulompi kuollut vyöhyke"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5379,6 +5368,8 @@ msgid ""
 "Key for opening the pause menu in-game.\n"
 "Pressing the escape key always opens the pause menu."
 msgstr ""
+"Näppäin, jolla avataan taukovalikon pelin aikana.\n"
+"Esc-näppäimen painaminen avaa aina taukovalikon."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5471,9 +5462,9 @@ msgid ""
 "-   Opaque: disable transparency"
 msgstr ""
 "Lehvätyyli:\n"
-"-   fancy:  kaikki sivut näkyvillä\n"
-"-   simple: vain ulkosivut\n"
-"-   opaque: ei läpinäkyvyyttä"
+"-   Fancy:  kaikki sivut näkyvillä\n"
+"-   Simple: vain ulkosivut\n"
+"-   Opaque: ei läpinäkyvyyttä"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5531,7 +5522,7 @@ msgid ""
 msgstr ""
 "debug.txt-tiedostoon tehtyjen kirjausten taso:\n"
 "-    <ei mitään> (ei kirjauksia)\n"
-"-    none (viestejä ilman tasoa)\n"
+"-    none (viestit ilman tasoa)\n"
 "-    error\n"
 "-    warning\n"
 "-    action\n"
@@ -5590,7 +5581,7 @@ msgstr ""
 "-    median saantiin, jos palvelin käyttää \"remote_media\"-asetusta\n"
 "-    palvelinlistan lataamiseen ja palvelinilmoituksiin\n"
 "-    päävalikon suorittamiin latauksiin (esim. lisäosien hallinnointi).\n"
-"Vaikuttaa vain, jos käännetään cURL:n avulla."
+"Vaikuttaa vain, jos Luanti käännettiin cURL-tuella."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
@@ -5679,18 +5670,8 @@ msgstr "Päävalikkoskripti"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
-"Sumun ja taivaan väri riippuu vuorokaudenajasta (auringonnousu/"
-"auringonlasku) ja katseen suunnasta."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
+"Sumun ja taivaan väri riippuu vuorokaudenajasta (auringonnousu/-lasku) ja "
+"katseen suunnasta."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6318,6 +6299,25 @@ msgid "Occlusion Culling"
 msgstr "Peittyvien asioiden karsiminen"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Peittyvien asioiden karsimisen tapa\n"
+"\n"
+"\"loops\" on perinteinen algoritmi, jossa on sisäkkäisiä toistorakenteita ja "
+"O(n³)-kompleksisuus\n"
+"\"bfs\" on uusi algoritmi, joka perustuu leveyssuuntaiseen läpikäyntiin ja "
+"sivuttaiskarsintaan\n"
+"\n"
+"Tätä asetusta tulee muuttaa vain, jos on suorituskykyongelmia."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Fontin takana olevan varjon läpinäkymättömyys (alfa)."
 
@@ -6331,7 +6331,7 @@ msgstr "Avaa tavaraluettelo"
 
 #: src/settings_translation_file.cpp
 msgid "Open pause menu"
-msgstr ""
+msgstr "Avaa taukovalikko"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6445,11 +6445,6 @@ msgstr ""
 "näppäimiä painaa pohjassa.\n"
 "Kytke tämä päälle, mikäli kaivat tai sijoitat liian usein vahingossa.\n"
 "Kosketusnäyttöjen kohdalla tämä koskee vain kaivamista."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"Estä lisäosia tekemästä turvattomia asioita kuten ajamasta kuorikomentoja."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6588,13 +6583,15 @@ msgstr ""
 "Yhdistä alla olevat tavumerkinnät rajoittaaksesi asiakaspuolen "
 "ominaisuuksia\n"
 "tai aseta arvoon 0, jolloin rajoituksia ei ole:\n"
-"LOAD_CLIENT_MODS: 1 (kytke pois asiakkaan mahdollisuus ladata lisäosia)\n"
-"CHAT_MESSAGES: 2 (kytke pois send_chat_message-kutsu asiakkaan puolelta)\n"
-"READ_ITEMDEFS: 4 (kytke pois get_item_def-kutsu asiakkaan puolelta)\n"
-"READ_NODEDEFS: 8 (kytke pois get_node_def-kutsu asiakkaan puolelta)\n"
-"LOOKUP_NODES_LIMIT: 16 (rajoittaa get_node-kutsun asiakkaan puolelta\n"
-"arvon csm_restriction_noderange mukaisesti)\n"
-"READ_PLAYERINFO: 32 (kytke pois get_player_names-kutsu asiakkaan puolelta)"
+"LOAD_CLIENT_MODS: 1 (kytkee pois asiakkaan mahdollisuus ladata lisäosia)\n"
+"CHAT_MESSAGES: 2 (kytkee pois ”send_chat_message”-kutsut asiakkaan "
+"puolelta)\n"
+"READ_ITEMDEFS: 4 (kytkee pois ”get_item_def”-kutsut asiakkaan puolelta)\n"
+"READ_NODEDEFS: 8 (kytkee pois ”get_node_def”-kutsut asiakkaan puolelta)\n"
+"LOOKUP_NODES_LIMIT: 16 (rajoittaa ”get_node”-kutsun asiakkaan puolelta\n"
+"”csm_restriction_noderange”-asetuksen mukaisesti)\n"
+"READ_PLAYERINFO: 32 (kytkee pois ”get_player_names”-kutsut asiakkaan "
+"puolelta)"
 
 #: src/settings_translation_file.cpp
 msgid "Return to Main Menu"
@@ -6963,12 +6960,6 @@ msgstr "Aseta asiakkaan lähettämän keskuteluviestin suurin pituus (merkkeinä
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -7089,6 +7080,10 @@ msgstr ""
 "Tämän muuttamisen jälkeen tarvitaan uudelleenkäynnistys."
 
 #: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
 msgstr "Näytä nimikylttien taustat oletuksena"
 
@@ -7112,11 +7107,12 @@ msgstr ""
 "järjestelmät hyötyvät pienemmistä arvoista."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Simulate translucency when looking at foliage in the sunlight.\n"
 "It is recommended to use this with setting \"leaves_style\" set to \"fancy\"."
-msgstr "Jäljittele läpikuultavuutta, kun lehvästöä katsoo auringonvalossa."
+msgstr ""
+"Jäljittele läpikuultavuutta, kun lehvästöä katsoo auringonvalossa.\n"
+"On suositeltavaa käyttää tätä asetuksen \"leaves_style\" ollessa \"fancy\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7562,18 +7558,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Kuutioiden ympäristövarjostuksen voimakkuus (tummuus).\n"
-"Pienempi arvo on tummempi, suurempi arvo hailakkaampi.\n"
-"Tämän asetuksen käypä vaihteluväli on 0.25 - 4.0. Jos arvo ei ole\n"
-"näiden rajojen sisällä, se asetetaan lähimpään käypään arvoon."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7652,19 +7636,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Sekunteina ilmoitettu aikaraja, jolloin asiakas poistaa käyttämättömät "
 "maailmatiedot muistista."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Sumu päälle/pois"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7808,24 +7779,6 @@ msgstr "Luotetut lisäosat"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Peittyvien asioiden karsimisen tapa\n"
-"\n"
-"\"loops\" on perinteinen algoritmi, jossa on sisäkkäisiä toistorakenteita ja "
-"O(n³)-kompleksisuus\n"
-"\"bfs\" on uusi algoritmi, joka perustuu leveyssuuntaiseen läpikäyntiin ja "
-"sivuttaiskarsintaan\n"
-"\n"
-"Tätä asetusta tulee muuttaa vain, jos on suorituskykyongelmia."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7911,14 +7864,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Käytä säteenseurantaa uusimmassa karsimistavassa.\n"
-"Tämä asetus kytkee säteenseurannan avulla suoritettavan\n"
-"karsintatarkastuksen alle 4 x 4 x 4 maailmakuution kokoisille asiakkaan "
-"silmukoille."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -8059,12 +8008,6 @@ msgid "Volume when unfocused"
 msgstr "Äänenvoimakkuus kun ei kohdistettu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Tilavuudellinen valaistus"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "Tilavuudellinen valaistus"
 
@@ -8137,9 +8080,7 @@ msgid "Weblink color"
 msgstr "Verkkolinkin väri"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8198,7 +8139,7 @@ msgid ""
 "Mods may still set a background."
 msgstr ""
 "Näytetäänkö nimikylttien taustat oletuksena.\n"
-"Lisäosat saattavat yhä asettaa taustan."
+"Lisäosat saattavat silti asettaa taustan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8217,7 +8158,7 @@ msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
-"Pyydetäänkö asiakkaita yhdistämään uudelleen (Lua-) kaatumisen jälkeen.\n"
+"Pyydetäänkö asiakkaita yhdistämään uudelleen (Lua-)kaatumisen jälkeen.\n"
 "Kytke tämä päälle, jos palvelimesi on asetettu käynnistymään automaattisesti "
 "uudelleen."
 
@@ -8385,24 +8326,85 @@ msgstr "cURLin välityspalvelimen osoite"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Kuvankaappauksen tallentaminen kohteeseen \"%s\" epäonnistui"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Ota peliohjaimet käyttöön"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (Käytössä)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Ympäristövarjostuksen gamma"
+
+#~ msgid "Enable mod security"
+#~ msgstr "Ota lisäosien turvallisuus käyttöön"
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Installed Packages:"
+#~ msgstr "Asennetut paketit:"
+
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
 #~ msgstr ""
-#~ "Ota peliohjaimet käyttöön. Tarvitsee uudelleenkäynnistyksen toimiakseen"
+#~ "Tee volumetrioista heikompia lähempänä olevia kohteita vasten "
+#~ "jäljitelläksesi fyysisiä volumetrioita."
 
-#~ msgid "Keybindings"
-#~ msgstr "Näppäinasetukset"
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "Tekee vaalean sumun väristä kylläisemmän."
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "Peliohjaimen kuollut vyöhyke"
+#~ msgid "Player name too long."
+#~ msgstr "Pelaajanimi on liian pitkä."
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "Käytettävän ohjaimen tunniste"
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Estä lisäosia tekemästä turvattomia asioita kuten ajamasta kuorikomentoja."
 
-#~ msgid "The type of joystick"
-#~ msgstr "Peliohjaimen tyyppi"
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "Aseta jälkikäsittelyn gamma-arvo.\n"
+#~ "Suuremmat arvot antavat pienemmän kontrastin ja päinvastoin."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "Kun asetus on päällä, nesteiden heijastuksia jäljitellään."
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Kuutioiden ympäristövarjostuksen voimakkuus (tummuus).\n"
+#~ "Pienempi arvo on tummempi, suurempi arvo hailakkaampi.\n"
+#~ "Tämän asetuksen käypä vaihteluväli on 0.25 - 4.0. Jos arvo ei ole\n"
+#~ "näiden rajojen sisällä, se asetetaan lähimpään käypään arvoon."
+
+#~ msgid "Tint sunlight during sunrise/sunset."
+#~ msgstr "Sävytä auringonvalo auringonnousun/-laskun aikana."
+
+#~ msgid "Tinted fog"
+#~ msgstr "Sävytetty sumu"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "Sävytetty auringonvalo"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Ota kuviointipaketti käyttöön"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Käytä säteenseurantaa uusimmassa karsimistavassa.\n"
+#~ "Tämä asetus kytkee säteenseurannan avulla suoritettavan\n"
+#~ "karsintatarkastuksen alle 4 x 4 x 4 maailmakuution kokoisille asiakkaan "
+#~ "silmukoille."
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Tilavuussyvyyden vaimennus"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "Kun asetus on päällä, simuloidaan raakoja nesteen heijastuksia.\n"
+#~ "Aallonkorkeus, pituus ja nopeus vaikuttavat näihin heijastuksiin."

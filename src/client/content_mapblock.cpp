@@ -339,6 +339,8 @@ static LightPair getSmoothLightCorner(const v3s16 &p,
 {
 	const NodeDefManager *ndef = data->m_nodedef;
 
+	assert(data->m_smooth_lighting);
+
 	const std::array<v3s16,8> dirs {
 		// Always shine light
 		v3s16(0,0,0),
@@ -370,8 +372,7 @@ static LightPair getSmoothLightCorner(const v3s16 &p,
 			return true;
 		const ContentFeatures &f = ndef->get(n);
 		ContentLightingFlags flags = data->getLightingFlags(p + dirs[i], n);
-		if (flags.light_source > light_source_max)
-			light_source_max = flags.light_source;
+		light_source_max = std::max(light_source_max, flags.light_source);
 		// Check f.solidness because fast-style leaves look better this way
 		if (flags.has_light && NDT_solidness[f.drawtype] != 2) {
 			u8 light_level_day = n.getLight(LIGHTBANK_DAY, flags);
@@ -429,25 +430,20 @@ static LightPair getSmoothLightCorner(const v3s16 &p,
 	}
 
 	if (ambient_occlusion > 4) {
-		static thread_local const float ao_gamma = rangelim(
-			g_settings->getFloat("ambient_occlusion_gamma"), 0.25, 4.0);
-
-		// Table of gamma space multiply factors.
-		static thread_local const float light_amount[3] = {
-			powf(0.75, 1.0 / ao_gamma),
-			powf(0.5,  1.0 / ao_gamma),
-			powf(0.25, 1.0 / ao_gamma)
-		};
-
-		//calculate table index for gamma space multiplier
-		ambient_occlusion -= 5;
+		float light_amount; // gamma space multiplier
+		if (ambient_occlusion == 5)
+			light_amount = std::pow(0.75f, data->m_ao_gamma_inv);
+		else if (ambient_occlusion == 6)
+			light_amount = std::pow(0.5f, data->m_ao_gamma_inv);
+		else // >= 7
+			light_amount = std::pow(0.25f, data->m_ao_gamma_inv);
 
 		if (!skip_ambient_occlusion_day)
 			light_day = rangelim(core::round32(
-					light_day * light_amount[ambient_occlusion]), 0, 255);
+					light_day * light_amount), 0, 255);
 		if (!skip_ambient_occlusion_night)
 			light_night = rangelim(core::round32(
-					light_night * light_amount[ambient_occlusion]), 0, 255);
+					light_night * light_amount), 0, 255);
 	}
 
 	return LightPair((u8)light_day, (u8)light_night);

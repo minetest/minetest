@@ -233,11 +233,13 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 
 	// Note: as the area used here is usually small, iterating entire blocks
 	// would actually be slower by factor of 10.
+	// Note #2: the >= min check will prevent an overflow from causing an
+	// infinite loop.
 
 	v3s16 p;
-	for (p.Z = min.Z; p.Z <= max.Z; p.Z++)
-	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
-	for (p.X = min.X; p.X <= max.X; p.X++) {
+	for (p.Z = min.Z; p.Z >= min.Z && p.Z <= max.Z; p.Z++)
+	for (p.Y = min.Y; p.Y >= min.Y && p.Y <= max.Y; p.Y++)
+	for (p.X = min.X; p.X >= min.X && p.X <= max.X; p.X++) {
 		v3s16 bp, relp;
 		getNodeBlockPosWithOffset(p, bp, relp);
 		if (bp != last_bp) {
@@ -375,7 +377,8 @@ template <float v3f::*AX>
 inline void collide_with(const aabb3f &box_mov, const aabb3f &box_stat,
 	v3f *pos_f, v3f *speed_f, v3f *accel_f, const v3f &aspeed_f, float bounce)
 {
-	const float speed = aspeed_f.*AX;
+	// Rare case: `speed_f->*AX` may be 0 when spawning an object (inside a collision box)
+	const float speed = speed_f->*AX ? speed_f->*AX : aspeed_f.*AX;
 
 	if (speed) {
 		// Set the position along the axis of collision to exactly where the box collided.
@@ -394,7 +397,7 @@ inline void collide_with(const aabb3f &box_mov, const aabb3f &box_stat,
 	}
 }
 
-#define PROFILER_NAME(text) (dynamic_cast<ServerEnvironment*>(env) ? ("Server: " text) : ("Client: " text))
+#define PROFILER_NAME(text) (env->getGameDef()->isClient() ? ("Client: " text) : ("Server: " text))
 
 CollisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		const aabb3f &box_0,
@@ -406,13 +409,13 @@ CollisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 {
 	static bool time_notification_done = false;
 
-	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG, PRECISION_MICRO);
-
 	CollisionMoveResult result;
 
 	// Assume no collisions when no velocity and no acceleration
 	if (*speed_f == v3f() && accel_f == v3f())
 		return result;
+
+	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG, PRECISION_MICRO);
 
 	/*
 		Calculate new velocity
@@ -427,6 +430,26 @@ CollisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		dtime = DTIME_LIMIT;
 	} else {
 		time_notification_done = false;
+	}
+
+	{
+		// Run two steps when encountering parabolas
+		// NOTE: There might be multiple turning points. This is a simplification to
+		//       cover 99% of the cases, generally +Y speed and -Y acceleration.
+		float dtime_peak = 1E99;
+		if (accel_f.X * speed_f->X < -0.01f)
+			dtime_peak = std::min(dtime_peak, -speed_f->X / accel_f.X);
+		if (accel_f.Y * speed_f->Y < -0.01f)
+			dtime_peak = std::min(dtime_peak, -speed_f->Y / accel_f.Y);
+		if (accel_f.Z * speed_f->Z < -0.01f)
+			dtime_peak = std::min(dtime_peak, -speed_f->Z / accel_f.Z);
+
+		if (dtime_peak < dtime) {
+			result = collisionMoveSimple(env, gamedef, box_0, stepheight, dtime_peak,
+					pos_f, speed_f, accel_f, self, collide_with_objects, step_up_mode);
+			// run with remaining dtime
+			dtime -= dtime_peak;
+		}
 	}
 
 	// Average speed

@@ -284,10 +284,12 @@ ParticleSpawner::ParticleSpawner(
 		m_texpool(std::move(texpool)),
 		m_attached_id(attached_id)
 {
-	m_spawntimes.reserve(p.amount + 1);
-	for (u16 i = 0; i <= p.amount; i++) {
-		float spawntime = myrand_float() * p.time;
-		m_spawntimes.push_back(spawntime);
+	if (p.time != 0) {
+		m_spawntimes.reserve(p.amount + 1);
+		for (int i = 0; i <= p.amount; i++) {
+			float spawntime = myrand_float() * p.time;
+			m_spawntimes.push_back(spawntime);
+		}
 	}
 
 	size_t max_particles = 0; // maximum number of particles likely to be visible at any given time
@@ -300,7 +302,7 @@ ParticleSpawner::ParticleSpawner(
 		max_particles = p.amount * longestLife;
 	}
 
-	p_manager->reserveParticleSpace(max_particles * 1.2);
+	p_manager->reserveParticleSpace(max_particles * 1.2f);
 }
 
 namespace {
@@ -505,15 +507,16 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
 		pp.size = r_size.pickWithin();
 
-	++m_active;
-	m_particlemanager->addParticle(std::make_unique<Particle>(
+	auto obj = std::make_unique<Particle>(
 			pp,
 			texture,
 			texpos,
 			texsize,
 			color,
 			this
-		));
+		);
+	if (m_particlemanager->addParticle(std::move(obj)))
+		m_active++;
 }
 
 void ParticleSpawner::step(float dtime, ClientEnvironment *env)

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-05-10 14:24+0000\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
+"PO-Revision-Date: 2026-08-24 08:51+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -347,6 +347,13 @@ msgstr "<empty>"
 msgid "Accessibility"
 msgstr "Aksesibilitas"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -527,7 +534,7 @@ msgstr "Sebuah masalah terjadi:"
 
 #: builtin/fstk/ui.lua
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Salin ke papan klip"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -615,7 +622,7 @@ msgstr "Mengunduh..."
 msgid "Featured"
 msgstr "Unggulan"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Permainan"
 
@@ -626,7 +633,7 @@ msgstr "Permainan"
 msgid "Loading..."
 msgstr "Memuat..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Mod"
 
@@ -800,10 +807,6 @@ msgstr "oleh $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "oleh $1  —  $2 unduhan  —  +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Dinyalakan)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1383,8 +1386,27 @@ msgid "Disable Texture Pack"
 msgstr "Matikan Paket Tekstur"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Paket Terpasang:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Matikan Paket Tekstur"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page Down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Bergerak ke kiri"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1399,12 +1421,13 @@ msgid "Rename"
 msgstr "Ganti nama"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Pembaruan tersedia?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Paket Tekstur"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Gunakan Paket Tekstur"
+msgid "Update available?"
+msgstr "Pembaruan tersedia?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1566,9 +1589,8 @@ msgid "Server Description"
 msgstr "Keterangan Server"
 
 #: src/chat.cpp
-#, fuzzy
 msgid "Player names: "
-msgstr "Mainkan Permainan"
+msgstr "Nama pemain: "
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1616,8 +1638,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "Tiada dunia yang dipilih dan tiada alamat yang diberikan."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Nama pemain terlalu panjang."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Nama pemain: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1762,7 +1785,7 @@ msgstr "Mode cepat dinyalakan (catatan: tanpa hak \"fast\")"
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "File: %d / %d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1793,14 +1816,12 @@ msgid "Item definitions..."
 msgstr "Definisi barang..."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "KiB"
-msgstr "KiB/s"
+msgstr "KiB"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "MiB"
-msgstr "MiB/s"
+msgstr "MiB"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1853,7 +1874,7 @@ msgstr "Pemain tunggal"
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Ukuran: %.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -2082,19 +2103,16 @@ msgid "Profiler shown (page %d of %d)"
 msgstr "Pemrofil ditampilkan (halaman %d dari %d)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "A (Gamepad)"
-msgstr "Gamepad"
+msgstr "A (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "B (Gamepad)"
-msgstr "Gamepad"
+msgstr "B (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Back (Gamepad)"
-msgstr "Gamepad"
+msgstr "Back (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -2102,7 +2120,7 @@ msgstr "Backspace"
 
 #: src/client/keycode.cpp
 msgid "Bottom Face Button (Gamepad)"
-msgstr ""
+msgstr "Tombol Wajah Bawah (Gamepad)"
 
 #. TRANSLATORS: Usually paired with the Pause key
 #: src/client/keycode.cpp
@@ -2115,7 +2133,7 @@ msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
 msgid "Circle (Gamepad)"
-msgstr ""
+msgstr "Circle (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -2126,26 +2144,24 @@ msgid "Control Key"
 msgstr "Ctrl"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Cross (Gamepad)"
-msgstr "Gamepad"
+msgstr "Cross (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "D-Pad Down"
-msgstr "Page Down"
+msgstr "D-Pad Bawah"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Left"
-msgstr ""
+msgstr "D-Pad Kiri"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Right"
-msgstr ""
+msgstr "D-Pad Kanan"
 
 #: src/client/keycode.cpp
 msgid "D-Pad Up"
-msgstr ""
+msgstr "D-Pad Atas"
 
 #: src/client/keycode.cpp
 msgid "Delete Key"
@@ -2160,24 +2176,23 @@ msgid "End Key"
 msgstr "Tombol End"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d +"
-msgstr "Gamepad"
+msgstr "Sumbu Gamepad %d +"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d -"
-msgstr "Gamepad"
+msgstr "Sumbu Gamepad %d -"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Button %d"
-msgstr "Tombol Mouse %d"
+msgstr "Tombol Gamepad %d"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Guide (Gamepad)"
-msgstr "Gamepad"
+msgstr "Guide (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Help Key"
@@ -2205,32 +2220,27 @@ msgstr "Ctrl Kiri"
 
 #: src/client/keycode.cpp
 msgid "Left Face Button (Gamepad)"
-msgstr ""
+msgstr "Tombol Wajah Kiri (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Button"
-msgstr "Jenis joystick"
+msgstr "Tombol Joystick Kiri"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Down"
-msgstr "ID Joystick"
+msgstr "Joystick Kiri Bawah"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Left"
-msgstr "Jenis joystick"
+msgstr "Joystick Kiri Kiri"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Right"
-msgstr "Jenis joystick"
+msgstr "Joystick Kiri Kanan"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Joystick Up"
-msgstr "Jenis joystick"
+msgstr "Joystick Kiri Atas"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
@@ -2241,14 +2251,12 @@ msgid "Left Shift"
 msgstr "Shift Kiri"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Shoulder"
-msgstr "Shift Kiri"
+msgstr "Bahu Kiri"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Trigger"
-msgstr "Panah Kiri"
+msgstr "Trigger Kiri"
 
 #. TRANSLATORS: Name of key
 #: src/client/keycode.cpp
@@ -2362,11 +2370,11 @@ msgstr "Main"
 
 #: src/client/keycode.cpp
 msgid "Primary Left Paddle"
-msgstr ""
+msgstr "Dayung Kiri Primer"
 
 #: src/client/keycode.cpp
 msgid "Primary Right Paddle"
-msgstr ""
+msgstr "Dayung Kanan Primer"
 
 #. TRANSLATORS: "Print screen" key
 #: src/client/keycode.cpp
@@ -2391,31 +2399,27 @@ msgstr "Ctrl Kanan"
 
 #: src/client/keycode.cpp
 msgid "Right Face Button (Gamepad)"
-msgstr ""
+msgstr "Tombol Wajah Kanan (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Right Joystick Button"
-msgstr ""
+msgstr "Tombol Joystick Kanan"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Down"
-msgstr "ID Joystick"
+msgstr "Joystick Kanan Bawah"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Left"
-msgstr "Jenis joystick"
+msgstr "Joystick Kanan Kiri"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Right"
-msgstr "Jenis joystick"
+msgstr "Joystick Kanan Kanan"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Joystick Up"
-msgstr "Jenis joystick"
+msgstr "Joystick Kanan Atas"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
@@ -2426,14 +2430,12 @@ msgid "Right Shift"
 msgstr "Shift Kanan"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Shoulder"
-msgstr "Shift Kanan"
+msgstr "Bahu Kanan"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Trigger"
-msgstr "Panah Kanan"
+msgstr "Trigger Kanan"
 
 #. TRANSLATORS: Name of key
 #: src/client/keycode.cpp
@@ -2451,11 +2453,11 @@ msgstr "Scroll Lock"
 
 #: src/client/keycode.cpp
 msgid "Secondary Left Paddle"
-msgstr ""
+msgstr "Dayung Kiri Sekunder"
 
 #: src/client/keycode.cpp
 msgid "Secondary Right Paddle"
-msgstr ""
+msgstr "Dayung Kanan Sekunder"
 
 #: src/client/keycode.cpp
 msgid "Select Key"
@@ -2470,14 +2472,12 @@ msgid "Space"
 msgstr "Spasi"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Square (Gamepad)"
-msgstr "Alur Permainan Server"
+msgstr "Square (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Start (Gamepad)"
-msgstr "Mulai Permainan"
+msgstr "Start (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Tab Key"
@@ -2485,42 +2485,40 @@ msgstr "Tombol Tab"
 
 #: src/client/keycode.cpp
 msgid "Top Face Button (Gamepad)"
-msgstr ""
+msgstr "Tombol Wajah Atas (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Touchpad Button (Gamepad)"
-msgstr ""
+msgstr "Tombol Touchpad (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Triangle (Gamepad)"
-msgstr ""
+msgstr "Triangle (Gamepad)"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
 msgstr "Panah Atas"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "X (Gamepad)"
-msgstr "Gamepad"
+msgstr "X (Gamepad)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Y (Gamepad)"
-msgstr "Gamepad"
+msgstr "Y (Gamepad)"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
 msgstr "Peta mini disembunyikan"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Peta mini mode radar, Zum %dx"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Peta mini mode permukaan, Zum %dx"
 
 #: src/client/minimap.cpp
@@ -2826,7 +2824,7 @@ msgstr ""
 
 #: src/script/lua_api/l_mainmenu.cpp
 msgid "Copied to clipboard!"
-msgstr ""
+msgstr "Disalin ke papan klip!"
 
 #: src/server.cpp
 #, c-format
@@ -3012,9 +3010,8 @@ msgid "Acceleration of gravity, in nodes per second per second."
 msgstr "Percepatan gravitasi dalam nodus per detik per detik."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Actions and Keybindings"
-msgstr "Tambahkan pintasan tombol"
+msgstr "Tindakan dan Pengikatan Tombol"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -3102,10 +3099,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Always fly fast"
 msgstr "Selalu terbang cepat"
-
-#: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Gama ambient occlusion"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
@@ -3225,7 +3218,6 @@ msgstr ""
 "Dalam satuan MapBlock (16 nodus)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "At this distance the server will consider blocks as \"far away\".\n"
 "It will perform simpler and cheaper occlusion checks, update\n"
@@ -3234,14 +3226,15 @@ msgid ""
 "This is especially useful for very large viewing range (upwards of 500).\n"
 "Stated in MapBlocks (16 nodes)."
 msgstr ""
-"Pada jarak ini, server akan melakukan optimasi dengan agresif terhadap\n"
-"blok yang dikirim kepada klien.\n"
-"Nilai yang kecil dapat meningkatkan kinerja dengan glitch pada tampilan\n"
-"(beberapa blok di bawah air dan dalam gua tidak akan digambar,\n"
-"terkadang juga di darat).\n"
-"Nilai yang lebih besar daripada max_block_send_distance mematikan\n"
-"optimasi ini.\n"
-"Dalam satuan MapBlock (16 nodus)."
+"Pada jarak ini, server akan menganggap blok sebagai \"jauh\".\n"
+"Server akan melakukan pemeriksaan oklusi yang lebih sederhana dan murah, "
+"memperbarui\n"
+"pembaruan blok prioritas rendah secara malas, dan membatasi blok yang "
+"dikirim ke\n"
+"klien dalam satu putaran.\n"
+"Ini terutama berguna untuk jangkauan pandang yang sangat besar (di atas "
+"500).\n"
+"Dinyatakan dalam MapBlocks (16 node)."
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
@@ -3577,18 +3570,20 @@ msgstr ""
 "content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Daftar yang dipisahkan dengan koma dari mod yang dibolehkan untuk\n"
 "mengakses HTTP API, membolehkan mereka untuk mengunggah dan mengunduh data "
 "ke/dari internet."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Daftar yang dengan dipisahkan koma dari mod terpercaya yang diperbolehkan\n"
 "untuk mengakses fungsi yang tidak aman bahkan saat mod security aktif "
@@ -3949,6 +3944,10 @@ msgid "Developer Options"
 msgstr "Pilihan Pengembang"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr ""
 "Nonaktifkan jika Anda hanya ingin melakukan instrumentasi dengan Tracy."
@@ -4124,10 +4123,6 @@ msgstr "Aktifkan bayangan dinamis"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Nyalakan dukungan saluran mod."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Nyalakan pengamanan mod"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4546,11 +4541,7 @@ msgstr "Filter skala GUI"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr ""
+msgstr "Gamepad dan Joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -5011,9 +5002,10 @@ msgstr ""
 "blok tak terlihat sehingga kemampuan mode tembus blok berkurang."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Jika dinyalakan, Anda dapat menaruh nodus pada posisi tempat Anda berdiri "
@@ -5185,14 +5177,12 @@ msgid "Joystick frustum sensitivity"
 msgstr "Kepekaan ruang gerak joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick inner dead zone"
-msgstr "Zona mati joystick"
+msgstr "Zona mati dalam joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick outer dead zone"
-msgstr "Zona mati joystick"
+msgstr "Zona mati luar joystick"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5297,6 +5287,8 @@ msgid ""
 "Key for opening the pause menu in-game.\n"
 "Pressing the escape key always opens the pause menu."
 msgstr ""
+"Tombol untuk membuka menu jeda dalam permainan.\n"
+"Menekan tombol escape selalu membuka menu jeda."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5590,16 +5582,6 @@ msgid ""
 msgstr ""
 "Buat warna kabut dan langit tergantung pada waktu (fajar/magrib) dan arah "
 "pandangan."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6213,6 +6195,25 @@ msgid "Occlusion Culling"
 msgstr "Pemusnahan Oklusi"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Jenis occlusion_culler\n"
+"\n"
+"\"loops\" adalah algoritma peninggalan dengan loop bertingkat dan "
+"kompleksitas O(n³)\n"
+"\"bfs\" adalah algoritma baru berdasarkan breadth-first-search dan side "
+"culling\n"
+"\n"
+"Pengaturan ini seharusnya hanya diubah jika Anda mengalami masalah kinerja."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Keburaman (alfa) dari bayangan di belakang font."
 
@@ -6226,7 +6227,7 @@ msgstr "Buka inventaris"
 
 #: src/settings_translation_file.cpp
 msgid "Open pause menu"
-msgstr ""
+msgstr "Buka menu jeda"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6338,12 +6339,6 @@ msgstr ""
 "Nyalakan jika Anda merasa tidak sengaja menggali dan menaruh terlalu "
 "sering.\n"
 "Pada layar sentuh, ini hanya memengaruhi penggalian."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"Mencegah mod untuk melakukan hal yang tidak aman misalnya menjalankan "
-"perintah shell."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6833,14 +6828,12 @@ msgstr ""
 "Nilai 0 berarti tidak miring/orbit tegak."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation."
 msgstr ""
-"Atur kompensasi pajanan dalam satuan EV.\n"
-"Nilai 0.0 (bawaan) berarti tidak ada kompensasi pajanan.\n"
-"Rentang: dari -1 ke 1.0"
+"Atur kompensasi eksposur dalam satuan EV.\n"
+"Nilai 0,0 (bawaan) berarti tidak ada kompensasi eksposur."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6855,12 +6848,6 @@ msgid ""
 "Set the maximum length of a chat message (in characters) sent by clients."
 msgstr ""
 "Atur panjang pesan obrolan maksimum (jumlah karakter) yang dikirim klien."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6982,6 +6969,10 @@ msgstr ""
 "Diperlukan mulai ulang setelah mengganti ini."
 
 #: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
 msgstr "Tampilkan latar belakang tanda nama secara bawaan"
 
@@ -7005,11 +6996,13 @@ msgstr ""
 "nilai yang lebih kecil."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Simulate translucency when looking at foliage in the sunlight.\n"
 "It is recommended to use this with setting \"leaves_style\" set to \"fancy\"."
-msgstr "Simulasikan transparansi ketika melihat dedaunan dalam sinar matahari."
+msgstr ""
+"Simulasikan tembus cahaya saat melihat dedaunan di bawah sinar matahari.\n"
+"Disarankan untuk menggunakan ini dengan pengaturan \"leaves_style\" diatur "
+"ke \"fancy\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7440,18 +7433,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Kekuatan (kegelapan) dari shade ambient occlusion pada nodus.\n"
-"Makin kecil makin gelap, juga sebaliknya. Jangkauan yang sah\n"
-"berkisar dari 0.25 sampai 4.0 inklusif. Jika nilai di luar jangkauan,\n"
-"akan diatur ke nilai yang sah terdekat."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7524,19 +7505,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Batas waktu bagi klien untuk menghapus data peta yang tidak digunakan dari "
 "memori dalam detik."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Alih kabut"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7681,24 +7649,6 @@ msgstr "Mod yang dipercaya"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Jenis occlusion_culler\n"
-"\n"
-"\"loops\" adalah algoritma peninggalan dengan loop bertingkat dan "
-"kompleksitas O(n³)\n"
-"\"bfs\" adalah algoritma baru berdasarkan breadth-first-search dan side "
-"culling\n"
-"\n"
-"Pengaturan ini seharusnya hanya diubah jika Anda mengalami masalah kinerja."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7783,13 +7733,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Gunakan raytraced occlusion culling dalam culler baru.\n"
-"Flag ini membolehkan penggunaan uji raytraced occlusion culling\n"
-"untuk ukuran mesh klien yang lebih kecil daripada 4x4x4 blok peta."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7930,14 +7877,8 @@ msgid "Volume when unfocused"
 msgstr "Volume saat tidak difokuskan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Pencahayaan volume"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
-msgstr "Pencahayaan volume"
+msgstr "Pencahayaan Volumetrik"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8008,9 +7949,7 @@ msgid "Weblink color"
 msgstr "Warna tautan web"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8250,23 +8189,86 @@ msgstr "Alamat proxy cURL"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Gagal menyimpan tangkapan layar ke \"%s\""
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Gunakan joystick"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (Dinyalakan)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "Nyalakan joystick. Perlu mulai ulang agar berefek"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Gama ambient occlusion"
 
-#~ msgid "Keybindings"
-#~ msgstr "Pengikatan tombol"
+#~ msgid "Enable mod security"
+#~ msgstr "Nyalakan pengamanan mod"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "Zona mati joystick yang digunakan"
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "Identitas dari joystick yang digunakan"
+#~ msgid "Installed Packages:"
+#~ msgstr "Paket Terpasang:"
 
-#~ msgid "The type of joystick"
-#~ msgstr "Jenis joystick"
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
+#~ msgstr ""
+#~ "Buat volumetrik lebih lemah terhadap objek yang lebih dekat untuk meniru "
+#~ "volumetrik fisik."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "Ketika diaktifkan, refleksi cairan disimulasikan."
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "Membuat warna kabut cahaya lebih jenuh."
+
+#~ msgid "Player name too long."
+#~ msgstr "Nama pemain terlalu panjang."
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Mencegah mod untuk melakukan hal yang tidak aman misalnya menjalankan "
+#~ "perintah shell."
+
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "Atur nilai gamma pasca-pemrosesan.\n"
+#~ "Nilai lebih tinggi memberikan kontras lebih rendah dan sebaliknya."
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Kekuatan (kegelapan) dari shade ambient occlusion pada nodus.\n"
+#~ "Makin kecil makin gelap, juga sebaliknya. Jangkauan yang sah\n"
+#~ "berkisar dari 0.25 sampai 4.0 inklusif. Jika nilai di luar jangkauan,\n"
+#~ "akan diatur ke nilai yang sah terdekat."
+
+#~ msgid "Tint sunlight during sunrise/sunset."
+#~ msgstr "Warnai sinar matahari saat matahari terbit/terbenam."
+
+#~ msgid "Tinted fog"
+#~ msgstr "Kabut berwarna"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "Sinar matahari berwarna"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Gunakan Paket Tekstur"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Gunakan raytraced occlusion culling dalam culler baru.\n"
+#~ "Flag ini membolehkan penggunaan uji raytraced occlusion culling\n"
+#~ "untuk ukuran mesh klien yang lebih kecil daripada 4x4x4 blok peta."
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Atenuasi Kedalaman Volumetrik"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "Saat diaktifkan, refleksi cairan kasar disimulasikan.\n"
+#~ "Ketinggian, panjang, dan kecepatan gelombang akan memengaruhi refleksi "
+#~ "ini."

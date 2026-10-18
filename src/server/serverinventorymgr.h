@@ -35,8 +35,10 @@ public:
 	bool removeDetachedInventory(const std::string &name);
 	bool checkDetachedInventoryAccess(const InventoryLocation &loc, const std::string &player) const;
 
-	void sendDetachedInventories(const std::string &peer_name, bool incremental,
-			std::function<void(const std::string &, Inventory *)> apply_cb);
+	// args: name, inventory, owner
+	using SendCallbackFn = std::function<void(const std::string&, Inventory*, const std::string &)>;
+	void sendDetachedInventories(const std::string &filter_owner, bool incremental,
+		const SendCallbackFn &apply_cb);
 
 protected:
 	struct DetachedInventory

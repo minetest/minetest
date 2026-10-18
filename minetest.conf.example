@@ -26,7 +26,7 @@
 #    type: float min: 0 max: 100
 # cinematic_camera_smoothing = 0.05
 
-#    If enabled, you can place nodes at the position (feet + eye level) where you stand.
+#    If enabled, you can place nodes that would be blocked by your collision box.
 #    This is helpful when working with nodeboxes in small areas.
 #    type: bool
 # enable_build_where_you_stand = false
@@ -628,7 +628,7 @@
 
 #    View distance in nodes.
 #    type: int min: 20 max: 4000
-# viewing_range = 190
+# viewing_range = 200
 
 #    Undersampling is similar to using a lower screen resolution, but it applies
 #    to the game world only, keeping the GUI intact.
@@ -686,13 +686,6 @@
 #    light, it has very little effect on natural night light.
 #    type: float min: 0.33 max: 3
 # display_gamma = 1.0
-
-#    The strength (darkness) of node ambient-occlusion shading.
-#    Lower is darker, Higher is lighter. The valid range of values for this
-#    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
-#    set to the nearest valid value.
-#    type: float min: 0.25 max: 4
-# ambient_occlusion_gamma = 1.8
 
 ### Screenshots
 
@@ -818,18 +811,18 @@
 
 ### Occlusion Culling
 
-#    Type of occlusion_culler
+#    Occlusion culler to prefer
 #
-#    "loops" is the legacy algorithm with nested loops and O(n³) complexity
+#    "loops" is a simple nested algorithm with O(n³) complexity
 #    "bfs" is the new algorithm based on breadth-first-search and side culling
 #
 #    This setting should only be changed if you have performance problems.
 #    type: enum values: bfs, loops
 # occlusion_culler = bfs
 
-#    Use raytraced occlusion culling in the new culler.
-#    This flag enables use of raytraced occlusion culling test for
-#    client mesh sizes smaller than 4x4x4 map blocks.
+#    Use raytraced occlusion culling.
+#
+#    This setting should only be changed if you have performance problems.
 #    type: bool
 # enable_raytraced_culling = true
 
@@ -858,6 +851,10 @@
 #    at the expense of minor visual glitches that do not impact game playability.
 #    type: bool
 # performance_tradeoffs = false
+
+#    Show local particles when digging nodes.
+#    type: bool
+# enable_dig_particles = true
 
 ### Waving Nodes
 
@@ -3027,17 +3024,13 @@
 
 ### Mod Security
 
-#    Prevent mods from doing insecure things like running shell commands.
-#    type: bool
-# secure.enable_security = true
-
-#    Comma-separated list of trusted mods that are allowed to access insecure
-#    functions even when mod security is on (via request_insecure_environment()).
+#    Comma-separated list of trusted mods that are allowed to bypass the Lua
+#    sandbox. They will have full access to the host machine.
 #    type: string
 # secure.trusted_mods =
 
-#    Comma-separated list of mods that are allowed to access HTTP APIs, which
-#    allow them to upload and download data to/from the internet.
+#    Comma-separated list of mods that are allowed to use HTTP APIs, which
+#    allows them to connect to the Internet and devices on your network.
 #    type: string
 # secure.http_mods =
 
@@ -3247,7 +3240,7 @@
 #    draw calls, benefiting especially high-end GPUs.
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 #    type: int min: 1 max: 16
-# client_mesh_chunk = 1
+# client_mesh_chunk = 2
 
 #    Decide the color depth of the texture used for the post-processing pipeline.
 #    Reducing this can improve performance, but some effects (e.g. debanding)
@@ -3417,13 +3410,13 @@
 #    won't be deleted, depending on the current view range.
 #    Set to -1 for no limit.
 #    type: int min: -1 max: 2147483647
-# client_mapblock_limit = 7500
+# client_mapblock_limit = 9300
 
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
 #    type: int min: 1
-# max_simultaneous_block_sends_per_client = 40
+# max_simultaneous_block_sends_per_client = 50
 
 #    To save bandwidth, block transfers are slowed down when a player is building something.
 #    This determines how long the throttling lasts after placing a node.
@@ -3510,7 +3503,7 @@
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 #    type: int min: 1 max: 65535
-# max_block_send_distance = 12
+# max_block_send_distance = 13
 
 #    Default maximum number of forceloaded mapblocks.
 #    Set this to -1 to disable the limit.
@@ -3604,17 +3597,17 @@
 
 #    Maximum number of blocks that can be queued for loading.
 #    type: int min: 1 max: 1000000
-# emergequeue_limit_total = 1024
+# emergequeue_limit_total = 1200
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
 #    type: int min: 1 max: 1000000
-# emergequeue_limit_diskonly = 128
+# emergequeue_limit_diskonly = 150
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
 #    type: int min: 1 max: 1000000
-# emergequeue_limit_generate = 128
+# emergequeue_limit_generate = 150
 
 #    Number of emerge threads (responsible for map generation and loading) to use.
 #    If 0 then the engine will automatically choose a suitable value depending
@@ -3729,8 +3722,11 @@
 
 ## Hide: Temporary Settings
 
-#    Path to texture directory. All textures are first searched from here.
-#    type: path
+#    Ordered list of texture pack paths, separated by ";" on Windows
+#    and ":" on other platforms.
+#    Earlier entries take priority: if multiple packs provide the same
+#    texture, the first one wins.
+#    type: string
 # texture_path =
 
 #    Enables minimap.

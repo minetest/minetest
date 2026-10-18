@@ -82,12 +82,15 @@
 		Added optional "do_interpolate_rotation" u8 to AO_CMD_UPDATE_POSITION
 		[scheduled bump for 5.17.0]
 	PROTOCOL VERSION 54
-		Versioned inventories and ItemStack node modifiers
+		Send 'en' translation files to clients as a fallback
 		[scheduled bump for 5.18.0]
+	PROTOCOL VERSION 55
+		ItemStack with node modifiers
+		[scheduled bump for 5.19.0]
 */
 
 // Note: Also update core.protocol_versions in builtin when bumping
-const u16 LATEST_PROTOCOL_VERSION = 54;
+const u16 LATEST_PROTOCOL_VERSION = 55;
 
 // See also formspec [Version History] in doc/lua_api.md
 const u16 FORMSPEC_API_VERSION = 12;

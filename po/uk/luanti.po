@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-06 15:01+0000\n"
-"Last-Translator: winver <kirillstuzhuk@gmail.com>\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
+"PO-Revision-Date: 2026-10-10 10:44+0000\n"
+"Last-Translator: Tarás Lavrentiev <fromkaniv@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.8.1.dev0\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -343,6 +343,13 @@ msgstr "<порожно>"
 msgid "Accessibility"
 msgstr "Доступність"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -523,7 +530,7 @@ msgstr "Виникла помилка:"
 
 #: builtin/fstk/ui.lua
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Скопіювати до буфера обміну"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -611,7 +618,7 @@ msgstr "Завантаження..."
 msgid "Featured"
 msgstr "Рекомендовано"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Ігри"
 
@@ -622,7 +629,7 @@ msgstr "Ігри"
 msgid "Loading..."
 msgstr "Завантаження..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Моди"
 
@@ -796,10 +803,6 @@ msgstr "від $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "Автор: $1  —  Завантажень: $2  —  +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (увімкнено)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1381,8 +1384,27 @@ msgid "Disable Texture Pack"
 msgstr "Вимкнути текстури"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Встановлені пакунки:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Вимкнути текстури"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page Down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Рухатись ліворуч"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1397,12 +1419,13 @@ msgid "Rename"
 msgstr "Перейменувати"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Оновлення доступно?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Текстури"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Використати текстури"
+msgid "Update available?"
+msgstr "Оновлення доступно?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1563,9 +1586,8 @@ msgid "Server Description"
 msgstr "Опис сервера"
 
 #: src/chat.cpp
-#, fuzzy
 msgid "Player names: "
-msgstr "Грати"
+msgstr "Імена гравців: "
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1613,8 +1635,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "Жоден світ не вибрано та не надано адреси. Немає чого робити."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Імʼя гравця задовге."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Імена гравців: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1759,7 +1782,7 @@ msgstr "Швидкий рух увімкнено (немає дозволу \"fa
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "Файли: %d / %d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1790,14 +1813,12 @@ msgid "Item definitions..."
 msgstr "Визначення предметів..."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "KiB"
-msgstr "КіБ/сек"
+msgstr "КіБ"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "MiB"
-msgstr "МіБ/сек"
+msgstr "МіБ"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1850,7 +1871,7 @@ msgstr "Одиночна гра"
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Розмір: %.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -2074,19 +2095,16 @@ msgid "Profiler shown (page %d of %d)"
 msgstr "Профайлер відображено (сторінка %d з %d)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "A (Gamepad)"
-msgstr "Контролери"
+msgstr "A (Геймпад)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "B (Gamepad)"
-msgstr "Контролери"
+msgstr "B (Геймпад)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Back (Gamepad)"
-msgstr "Контролери"
+msgstr "Назад (Геймпад)"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -2107,7 +2125,7 @@ msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
 msgid "Circle (Gamepad)"
-msgstr ""
+msgstr "Коло (Геймпад)"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -2118,9 +2136,8 @@ msgid "Control Key"
 msgstr "Ctrl"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Cross (Gamepad)"
-msgstr "Контролери"
+msgstr "Хрестовина (Геймпад)"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -2152,24 +2169,23 @@ msgid "End Key"
 msgstr "Клавіша End"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d +"
-msgstr "Контролери"
+msgstr "Вісь Геймпада %d +"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Axis %d -"
-msgstr "Контролери"
+msgstr "Вісь Геймпада %d -"
 
 #: src/client/keycode.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Gamepad Button %d"
-msgstr "Кнопка миші %d"
+msgstr "Кнопка Геймпада %d"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Guide (Gamepad)"
-msgstr "Контролери"
+msgstr "Гід (Геймпад)"
 
 #: src/client/keycode.cpp
 msgid "Help Key"
@@ -2506,13 +2522,13 @@ msgid "Minimap hidden"
 msgstr "Мінімапа вимкнена"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Мінімапа в режимі радара. Наближення x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Мінімапа в режимі поверхні. Наближення x%d"
 
 #: src/client/minimap.cpp
@@ -3094,10 +3110,6 @@ msgid "Always fly fast"
 msgstr "Завжди літати швидко"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Гамма навколишнього затінення"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "Збільшує долини."
 
@@ -3563,17 +3575,19 @@ msgstr ""
 "повний перелік на https://content.luanti.org/help/content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Розділений комами перелік модів, яким надано доступ до HTTP API, що\n"
 "дозвляє ним завантажувати дані з інтернету або в інтернет."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Розділений комами перелік довірених модів, яким надано доступ до "
 "небезпечних\n"
@@ -3937,6 +3951,10 @@ msgid "Developer Options"
 msgstr "Розробницькі налаштування"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "Вимкніть, якщо ви хочете лише інструментувати з Tracy."
 
@@ -4110,10 +4128,6 @@ msgstr "Увімкнути динамічні тіні"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Увімкнути підтримку каналів модів."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Увімкнути безпеку модів"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4536,10 +4550,6 @@ msgstr "Фільтр масштабування HUD"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4996,9 +5006,10 @@ msgstr ""
 "невидимих вузлів, тому користь проходу крізь стіни зменшено."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Якщо увімкнено, ви можете розміщувати вузли на тому місці, де ви стоїте.\n"
@@ -5574,16 +5585,6 @@ msgid ""
 msgstr ""
 "Зробити кольори туману й неба залежними від частини доби (світанок/захід) і "
 "напрямка погляду."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6198,6 +6199,25 @@ msgid "Occlusion Culling"
 msgstr "Оклюзивне відсікання"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Методи occlusion_culler\n"
+"\n"
+"\"loops\" - старий алгоритм зі вкладеними циклами й складністю O(n3)\n"
+"\"bfs\" - новий алгоритм, що основано на пошуці в ширину й обрізанні бокових "
+"граней\n"
+"\n"
+"Це налаштування повинно бути зміненим лише якщо ви маєте проблеми з "
+"продуктивністю."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Непрозорість (альфа) тіні за шрифтом."
 
@@ -6323,10 +6343,6 @@ msgstr ""
 "кнопок.\n"
 "Увімкніть це, коли копаєте або розміщуєте випадково занадто часто.\n"
 "На сенсорних екранах це впливає лише на копання."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr "Заборонити модам робити небезпечні речі, як виконання команд оболонки."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6836,12 +6852,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6958,6 +6968,10 @@ msgid ""
 msgstr ""
 "Показати рамку виділення сутностей\n"
 "Після зміни потрібно перезапустити."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7431,18 +7445,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Сила (темрява) глобального затінення вузлів. Нижче - темніше,\n"
-"вище - світліше. Можливий діапазон значень для цього налаштування -\n"
-"від 0.25 до 4.0 включно. Якщо значення знаходиться поза цим діапазоном,\n"
-"воно буде встановлено до найближчого можливого значення."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7515,19 +7517,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Час очікування для клієнта, щоб видалити невикористані дані світу з пам'яті, "
 "в секундах."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Увімкнути туман"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7671,24 +7660,6 @@ msgstr "Довірені моди"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Методи occlusion_culler\n"
-"\n"
-"\"loops\" - старий алгоритм зі вкладеними циклами й складністю O(n3)\n"
-"\"bfs\" - новий алгоритм, що основано на пошуці в ширину й обрізанні бокових "
-"граней\n"
-"\n"
-"Це налаштування повинно бути зміненим лише якщо ви маєте проблеми з "
-"продуктивністю."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7773,13 +7744,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Використовувати проминеве оклюзивне відсікання в новому методі.\n"
-"Ця мітка вмикає використання перевірки проминевого оклюзивного відсікання\n"
-"для розмірів сітки клієнта менше за 4x4x4 блоків мапи."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7922,11 +7890,6 @@ msgstr "Гучність поза фокусом"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Об'ємне освітлення"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "Об'ємне освітлення"
 
@@ -7999,9 +7962,7 @@ msgid "Weblink color"
 msgstr "Колір вебпосилання"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8240,23 +8201,54 @@ msgstr ""
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Не вдалося зберегти скріншот до «%s»"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Увімкнути джойстики"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (увімкнено)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "Увімкнути джойстики. Потребує перезапуск, щоб дати ефект"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Гамма навколишнього затінення"
 
-#~ msgid "Keybindings"
-#~ msgstr "Прив'язки клавіш"
+#~ msgid "Enable mod security"
+#~ msgstr "Увімкнути безпеку модів"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "Мертва зона джойстика"
+#~ msgid "Installed Packages:"
+#~ msgstr "Встановлені пакунки:"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "Ідентифікатор джойстика, що використовується"
+#~ msgid "Player name too long."
+#~ msgstr "Імʼя гравця задовге."
 
-#~ msgid "The type of joystick"
-#~ msgstr "Тип джойстика"
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Заборонити модам робити небезпечні речі, як виконання команд оболонки."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "Якщо увімкнено, віддзеркалення рідин візуалізується."
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Сила (темрява) глобального затінення вузлів. Нижче - темніше,\n"
+#~ "вище - світліше. Можливий діапазон значень для цього налаштування -\n"
+#~ "від 0.25 до 4.0 включно. Якщо значення знаходиться поза цим діапазоном,\n"
+#~ "воно буде встановлено до найближчого можливого значення."
+
+#, fuzzy
+#~ msgid "Tinted fog"
+#~ msgstr "Увімкнути туман"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Використати текстури"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Використовувати проминеве оклюзивне відсікання в новому методі.\n"
+#~ "Ця мітка вмикає використання перевірки проминевого оклюзивного "
+#~ "відсікання\n"
+#~ "для розмірів сітки клієнта менше за 4x4x4 блоків мапи."
+
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Об'ємне освітлення"

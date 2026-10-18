@@ -133,7 +133,7 @@ void NodeMetaRef::handleToTable(lua_State *L, IMetadata *_meta)
 	MetaDataRef::handleToTable(L, _meta);
 
 	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(_meta);
-	assert(meta);
+	sanity_check(meta);
 
 	// inventory
 	Inventory *inv = meta->getInventory();

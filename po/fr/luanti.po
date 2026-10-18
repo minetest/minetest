@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-19 14:13+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
+"PO-Revision-Date: 2026-10-10 10:44+0000\n"
+"Last-Translator: Titouan Mandeville <titouan.mandeville@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.9.dev0\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -351,6 +351,13 @@ msgstr "<vide>"
 msgid "Accessibility"
 msgstr "Accessibilité"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -619,7 +626,7 @@ msgstr "Téléchargement…"
 msgid "Featured"
 msgstr "Mis en avant"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Jeux"
 
@@ -630,7 +637,7 @@ msgstr "Jeux"
 msgid "Loading..."
 msgstr "Chargement…"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Mods"
 
@@ -804,10 +811,6 @@ msgstr "de $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "de $1  —  $2 téléchargements  —  +$3/$4/-$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Activé)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1399,8 +1402,27 @@ msgid "Disable Texture Pack"
 msgstr "Désactiver le pack de textures"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Paquets installés :"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Désactiver le pack de textures"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Bas de page"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Gauche"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1415,12 +1437,13 @@ msgid "Rename"
 msgstr "Renommer"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Mise à jour disponible ?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Packs de textures"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Utiliser le pack de textures"
+msgid "Update available?"
+msgstr "Mise à jour disponible ?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1631,8 +1654,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "Pas de monde sélectionné et pas d'adresse fournie. Rien à faire."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Nom du joueur trop long."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Noms des joueurs : "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2503,13 +2527,13 @@ msgid "Minimap hidden"
 msgstr "Mini-carte cachée"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Mini-carte en mode radar, zoom ×%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Mini-carte en mode surface, zoom ×%d"
 
 #: src/client/minimap.cpp
@@ -3106,10 +3130,6 @@ msgid "Always fly fast"
 msgstr "Toujours voler vite"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Occlusion gamma ambiante"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "Amplifier les vallées."
 
@@ -3576,17 +3596,19 @@ msgstr ""
 "content_flags/."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Liste séparée par des virgules, des mods autorisés à accéder aux APIs HTTP, "
 "leur permettant d'envoyer et de télécharger des données vers/depuis Internet."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Liste séparée par des virgules, des mods de confiance autorisés à accéder "
 "aux fonctions non sécurisées même lorsque l'option de sécurisation des mods "
@@ -3951,6 +3973,10 @@ msgid "Developer Options"
 msgstr "Options de développeur"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "Désactiver pour uniquement instrumenter avec Tracy."
 
@@ -4127,10 +4153,6 @@ msgstr "Activer les ombres dynamiques"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Activer la prise en charge des canaux de mods."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Activer la sécurité des mods"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4569,10 +4591,6 @@ msgstr "Filtrage des images de l'interface graphique"
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
 msgstr "Manettes et joysticks"
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -5039,9 +5057,10 @@ msgstr ""
 "l'utilité du mode sans collisions est réduite."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Si activé, vous pouvez placer des blocs à la position où vous vous trouvez.\n"
@@ -5626,16 +5645,6 @@ msgid ""
 msgstr ""
 "Rendre la couleur du brouillard et du ciel différents selon l'heure du jour "
 "(aube/crépuscule) et la direction du regard."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6267,6 +6276,26 @@ msgid "Occlusion Culling"
 msgstr "Détermination des blocs invisibles"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Type d'« occlusion culler » (déterminateur des blocs invisibles)\n"
+"\n"
+"« loops » est l'ancien algorithme avec des boucles imbriquées et une "
+"complexité O(n³)\n"
+"« bfs » est le nouvel algorithme basé sur le parcours en largeur et "
+"l'élimination latérale\n"
+"\n"
+"Ce paramètre ne doit être modifié que si vous rencontrez des problèmes de "
+"performance."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Opacité (alpha) de l'ombre derrière la police, entre 0 et 255."
 
@@ -6394,12 +6423,6 @@ msgstr ""
 "Activer cette option lorsque vous creusez ou placez trop souvent par "
 "accident.\n"
 "Sur écrans tactiles, cela a un effet seulement pour le minage."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"Empêcher les mods d'exécuter des fonctions non sécurisées, comme des "
-"commandes système."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6923,12 +6946,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -7048,6 +7065,10 @@ msgstr ""
 "Un redémarrage est nécessaire après cette modification."
 
 #: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
 msgstr "Afficher l'arrière-plan des badges par défaut"
 
@@ -7144,8 +7165,8 @@ msgid ""
 "cinematic mode by using the key set in Controls."
 msgstr ""
 "Lisse la rotation de la caméra en mode cinématique, 0 pour désactiver.\n"
-"Entrer en mode cinématique avec le raccourci défini dans « Clavier et souris "
-"»."
+"Entrer en mode cinématique avec le raccourci défini dans « Clavier et "
+"souris »."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7526,20 +7547,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Intensité (obscurité) de l'ombrage des blocs avec l'occlusion ambiante.\n"
-"Les valeurs plus faibles sont plus sombres, les valeurs plus hautes sont "
-"plus claires.\n"
-"Une plage valide de valeurs pour cela se situe entre 0,25 et 4,0.\n"
-"Si la valeur est en dehors de cette plage alors elle est définie à la plus "
-"proche des valeurs valides."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7617,19 +7624,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Délai d'attente pour le client avant de supprimer les données de carte "
 "inutilisées de la mémoire, établi en secondes."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Brouillard"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr "Teinte de la lumière du soleil"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7774,25 +7768,6 @@ msgstr "Mods de confiance"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Type d'« occlusion culler » (déterminateur des blocs invisibles)\n"
-"\n"
-"« loops » est l'ancien algorithme avec des boucles imbriquées et une "
-"complexité O(n³)\n"
-"« bfs » est le nouvel algorithme basé sur le parcours en largeur et "
-"l'élimination latérale\n"
-"\n"
-"Ce paramètre ne doit être modifié que si vous rencontrez des problèmes de "
-"performance."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7883,15 +7858,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Utiliser l'élimination des blocs invisibles par lancer de rayons avec le "
-"nouvel algorithme.\n"
-"Cette option active l'utilisation du test d'élimination des blocs invisibles "
-"par lancer de rayons,\n"
-"pour les maillages clients de taille inférieure à 4 × 4 × 4 blocs de carte."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -8034,11 +8004,6 @@ msgid "Volume when unfocused"
 msgstr "Volume fenêtre non sélectionnée"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Éclairage volumétrique"
-
-#: src/settings_translation_file.cpp
 msgid "Volumetric Lighting"
 msgstr "Éclairage volumétrique"
 
@@ -8110,13 +8075,8 @@ msgid "Weblink color"
 msgstr "Couleur du lien web"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
-"Lorsque cette option est activée, les reflets sur les liquides sont simulés "
-"de façon approximative.\n"
-"La hauteur, la longueur et la vitesse des vagues influencent ces reflets."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8360,25 +8320,88 @@ msgstr "Adresse proxy de cURL"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Échec de l'enregistrement de la capture d'écran sous « %s »"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Activer les manettes"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (Activé)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "Activer les manettes. Nécessite un redémarrage pour prendre effet."
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Occlusion gamma ambiante"
 
-#~ msgid "Keybindings"
-#~ msgstr "Raccourcis"
+#~ msgid "Enable mod security"
+#~ msgstr "Activer la sécurité des mods"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "Zone morte de la manette."
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "Identifiant de la manette à utiliser."
+#~ msgid "Installed Packages:"
+#~ msgstr "Paquets installés :"
 
-#~ msgid "The type of joystick"
-#~ msgstr "Type de manette."
-
-#~ msgid "When enabled, liquid reflections are simulated."
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
 #~ msgstr ""
-#~ "Lorsque cette option est activée, les réflexions des liquides sont "
-#~ "simulées."
+#~ "Rends les volumétriques plus faible contre les objects à proximité pour "
+#~ "émuler les volumétriques physiques."
+
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "Rend la couleur du brouillard léger plus saturée."
+
+#~ msgid "Player name too long."
+#~ msgstr "Nom du joueur trop long."
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Empêcher les mods d'exécuter des fonctions non sécurisées, comme des "
+#~ "commandes système."
+
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "Définir le calcul des valeurs gamma.\n"
+#~ "Une valeur plus haute signifie une plus grande contraste et vice versa."
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Intensité (obscurité) de l'ombrage des blocs avec l'occlusion ambiante.\n"
+#~ "Les valeurs plus faibles sont plus sombres, les valeurs plus hautes sont "
+#~ "plus claires.\n"
+#~ "Une plage valide de valeurs pour cela se situe entre 0,25 et 4,0.\n"
+#~ "Si la valeur est en dehors de cette plage alors elle est définie à la "
+#~ "plus proche des valeurs valides."
+
+#~ msgid "Tinted fog"
+#~ msgstr "Brouillard teinté"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "Teinte de la lumière du soleil"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Utiliser le pack de textures"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Utiliser l'élimination des blocs invisibles par lancer de rayons avec le "
+#~ "nouvel algorithme.\n"
+#~ "Cette option active l'utilisation du test d'élimination des blocs "
+#~ "invisibles par lancer de rayons,\n"
+#~ "pour les maillages clients de taille inférieure à 4 × 4 × 4 blocs de "
+#~ "carte."
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Atténuation de l'éclairage volumétrique"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "Lorsque cette option est activée, les reflets sur les liquides sont "
+#~ "simulés de façon approximative.\n"
+#~ "La hauteur, la longueur et la vitesse des vagues influencent ces reflets."

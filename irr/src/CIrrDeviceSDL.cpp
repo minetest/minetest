@@ -333,7 +333,8 @@ void CIrrDeviceSDL::resetReceiveTextInputEvents()
 			SDL_StartTextInput(Window);
 		}
 	} else {
-		SDL_StopTextInput(Window);
+		if (SDL_TextInputActive(Window))
+			SDL_StopTextInput(Window);
 	}
 }
 

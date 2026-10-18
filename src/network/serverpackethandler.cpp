@@ -308,16 +308,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Keep client language for server translations
 	client->setLangCode(lang);
 
-	// Send active objects
-	{
-		PlayerSAO *sao = getPlayerSAO(peer_id);
-		if (sao)
-			SendActiveObjectRemoveAdd(client, sao);
-	}
-
-	// Send detached inventories
-	sendDetachedInventories(peer_id, false);
-
 	// Send player movement settings
 	SendMovement(peer_id);
 

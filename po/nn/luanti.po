@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Norwegian Nynorsk (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-19 14:13+0000\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
+"PO-Revision-Date: 2026-08-24 08:51+0000\n"
 "Last-Translator: Blood Axe <bloodaxenor@protonmail.com>\n"
 "Language-Team: Norwegian Nynorsk <https://hosted.weblate.org/projects/"
 "minetest/minetest/nn/>\n"
@@ -24,7 +24,7 @@ msgstr "Tom kommando."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "Gå ut til hovudmeny"
+msgstr "Attende til hovudmeny"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -63,17 +63,16 @@ msgid "Command not available: "
 msgstr "Kommandoen er ikkje tilgjengeleg: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Få hjelp med kommandoar"
+msgstr "Få hjelp med kommandoar (-t: utslag i chat)"
 
 #. TRANSLATORS: 'help' and 'all' mustn't be translated. cmd = command
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
-"Nytt '.help <kommando>' for å få meir informasjon, eller '.help all' for å "
-"liste opp alt."
+"Nytt '.help <km>' for å få meir informasjon, eller '.help all' for å liste "
+"opp alt."
 
 #. TRANSLATORS: Syntax of 'help' command. Don't translate anything except 'cmd' (=command)
 #: builtin/common/chatcommands.lua
@@ -292,7 +291,7 @@ msgstr ""
 #. the settings menu.
 #: builtin/common/settings/dlg_change_mapgen_flags.lua
 msgid "absvalue"
-msgstr "absverd"
+msgstr "absverdi"
 
 #. TRANSLATORS: "defaults" is a noise parameter flag.
 #. It describes the default processing options
@@ -335,6 +334,13 @@ msgstr "<tom>"
 #: builtin/common/settings/dlg_settings.lua
 msgid "Accessibility"
 msgstr "Tilgjenge"
+
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
 
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
@@ -406,7 +412,6 @@ msgid "Not bound"
 msgstr "Ikkje bunden"
 
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
 msgstr "Sett opphavsverdien att"
 
@@ -435,14 +440,13 @@ msgstr "Vis tekniske namn"
 
 #. TRANSLATORS: Touchscreen interaction style
 #: builtin/common/settings/dlg_settings.lua
-#, fuzzy
 msgid "Tap"
-msgstr "Tabulator"
+msgstr "Trykk"
 
 #. TRANSLATORS: Touchscreen interaction style
 #: builtin/common/settings/dlg_settings.lua
 msgid "Tap with crosshair"
-msgstr ""
+msgstr "Trykk med trådkors"
 
 #: builtin/common/settings/dlg_settings.lua
 msgid ""
@@ -468,15 +472,15 @@ msgstr "Innhald: Spel"
 
 #: builtin/common/settings/settingtypes.lua
 msgid "Content: Mods"
-msgstr "Innhald: Speltillegg"
+msgstr "Innhald: Tillegg"
 
 #: builtin/common/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(Spelet må òg aktivere skuggar)"
 
 #: builtin/common/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Tilpassa"
 
 #: builtin/common/settings/shadows_component.lua
 msgid "High"
@@ -516,7 +520,7 @@ msgstr "Det har skjedd ein feil:"
 
 #: builtin/fstk/ui.lua
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Kopier til utklippstavla"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -556,7 +560,7 @@ msgstr "Me støtter protokollversjonar mellom $1 og $2."
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Feil ved installering av \"$1\": $2"
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Failed to download \"$1\""
@@ -584,20 +588,19 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
-msgstr "$1 lastar ned …"
+msgstr "$1 lastar ned…"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All"
-msgstr "Alle"
+msgstr "Alt"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "ContentDB is not available when Luanti was compiled without cURL"
-msgstr "ContentDB er ikkje tilgjengeleg når Minetest vart kompilert utan cURL"
+msgstr "ContentDB er ikkje tilgjengeleg når Luanti vart kompilert utan cURL"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Downloading..."
-msgstr "Lastar ned …"
+msgstr "Lastar ned…"
 
 #. TRANSLATORS: A 'featured' package in ContentDB is a package that is
 #. more prominently displayed than other packages
@@ -605,7 +608,7 @@ msgstr "Lastar ned …"
 msgid "Featured"
 msgstr "Framheva"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Spel"
 
@@ -614,9 +617,9 @@ msgstr "Spel"
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/serverlistmgr.lua
 #: src/client/game.cpp
 msgid "Loading..."
-msgstr "Lastar..."
+msgstr "Lastar.."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Tillegg"
 
@@ -706,7 +709,7 @@ msgstr "Ver venleg å sjekke at basisspelet er korrekt."
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Du må installere eit spel før du kan installere tillegg"
 
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -717,9 +720,8 @@ msgid "Overwrite"
 msgstr "Overskriv"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "ContentDB page"
-msgstr "URL til ContentDB"
+msgstr "ContentDB-nettstad"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Description"
@@ -739,7 +741,7 @@ msgstr "Feil ved lasting av omtalar"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Forumemne"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Information"
@@ -793,10 +795,6 @@ msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "av $1  —  $2 nedlastingar  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Aktivert)"
-
-#: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
 msgstr "$1 speltillegg"
 
@@ -805,21 +803,17 @@ msgid "Failed to install $1 to $2"
 msgstr "Klarte ikkje å installere $1 til $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Legg inn tillegg: Kan ikkje finna eit sømeleg mappenamn for tilleggssamling "
-"$1"
+msgstr "Installasjon: Kunne ikkje finne sømeleg mappenamn for $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Kan ikkje finna eit lovleg tillegg eller tilleggssamling"
+msgstr ""
+"Klarte ikkje å finne ein gyldig vedlegg, vedleggspakke eller eit gyldig spel"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Kan ikkje leggja til eit tillegg som $1"
+msgstr "Klarte ikkje å installere $1 som ein $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -835,6 +829,8 @@ msgid ""
 "Players connected to\n"
 "$1"
 msgstr ""
+"Spelarar kopla til\n"
+"$1"
 
 #. TRANSLATORS: Message in the mod list when a mod is enabled with error
 #: builtin/mainmenu/dlg_config_world.lua
@@ -848,7 +844,7 @@ msgstr "(Misnøgd)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Deaktiver alt"
+msgstr "Skru av alle"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
@@ -880,7 +876,7 @@ msgstr "Tillegg:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mods located inside the world folder."
-msgstr ""
+msgstr "Vedlegg plasserte i verdsmappa."
 
 #. TRANSLATORS: About mod dependencies
 #: builtin/mainmenu/dlg_config_world.lua
@@ -1189,11 +1185,11 @@ msgstr "Namn"
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr "Lykelord"
+msgstr "Passord"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
-msgstr "Lykelord samsvarer ikkje"
+msgstr "Passord samsvarer ikkje"
 
 #. TRANSLATORS: Register an account on a server
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
@@ -1255,11 +1251,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses a game called $2 and the following mods:"
-msgstr ""
+msgstr "Tenaren $1 nyttar spelet som heiter $2 og følgjande tillegg:"
 
 #: builtin/mainmenu/dlg_server_list_mods.lua
 msgid "The $1 server uses the following mods:"
-msgstr ""
+msgstr "Tenaren $1 nyttar følgjande tillegg:"
 
 #. TRANSLATORS: $1 = name of the engine
 #: builtin/mainmenu/dlg_version_info.lua
@@ -1320,7 +1316,7 @@ msgstr "Aktive bidragsytarar"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
-msgstr ""
+msgstr "Aktiv oppteiknar:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -1367,17 +1363,35 @@ msgstr "Innhald"
 
 #. TRANSLATORS: $1 = number of available updates
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Innhald"
+msgstr "Innhald [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
 msgstr "Deaktiver teksturpakke"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Installerte pakker:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Deaktiver teksturpakke"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Nedover på side"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Bevega til venstre"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1389,19 +1403,20 @@ msgstr "Inga pakkeskildring tilgjengeleg"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr "Omdøp"
+msgstr "Omdøyp"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Texture packs"
+msgstr "Teksturpakkar"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Update available?"
 msgstr "Oppdatering tilgjengeleg?"
 
-#: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Bruk teksturpakke"
-
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr "Annonsér tenarmaskin"
+msgstr "Kunngjer tenar"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -1417,11 +1432,11 @@ msgstr "Aktivér skading"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr "Gjestgjeva spel"
+msgstr "Verta spel"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr "Gjestgjev tenar"
+msgstr "Verta tenar"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install a game"
@@ -1433,13 +1448,14 @@ msgstr "Installer spel frå ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Luanti doesn't come with a game by default."
-msgstr ""
+msgstr "Luanti har ingen spel til å byrja med."
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
 "Luanti is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
+"Luanti er ei spelskapingsplatform som lar deg spele eit breitt spelutval."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1554,12 +1570,11 @@ msgstr "Slett favoritt"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
-msgstr "Tenarbeskriving"
+msgstr "Tenarskildring"
 
 #: src/chat.cpp
-#, fuzzy
 msgid "Player names: "
-msgstr "Ha i gang spel"
+msgstr "Spelarnamn: "
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1567,7 +1582,7 @@ msgstr "Tilkopling avbroten (protokollfeil?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
-msgstr "Nett-kopling er brutt."
+msgstr "Nettkopling tidsavbroten."
 
 #: src/client/client.cpp
 msgid "Done!"
@@ -1575,15 +1590,15 @@ msgstr "Ferdig!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr "Førebur noder"
+msgstr "Førebur nodar"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr "Førebur nodar …"
+msgstr "Førebur nodar…"
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr "Lastar teksturar …"
+msgstr "Lastar teksturar…"
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
@@ -1604,11 +1619,12 @@ msgstr "Hovudmeny"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Inga verd er vald og inga stadsopplysing gjeven. Ikkje noko å gjere."
+msgstr "Inga verd er vald og inga adresse gjeven. Ikkje noko å gjere."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Spelarnamn for langt."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Spelarnamn: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1687,9 +1703,8 @@ msgid "Camera update enabled"
 msgstr "Kamera oppdatering er aktivert"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
-msgstr "Zoom er for tiden deaktivert tå spelet eller ein modifikasjon"
+msgstr "Zoom er for tiden deaktivert tå spelet eller eit tillegg"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1722,15 +1737,15 @@ msgstr "Tilkoplinga feila av ein ukjent grunn"
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Kunne ikkje løysa adressa: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr "Skapar klient..."
+msgstr "Opprettar klient..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr "Skapar tenarmaskin..."
+msgstr "Opprettar tenar..."
 
 #: src/client/game.cpp
 msgid "Debug info shown"
@@ -1739,63 +1754,60 @@ msgstr "Problemsøkjaren visar sin informasjon"
 #: src/client/game.cpp
 #, c-format
 msgid "Error creating client: %s"
-msgstr "Kunne ikkje skapa klient: %s"
+msgstr "Kunne ikkje oppretta klient: %s"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr "Ekspressmodus er avtatt"
+msgstr "Snøggmodus deaktivert"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr "Ekspress modus er i gang"
+msgstr "Snøggmodus aktivert"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr "Ekspress modus er i gang (notat: ikkje noko \"ekspress\" privilegier)"
+msgstr "Snøggmodus aktivert (merknad: manglar 'fast' privilegier)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Files: %d / %d"
-msgstr ""
+msgstr "Filer: %d / %d"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr "Flyvemodus er avtatt"
+msgstr "Flygemodus deaktivert"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr "Flyvemodus er i gang"
+msgstr "Flygemodus aktivert"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "Flyvemodus er i gang (Notat: Ikkje noko 'flyve' privilegier)"
+msgstr "Flygemodus aktivert (merknad: manglar 'fly' privilegier)"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
-msgstr "Tåke er deaktivert"
+msgstr "Tåke deaktivert"
 
 #: src/client/game.cpp
 msgid "Fog enabled"
-msgstr "Tåke er aktivert"
+msgstr "Tåke aktivert"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "Zoom er for tiden deaktivert tå spelet eller ein modifikasjon"
+msgstr "Tåke er aktivert av spel eller modifikasjon"
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr "Definerér gjennstander..."
+msgstr "Definerer gjenstandar..."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "KiB"
-msgstr "KiB/s"
+msgstr "KiB"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "MiB"
-msgstr "MiB/s"
+msgstr "MiB"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
@@ -1807,20 +1819,19 @@ msgstr "Fleirspelar"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr "Ikkjeklipp modus er avtatt"
+msgstr "Kollisjonsfri modus deaktivert"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr "Ikkjeklipp modus er i gang"
+msgstr "Kollisjonsfri modus aktivert"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
-"Ikkjeklipp modus er i gang (notat: Ikkje noko 'ikkjeklipp' privilegier)"
+msgstr "Kollisjonsfri modus aktivert (merknad: manglar 'noclip' privilegier)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr "Definerér noder..."
+msgstr "Definerer noder..."
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
@@ -1844,12 +1855,12 @@ msgstr "Slår av..."
 
 #: src/client/game.cpp src/client/game_formspec.cpp
 msgid "Singleplayer"
-msgstr "Enkeltspelar oppleving"
+msgstr "Enkeltspelar"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Size: %.2f %s"
-msgstr ""
+msgstr "Storleik: %.2f %s"
 
 #: src/client/game.cpp
 msgid "Sound muted"
@@ -1930,11 +1941,11 @@ msgstr "Volum endra til %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe not supported by video driver"
-msgstr ""
+msgstr "Trådramme støttast ikkje av videodrivaren"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr "Jern-tråd-ramma er vist"
+msgstr "Trådramme synast"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -1943,7 +1954,7 @@ msgstr "Zoom er for tiden deaktivert tå spelet eller ein modifikasjon"
 #. TRANSLATORS: Game mode (server or singleplayer)
 #: src/client/game_formspec.cpp
 msgid "- Mode: "
-msgstr "- modus: "
+msgstr "- Modus: "
 
 #: src/client/game_formspec.cpp
 msgid "- Public: "
@@ -1961,15 +1972,14 @@ msgstr "- Tenarnamn: "
 #. TRANSLATORS: Pause menu button, try to keep the translation short
 #: src/client/game_formspec.cpp
 msgid "Change Password"
-msgstr "Endre lykelord"
+msgstr "Endre passord"
 
 #. TRANSLATORS: Pause menu button, try to keep the translation short
 #: src/client/game_formspec.cpp
 msgid "Continue"
-msgstr "Fortset"
+msgstr "Hald fram"
 
 #: src/client/game_formspec.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1984,18 +1994,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Utgangspunkts Kontroller:\n"
-"Ikkje nokon meny synleg:\n"
-"- einskild berøring: knapp aktiveres\n"
-"- dobbel berøring: plassér/bruk\n"
-"- stryk finger: sjå rundt\n"
-"Meny/Synleg innhald:\n"
-"- dobbel berøring (ute):\n"
+"Kontrollar:\n"
+"Ingen meny synleg:\n"
+"- finger-røyrsle: sjå rundt\n"
+"- einskild berøring: plasser/skå/bruk\n"
+"- lang berøring: utvinn/bruk\n"
+"Meny/Inventar opent:\n"
+"- dobbel berøring (utanfor):\n"
 " -->lukk\n"
-"- berør stokk, berør slott:\n"
-" --> flytt stokk\n"
-"- berør&dra, berør med den andre finger'n\n"
-" --> plassér enkelt-gjenstand til slott\n"
+"- berør stabel, berør felt:\n"
+" --> flytt stabel\n"
+"- berør og flytt, berør med enda ein finger\n"
+" --> plasser enkelt-gjenstand i felt\n"
 
 #. TRANSLATORS: Pause menu button, try to keep the translation short
 #: src/client/game_formspec.cpp
@@ -2017,7 +2027,7 @@ msgstr "Spelet er stogga"
 
 #: src/client/game_formspec.cpp
 msgid "Hosting server"
-msgstr "Er i gang med vertskap tå tenarmaskin"
+msgstr "Vertar tenar"
 
 #: src/client/game_formspec.cpp
 msgid "Off"
@@ -2075,19 +2085,16 @@ msgid "Profiler shown (page %d of %d)"
 msgstr "Profilering synast (side %d av %d)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "A (Gamepad)"
-msgstr "Styrespakar"
+msgstr "A (styrespak)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "B (Gamepad)"
-msgstr "Styrespakar"
+msgstr "B (styrespak)"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Back (Gamepad)"
-msgstr "Styrespakar"
+msgstr "Attende (styrespak)"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -2169,7 +2176,7 @@ msgstr "Styrespakar"
 #: src/client/keycode.cpp
 #, c-format
 msgid "Gamepad Button %d"
-msgstr ""
+msgstr "Styrespak-knapp %d"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -2191,9 +2198,8 @@ msgid "Insert"
 msgstr "Sett inn"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Venstre kontrol"
+msgstr "Venstre pil"
 
 #: src/client/keycode.cpp
 msgid "Left Click"
@@ -2254,29 +2260,28 @@ msgid "Left Windows"
 msgstr "Venstre, meta knapp"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Meny"
+msgstr "Menyknapp"
 
 #: src/client/keycode.cpp
 msgid "Middle Click"
-msgstr ""
+msgstr "Midtklikk"
 
 #. TRANSLATORS: This is for mouse buttons without an intuitive description. %d is the number of the button.
 #: src/client/keycode.cpp
 #, c-format
 msgid "Mouse Button %d"
-msgstr ""
+msgstr "Museknapp %d"
 
 #. TRANSLATORS: This is a mouse button.
 #: src/client/keycode.cpp
 msgid "Mouse X1"
-msgstr ""
+msgstr "Mus X1"
 
 #. TRANSLATORS: This is a mouse button.
 #: src/client/keycode.cpp
 msgid "Mouse X2"
-msgstr ""
+msgstr "Mus X2"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
@@ -2521,13 +2526,13 @@ msgid "Minimap hidden"
 msgstr "Minikart er gøymt"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Minikart i radarmodus, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Minikart i overflatemodus, Zoom x%d"
 
 #: src/client/minimap.cpp
@@ -2601,7 +2606,7 @@ msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr "Fortset"
+msgstr "Hald fram"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
@@ -2641,19 +2646,16 @@ msgid "Sound Volume: %d%%"
 msgstr "Lydstyrke: %d%%"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Add button"
-msgstr "Mellom knappen"
+msgstr "Legg til knapp"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Done"
-msgstr "Ferdig!"
+msgstr "Ferdig"
 
 #: src/gui/touchscreeneditor.cpp
-#, fuzzy
 msgid "Remove"
-msgstr "Fjern-tenarmaskin"
+msgstr "Fjern"
 
 #: src/gui/touchscreeneditor.cpp
 msgid "Reset"
@@ -2717,16 +2719,15 @@ msgstr "Vel rekkevidde"
 
 #: src/gui/touchscreenlayout.cpp src/settings_translation_file.cpp
 msgid "Sneak"
-msgstr "Smyge"
+msgstr "Snika"
 
 #: src/gui/touchscreenlayout.cpp src/settings_translation_file.cpp
 msgid "Toggle chat log"
 msgstr "Slå chatloggen av eller på"
 
 #: src/gui/touchscreenlayout.cpp
-#, fuzzy
 msgid "Toggle debug"
-msgstr "Slå av/på tåke"
+msgstr "Veksla problemsøkjaren"
 
 #: src/gui/touchscreenlayout.cpp src/settings_translation_file.cpp
 msgid "Toggle fast"
@@ -2753,6 +2754,8 @@ msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr ""
+"Ein annan klient er kopla til med dette namnet.  Om klienten din avslutta "
+"uventa, prøv på ny om eit minutt."
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
@@ -2800,40 +2803,44 @@ msgstr "Tenar skruast av"
 #: src/network/clientpackethandler.cpp
 msgid ""
 "The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
+msgstr "Tenaren har støtt på ein intern feil. Du vil no bli kopla frå."
 
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
-msgstr ""
+msgstr "Tenaren kjøyrer i enkeltspelarmodus.  Du kan ikkje kopla til."
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr ""
+msgstr "For mange brukarar"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "Ukjend årsak til fråkopling."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr ""
+"Klienten din sende noko tenaren ikkje venta.  Prøv å kople til på nytt eller "
+"oppdater klienten din."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
 msgstr ""
+"Din klientversjon er ikkje støtta.\n"
+"Ver venleg og kontakt tenaradministrator."
 
 #: src/script/lua_api/l_mainmenu.cpp
 msgid "Copied to clipboard!"
-msgstr ""
+msgstr "Kopiert til utklippstavla!"
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Slår av..."
+msgstr "%s under avslutting: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2888,7 +2895,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2985,9 +2992,8 @@ msgid "Acceleration of gravity, in nodes per second per second."
 msgstr "Gravitasjonsakselerasjon, i nodar per sekund per sekund."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Actions and Keybindings"
-msgstr "Legg til tastebinding"
+msgstr "Handlingar og tastebinding"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -3063,10 +3069,6 @@ msgid "Always fly fast"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "Forsterkar dalane."
 
@@ -3076,11 +3078,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr "Annonser tenar"
+msgstr "Kunngjer tenar"
 
 #: src/settings_translation_file.cpp
 msgid "Announce to this serverlist."
-msgstr "Annonser til denne tenarlista."
+msgstr "Kunngjer åt denne tenarlista."
 
 #: src/settings_translation_file.cpp
 msgid "Anti-aliasing scale"
@@ -3310,15 +3312,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr ""
+msgstr "Hòlestøy"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Hòlestøy #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Hòlestøy #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
@@ -3326,19 +3328,19 @@ msgstr "Hòlebreidde"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr ""
+msgstr "Hòle1-støy"
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr ""
+msgstr "Hòle2-støy"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
-msgstr ""
+msgstr "Hòlromsgrense"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr ""
+msgstr "Hòlromstøy"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
@@ -3346,11 +3348,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
-msgstr ""
+msgstr "Hòleterskel"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern upper limit"
-msgstr ""
+msgstr "Hòlrom øvre grense"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3414,7 +3416,7 @@ msgstr "Klient"
 
 #: src/settings_translation_file.cpp
 msgid "Client Debugging"
-msgstr ""
+msgstr "Problemsøkjar på klient"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
@@ -3487,14 +3489,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3594,21 +3596,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr "Kræsjmelding"
+msgstr "Krasjmelding"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Trådkors alfa"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
+"Trådkors alfa (gjennomsiktigheit, mellom 0 og 255).\n"
+"Dette gjeld òg for objekt-trådkorset."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Trådkors farge"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3617,9 +3621,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Damage flash"
-msgstr "Kartskaparflagg"
+msgstr "Skadeblits"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -3631,7 +3634,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
+msgstr "Promblemsøkjing"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3651,7 +3654,7 @@ msgstr "Senk volum"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Dedikert tenar steg"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
@@ -3662,6 +3665,8 @@ msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
 msgstr ""
+"Standard maksimumstal på tvangslasta kartblokker.\n"
+"Set denne til -1 for å deaktivere grensa."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3677,7 +3682,7 @@ msgstr "Standard rapportformat"
 
 #: src/settings_translation_file.cpp
 msgid "Default stack size"
-msgstr ""
+msgstr "Standard stabelstorleik"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3788,8 +3793,7 @@ msgstr ""
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
-msgstr ""
-"Beskriving av tenaren – vert vist når spelarar vert med og i tenarlista."
+msgstr "Skildring av tenaren – synast når spelarar vert med og i tenarlista."
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
@@ -3802,9 +3806,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "Dekorasjonar"
+msgstr "Utviklaralternativ"
+
+#: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
@@ -3812,7 +3819,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Ikkje tillat tome passord"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
@@ -3863,7 +3870,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
-msgstr ""
+msgstr "Fangehòl støy"
 
 #: src/settings_translation_file.cpp
 msgid "Dynamic shadows"
@@ -3961,10 +3968,6 @@ msgstr "Dynamiske skuggar"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4102,19 +4105,19 @@ msgstr "Kantutjemning:"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr ""
+msgstr "Snøggmodus akselerasjon"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
+msgstr "Snøggmodus fart"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
-msgstr ""
+msgstr "Synsvidde"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
-msgstr ""
+msgstr "Syndvidde i gradar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4204,7 +4207,7 @@ msgstr "Tåka si byrjing"
 
 #: src/settings_translation_file.cpp
 msgid "Font"
-msgstr ""
+msgstr "Skrifttype"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -4224,7 +4227,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Skriftstorleik"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
@@ -4323,24 +4326,19 @@ msgid "Fullscreen mode."
 msgstr "Fullskjerm-modus."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
-msgstr "Grafiske brukargrensesnitt"
+msgstr "Grafisk brukargrensesnitt"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "Grafisk brukargrensesnitt-skalering"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr ""
+msgstr "Grafisk brukargrensesnitt-skaleringsfilter"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4376,15 +4374,15 @@ msgstr "Grafikk og lyd"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Gravitasjon"
 
 #: src/settings_translation_file.cpp
 msgid "Ground level"
-msgstr ""
+msgstr "Bakkenivå"
 
 #: src/settings_translation_file.cpp
 msgid "Ground noise"
-msgstr ""
+msgstr "Bakkestøy"
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
@@ -4392,12 +4390,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "HUD er vist"
+msgstr "HUD storleik"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4484,147 +4481,147 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 1"
-msgstr ""
+msgstr "Hurtigfelt 1"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 10"
-msgstr ""
+msgstr "Hurtigfelt 10"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 11"
-msgstr ""
+msgstr "Hurtigfelt 11"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 12"
-msgstr ""
+msgstr "Hurtigfelt 12"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 13"
-msgstr ""
+msgstr "Hurtigfelt 13"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 14"
-msgstr ""
+msgstr "Hurtigfelt 14"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 15"
-msgstr ""
+msgstr "Hurtigfelt 15"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 16"
-msgstr ""
+msgstr "Hurtigfelt 16"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 17"
-msgstr ""
+msgstr "Hurtigfelt 17"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 18"
-msgstr ""
+msgstr "Hurtigfelt 18"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 19"
-msgstr ""
+msgstr "Hurtigfelt 19"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 2"
-msgstr ""
+msgstr "Hurtigfelt 2"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 20"
-msgstr ""
+msgstr "Hurtigfelt 20"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 21"
-msgstr ""
+msgstr "Hurtigfelt 21"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 22"
-msgstr ""
+msgstr "Hurtigfelt 22"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 23"
-msgstr ""
+msgstr "Hurtigfelt 23"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 24"
-msgstr ""
+msgstr "Hurtigfelt 24"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 25"
-msgstr ""
+msgstr "Hurtigfelt 25"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 26"
-msgstr ""
+msgstr "Hurtigfelt 26"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 27"
-msgstr ""
+msgstr "Hurtigfelt 27"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 28"
-msgstr ""
+msgstr "Hurtigfelt 28"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 29"
-msgstr ""
+msgstr "Hurtigfelt 29"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 3"
-msgstr ""
+msgstr "Hurtigfelt 3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 30"
-msgstr ""
+msgstr "Hurtigfelt 30"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 31"
-msgstr ""
+msgstr "Hurtigfelt 31"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 32"
-msgstr ""
+msgstr "Hurtigfelt 32"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 4"
-msgstr ""
+msgstr "Hurtigfelt 4"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 5"
-msgstr ""
+msgstr "Hurtigfelt 5"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 6"
-msgstr ""
+msgstr "Hurtigfelt 6"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 7"
-msgstr ""
+msgstr "Hurtigfelt 7"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 8"
-msgstr ""
+msgstr "Hurtigfelt 8"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 9"
-msgstr ""
+msgstr "Hurtigfelt 9"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Enable mouse wheel for selection"
-msgstr ""
+msgstr "Hurtigfelt: Aktiver musehjul for val"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Invert mouse wheel direction"
-msgstr ""
+msgstr "Hurtigfelt: Inverter retning på musehjulet"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: select next item"
-msgstr ""
+msgstr "Hurtigfelt: Vel neste gjenstand"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: select previous item"
-msgstr ""
+msgstr "Hurtigfelt: Vel forrige gjenstand"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4746,8 +4743,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 
@@ -5241,16 +5238,6 @@ msgstr ""
 "solnedgang) og retninga ein er orientert mot."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
 msgstr ""
 
@@ -5697,7 +5684,7 @@ msgstr "Målbind"
 
 #: src/settings_translation_file.cpp
 msgid "Mute sound"
-msgstr ""
+msgstr "Målbind ljod"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5789,6 +5776,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5899,10 +5896,6 @@ msgid ""
 "buttons.\n"
 "Enable this when you dig or place too often by accident.\n"
 "On touchscreens, this only affects digging."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6030,9 +6023,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Return to Main Menu"
-msgstr "Gå ut til hovudmeny"
+msgstr "Attende til hovudmeny"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge mountain spread noise"
@@ -6339,12 +6331,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6439,6 +6425,10 @@ msgstr ""
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6797,14 +6787,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -6859,19 +6841,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory, in seconds."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Slå av/på tåke"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7020,16 +6989,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7098,9 +7057,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7230,11 +7189,6 @@ msgstr "Volum når ufokusert"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Volumetrisk ljos"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "Volumetrisk ljos"
 
@@ -7304,9 +7258,7 @@ msgid "Weblink color"
 msgstr "Fargen på nettlenker"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7496,11 +7448,22 @@ msgstr ""
 msgid "Failed to save screenshot to \"%s\""
 msgstr ""
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Aktivera styrespakar"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (Aktivert)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "Aktivera styrespakar. Krevjar ein omstart for å tre i kraft"
+#~ msgid "Installed Packages:"
+#~ msgstr "Installerte pakker:"
 
-#~ msgid "Keybindings"
-#~ msgstr "Tastebindingar"
+#~ msgid "Player name too long."
+#~ msgstr "Spelarnamn for langt."
+
+#, fuzzy
+#~ msgid "Tinted fog"
+#~ msgstr "Slå av/på tåke"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Bruk teksturpakke"
+
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Volumetrisk ljos"

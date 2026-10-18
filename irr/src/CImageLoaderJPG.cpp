@@ -44,31 +44,6 @@ struct irr_jpeg_error_mgr
 	core::stringc *filename;
 };
 
-void CImageLoaderJPG::init_source(j_decompress_ptr cinfo)
-{
-	// DO NOTHING
-}
-
-boolean CImageLoaderJPG::fill_input_buffer(j_decompress_ptr cinfo)
-{
-	// DO NOTHING
-	return TRUE;
-}
-
-void CImageLoaderJPG::skip_input_data(j_decompress_ptr cinfo, long count)
-{
-	jpeg_source_mgr *src = cinfo->src;
-	if (count > 0) {
-		src->bytes_in_buffer -= count;
-		src->next_input_byte += count;
-	}
-}
-
-void CImageLoaderJPG::term_source(j_decompress_ptr cinfo)
-{
-	// DO NOTHING
-}
-
 void CImageLoaderJPG::error_exit(j_common_ptr cinfo)
 {
 	// unfortunately we need to use a goto rather than throwing an exception
@@ -114,9 +89,9 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 
 	core::stringc filename = file->getFileName();
 
-	u8 **rowPtr = 0;
-	u8 *input = new u8[file->getSize()];
-	file->read(input, file->getSize());
+	const size_t inputSize = file->getSize();
+	u8 *input = new u8[inputSize];
+	file->read(input, inputSize);
 
 	// allocate and initialize JPEG decompression object
 	struct jpeg_decompress_struct cinfo;
@@ -132,6 +107,10 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 	cinfo.err->output_message = output_message;
 	jerr.filename = &filename;
 
+	// (volatile required due to setjmp)
+	u8 ** volatile rowPtr = nullptr;
+	u8 * volatile output = nullptr;
+
 	// compatibility fudge:
 	// we need to use setjmp/longjmp for error handling as gcc-linux
 	// crashes when throwing within external c code
@@ -143,6 +122,7 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 
 		delete[] input;
 		delete[] rowPtr;
+		delete[] output;
 
 		// return null pointer
 		return 0;
@@ -152,18 +132,7 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 	jpeg_create_decompress(&cinfo);
 
 	// specify data source
-	jpeg_source_mgr jsrc;
-
-	// Set up data pointer
-	jsrc.bytes_in_buffer = file->getSize();
-	jsrc.next_input_byte = (JOCTET *)input;
-	cinfo.src = &jsrc;
-
-	jsrc.init_source = init_source;
-	jsrc.fill_input_buffer = fill_input_buffer;
-	jsrc.skip_input_data = skip_input_data;
-	jsrc.resync_to_restart = jpeg_resync_to_restart;
-	jsrc.term_source = term_source;
+	jpeg_mem_src(&cinfo, input, inputSize);
 
 	// Decodes JPG input from whatever source
 	// Does everything AFTER jpeg_create_decompress
@@ -198,7 +167,7 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 	u32 height = cinfo.image_height;
 
 	// Allocate memory for buffer
-	u8 *output = new u8[rowspan * height];
+	output = new u8[rowspan * height];
 
 	// Here we use the library's state variable cinfo.output_scanline as the
 	// loop counter, so that we don't have to keep track ourselves.
@@ -214,6 +183,7 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 		rowsRead += jpeg_read_scanlines(&cinfo, &rowPtr[rowsRead], cinfo.output_height - rowsRead);
 
 	delete[] rowPtr;
+	rowPtr = nullptr;
 	// Finish decompression
 
 	jpeg_finish_decompress(&cinfo);
@@ -241,11 +211,14 @@ IImage *CImageLoaderJPG::loadImage(io::IReadFile *file) const
 			}
 		}
 		delete[] output;
-	} else
+		output = nullptr;
+	} else {
 		image = new CImage(ECF_R8G8B8,
 				core::dimension2d<u32>(width, height), output);
+	}
 
 	delete[] input;
+	input = nullptr;
 
 	return image;
 }

@@ -11,7 +11,7 @@
 
 inline bool nodeModifiersSupportForProtocol(u16 protocol)
 {
-	return protocol >= 54;
+	return protocol >= 55;
 }
 
 class NodeModifierManager;

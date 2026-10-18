@@ -1048,9 +1048,9 @@ bool CNullDriver::isHardwareBufferRecommend(const scene::HWBuffer *buf)
 	if (buf->MappingHint == scene::EHM_NEVER)
 		return false;
 
-	if (dynamic_cast<const scene::IVertexBuffer *>(buf)) {
+	if (buf->getBufferType() == scene::HWBuffer::Type::VERTEX) {
 		return buf->getCount() >= MinVertexCountForVBO;
-	} else if (dynamic_cast<const scene::IIndexBuffer *>(buf)) {
+	} else if (buf->getBufferType() == scene::HWBuffer::Type::INDEX) {
 		// This is a bit stupid
 		return buf->getCount() >= 3 * MinVertexCountForVBO;
 	} else {

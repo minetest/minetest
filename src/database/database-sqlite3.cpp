@@ -27,6 +27,7 @@ enum {
 
 #define SQLRES(s, r, m) sqlite3_vrfy(s, m, r);
 #define SQLOK(s, m) SQLRES(s, SQLITE_OK, m)
+#define SQLSTEP(stmt, errmsg) sqlite3_vrfy_step(sqlite3_step(stmt), errmsg)
 
 #define PREPARE_STATEMENT(name, query) \
 	SQLOK(sqlite3_prepare_v2(m_database, query, -1, &m_stmt_##name, NULL), \
@@ -171,7 +172,7 @@ bool Database_SQLite3::checkTable(const char *table)
 	PREPARE_STATEMENT(tmp, "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?;");
 	str_to_sqlite(m_stmt_tmp, 1, table);
 
-	bool ret = (sqlite3_step(m_stmt_tmp) == SQLITE_ROW);
+	bool ret = sqlite3_vrfy_step(sqlite3_step(m_stmt_tmp));
 
 	FINALIZE_STATEMENT(tmp)
 	return ret;
@@ -186,7 +187,7 @@ bool Database_SQLite3::checkColumn(const char *table, const char *column)
 	PREPARE_STATEMENT(tmp, query_str.c_str());
 
 	bool ret = false;
-	while (sqlite3_step(m_stmt_tmp) == SQLITE_ROW) {
+	while (sqlite3_vrfy_step(sqlite3_step(m_stmt_tmp))) {
 		ret |= sqlite_to_string_view(m_stmt_tmp, 1) == column;
 		if (ret)
 			break;
@@ -314,8 +315,7 @@ void MapDatabaseSQLite3::loadBlock(const v3s16 &pos, std::string *block)
 	verifyDatabase();
 
 	bindPos(m_stmt_read, pos);
-
-	if (sqlite3_step(m_stmt_read) != SQLITE_ROW) {
+	if (!SQLSTEP(m_stmt_read, "Failed to load block")) {
 		block->clear();
 		sqlite3_reset(m_stmt_read);
 		return;
@@ -333,7 +333,7 @@ void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	verifyDatabase();
 
 	v3s16 p;
-	while (sqlite3_step(m_stmt_list) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_list, "Failed to list blocks")) {
 		if (m_new_format) {
 			p.X = sqlite_to_int(m_stmt_list, 0);
 			p.Y = sqlite_to_int(m_stmt_list, 1);
@@ -471,9 +471,9 @@ bool PlayerDatabaseSQLite3::playerDataExists(const std::string &name)
 {
 	verifyDatabase();
 	str_to_sqlite(m_stmt_player_load, 1, name);
-	bool res = (sqlite3_step(m_stmt_player_load) == SQLITE_ROW);
+	bool exists = SQLSTEP(m_stmt_player_load, "");
 	sqlite3_reset(m_stmt_player_load);
-	return res;
+	return exists;
 }
 
 void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
@@ -520,7 +520,7 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	sqlite3_vrfy(sqlite3_step(m_stmt_player_remove_inventory_items), SQLITE_DONE);
 	sqlite3_reset(m_stmt_player_remove_inventory_items);
 
-	const auto &inventory_lists = sao->getInventory()->getLists();
+	const auto &inventory_lists = player->inventory.getLists();
 	std::ostringstream oss;
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList *list = inventory_lists[i];
@@ -571,10 +571,11 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	verifyDatabase();
 
 	str_to_sqlite(m_stmt_player_load, 1, player->getName());
-	if (sqlite3_step(m_stmt_player_load) != SQLITE_ROW) {
+	if (!SQLSTEP(m_stmt_player_load, "Failed to load player")) {
 		sqlite3_reset(m_stmt_player_load);
 		return false;
 	}
+
 	sao->setLookPitch(sqlite_to_float(m_stmt_player_load, 0));
 	sao->setPlayerYaw(sqlite_to_float(m_stmt_player_load, 1));
 	sao->setBasePosition(sqlite_to_v3f(m_stmt_player_load, 2));
@@ -584,7 +585,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 	// Load inventory
 	str_to_sqlite(m_stmt_player_load_inventory, 1, player->getName());
-	while (sqlite3_step(m_stmt_player_load_inventory) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_player_load_inventory, "")) {
 		InventoryList *invList = player->inventory.addList(
 			sqlite_to_string(m_stmt_player_load_inventory, 2),
 			sqlite_to_uint(m_stmt_player_load_inventory, 3));
@@ -594,8 +595,8 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 		str_to_sqlite(m_stmt_player_load_inventory_items, 1, player->getName());
 		int_to_sqlite(m_stmt_player_load_inventory_items, 2, invId);
-		while (sqlite3_step(m_stmt_player_load_inventory_items) == SQLITE_ROW) {
-			const std::string itemStr = sqlite_to_string(m_stmt_player_load_inventory_items, 1);
+		while (SQLSTEP(m_stmt_player_load_inventory_items, "")) {
+			const auto itemStr = sqlite_to_string(m_stmt_player_load_inventory_items, 1);
 			if (!itemStr.empty()) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
@@ -608,7 +609,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	sqlite3_reset(m_stmt_player_load_inventory);
 
 	str_to_sqlite(m_stmt_player_metadata_load, 1, sao->getPlayer()->getName());
-	while (sqlite3_step(m_stmt_player_metadata_load) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_player_metadata_load, "")) {
 		std::string attr = sqlite_to_string(m_stmt_player_metadata_load, 0);
 		auto value = sqlite_to_string_view(m_stmt_player_metadata_load, 1);
 
@@ -634,7 +635,7 @@ void PlayerDatabaseSQLite3::listPlayers(std::vector<std::string> &res)
 {
 	verifyDatabase();
 
-	while (sqlite3_step(m_stmt_player_list) == SQLITE_ROW)
+	while (SQLSTEP(m_stmt_player_list, "Failed to list players"))
 		res.emplace_back(sqlite_to_string_view(m_stmt_player_list, 0));
 
 	sqlite3_reset(m_stmt_player_list);
@@ -707,10 +708,11 @@ bool AuthDatabaseSQLite3::getAuth(const std::string &name, AuthEntry &res)
 {
 	verifyDatabase();
 	str_to_sqlite(m_stmt_read, 1, name);
-	if (sqlite3_step(m_stmt_read) != SQLITE_ROW) {
+	if (!SQLSTEP(m_stmt_read, "Failed to get auth")) {
 		sqlite3_reset(m_stmt_read);
 		return false;
 	}
+
 	res.id = sqlite_to_uint(m_stmt_read, 0);
 	res.name = sqlite_to_string_view(m_stmt_read, 1);
 	res.password = sqlite_to_string_view(m_stmt_read, 2);
@@ -718,7 +720,7 @@ bool AuthDatabaseSQLite3::getAuth(const std::string &name, AuthEntry &res)
 	sqlite3_reset(m_stmt_read);
 
 	int64_to_sqlite(m_stmt_read_privs, 1, res.id);
-	while (sqlite3_step(m_stmt_read_privs) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_read_privs, "")) {
 		res.privileges.emplace_back(sqlite_to_string_view(m_stmt_read_privs, 0));
 	}
 	sqlite3_reset(m_stmt_read_privs);
@@ -783,7 +785,7 @@ void AuthDatabaseSQLite3::listNames(std::vector<std::string> &res)
 {
 	verifyDatabase();
 
-	while (sqlite3_step(m_stmt_list_names) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_list_names, "Failed to list names")) {
 		res.emplace_back(sqlite_to_string_view(m_stmt_list_names, 0));
 	}
 	sqlite3_reset(m_stmt_list_names);
@@ -859,7 +861,7 @@ void ModStorageDatabaseSQLite3::getModEntries(const std::string &modname, String
 	verifyDatabase();
 
 	str_to_sqlite(m_stmt_get_all, 1, modname);
-	while (sqlite3_step(m_stmt_get_all) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_get_all, "Failed to get mod entries")) {
 		auto key = sqlite_to_blob(m_stmt_get_all, 0);
 		auto value = sqlite_to_blob(m_stmt_get_all, 1);
 		(*storage)[std::string(key)].assign(value);
@@ -875,7 +877,7 @@ void ModStorageDatabaseSQLite3::getModKeys(const std::string &modname,
 	verifyDatabase();
 
 	str_to_sqlite(m_stmt_get_keys, 1, modname);
-	while (sqlite3_step(m_stmt_get_keys) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_get_keys, "Failed to get mod keys")) {
 		auto key = sqlite_to_blob(m_stmt_get_keys, 0);
 		storage->emplace_back(key);
 	}
@@ -891,7 +893,7 @@ bool ModStorageDatabaseSQLite3::getModEntry(const std::string &modname,
 
 	str_to_sqlite(m_stmt_get, 1, modname);
 	blob_to_sqlite(m_stmt_get, 2, key);
-	bool found = sqlite3_step(m_stmt_get) == SQLITE_ROW;
+	bool found = SQLSTEP(m_stmt_get, "Failed to get entry");
 	if (found) {
 		auto sv = sqlite_to_blob(m_stmt_get, 0);
 		value->assign(sv);
@@ -910,10 +912,7 @@ bool ModStorageDatabaseSQLite3::hasModEntry(const std::string &modname,
 
 	str_to_sqlite(m_stmt_has, 1, modname);
 	blob_to_sqlite(m_stmt_has, 2, key);
-	bool found = sqlite3_step(m_stmt_has) == SQLITE_ROW;
-	if (found)
-		sqlite3_step(m_stmt_has);
-
+	bool found = SQLSTEP(m_stmt_has, "");
 	sqlite3_reset(m_stmt_has);
 
 	return found;
@@ -966,7 +965,7 @@ void ModStorageDatabaseSQLite3::listMods(std::vector<std::string> *res)
 {
 	verifyDatabase();
 
-	while (sqlite3_step(m_stmt_get_mods) == SQLITE_ROW) {
+	while (SQLSTEP(m_stmt_get_mods, "Failed to list mods")) {
 		auto name = sqlite_to_string_view(m_stmt_get_mods, 0);
 		res->emplace_back(name);
 	}
