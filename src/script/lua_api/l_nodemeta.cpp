@@ -14,6 +14,11 @@
 #include "serverenvironment.h"
 #include "map.h"
 #include "mapblock.h"
+#if CHECK_CLIENT_BUILD()
+#include "client/client.h"
+#include "client/clientenvironment.h"
+#include "client/clientmap.h"
+#endif
 
 /*
 	NodeMetaRef
@@ -21,8 +26,13 @@
 
 IMetadata* NodeMetaRef::getmeta(bool auto_create)
 {
-	if (m_is_local)
-		return m_local_meta;
+#if CHECK_CLIENT_BUILD()
+	if (m_is_local) {
+		bool accessible;
+		m_client->CSMGetNode(m_p, &accessible);
+		return accessible ? m_client->getEnv().getMap().getNodeMetadata(m_p) : nullptr;
+	}
+#endif
 
 	NodeMetadata *meta = m_env->getMap().getNodeMetadata(m_p);
 	if (meta == NULL && auto_create) {
@@ -133,10 +143,23 @@ void NodeMetaRef::handleToTable(lua_State *L, IMetadata *_meta)
 	}
 	lua_setfield(L, -2, "inventory");
 
-	if (!m_is_local) {
+#if CHECK_CLIENT_BUILD()
+	if (m_is_local) {
+		const auto ids = m_client->getEnv().getMap().getNodeModifiers(m_p);
+		const auto *manager = m_client->getNodeModifierManager();
+		lua_createtable(L, ids.size(), 0);
+		int i = 0;
+		for (u16 id : ids) {
+			if (id >= manager->size())
+				continue;
+			const auto &name = manager->get(id).m_name;
+			lua_pushlstring(L, name.data(), name.size());
+			lua_rawseti(L, -2, ++i);
+		}
+	} else
+#endif
 		NodeModifiersRef(m_p, m_env).pushList(L);
-		lua_setfield(L, -2, "modifiers");
-	}
+	lua_setfield(L, -2, "modifiers");
 }
 
 // from_table(self, table)
@@ -186,11 +209,12 @@ NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
 {
 }
 
-NodeMetaRef::NodeMetaRef(IMetadata *meta):
-	m_is_local(true),
-	m_local_meta(meta)
+#if CHECK_CLIENT_BUILD()
+NodeMetaRef::NodeMetaRef(v3s16 p, Client *client):
+	m_is_local(true), m_p(p), m_client(client)
 {
 }
+#endif
 
 // Creates an NodeMetaRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
@@ -203,13 +227,15 @@ void NodeMetaRef::create(lua_State *L, v3s16 p, ServerEnvironment *env)
 }
 
 // Client-sided version of the above
-void NodeMetaRef::createClient(lua_State *L, IMetadata *meta)
+#if CHECK_CLIENT_BUILD()
+void NodeMetaRef::createClient(lua_State *L, v3s16 p, Client *client)
 {
-	NodeMetaRef *o = new NodeMetaRef(meta);
+	NodeMetaRef *o = new NodeMetaRef(p, client);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
+#endif
 
 const char NodeMetaRef::className[] = "NodeMetaRef";
 

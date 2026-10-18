@@ -16,11 +16,14 @@ class NodeMetadata;
 class NodeMetaRef : public MetaDataRef {
 private:
 	bool m_is_local = false;
-	// Set for server metadata
+	// Node position shared by server and client references.
 	v3s16 m_p;
+	// Set for server metadata
 	ServerEnvironment *m_env = nullptr;
 	// Set for client metadata
-	IMetadata *m_local_meta = nullptr;
+#if CHECK_CLIENT_BUILD()
+	Client *m_client = nullptr;
+#endif
 
 	static const luaL_Reg methodsServer[];
 	static const luaL_Reg methodsClient[];
@@ -58,7 +61,9 @@ private:
 
 public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);
-	NodeMetaRef(IMetadata *meta);
+#if CHECK_CLIENT_BUILD()
+	NodeMetaRef(v3s16 p, Client *client);
+#endif
 
 	~NodeMetaRef() = default;
 
@@ -67,7 +72,9 @@ public:
 	static void create(lua_State *L, v3s16 p, ServerEnvironment *env);
 
 	// Client-sided version of the above
-	static void createClient(lua_State *L, IMetadata *meta);
+#if CHECK_CLIENT_BUILD()
+	static void createClient(lua_State *L, v3s16 p, Client *client);
+#endif
 
 	static void Register(lua_State *L);
 	static void RegisterClient(lua_State *L);

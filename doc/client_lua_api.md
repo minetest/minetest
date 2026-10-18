@@ -846,6 +846,13 @@ Can be obtained via `core.get_meta(pos)`.
 * `to_table()`: returns `nil` or a table with keys:
     * `fields`: key-value storage
     * `inventory`: `{list1 = {}, ...}}`
+    * `modifiers`: array of node modifier names in application order; unknown IDs
+      whose names are unavailable on the client are omitted
+
+Reads recheck CSM node-lookup restrictions. `to_table()` returns `nil` when
+metadata is absent or the position is inaccessible. Modifier data is a copy;
+editing the table does not change the node. CSM node metadata does not expose
+`get_modifiers()` or modifier mutation methods.
 
 ### `Raycast`
 
