@@ -964,8 +964,6 @@ bool Inventory::operator == (const Inventory &other) const
 
 void Inventory::serialize(std::ostream &os, bool incremental, bool with_modifiers) const
 {
-	if (with_modifiers)
-		os << "InventoryVersion 1\n";
 	//std::cout << "Serialize " << (int)incremental << ", n=" << m_lists.size() << std::endl;
 	for (const InventoryList *list : m_lists) {
 		if (!incremental || list->checkModified()) {
@@ -1006,14 +1004,6 @@ void Inventory::deSerialize(std::istream &is)
 			m_lists.erase(std::remove(m_lists.begin(), m_lists.end(),
 					nullptr), m_lists.end());
 			return;
-		}
-
-		// To do: check whether old version can receive this
-		if (name == "InventoryVersion") {
-			unsigned version;
-			if (!(iss >> version) || version != 1)
-				throw SerializationError("Unsupported inventory version");
-			continue;
 		}
 
 		if (name == "List") {
