@@ -1,6 +1,6 @@
 // Luanti
 // SPDX-License-Identifier: LGPL-2.1-or-later
-// Copyright (C) 2010-2020 Minetest core development team
+// Copyright (C) 2010-2020 Luanti core development team
 
 #include "serverinventorymgr.h"
 #include "map.h"

@@ -462,7 +462,7 @@ void RenderingEngine::autosaveScreensizeAndCo(
 		return;
 
 	// Note: If the screensize or similar hasn't changed (i.e. it's the same as
-	// the setting was when minetest started, as given by the initial_* parameters),
+	// the setting was when luanti started, as given by the initial_* parameters),
 	// we do not want to save the thing. This allows users to also manually change
 	// the settings.
 

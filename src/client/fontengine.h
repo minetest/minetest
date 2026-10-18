@@ -158,7 +158,7 @@ private:
 	/** initialize a new TTF font */
 	gui::IGUIFont *initFont(FontSpec spec);
 
-	/** update current minetest skin with font changes */
+	/** update current luanti skin with font changes */
 	void updateSkin();
 
 	void clearCache();

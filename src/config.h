@@ -7,7 +7,7 @@
 #endif
 
 /*
- * There are three ways a Minetest source file can be built:
+ * There are three ways a Luanti source file can be built:
  * 1) we are currently building it for exclusively linking into the client
  * 2) we are currently building it for exclusively linking into the server
  * 3) we are building it only once for linking into both the client and server

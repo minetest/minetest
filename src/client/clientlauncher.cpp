@@ -252,7 +252,7 @@ bool ClientLauncher::run(const GameParams &game_params, const Settings &cmd_args
 		 * in case of a later unclean exit from the mainmenu.
 		 * This is especially useful on Android because closing the app from the
 		 * "Recents screen" results in an unclean exit.
-		 * Caveat: This means that the settings are saved twice when exiting Minetest.
+		 * Caveat: This means that the settings are saved twice when exiting Luanti.
 		 */
 		if (!g_settings_path.empty())
 			g_settings->updateConfigFile(g_settings_path.c_str());

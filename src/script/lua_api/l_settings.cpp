@@ -41,7 +41,7 @@ static inline int checkSettingSecurity(lua_State* L, const std::string &name)
 
 	if (name == "mg_name" || name == "mg_flags") {
 		errorstream << "Tried to set global setting " << name << ", ignoring. "
-			"minetest.set_mapgen_setting() should be used instead." << std::endl;
+			"core.set_mapgen_setting() should be used instead." << std::endl;
 		infostream << script_get_backtrace(L) << std::endl;
 		return -1;
 	}
