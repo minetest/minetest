@@ -71,6 +71,7 @@
 #include "database/database-dummy.h"
 
 #include <iostream>
+#include <optional>
 #include <queue>
 #include <algorithm>
 #include <sstream>
@@ -966,7 +967,8 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 
 						// Add full new data to appropriate buffer
 						std::string &buffer = aom.reliable ? reliable_data : unreliable_data;
-						aom.appendTo(buffer, client->net_proto_version);
+						aom.appendTo(buffer,
+								nodeModifiersSupportForProtocol(client->net_proto_version));
 					}
 				}
 				/*
@@ -3022,34 +3024,42 @@ void Server::SendMinimapModes(session_t peer_id,
 
 void Server::sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id)
 {
+	std::optional<NetworkPacket> packets[2];
+	const auto send = [&](session_t peer) {
+		bool with_modifiers = inventory &&
+				nodeModifiersSupportForProtocol(m_clients.getProtocolVersion(peer));
+		std::optional<NetworkPacket> &packet = packets[with_modifiers ? 1 : 0];
+		if (!packet) {
+			packet.emplace(TOCLIENT_DETACHED_INVENTORY, 0);
+			NetworkPacket &pkt = *packet;
+			pkt << name;
+
+			if (!inventory) {
+				pkt << false; // Remove inventory
+			} else {
+				pkt << true; // Update inventory
+
+				// Serialization & NetworkPacket isn't a love story
+				std::ostringstream os(std::ios_base::binary);
+				inventory->serialize(os, false, with_modifiers);
+				inventory->setModified(false);
+
+				const std::string &os_str = os.str();
+				// HACK: to keep compatibility with 5.0.0 clients
+				pkt << static_cast<u16>(os_str.size());
+				pkt.putRawString(os_str);
+			}
+		}
+
+		Send(peer, &*packet);
+	};
+
 	if (peer_id == PEER_ID_INEXISTENT) {
 		for (session_t peer : m_clients.getClientIDs())
-			sendDetachedInventory(inventory, name, peer);
-		return;
-	}
-	NetworkPacket pkt(TOCLIENT_DETACHED_INVENTORY, 0, peer_id);
-	pkt << name;
-
-	if (!inventory) {
-		pkt << false; // Remove inventory
+			send(peer);
 	} else {
-		pkt << true; // Update inventory
-
-		// Serialization & NetworkPacket isn't a love story
-		std::ostringstream os(std::ios_base::binary);
-		inventory->serialize(os, false,
-				nodeModifiersSupportForProtocol(m_clients.getProtocolVersion(peer_id)));
-		inventory->setModified(false);
-
-		const std::string &os_str = os.str();
-		pkt << static_cast<u16>(os_str.size()); // HACK: to keep compatibility with 5.0.0 clients
-		pkt.putRawString(os_str);
+		send(peer_id);
 	}
-
-	if (peer_id == PEER_ID_INEXISTENT)
-		m_clients.sendToAll(&pkt);
-	else
-		Send(&pkt);
 }
 
 void Server::sendDetachedInventories(session_t peer_id, bool incremental)

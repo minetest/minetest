@@ -42,7 +42,7 @@ struct ActiveObjectMessage
 	{}
 
 	void appendTo(std::string &data) const;
-	void appendTo(std::string &data, u16 protocol_version) const;
+	void appendTo(std::string &data, bool with_node_modifiers) const;
 
 	u16 id;
 	bool reliable;

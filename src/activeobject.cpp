@@ -12,10 +12,10 @@ void ActiveObjectMessage::appendTo(std::string &data) const
 	appendTo(data, LATEST_PROTOCOL_VERSION);
 }
 
-void ActiveObjectMessage::appendTo(std::string &data, u16 protocol_version) const
+void ActiveObjectMessage::appendTo(std::string &data, bool with_node_modifiers) const
 {
 	const std::string *payload = &datastring;
-	if (m_legacy_datastring && !nodeModifiersSupportForProtocol(protocol_version))
+	if (m_legacy_datastring && !with_node_modifiers)
 		payload = &*m_legacy_datastring;
 
 	char idbuf[2];
