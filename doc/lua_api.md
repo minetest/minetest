@@ -8898,6 +8898,8 @@ of the `${k}` syntax in formspecs is not deprecated.
     * Returns `true` on success. If it returns `false`, the old metadata is unchanged.
 * `equals(other)`
     * returns `true` if this metadata has the same key-value pairs as `other`
+    * Metadata of different types can be compared. Inventories and node modifiers
+      are ignored; ItemStack equality still includes node modifiers.
 
 ### Metadata tables
 

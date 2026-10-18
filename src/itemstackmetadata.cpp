@@ -25,10 +25,9 @@ bool ItemStackMetadata::empty() const
 	return SimpleMetadata::empty() && m_modifiers.empty();
 }
 
-bool ItemStackMetadata::equalsExtra(const IMetadata &other) const
+bool ItemStackMetadata::operator==(const ItemStackMetadata &other) const
 {
-	const auto *item = dynamic_cast<const ItemStackMetadata *>(&other);
-	return item ? m_modifiers == item->m_modifiers : m_modifiers.empty();
+	return IMetadata::operator==(other) && m_modifiers == other.m_modifiers;
 }
 
 bool ItemStackMetadata::addModifier(const std::string &name,

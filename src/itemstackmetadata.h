@@ -22,6 +22,12 @@ public:
 	ItemStackMetadata()
 	{}
 
+	// Mixed metadata types compare fields only; ItemStacks also compare modifiers.
+	using IMetadata::operator==;
+	using IMetadata::operator!=;
+	bool operator==(const ItemStackMetadata &other) const;
+	bool operator!=(const ItemStackMetadata &other) const { return !(*this == other); }
+
 	// Overrides
 	void clear() override;
 	bool empty() const override;
@@ -55,7 +61,6 @@ public:
 	void clearWearBarParams();
 
 private:
-	bool equalsExtra(const IMetadata &other) const override;
 	void updateToolCapabilities();
 	void updateWearBarParams();
 

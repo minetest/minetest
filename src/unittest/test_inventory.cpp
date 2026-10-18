@@ -164,6 +164,25 @@ void TestInventory::testFormats(IItemDefManager *idef)
 
 void TestInventory::testModifiers(IItemDefManager *idef)
 {
+	ItemStackMetadata a, b;
+	SimpleMetadata fields;
+	UASSERT(a.addModifier("test:first"));
+	UASSERT(a != b && b != a);
+	UASSERT(!(a == b) && !(b == a));
+	UASSERT(a == fields && fields == a);
+	UASSERT(!(a != fields) && !(fields != a));
+	const IMetadata &base_a = a, &base_b = b;
+	UASSERT(base_a == base_b && base_b == base_a);
+	UASSERT(b.addModifier("test:first"));
+	UASSERT(a == b && !(a != b));
+	UASSERT(a.addModifier("test:second"));
+	UASSERT(b.addModifier("test:second"));
+	UASSERT(b.addModifier("test:first"));
+	UASSERT(a != b); // Application order matters.
+	UASSERT(b.setModifiers({"test:first", "test:second"}));
+	b.setString("field", "different");
+	UASSERT(a != b && base_a != base_b);
+
 	ItemStackMetadata limited;
 	std::vector<std::string> full;
 	for (int i = 0; i < 16; ++i) {
@@ -261,12 +280,12 @@ void TestInventory::testModifiers(IItemDefManager *idef)
 	UASSERTEQ(std::string, meta.getString("node_modifiers"), "not JSON");
 	UASSERT(meta.getStrings().size() == 1);
 
-	// Generic metadata equality also sees the separate vector, symmetrically.
+	// Generic metadata equality compares only fields, symmetrically.
 	SimpleMetadata fields_only;
 	fields_only.setString("node_modifiers", "not JSON");
 	const IMetadata &generic = meta;
-	UASSERT(generic != fields_only);
-	UASSERT(fields_only != generic);
+	UASSERT(generic == fields_only);
+	UASSERT(fields_only == generic);
 	meta.removeModifier("test:first");
 	UASSERT(generic == fields_only);
 	UASSERT(fields_only == generic);
