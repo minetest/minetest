@@ -38,12 +38,18 @@ private:
 static TestSAO g_test_instance;
 
 const static char *helper_lua_src = R"(
-core.register_entity(":test:static", {})
-core.register_entity(":test:non_static", {
-	initial_properties = {
-		static_save = false,
-	}
-})
+local function assert_objectref(self)
+	assert(self.object:is_valid(), "ObjectRef is not valid in callback")
+end
+local def = {
+	on_activate = assert_objectref,
+	on_deactivate = assert_objectref,
+	on_step = assert_objectref,
+	get_staticdata = assert_objectref,
+}
+core.register_entity(":test:static", table.copy(def))
+def.initial_properties = { static_save = false }
+core.register_entity(":test:non_static", table.copy(def))
 )";
 
 void TestSAO::runTests(IGameDef *gamedef)
