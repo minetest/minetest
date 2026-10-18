@@ -27,11 +27,8 @@
 IMetadata* NodeMetaRef::getmeta(bool auto_create)
 {
 #if CHECK_CLIENT_BUILD()
-	if (m_is_local) {
-		bool accessible;
-		m_client->CSMGetNode(m_p, &accessible);
-		return accessible ? m_client->getEnv().getMap().getNodeMetadata(m_p) : nullptr;
-	}
+	if (m_is_local)
+		return m_client->getEnv().getMap().getNodeMetadata(m_p);
 #endif
 
 	NodeMetadata *meta = m_env->getMap().getNodeMetadata(m_p);
