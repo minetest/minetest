@@ -16,7 +16,6 @@ class NodeMetadata;
 class NodeMetaRef : public MetaDataRef {
 private:
 	bool m_is_local = false;
-	// Node position shared by server and client references.
 	v3s16 m_p;
 	// Set for server metadata
 	ServerEnvironment *m_env = nullptr;

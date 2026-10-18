@@ -192,13 +192,14 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table)
 		NodeModifiersRef::readList(L, -1, modifiers);
 	lua_pop(L, 1);
 
-	// Ensure the block is available before changing either part of its state.
 	Map &map = m_env->getMap();
-	if (!map.emergeBlock(getNodeBlockPos(m_p), false) || !NodeModifiersRef(m_p, m_env).set(modifiers))
+	if (!NodeModifiersRef(m_p, m_env).set(modifiers))
 		return false;
-	// setModifiers succeeded under the map lock, so this block still exists.
+
 	bool installed = map.setNodeMetadata(m_p, meta.get());
+	// The block should exist, otherwise setting modifiers would fail
 	SANITY_CHECK(installed);
+
 	meta.release();
 	return true;
 }

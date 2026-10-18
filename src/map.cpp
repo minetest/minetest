@@ -184,7 +184,7 @@ std::vector<u16> Map::getNodeModifiers(v3s16 p)
 
 bool Map::setNodeModifiers(v3s16 p, const std::vector<u16> &ids)
 {
-	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	MapBlock *block = emergeBlock(getNodeBlockPos(p), false);
 	if (!block)
 		return false;
 
@@ -205,7 +205,7 @@ bool Map::setNodeModifiers(v3s16 p, const std::vector<u16> &ids)
 
 bool Map::addNodeModifier(v3s16 p, u16 id, bool prune_overridden)
 {
-	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	MapBlock *block = emergeBlock(getNodeBlockPos(p), false);
 	if (!block)
 		return false;
 
@@ -226,7 +226,7 @@ bool Map::addNodeModifier(v3s16 p, u16 id, bool prune_overridden)
 
 void Map::removeNodeModifier(v3s16 p, u16 id)
 {
-	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	MapBlock *block = emergeBlock(getNodeBlockPos(p), false);
 	if (!block)
 		return;
 
