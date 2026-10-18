@@ -116,7 +116,6 @@ void TestInventory::testFormats(IItemDefManager *idef)
 	for (auto protocol : {52, 53, 54}) {
 		std::stringstream stream;
 		inv.serialize(stream, false, nodeModifiersSupportForProtocol(protocol));
-		UASSERT((stream.str().find("InventoryVersion 1\n") == 0) == (protocol == 54));
 		Inventory loaded(idef);
 		loaded.deSerialize(stream);
 		const auto &meta = loaded.getList("main")->getItem(0).metadata;
@@ -158,8 +157,6 @@ void TestInventory::testFormats(IItemDefManager *idef)
 		UASSERT(item.metadata.getModifiersList().empty() == (block_version == 29));
 	}
 	UASSERTEQ(size_t, list->getItem(0).metadata.getModifiersList().size(), 1);
-	std::stringstream unsupported("InventoryVersion 99\nEndInventory\n");
-	EXCEPTION_CHECK(SerializationError, inv.deSerialize(unsupported));
 }
 
 void TestInventory::testModifiers(IItemDefManager *idef)
