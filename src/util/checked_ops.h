@@ -125,6 +125,22 @@ namespace checked {
 		return result;
 	}
 
+	// a + b + c + ts...
+	template<typename T, typename... Ts>
+	std::optional<T> add(T a, T b, T c, Ts... ts) {
+		return add(add(a, b), c, ts...);
+	}
+	// a - b - c - ts...
+	template<typename T, typename... Ts>
+	std::optional<T> sub(T a, T b, T c, Ts... ts) {
+		return sub(sub(a, b), c, ts...);
+	}
+	// a * b * c * ts...
+	template<typename T, typename... Ts>
+	std::optional<T> mul(T a, T b, T c, Ts... ts) {
+		return mul(mul(a, b), c, ts...);
+	}
+
 	template<typename T>
 	struct NextSize_;
 	// C++ doesn't specify whether char is signed or unsigned
