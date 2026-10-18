@@ -168,14 +168,18 @@ ContentLightingFlags Map::getLightingFlags(v3s16 p, const MapNode &node)
 		return m_nodedef->getLightingFlags(node);
 }
 
-AppliedNodeModifiersStorage::ConstRange Map::getNodeModifiers(v3s16 p)
+std::vector<u16> Map::getNodeModifiers(v3s16 p)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
-	if (block)
-		return block->getNodeModifiers(p - block->getPosRelative());
+	if (!block)
+		return {};
 
-	static const AppliedNodeModifiersStorage empty;
-	return empty.findRange(v3s16());
+	auto [first, last] = block->getNodeModifiers(p - block->getPosRelative());
+	std::vector<u16> ids;
+	ids.reserve(last - first);
+	for (auto it = first; it != last; ++it)
+		ids.push_back(it->id);
+	return ids;
 }
 
 bool Map::setNodeModifiers(v3s16 p, const std::vector<u16> &ids)

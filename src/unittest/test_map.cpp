@@ -179,15 +179,13 @@ void TestMap::testGetNodeModifiers(IGameDef *gamedef)
 	const v3s16 local(MAP_BLOCKSIZE - 1, 2, 3);
 	UASSERT(negative->setNodeModifiers(local, {5, 2}));
 	UASSERT(zero->setNodeModifiers(local, {7}));
-	auto [first, last] = map.getNodeModifiers(v3s16(-1, 2, 3));
-	UASSERT(last - first == 2);
-	UASSERT(first->id == 5 && (first + 1)->id == 2);
-	UASSERT(first->pos == local);
-	auto positive = map.getNodeModifiers(local);
-	UASSERT(positive.second - positive.first == 1 && positive.first->id == 7);
-	auto absent = map.getNodeModifiers(v3s16(0, 0, 0));
-	UASSERT(absent.first == absent.second);
-	auto unloaded = map.getNodeModifiers(v3s16(MAP_BLOCKSIZE, 2, 3));
-	UASSERT(unloaded.first == unloaded.second);
+	const auto ids = map.getNodeModifiers(v3s16(-1, 2, 3));
+	UASSERT(ids == std::vector<u16>({5, 2}));
+	UASSERT(map.getNodeModifiers(local) == std::vector<u16>({7}));
+	UASSERT(map.getNodeModifiers(v3s16(0, 0, 0)).empty());
+	UASSERT(map.getNodeModifiers(v3s16(MAP_BLOCKSIZE, 2, 3)).empty());
+	UASSERT(negative->setNodeModifiers(local, {9}));
+	UASSERT(ids == std::vector<u16>({5, 2}));
+	UASSERT(map.getNodeModifiers(v3s16(-1, 2, 3)) == std::vector<u16>({9}));
 	UASSERT(map.getBlockNoCreateNoEx(v3s16(1, 0, 0)) == nullptr);
 }

@@ -177,10 +177,9 @@ void NodeModifiersRef::pushList(lua_State *L) const
 			append(name);
 	} else {
 		const auto *manager = m_env->getGameDef()->getNodeModifierManager();
-		auto [first, last] = m_env->getMap().getNodeModifiers(m_pos);
-		for (auto it = first; it != last; ++it)
-			if (it->id < manager->size())
-				append(manager->get(it->id).m_name);
+		for (u16 id : m_env->getMap().getNodeModifiers(m_pos))
+			if (id < manager->size())
+				append(manager->get(id).m_name);
 	}
 }
 

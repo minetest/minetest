@@ -137,10 +137,9 @@ public:
 	inline const NodeDefManager * getNodeDefManager() { return m_nodedef; }
 
 	ContentLightingFlags getLightingFlags(v3s16 p, const MapNode &node);
-	// World-position lookup; unloaded blocks return an empty range.
-	// Entries retain block-relative positions. Iterators are invalidated by
-	// modifier-list mutations or unloading the owning block.
-	AppliedNodeModifiersStorage::ConstRange getNodeModifiers(v3s16 p);
+	// Ordered modifier IDs at a world position. Unloaded blocks return an empty list.
+	// The returned list is independent of subsequent map changes.
+	std::vector<u16> getNodeModifiers(v3s16 p);
 	// Update modifiers, lighting, and notify clients of all affected blocks.
 	bool setNodeModifiers(v3s16 p, const std::vector<u16> &ids);
 	bool addNodeModifier(v3s16 p, u16 id, bool prune_overridden = false);
@@ -289,12 +288,12 @@ public:
 	bool isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool dense = false);
 
 private:
-	// Apply a node or modifier change using effective flags captured before the change.
+	// Apply a node or modifier change using lighting flags captured before the change.
 	// Callers handle rollback and dispatch events for the collected blocks.
 	void updateNode(MapBlock *block, v3s16 rel, MapNode oldnode, MapNode node,
 			ContentLightingFlags old_flags, std::map<v3s16, MapBlock*> &modified_blocks);
 
-	// Called after a modifier change, with the node and effective flags from before it.
+	// Called after a modifier change, with the node and lighting flags from before it.
 	void onNodeModifiersChanged(MapBlock *block, v3s16 rel,
 			MapNode oldnode, ContentLightingFlags old_flags);
 
