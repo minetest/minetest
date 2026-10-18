@@ -35,9 +35,6 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	s32 id, IMenuManager *menumgr, bool remap_click_outside) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0, 0, 100, 100)),
-#ifdef __ANDROID__
-		m_jni_field_name(""),
-#endif
 		m_menumgr(menumgr),
 		m_remap_click_outside(remap_click_outside)
 {
@@ -241,31 +238,31 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
-		if ((hovered) && (hovered->getType() == gui::EGUIET_EDIT_BOX)) {
+		if (hovered && hovered->getType() == gui::EGUIET_EDIT_BOX) {
 			bool retval = hovered->OnEvent(event);
 			if (retval)
 				Environment->setFocus(hovered);
 
-			std::string field_name = getNameByID(hovered->getID());
-			// read-only field
-			if (field_name.empty())
+			auto *editbox = IRR_DOWN_CAST<gui::IGUIEditBox*>(hovered);
+
+			if (!editbox->isEnabled() || !editbox->isWritable())
 				return retval;
 
-			m_jni_field_name = field_name;
+			m_jni_field_name = getNameByID(hovered->getID());
 
 			// single line text input
 			int type = 2;
 
 			// multi line text input
-			if (((gui::IGUIEditBox *)hovered)->isMultiLineEnabled())
+			if (editbox->isMultiLineEnabled())
 				type = 1;
 
 			// passwords are always single line
-			if (((gui::IGUIEditBox *)hovered)->isPasswordBox())
+			if (editbox->isPasswordBox())
 				type = 3;
 
 			porting::showTextInputDialog("",
-					wide_to_utf8(((gui::IGUIEditBox *) hovered)->getText()), type);
+					wide_to_utf8(editbox->getText()), type);
 			// Since we have opened the dialog, we have to return true to mark
 			// the event as handled (avoids double-opening).
 			return true;
@@ -274,10 +271,10 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 
 	if (event.EventType == EET_GUI_EVENT) {
 		if (event.GUIEvent.EventType == gui::EGET_LISTBOX_OPENED) {
-			gui::IGUIComboBox *dropdown = (gui::IGUIComboBox *) event.GUIEvent.Caller;
+			auto *dropdown = IRR_DOWN_CAST<gui::IGUIComboBox*>(event.GUIEvent.Caller);
 
 			std::string field_name = getNameByID(dropdown->getID());
-			if (field_name.empty())
+			if (field_name.empty() || !dropdown->isEnabled())
 				return false;
 
 			m_jni_field_name = field_name;

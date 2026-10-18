@@ -136,7 +136,10 @@ public:
 	void updateAbsolutePosition() override;
 
 	//! Returns whether the element takes input from the IME
-	bool acceptsIME() override { return isEnabled() && IsWritable; };
+	bool acceptsIME() override { return isEnabled() && isWritable(); };
+
+	//! Gets whether the edit box is writable
+	bool isWritable() const override { return IsWritable; };
 
 	//! Sets whether the edit box is writable
 	void setWritable(bool writable) override { IsWritable = writable; setTabStop(writable); }

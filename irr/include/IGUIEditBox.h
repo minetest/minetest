@@ -118,6 +118,9 @@ public:
 	//! Returns true if the edit box is currently a password box.
 	virtual bool isPasswordBox() const = 0;
 
+	//! Gets whether the edit box is writable
+	virtual bool isWritable() const = 0;
+
 	//! Sets whether the edit box is writable
 	virtual void setWritable(bool writable) = 0;
 
