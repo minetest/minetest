@@ -35,7 +35,7 @@ IMetadata* NodeMetaRef::getmeta(bool auto_create)
 	return meta;
 }
 
-void NodeMetaRef::clearMetaFields()
+void NodeMetaRef::removeNodeMetadata()
 {
 	SANITY_CHECK(!m_is_local);
 	m_env->getMap().removeNodeMetadata(m_p);
@@ -43,7 +43,7 @@ void NodeMetaRef::clearMetaFields()
 
 void NodeMetaRef::clearMeta()
 {
-	clearMetaFields();
+	removeNodeMetadata();
 
 	m_env->getMap().setNodeModifiers(m_p, {});
 }
@@ -58,7 +58,7 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 
 	// If the metadata is now empty, get rid of it
 	if (meta && meta->empty()) {
-		clearMetaFields();
+		removeNodeMetadata();
 		meta = nullptr;
 	}
 
@@ -71,7 +71,7 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 
 int NodeMetaRef::l_get_modifiers(lua_State *L)
 {
-	MAP_LOCK_REQUIRED;
+	NO_MAP_LOCK_REQUIRED;
 
 	auto *ref = checkObject<NodeMetaRef>(L, 1);
 	NodeModifiersRef::create(L, ref->m_p, ref->m_env);

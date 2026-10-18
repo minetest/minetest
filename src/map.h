@@ -289,8 +289,13 @@ public:
 	bool isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool dense = false);
 
 private:
+	// Apply a node or modifier change using effective flags captured before the change.
+	// Callers handle rollback and dispatch events for the collected blocks.
+	void updateNode(MapBlock *block, v3s16 rel, MapNode oldnode, MapNode node,
+			ContentLightingFlags old_flags, std::map<v3s16, MapBlock*> &modified_blocks);
+
 	// Called after a modifier change, with the node and effective flags from before it.
-	void updateNodeModifierLighting(MapBlock *block, v3s16 rel,
+	void onNodeModifiersChanged(MapBlock *block, v3s16 rel,
 			MapNode oldnode, ContentLightingFlags old_flags);
 
 protected:

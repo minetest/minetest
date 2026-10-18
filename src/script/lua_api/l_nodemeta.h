@@ -40,7 +40,7 @@ private:
 	 */
 	virtual IMetadata* getmeta(bool auto_create);
 	virtual void clearMeta();
-	void clearMetaFields();
+	void removeNodeMetadata();
 
 	virtual void reportMetadataChange(const std::string *name = nullptr);
 
