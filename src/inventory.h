@@ -292,8 +292,8 @@ public:
 		return !(*this == other);
 	}
 
-	// Never ever serialize to disk using "incremental"!
-	void serialize(std::ostream &os, bool incremental = false) const;
+	void serializeIncremental(std::ostream &os) const;
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
 	// Creates a new list if none exists or truncates existing lists
@@ -333,6 +333,7 @@ public:
 		}
 	}
 private:
+	static void serializeList(std::ostream &os, const InventoryList *list);
 	// -1 if not found
 	s32 getListIndex(const std::string &name) const;
 
