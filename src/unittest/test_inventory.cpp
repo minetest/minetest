@@ -10,6 +10,7 @@
 #include "inventory.h"
 #include "itemdef.h"
 #include "object_properties.h"
+#include "activeobject.h"
 #include "nodemetadata.h"
 #include "exceptions.h"
 #include "util/serialize.h"
@@ -143,6 +144,42 @@ void TestInventory::testFormats(IItemDefManager *idef)
 		UASSERT(item.metadata.getModifiersList().empty() == (protocol < 54));
 		UASSERTEQ(std::string, item.metadata.getString("description"), "ordinary metadata");
 	}
+
+	// Queued payloads retain their values, including across message copies.
+	const auto property_packet = [&props](u16 protocol) {
+		std::ostringstream os(std::ios::binary);
+		writeU8(os, AO_CMD_SET_PROPERTIES);
+		props.serialize(os, protocol);
+		return os.str();
+	};
+	ActiveObjectMessage original(42, true, property_packet(54), property_packet(53));
+	ActiveObjectMessage queued = original;
+	props.wield_item.clear();
+	original = ActiveObjectMessage(0);
+
+	std::string legacy_payload;
+	std::string current_payload;
+	for (u16 protocol : {53, 54, 52, 54, 53}) {
+		std::string packet;
+		queued.appendTo(packet, protocol);
+		std::istringstream input(packet, std::ios::binary);
+		UASSERTEQ(u16, readU16(input), 42);
+		std::string payload = deSerializeString16(input);
+		std::istringstream properties_stream(payload, std::ios::binary);
+		UASSERTEQ(u8, readU8(properties_stream), AO_CMD_SET_PROPERTIES);
+		ObjectProperties loaded;
+		loaded.deSerialize(properties_stream);
+		ItemStack item;
+		item.deSerialize(loaded.wield_item, idef);
+		UASSERTEQ(std::string, item.metadata.getString("description"), "ordinary metadata");
+		UASSERT(item.metadata.getModifiersList().empty() == (protocol < 54));
+
+		std::string &previous = protocol < 54 ? legacy_payload : current_payload;
+		if (!previous.empty())
+			UASSERTEQ(std::string, payload, previous);
+		previous = payload;
+	}
+
 	// Node inventories are carried in blocks and metadata-update packets.
 	NodeMetadataList nodes;
 	auto *node = new NodeMetadata(idef);

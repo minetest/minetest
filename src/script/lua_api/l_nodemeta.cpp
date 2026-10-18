@@ -79,6 +79,9 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 	m_env->getMap().dispatchEvent(event);
 }
 
+// Exported functions
+
+// get_modifiers()
 int NodeMetaRef::l_get_modifiers(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -88,6 +91,7 @@ int NodeMetaRef::l_get_modifiers(lua_State *L)
 	return 1;
 }
 
+// get_inventory(self)
 int NodeMetaRef::l_get_inventory(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;

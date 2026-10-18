@@ -966,19 +966,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 
 						// Add full new data to appropriate buffer
 						std::string &buffer = aom.reliable ? reliable_data : unreliable_data;
-						if (cmd == AO_CMD_SET_PROPERTIES &&
-								!nodeModifiersSupportForProtocol(client->net_proto_version)) {
-							// To do: maybe try to avoid this (pre-serialize for all clients with older version)
-							std::istringstream input(aom.datastring.substr(1), std::ios::binary);
-							ObjectProperties properties;
-							properties.deSerialize(input);
-							std::ostringstream output(std::ios::binary);
-							writeU8(output, AO_CMD_SET_PROPERTIES);
-							properties.serialize(output, client->net_proto_version);
-							ActiveObjectMessage(aom.id, aom.reliable, output.str()).appendTo(buffer);
-						} else {
-							aom.appendTo(buffer);
-						}
+						aom.appendTo(buffer, client->net_proto_version);
 					}
 				}
 				/*

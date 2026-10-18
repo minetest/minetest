@@ -51,6 +51,8 @@ private:
 	virtual bool handleFromTable(lua_State *L, int table);
 
 	// Exported functions
+
+	// get_modifiers(self)
 	static int l_get_modifiers(lua_State *L);
 
 	// get_inventory(self)

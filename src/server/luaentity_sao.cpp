@@ -146,10 +146,10 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
 	if (!m_properties_sent) {
 		m_properties_sent = true;
-		// Queue the full format; the server downgrades it per recipient.
-		std::string str = getPropertyPacket(LATEST_PROTOCOL_VERSION);
-		// create message and add to list
-		m_messages_out.emplace(getId(), true, std::move(str));
+		// Queue both formats; protocol 53 is the last without node modifiers.
+		std::string current = getPropertyPacket(LATEST_PROTOCOL_VERSION);
+		std::string legacy = getPropertyPacket(53);
+		m_messages_out.emplace(getId(), true, current, std::move(legacy));
 	}
 
 	if (!m_texture_modifier_sent) {
