@@ -251,8 +251,11 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""); // = all supported ones
 
 	std::string bind_address = g_settings->get("bind_address");
-	curl_easy_setopt(curl, CURLOPT_INTERFACE,
-		bind_address.empty() ? nullptr : bind_address.c_str());
+	if (request.use_bind_address && !bind_address.empty()) {
+		curl_easy_setopt(curl, CURLOPT_INTERFACE, bind_address.c_str());
+	} else {
+		curl_easy_setopt(curl, CURLOPT_INTERFACE, nullptr);
+	}
 
 	std::string proxy = g_settings->get("secure.curl_proxy");
 	curl_easy_setopt(curl, CURLOPT_PROXY, proxy.empty() ? nullptr : proxy.c_str());

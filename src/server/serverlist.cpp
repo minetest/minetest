@@ -27,6 +27,7 @@ void sendAnnounce(AnnounceAction action,
 		bool dedicated)
 {
 	static const char *aa_names[] = {"start", "update", "delete"};
+
 	Json::Value server;
 	server["action"] = aa_names[action];
 	server["port"] = port;
@@ -45,6 +46,7 @@ void sendAnnounce(AnnounceAction action,
 		server["password"]     = g_settings->getBool("disallow_empty_password");
 		server["pvp"]          = g_settings->getBool("enable_pvp");
 		server["uptime"]       = (int) uptime;
+		server["gameid"]       = gameid;
 		server["game_time"]    = game_time;
 		server["clients"]      = (int) clients_names.size();
 		server["clients_max"]  = g_settings->getU16("max_users");
@@ -53,8 +55,6 @@ void sendAnnounce(AnnounceAction action,
 			for (const std::string &clients_name : clients_names)
 				server["clients_list"].append(clients_name);
 		}
-		if (!gameid.empty())
-			server["gameid"] = gameid;
 	}
 
 	if (action == AA_START) {
@@ -72,20 +72,21 @@ void sendAnnounce(AnnounceAction action,
 			server["lag"] = lag;
 	}
 
-	if (action == AA_START) {
-		actionstream << "Announcing " << aa_names[action] << " to " <<
-			g_settings->get("serverlist_url") << std::endl;
-	} else {
-		infostream << "Announcing " << aa_names[action] << " to " <<
-			g_settings->get("serverlist_url") << std::endl;
-	}
+	const auto &url = g_settings->get("serverlist_url");
+
+	(action == AA_START ? actionstream : infostream)
+		<< "Announcing " << aa_names[action] << " to " << url << std::endl;
 
 	HTTPFetchRequest fetch_request;
 	fetch_request.caller = HTTPFETCH_PRINT_BODY;
-	fetch_request.url = g_settings->get("serverlist_url") + std::string("/announce");
+	fetch_request.url = url + "/announce";
 	fetch_request.method = HTTP_POST;
 	fetch_request.fields["json"] = fastWriteJson(server);
 	fetch_request.multipart = true;
+	// If the server is bound to a specific IP, we should send the request from
+	// this IP so the remote can verify who is sending the announcement.
+	fetch_request.use_bind_address = true;
+
 	httpfetch_async(fetch_request);
 }
 #endif
