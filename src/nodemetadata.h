@@ -28,7 +28,7 @@ public:
 	~NodeMetadata();
 
 	void serialize(std::ostream &os, u8 version, bool disk=true,
-			bool with_modifiers=true) const;
+			bool stacks_with_modifiers=true) const;
 	void deSerialize(std::istream &is, u8 version);
 
 	void clear();

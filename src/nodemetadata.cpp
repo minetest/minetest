@@ -22,7 +22,8 @@ NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr):
 
 NodeMetadata::~NodeMetadata() = default;
 
-void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk, bool with_modifiers) const
+void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk,
+		bool stacks_with_modifiers) const
 {
 	int num_vars = disk ? m_stringvars.size() : countNonPrivate();
 	writeU32(os, num_vars);
@@ -37,7 +38,7 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk, bool with_
 			writeU8(os, (priv) ? 1 : 0);
 	}
 
-	m_inventory->serialize(os, false, with_modifiers);
+	m_inventory->serialize(os, false, stacks_with_modifiers);
 }
 
 void NodeMetadata::deSerialize(std::istream &is, u8 version)

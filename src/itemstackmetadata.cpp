@@ -41,13 +41,13 @@ bool ItemStackMetadata::addModifier(const std::string &name,
 		survivors.reserve(m_modifiers.size() + 1);
 		survivors.push_back(name);
 
-		const auto &added = prune_manager->get(prune_manager->getId(name));
+		const NodeModifier &added = prune_manager->get(prune_manager->getId(name));
 		u64 covered = added.m_is_dummy ? 0 : added.m_modified_props_mask;
 		for (auto it = m_modifiers.rbegin(); it != m_modifiers.rend(); ++it) {
 			if (*it == name)
 				continue;
 
-			const auto &modifier = prune_manager->get(prune_manager->getId(*it));
+			const NodeModifier &modifier = prune_manager->get(prune_manager->getId(*it));
 			const u64 mask = modifier.m_is_dummy ? 0 : modifier.m_modified_props_mask;
 			if (mask != 0 && (covered | mask) == covered)
 				continue;
@@ -74,11 +74,15 @@ bool ItemStackMetadata::addModifier(const std::string &name,
 			std::rotate(it, it + 1, m_modifiers.end());
 			setModified(true);
 		}
+
 		return true;
 	}
+
 	if (m_modifiers.size() >= MAX_NODE_MODIFIERS)
 		return false;
+
 	m_modifiers.push_back(name);
+
 	setModified(true);
 	return true;
 }
@@ -110,6 +114,7 @@ bool ItemStackMetadata::setModifiers(std::vector<std::string> &&modifiers) {
 		return false;
 
 	m_modifiers = std::move(modifiers);
+
 	setModified(true);
 	return true;
 }
