@@ -12,6 +12,7 @@ pkgs.mkShell {
     pkgs.zstd
     pkgs.libjpeg
     pkgs.libpng
+    pkgs.libzip
     pkgs.libGL
     pkgs.luajit
     pkgs.sdl3
