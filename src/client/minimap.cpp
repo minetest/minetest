@@ -320,7 +320,7 @@ void Minimap::addMode(MinimapModeDef mode)
 			precision = 1;
 		}
 		porting::mt_snprintf(label_buf, sizeof(label_buf),
-			mode.label.c_str(), zoom, precision
+			mode.label.c_str(), precision, zoom
 		);
 		mode.label = label_buf;
 	}
