@@ -64,7 +64,7 @@ inline ALenum warn_if_al_error(const char *desc)
 /**
  * Transforms vectors from a left-handed coordinate system to a right-handed one
  * and vice-versa.
- * (Needed because Minetest uses a left-handed one and OpenAL a right-handed one.)
+ * (Needed because Luanti uses a left-handed one and OpenAL a right-handed one.)
  */
 inline v3f swap_handedness(v3f v) noexcept
 {

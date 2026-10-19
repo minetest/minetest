@@ -1016,7 +1016,7 @@ std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
 		s.erase(std::remove(s.begin(), s.end(), '\x1b'), s.end());
 		return s;
 	}
-	// Note: Minetest escapes generally just look like \x1b# or \x1b(###)
+	// Note: Luanti escapes generally just look like \x1b# or \x1b(###)
 	// where # is a single character and ### any number of characters.
 	// Here we additionally assume that the first character in the sequence
 	// is [A-Za-z], to enable us to filter foreign types of escapes that might

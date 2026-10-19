@@ -143,7 +143,7 @@
 #define LUA_INTEGER	ptrdiff_t
 
 
-/* MINETEST-SPECIFIC CHANGE: make sure API functions conform to the C ABI. */
+/* LUANTI-SPECIFIC CHANGE: make sure API functions conform to the C ABI. */
 #if defined(__cplusplus)
 #define LUAI_API_EXTERN extern "C"
 #else
