@@ -59,13 +59,17 @@ local function cleanup_path(temppath)
 	return temppath
 end
 
+local function get_texture_pack_path(txtpath, item)
+	return txtpath .. DIR_DELIM .. item .. DIR_DELIM
+end
+
 local function load_texture_packs(txtpath, retval)
 	local list = core.get_dir_list(txtpath, true)
 	local enabled_packs = pkgmgr.get_enabled_texture_packs()
 
 	for _, item in ipairs(list) do
 		if item ~= "base" then
-			local path = txtpath .. DIR_DELIM .. item .. DIR_DELIM
+			local path = get_texture_pack_path(txtpath, item)
 			local conf = Settings(path .. "texture_pack.conf")
 			local order = table.indexof(enabled_packs, path)
 			if order == -1 then
@@ -163,11 +167,49 @@ function pkgmgr.move_texture_pack(path, delta)
 	pkgmgr.set_enabled_texture_packs(list)
 end
 
+--- Removes enabled packs that are missing from dirs, returns true if any were removed.
+local function remove_missing_texture_packs(dirs)
+	local found = {}
+	for _, dir in ipairs(dirs) do
+		for _, item in ipairs(core.get_dir_list(dir, true)) do
+			found[get_texture_pack_path(dir, item)] = true
+		end
+	end
+
+	local list = pkgmgr.get_enabled_texture_packs()
+	local kept = {}
+
+	for _, path in ipairs(list) do
+		-- Paths outside dirs are assumed intentionally set by user and kept
+		local managed = false
+		for _, dir in ipairs(dirs) do
+			local prefix = dir .. DIR_DELIM
+			if path:sub(1, #prefix) == prefix then
+				managed = true
+			end
+		end
+		if not managed or found[path] then
+			kept[#kept + 1] = path
+		end
+	end
+
+	if #kept == #list then
+		return false
+	end
+	pkgmgr.set_enabled_texture_packs(kept)
+	return true
+end
+
 --------------------------------------------------------------------------------
 function pkgmgr.reload_texture_packs()
 	local txtpath = core.get_texturepath()
 	local txtpath_system = core.get_texturepath_share()
 	local retval = {}
+
+	-- mm_game_theme is nil outside the main menu
+	if remove_missing_texture_packs({txtpath, txtpath_system}) and mm_game_theme then
+		mm_game_theme.texturepack = pkgmgr.get_enabled_texture_packs()[1]
+	end
 
 	load_texture_packs(txtpath, retval)
 
