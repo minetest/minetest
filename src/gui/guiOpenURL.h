@@ -1,5 +1,5 @@
 /*
-Part of Minetest
+Part of Luanti
 Copyright (C) 2023 rubenwardy
 
 Permission to use, copy, modify, and distribute this software for any

@@ -191,7 +191,8 @@ public:
 			curl_easy_cleanup(it);
 		}
 	}
-	CURL * alloc()
+
+	CURL *alloc()
 	{
 		CURL *curl;
 		if (handles.empty()) {
@@ -204,10 +205,13 @@ public:
 		}
 		return curl;
 	}
+
 	void free(CURL *handle)
 	{
-		if (handle)
+		if (handle) {
+			curl_easy_reset(handle); // reset everything to defaults
 			handles.push_back(handle);
+		}
 	}
 };
 
@@ -251,8 +255,11 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""); // = all supported ones
 
 	std::string bind_address = g_settings->get("bind_address");
-	curl_easy_setopt(curl, CURLOPT_INTERFACE,
-		bind_address.empty() ? nullptr : bind_address.c_str());
+	if (request.use_bind_address && !bind_address.empty()) {
+		curl_easy_setopt(curl, CURLOPT_INTERFACE, bind_address.c_str());
+	} else {
+		curl_easy_setopt(curl, CURLOPT_INTERFACE, nullptr);
+	}
 
 	std::string proxy = g_settings->get("secure.curl_proxy");
 	curl_easy_setopt(curl, CURLOPT_PROXY, proxy.empty() ? nullptr : proxy.c_str());
@@ -449,12 +456,6 @@ HTTPFetchOngoing::~HTTPFetchOngoing()
 		}
 	}
 
-	// Set safe options for the reusable cURL handle
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
-			httpfetch_discardfunction);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
-	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, nullptr);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
 	if (http_header) {
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, nullptr);
 		curl_slist_free_all(http_header);
@@ -463,6 +464,7 @@ HTTPFetchOngoing::~HTTPFetchOngoing()
 		curl_easy_setopt(curl, CURLOPT_MIMEPOST, nullptr);
 		curl_mime_free(multipart_mime);
 	}
+	// No need to reset any other options, the pool will do it.
 
 	// Store the cURL handle for reuse
 	pool->free(curl);

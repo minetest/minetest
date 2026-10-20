@@ -13,11 +13,11 @@ enum class PointabilityType : u8
 {
 	// Can be pointed through.
 	// Note: This MUST be the 0-th item in the enum for backwards compat.
-	// Older Minetest versions send "pointable=false" as "0".
+	// Older Luanti versions send "pointable=false" as "0".
 	POINTABLE_NOT,
 	// Is pointable.
 	// Note: This MUST be the 1-th item in the enum for backwards compat:
-	// Older Minetest versions send "pointable=true" as "1".
+	// Older Luanti versions send "pointable=true" as "1".
 	POINTABLE,
 	// Note: Since (u8) 2 is truthy,
 	// older clients will understand this as "pointable=true",

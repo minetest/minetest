@@ -190,7 +190,7 @@ end)
 
 core.register_chatcommand("privs", {
 	func = function(param)
-		return true, core.privs_to_string(minetest.get_privilege_list())
+		return true, core.privs_to_string(core.get_privilege_list())
 	end,
 })
 

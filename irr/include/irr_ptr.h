@@ -1,5 +1,5 @@
 /*
-Minetest
+Luanti
 Copyright (C) 2018 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
 
 This program is free software; you can redistribute it and/or modify

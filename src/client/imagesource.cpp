@@ -1557,7 +1557,7 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 		/*
 			[png:base64
 			Decodes a PNG image in base64 form.
-			Use minetest.encode_png and minetest.encode_base64
+			Use core.encode_png and core.encode_base64
 			to produce a valid string.
 		*/
 		else if (str_starts_with(part_of_name, "[png:")) {

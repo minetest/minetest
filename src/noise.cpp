@@ -1,5 +1,5 @@
 /*
- * Minetest
+ * Luanti
  * Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
  * Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
  * All rights reserved.

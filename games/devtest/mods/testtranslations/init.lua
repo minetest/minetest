@@ -5,6 +5,8 @@ local function send_compare(name, text)
 			core.get_translated_string("", text), text, core.get_translated_string("fr", text)))
 end
 
+-- FIXME: this should be moved to 'unittests' as far as possible, so
+--        it gets run automatically
 core.register_chatcommand("testtranslations", {
 	params = "",
 	description = "Test translations",
