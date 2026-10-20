@@ -1239,8 +1239,8 @@ PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 
 	// If failed, cancel
 	if (!player) {
-		RemotePlayer *joined = m_env->getPlayer(playername.c_str());
-		if (joined && joined->getPeerId() != PEER_ID_INEXISTENT) {
+		RemotePlayer *joined = m_env->getPlayer(playername.c_str(), true);
+		if (joined) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to another client)" << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
@@ -4235,7 +4235,8 @@ std::unique_ptr<PlayerSAO> Server::emergePlayer(const char *name, session_t peer
 	/*
 		Try to get an existing player
 	*/
-	RemotePlayer *player = m_env->getPlayer(name);
+	// Also match a disconnected player that is still pending removal
+	RemotePlayer *player = m_env->getPlayer(name, true);
 
 	// If player is already connected, cancel
 	if (player) {
