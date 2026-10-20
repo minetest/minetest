@@ -233,7 +233,10 @@ inline quaternion &quaternion::operator=(const matrix4 &m)
 {
 	const f32 diag = m[0] + m[5] + m[10] + 1;
 
-	if (diag > 0.0f) {
+	// diag is the diagonal sum plus one; only take this branch once it
+	// passes one, where the diagonal sum is positive and W is the largest
+	// component, so the scale below stays well away from zero.
+	if (diag > 1.0f) {
 		const f32 scale = sqrtf(diag) * 2.0f; // get scale from diagonal
 
 		// TODO: speed this up
