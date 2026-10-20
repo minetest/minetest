@@ -299,7 +299,7 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 
 	if (blockpos_over_max_limit(p)) {
 		warningstream << "Client: Ignoring block data at invalid position "
-			<< p << std::endl;
+				<< p << std::endl;
 		return;
 	}
 
