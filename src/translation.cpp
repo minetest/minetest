@@ -147,7 +147,7 @@ void Translations::loadTrTranslation(const std::string &data, bool is_fallback)
 			textdomain_narrow = trim(parts[1]);
 			textdomain = utf8_to_wide(textdomain_narrow);
 		}
-		else if (str_starts_with(line, "# Source-Language:")) {
+		else if (str_starts_with(line, "# X-Source-Language:")) {
 			auto parts = str_split(line, ':');
 			if (parts.size() < 2) {
 				errorstream << "Invalid source language translation line \"" << line
@@ -525,8 +525,8 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 										errorstream << "Invalid Plural-Forms line: " << wide_to_utf8(line) << std::endl;
 									}
 								}
-								else if (str_starts_with(line, L"Source-Language:")) {
-									auto source_lang = trim(wide_to_utf8(line.substr(16)));
+								else if (str_starts_with(line, L"X-Source-Language:")) {
+									auto source_lang = trim(wide_to_utf8(line.substr(18)));
 
 									if (is_fallback && !source_lang.empty() && source_lang == m_target_lang) {
 										return;
@@ -670,8 +670,8 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 							errorstream << "Invalid Plural-Forms line: " << line << std::endl;
 						}
 					}
-					else if (str_starts_with(line, "Source-Language:")) {
-						auto source_lang = trim(line.substr(16));
+					else if (str_starts_with(line, "X-Source-Language:")) {
+						auto source_lang = trim(line.substr(18));
 
 						if (is_fallback && !source_lang.empty() && source_lang == m_target_lang) {
 							return;

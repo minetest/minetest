@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Source-Language: fr\n"
+"X-Source-Language: fr\n"
 
 msgid "Testing .po files: incorrect source string"
 msgstr "Testing .po files: fallback string"
