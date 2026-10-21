@@ -110,6 +110,7 @@ SECTION("matrix-euler roundtrip") {
 // depending on rounding, could return a badly wrong rotation.
 SECTION("matrix-quaternion roundtrip near 180 degrees") {
 	const v3f near_half_turn[] = {
+		{core::PI, 0.0f, 0.0f}, // exactly 180 degrees about X
 		{2.82365f, 1.59297f, 5.97210f},
 		{2.50468f, 3.80537f, 0.22627f},
 		{6.12445f, 3.48952f, 3.99157f},
