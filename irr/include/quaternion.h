@@ -231,12 +231,11 @@ inline quaternion::quaternion(const matrix4 &mat)
 // matrix assignment operator
 inline quaternion &quaternion::operator=(const matrix4 &m)
 {
-	const f32 diag = m[0] + m[5] + m[10] + 1;
+	// Refer to getMatrixFast(), which this is the inverse of, for what m[i] resolves to.
+	const f32 diag = m[0] + m[5] + m[10] + 1; // = 4(1 - x^2 - y^2 - z^2) = 4w^2
 
-	// diag is the diagonal sum plus one; only take this branch once it
-	// passes one, where the diagonal sum is positive and W is the largest
-	// component, so the scale below stays well away from zero.
-	if (diag > 1.0f) {
+	// Solve for a large (c^2 >= 1/4) component c of x, y, z, w.
+	if (diag > 1.0f) { // w^2 >= 1/4
 		const f32 scale = sqrtf(diag) * 2.0f; // get scale from diagonal
 
 		// TODO: speed this up
@@ -244,10 +243,10 @@ inline quaternion &quaternion::operator=(const matrix4 &m)
 		Y = (m[8] - m[2]) / scale;
 		Z = (m[1] - m[4]) / scale;
 		W = 0.25f * scale;
-	} else {
+	} else { // w^2 <= 1/4 => x^2 + y^2 + z^2 >= 3/4 => max{x^2, y^2, z^2} >= 1/4
 		if (m[0] > m[5] && m[0] > m[10]) {
 			// 1st element of diag is greatest value
-			// find scale according to 1st element, and double it
+			// => x is greatest component
 			const f32 scale = sqrtf(1.0f + m[0] - m[5] - m[10]) * 2.0f;
 
 			// TODO: speed this up
