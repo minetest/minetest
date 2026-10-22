@@ -217,13 +217,15 @@ bool read_schematic_def(lua_State *L, int index,
 	v3s16 size = check_v3s16(L, -1);
 	lua_pop(L, 1);
 
+	if (size.X < 0 || size.Y < 0 || size.Z < 0)
+		throw LuaError("Schematic has invalid size");
 	schem->size = size;
 
 	//// Get schematic data
 	lua_getfield(L, index, "data");
 	luaL_checktype(L, -1, LUA_TTABLE);
 
-	u32 numnodes = size.X * size.Y * size.Z;
+	u32 numnodes = size.X * size.Y * size.Z; // FIXME: can overflow
 	schem->schemdata = new MapNode[numnodes];
 
 	size_t names_base = names->size();
@@ -1596,6 +1598,9 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 
+	if (!mg.vm->m_area.contains(VoxelArea(pmin, pmax)))
+		throw LuaError("Specified voxel area out of VoxelManipulator bounds");
+
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
 	oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
@@ -1652,6 +1657,9 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 			required_pmax = oldvm->m_area.MaxEdge - MAP_BLOCKSIZE;
 		if (pmin != required_pmin || pmax != required_pmax)
 			throw LuaError("use_mapgen_biomes requires extents matching chunk area");
+	} else {
+		if (!vm->m_area.contains(VoxelArea(pmin, pmax)))
+			throw LuaError("Specified voxel area out of VoxelManipulator bounds");
 	}
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
@@ -1924,7 +1932,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	//// Create the Lua table
 	u32 numnodes = schem->size.X * schem->size.Y * schem->size.Z;
 	bool resolve_done = schem->isResolveDone();
-	const std::vector<std::string> &names = schem->m_nodenames;
+	auto &names = schem->m_nodenames;
 
 	lua_createtable(L, 0, (write_yslice == "none") ? 2 : 3);
 
@@ -1954,7 +1962,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	for (u32 i = 0; i < numnodes; ++i) {
 		MapNode node = schem->schemdata[i];
 		const std::string &name =
-				resolve_done ? ndef->get(node.getContent()).name : names[node.getContent()];
+				resolve_done ? ndef->get(node).name : names.at(node.getContent());
 		u8 probability   = node.param1 & MTSCHEM_PROB_MASK;
 		bool force_place = node.param1 & MTSCHEM_FORCE_PLACE;
 		lua_createtable(L, 0, force_place ? 4 : 3);

@@ -607,6 +607,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 
 	applyPerPixel(dst, dst_pos, size, [&] (video::SColor in_c) {
 		if (colorize) {
+			colorf.a = in_c.getAlpha() / 255.0f;
 			f32 lum = in_c.getBrightness() / 255.0f;
 
 			if (norm_l < 0) {
@@ -1556,7 +1557,7 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 		/*
 			[png:base64
 			Decodes a PNG image in base64 form.
-			Use minetest.encode_png and minetest.encode_base64
+			Use core.encode_png and core.encode_base64
 			to produce a valid string.
 		*/
 		else if (str_starts_with(part_of_name, "[png:")) {

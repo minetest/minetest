@@ -417,3 +417,16 @@ local function test_str_pack_unpack()
 	assert(a == 42.3 and b == -384)
 end
 unittests.register("test_str_pack_unpack", test_str_pack_unpack)
+
+local function test_translated_string()
+	local get = core.get_translated_string
+	local S = core.get_translator("unittests")
+	-- normal test
+	assert(get("pl", "cat says " .. S("meow")) == "cat says miau")
+	-- must strip translation markup
+	assert(get("pl", S("test")) == "test")
+	-- must leave other strings/markup alone
+	assert(get("pl", "at the soup store") == "at the soup store")
+	assert(get("pl", core.colorize("red", "test")) == core.colorize("red", "test"))
+end
+unittests.register("test_translated_string", test_translated_string)

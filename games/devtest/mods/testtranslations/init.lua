@@ -5,6 +5,8 @@ local function send_compare(name, text)
 			core.get_translated_string("", text), text, core.get_translated_string("fr", text)))
 end
 
+-- FIXME: this should be moved to 'unittests' as far as possible, so
+--        it gets run automatically
 core.register_chatcommand("testtranslations", {
 	params = "",
 	description = "Test translations",
@@ -15,6 +17,12 @@ core.register_chatcommand("testtranslations", {
 		send_compare(name, S("Testing .tr files: untranslated"))
 		send_compare(name, S("Testing .po files: untranslated"))
 		send_compare(name, S("Testing .mo files: untranslated"))
+		send_compare(name, S("Testing .tr files: monolingual untranslated"))
+		send_compare(name, S("Testing .mo files: monolingual untranslated"))
+		send_compare(name, S("Testing .po files: monolingual untranslated"))
+		send_compare(name, S("Testing .po fallback: monolingual untranslated"))
+		send_compare(name, core.translate("translation_correction", "Testing .po files: incorrect source string"))
+		send_compare(name, core.translate("translation_correction", "Testing .po files: source string in target language"))
 		send_compare(name, S("Testing fuzzy .po entry: untranslated (expected)"))
 		send_compare(name, core.translate("translation_po", "Testing .po without context: untranslated"))
 		send_compare(name, core.translate("translation_mo", "Testing .mo without context: untranslated"))

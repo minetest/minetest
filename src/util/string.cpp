@@ -726,7 +726,7 @@ static void translate_string(std::wstring_view s, Translations *translations,
 			++i;
 			length = 1;
 		}
-		std::wstring_view escape_sequence(&s[start_index], length);
+		std::wstring_view escape_sequence = s.substr(start_index, length);
 
 		// The escape sequence is now reconstructed.
 		std::vector<std::wstring> parts = split(escape_sequence, L'@');
@@ -843,7 +843,7 @@ static void translate_all(std::wstring_view s, size_t &i,
 			++i;
 			length = 1;
 		}
-		std::wstring_view escape_sequence(&s[start_index], length);
+		std::wstring_view escape_sequence = s.substr(start_index, length);
 
 		// The escape sequence is now reconstructed.
 		std::vector<std::wstring> parts = split(escape_sequence, L'@');
@@ -1016,7 +1016,7 @@ std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
 		s.erase(std::remove(s.begin(), s.end(), '\x1b'), s.end());
 		return s;
 	}
-	// Note: Minetest escapes generally just look like \x1b# or \x1b(###)
+	// Note: Luanti escapes generally just look like \x1b# or \x1b(###)
 	// where # is a single character and ### any number of characters.
 	// Here we additionally assume that the first character in the sequence
 	// is [A-Za-z], to enable us to filter foreign types of escapes that might

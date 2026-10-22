@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kyrgyz (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2019-11-10 15:04+0000\n"
 "Last-Translator: Krock <mk939@ymail.com>\n"
 "Language-Team: Kyrgyz <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -337,6 +337,13 @@ msgstr ""
 msgid "Accessibility"
 msgstr ""
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -613,7 +620,7 @@ msgstr "Жүктөлүүдө..."
 msgid "Featured"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 #, fuzzy
 msgid "Games"
 msgstr "Оюн"
@@ -625,7 +632,7 @@ msgstr "Оюн"
 msgid "Loading..."
 msgstr "Жүктөлүүдө..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr ""
 
@@ -804,11 +811,6 @@ msgstr ""
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr ""
-
-#: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
-msgid "$1 (Enabled)"
-msgstr "күйгүзүлгөн"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 #, fuzzy
@@ -1392,7 +1394,25 @@ msgid "Disable Texture Pack"
 msgstr "Баарын өчүрүү"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Баарын өчүрүү"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Ылдый"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Move Up"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
@@ -1408,11 +1428,12 @@ msgid "Rename"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr ""
+#, fuzzy
+msgid "Texture packs"
+msgstr "Баарын өчүрүү"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
+msgid "Update available?"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
@@ -1640,8 +1661,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "Дүйнө тандалган жок жана дареги киргизилген жок. Кылууга эч нерсе жок."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr ""
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Оюнду баштоо/туташуу"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2556,12 +2578,12 @@ msgstr ""
 
 #: src/client/minimap.cpp
 #, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr ""
 
 #: src/client/minimap.cpp
 #, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr ""
 
 #: src/client/minimap.cpp
@@ -3098,10 +3120,6 @@ msgid "Always fly fast"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr ""
 
@@ -3526,14 +3544,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3848,6 +3866,10 @@ msgid "Developer Options"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr ""
 
@@ -4000,10 +4022,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4372,10 +4390,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4781,8 +4795,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 
@@ -5274,16 +5288,6 @@ msgstr "Башкы меню"
 #: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5829,6 +5833,16 @@ msgid "Occlusion Culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr ""
 
@@ -5938,10 +5952,6 @@ msgid ""
 "buttons.\n"
 "Enable this when you dig or place too often by accident.\n"
 "On touchscreens, this only affects digging."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6380,12 +6390,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6482,6 +6486,10 @@ msgstr ""
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6841,14 +6849,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -6903,19 +6903,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory, in seconds."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Учууга которуу"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7067,16 +7054,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7145,9 +7122,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7276,11 +7253,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Тегиз жарык"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "Тегиз жарык"
 
@@ -7351,9 +7323,7 @@ msgid "Weblink color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7543,3 +7513,15 @@ msgstr ""
 #, c-format
 msgid "Failed to save screenshot to \"%s\""
 msgstr ""
+
+#, fuzzy
+#~ msgid "$1 (Enabled)"
+#~ msgstr "күйгүзүлгөн"
+
+#, fuzzy
+#~ msgid "Tinted fog"
+#~ msgstr "Учууга которуу"
+
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Тегиз жарык"

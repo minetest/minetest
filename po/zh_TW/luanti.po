@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-08-18 15:51+0000\n"
 "Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
@@ -329,6 +329,13 @@ msgstr "【空白】"
 msgid "Accessibility"
 msgstr "無障礙"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -593,7 +600,7 @@ msgstr "正在下載..."
 msgid "Featured"
 msgstr "特性"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "遊戲"
 
@@ -604,7 +611,7 @@ msgstr "遊戲"
 msgid "Loading..."
 msgstr "載入中…"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "模組"
 
@@ -778,10 +785,6 @@ msgstr "作者：$1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "按 $1 — $2 下載 — +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1（已啟用）"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1353,8 +1356,27 @@ msgid "Disable Texture Pack"
 msgstr "停用材質包"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "已安裝套件："
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "停用材質包"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page Down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "移動"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1369,12 +1391,13 @@ msgid "Rename"
 msgstr "重新命名"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "可以更新嗎？"
+#, fuzzy
+msgid "Texture packs"
+msgstr "材質包"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "使用材質包"
+msgid "Update available?"
+msgstr "可以更新嗎？"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1583,8 +1606,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "未有已被選取的世界，且未提供地址。無事可做。"
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "玩家名稱太長。"
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "玩家名： "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2449,13 +2473,13 @@ msgid "Minimap hidden"
 msgstr "隱藏迷你地圖"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "雷達模式的迷你地圖，放大 %d 倍"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "表面模式的迷你地圖，放大 %d 倍"
 
 #: src/client/minimap.cpp
@@ -3028,10 +3052,6 @@ msgid "Always fly fast"
 msgstr "總是快速飛行"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "環境遮蔽光"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "放大山谷。"
 
@@ -3483,17 +3503,19 @@ msgstr ""
 "完整清單請見https://content.minetest.net/help/content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "以逗號分隔的 mod 清單，允許其存取 HTTP API，\n"
 "從而網際網路上傳及下載資料。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "受信任的 Mod 列表，以逗號分隔，其可存取不安全的\n"
 "功能，即便 mod 安全性是（經由 request_insecure_environment()）。"
@@ -3843,6 +3865,10 @@ msgid "Developer Options"
 msgstr "開發者選項"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr ""
 
@@ -4012,10 +4038,6 @@ msgstr "動態陰影"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "啟用 mod 頻道支援。"
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "啟用 mod 安全性"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4425,10 +4447,6 @@ msgstr "圖形使用者介面縮放過濾器"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4913,9 +4931,10 @@ msgstr ""
 "不可能看見的內容，而使穿牆模式的效用降低。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "如果啟用，您可以將節點放置在您站立的位置（腳+眼睛水平）。\n"
@@ -5475,16 +5494,6 @@ msgstr "主選單指令稿"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr "讓霧與天空的顏色取決於時間（黎明／日落）與觀看方向。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6086,6 +6095,23 @@ msgstr "伺服器端遮擋剔除"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"occlusion_culler 類型\n"
+"\n"
+"「loops」是具有巢狀循環和 O(n³) 複雜度的遺留演算法\n"
+"「bfs」是基於廣度優先搜尋和側面剔除的新演算法\n"
+"\n"
+"僅當出現效能問題時才應變更此設定。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "預設字體後面的陰影的不透明度 (alpha)，介於 0 到 255 之間。"
 
@@ -6209,10 +6235,6 @@ msgstr ""
 "防止按住對應按鈕時重複挖掘和放置。\n"
 "當您意外地頻繁挖掘或放置時啟用此功能。\n"
 "在觸控螢幕上，這只會影響挖掘。"
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr "避免 mod 做出不安全的舉動，像是執行 shell 指令等。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6719,12 +6741,6 @@ msgstr "設定客戶端發送的聊天訊息的最大長度（以字元為單位
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6839,6 +6855,10 @@ msgid ""
 msgstr ""
 "顯示實體選擇框\n"
 "更改後需要重新啟動。"
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7278,18 +7298,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"節點環境光遮蔽的強度（暗度）。\n"
-"愈低愈暗，愈高愈亮。這個設定的\n"
-"值的有效範圍是 0.25 到 4.0 間。如果\n"
-"值超出範圍，其將會被設定為最近的有效值。"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7359,19 +7367,6 @@ msgstr "時間速度"
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr "客戶端從記憶體中刪除未使用的地圖資料的逾時時間（以秒為單位）。"
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "切換霧氣"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7528,22 +7523,6 @@ msgstr "信任的 mod"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"occlusion_culler 類型\n"
-"\n"
-"「loops」是具有巢狀循環和 O(n³) 複雜度的遺留演算法\n"
-"「bfs」是基於廣度優先搜尋和側面剔除的新演算法\n"
-"\n"
-"僅當出現效能問題時才應變更此設定。"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7623,13 +7602,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"在新剔除器中使用光線追蹤遮擋剔除。\n"
-"該標誌允許使用光線追蹤遮擋剔除測試\n"
-"客戶端網格尺寸小於 4x4x4 地圖塊。"
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7768,11 +7744,6 @@ msgstr "不聚焦時的音量"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "體積照明"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "體積照明"
 
@@ -7843,9 +7814,7 @@ msgid "Weblink color"
 msgstr "網路連結顏色"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8079,24 +8048,52 @@ msgstr ""
 msgid "Failed to save screenshot to \"%s\""
 msgstr ""
 
-#~ msgid "Enable joysticks"
-#~ msgstr "啟用搖桿"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1（已啟用）"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "啟用操縱桿。 需要重新啟動才能生效"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "環境遮蔽光"
+
+#~ msgid "Enable mod security"
+#~ msgstr "啟用 mod 安全性"
+
+#~ msgid "Installed Packages:"
+#~ msgstr "已安裝套件："
+
+#~ msgid "Player name too long."
+#~ msgstr "玩家名稱太長。"
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr "避免 mod 做出不安全的舉動，像是執行 shell 指令等。"
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "節點環境光遮蔽的強度（暗度）。\n"
+#~ "愈低愈暗，愈高愈亮。這個設定的\n"
+#~ "值的有效範圍是 0.25 到 4.0 間。如果\n"
+#~ "值超出範圍，其將會被設定為最近的有效值。"
 
 #, fuzzy
-#~ msgid "Keybindings"
-#~ msgstr "鍵綁定。"
+#~ msgid "Tinted fog"
+#~ msgstr "切換霧氣"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "搖桿死區"
+#~ msgid "Use Texture Pack"
+#~ msgstr "使用材質包"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "要使用的搖桿的識別碼"
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "在新剔除器中使用光線追蹤遮擋剔除。\n"
+#~ "該標誌允許使用光線追蹤遮擋剔除測試\n"
+#~ "客戶端網格尺寸小於 4x4x4 地圖塊。"
 
-#~ msgid "The type of joystick"
-#~ msgstr "搖桿類型"
-
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "啟用後，將模擬液體反射。"
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "體積照明"

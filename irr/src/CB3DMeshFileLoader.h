@@ -34,50 +34,6 @@ public:
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
 	IAnimatedMesh *createMesh(io::IReadFile *file) override;
-
-private:
-	bool load();
-	std::optional<SB3dChunkHeader> readChunkHeader(size_t sizelim);
-	bool readChunkNODE(SkinnedMesh::SJoint *InJoint);
-	bool readChunkMESH(SkinnedMesh::SJoint *InJoint);
-	bool readChunkVRTS(SkinnedMesh::SJoint *InJoint);
-	bool readChunkTRIS(scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 Vertices_Start);
-	bool readChunkBONE(SkinnedMesh::SJoint *InJoint);
-	bool readChunkKEYS(SkinnedMesh::SJoint *InJoint);
-	bool readChunkANIM();
-	bool readChunkTEXS();
-	bool readChunkBRUS();
-
-	std::string readString();
-	void readFloats(f32 *vec, u32 count);
-
-	size_t getRemainingBytesInChunk() const
-	{
-		return std::max<long>(0, B3dStack.getLast().startposition +
-				B3dStack.getLast().length - B3DFile->getPos());
-	}
-
-	core::array<SB3dChunk> B3dStack;
-
-	core::array<SB3dMaterial> Materials;
-	core::array<SB3dTexture> Textures;
-
-	core::array<s32> AnimatedVertices_VertexID;
-
-	core::array<s32> AnimatedVertices_BufferID;
-
-	core::array<video::S3DVertex2TCoords> BaseVertices;
-
-	SkinnedMeshBuilder AnimatedMesh;
-	io::IReadFile *B3DFile;
-
-	// B3Ds have Vertex ID's local within the mesh I don't want this
-	//  Variable needs to be class member due to recursion in calls
-	u32 VerticesStart;
-
-	bool NormalsInFile;
-	bool HasVertexColors;
-	bool ShowWarning;
 };
 
 } // end namespace scene

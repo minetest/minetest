@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-04-20 07:09+0000\n"
 "Last-Translator: 109247019824 "
 "<109247019824@users.noreply.hosted.weblate.org>\n"
@@ -341,6 +341,13 @@ msgstr ""
 msgid "Accessibility"
 msgstr "Достъпност"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -613,7 +620,7 @@ msgstr "Изтегляне…"
 msgid "Featured"
 msgstr "Препоръчани"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Игри"
 
@@ -624,7 +631,7 @@ msgstr "Игри"
 msgid "Loading..."
 msgstr "Зареждане…"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Модификации"
 
@@ -798,10 +805,6 @@ msgstr "от $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "автор $1  –  $2 изтегляния  –  +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (включено)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1390,8 +1393,27 @@ msgid "Disable Texture Pack"
 msgstr "Изкл. на пакет с текстури"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Инсталирани добавки:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Изкл. на пакет с текстури"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page Down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Движение наляво"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1406,12 +1428,13 @@ msgid "Rename"
 msgstr "Преименуване"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Няма обновяване?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Пакети с текстури"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Вкл. на пакет с текстури"
+msgid "Update available?"
+msgstr "Няма обновяване?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1624,8 +1647,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr "Няма избран свят, нито зададен адрес. Няма какво да бъде направено."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Името на играча е твърде дълго."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Започване на игра"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2524,13 +2548,13 @@ msgid "Minimap hidden"
 msgstr "Картата е скрита"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Картата е в режим на радар, мащаб x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Картата е в режим на повърхност, мащаб x%d"
 
 #: src/client/minimap.cpp
@@ -3125,10 +3149,6 @@ msgid "Always fly fast"
 msgstr "Винаги бърз полет"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Гама на видимите блокове в далечина"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "Увеличава долините."
 
@@ -3590,18 +3610,20 @@ msgstr ""
 "пълния списък е на адрес https://content.luanti.org/help/content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "Списък с модофикации, разделени със запетая, които имат\n"
 "достъп до ППИ за HTTP и могат да изтеглят и изпращат\n"
 "информация от интернет."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "Списък с доверени модофикации, разделени със запетая, които\n"
 "имат достъп до опасните възможности даже при включена\n"
@@ -3967,6 +3989,10 @@ msgid "Developer Options"
 msgstr "За разработчици"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "Изключете ако желаете да замервате с Trasy."
 
@@ -4147,10 +4173,6 @@ msgstr "Динамични сенки"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Поддръжка на канали на модификациите."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Сигурност на модификациите"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4596,10 +4618,6 @@ msgstr "Филтър на мащабиране на интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5063,9 +5081,10 @@ msgstr ""
 "невидими блокове, така че полезността на режима noclip намалява."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Когато е отметнато, можете да поставяте възли, на мястото, на което стоите.\n"
@@ -5652,16 +5671,6 @@ msgid ""
 msgstr ""
 "Цветовете на мъглата и небето ще зависят от часа̀\n"
 "през деня (изгрев/залез) и посоката на погледа."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6285,6 +6294,24 @@ msgstr "Премахване на невидимите блокове"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Методи за изчистване на невидими блокове\n"
+"\n"
+"• loops – стар алгоритъм с вложени цикли и сложност O(n³);\n"
+"• bfs – нов алгоритъм на основата на търсене в ширина и изчистване на "
+"гранични блокове.\n"
+"\n"
+"Настройката трябва да бъде променяна само при проблеми с производителността."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Прозрачност на сянката на стандартния шрифт, между 0 и 255."
 
@@ -6412,12 +6439,6 @@ msgstr ""
 "на съответните бутони.\n"
 "Включете ако, когато копаете или поставяте прекалено често\n"
 "по невнимание. При сензорни екрани засяга само копаенето."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"Забраняване на модификациите да извършват опасни действия\n"
-"като изпълняване на команди в обвивката."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6949,12 +6970,6 @@ msgstr "Задава максималния брой знаци в съобще�
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -7078,6 +7093,10 @@ msgid ""
 msgstr ""
 "Показва рамка около избирания обект.\n"
 "Изисква рестарт."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7549,17 +7568,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Сила на сянката при изчезване в далечина. Ниските стойности\n"
-"създават тъмна, а високите - светла.\n"
-"Долна граница: 0.25, горна – 4.0."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7636,19 +7644,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Времето, след което клиентът премахва неизползваната карта от паметта, в "
 "секунди."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tinted fog"
-msgstr "Превкл. мъгла"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7793,23 +7788,6 @@ msgstr "Доверени модификации"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Методи за изчистване на невидими блокове\n"
-"\n"
-"• loops – стар алгоритъм с вложени цикли и сложност O(n³);\n"
-"• bfs – нов алгоритъм на основата на търсене в ширина и изчистване на "
-"гранични блокове.\n"
-"\n"
-"Настройката трябва да бъде променяна само при проблеми с производителността."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7899,14 +7877,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Лъчево премахване на невидимите блокове.\n"
-"Флагът включва проверка за използването на лъчевото премахване\n"
-"на невидими блокове за клиентски мешове по-малки от 4х4х4\n"
-"блокове от картата."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -8049,11 +8023,6 @@ msgstr "Сила на звука при загуба на фокус"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Volumetric Depth Attenuation"
-msgstr "Обемно осветление"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric Lighting"
 msgstr "Обемно осветление"
 
@@ -8126,9 +8095,7 @@ msgid "Weblink color"
 msgstr "Цвят на препратките"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -8364,23 +8331,54 @@ msgstr ""
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Грешка при запазване на екранната снимка в „%s“"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Включване на контролер"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (включено)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "Включване поддръжката на контролер. Изисква рестарт"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Гама на видимите блокове в далечина"
 
-#~ msgid "Keybindings"
-#~ msgstr "Клавишни комбинации"
+#~ msgid "Enable mod security"
+#~ msgstr "Сигурност на модификациите"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "Мъртва зона на контролера"
+#~ msgid "Installed Packages:"
+#~ msgstr "Инсталирани добавки:"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "Идентификатор на използвания контролер"
+#~ msgid "Player name too long."
+#~ msgstr "Името на играча е твърде дълго."
 
-#~ msgid "The type of joystick"
-#~ msgstr "Вид на контролера"
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Забраняване на модификациите да извършват опасни действия\n"
+#~ "като изпълняване на команди в обвивката."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "Когато е отметнато се имитира отражение от течностите."
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Сила на сянката при изчезване в далечина. Ниските стойности\n"
+#~ "създават тъмна, а високите - светла.\n"
+#~ "Долна граница: 0.25, горна – 4.0."
+
+#, fuzzy
+#~ msgid "Tinted fog"
+#~ msgstr "Превкл. мъгла"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Вкл. на пакет с текстури"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Лъчево премахване на невидимите блокове.\n"
+#~ "Флагът включва проверка за използването на лъчевото премахване\n"
+#~ "на невидими блокове за клиентски мешове по-малки от 4х4х4\n"
+#~ "блокове от картата."
+
+#, fuzzy
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Обемно осветление"

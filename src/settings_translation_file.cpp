@@ -10,7 +10,7 @@ fake_function() {
 	gettext("Camera smoothing in cinematic mode");
 	gettext("Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Controls.");
 	gettext("Build inside player");
-	gettext("If enabled, you can place nodes at the position (feet + eye level) where you stand.\nThis is helpful when working with nodeboxes in small areas.");
+	gettext("If enabled, you can place nodes that would be blocked by your collision box.\nThis is helpful when working with nodeboxes in small areas.");
 	gettext("Aux1 key for climbing/descending");
 	gettext("If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down and\ndescending.");
 	gettext("Double tap jump for fly");
@@ -200,8 +200,6 @@ fake_function() {
 	gettext("Field of view in degrees.");
 	gettext("Light curve gamma");
 	gettext("Alters the light curve by applying 'gamma correction' to it.\nHigher values make middle and lower light levels brighter.\nValue '1.0' leaves the light curve unaltered.\nThis only has significant effect on daylight and artificial\nlight, it has very little effect on natural night light.");
-	gettext("Ambient occlusion gamma");
-	gettext("The strength (darkness) of node ambient-occlusion shading.\nLower is darker, Higher is lighter. The valid range of values for this\nsetting is 0.25 to 4.0 inclusive. If the value is out of range it will be\nset to the nearest valid value.");
 	gettext("Screenshots");
 	gettext("Screenshot folder");
 	gettext("Path to save screenshots at. Can be an absolute or relative path.\nThe folder will be created if it doesn't already exist.");
@@ -250,9 +248,9 @@ fake_function() {
 	gettext("Applies a post-processing filter to detect and smoothen high-contrast edges.\nProvides balance between speed and image quality.\nfxaa can used in combination with the other anti-aliasing methods");
 	gettext("Occlusion Culling");
 	gettext("Occlusion Culler");
-	gettext("Type of occlusion_culler\n\n\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n\"bfs\" is the new algorithm based on breadth-first-search and side culling\n\nThis setting should only be changed if you have performance problems.");
+	gettext("Occlusion culler to prefer\n\n\"loops\" is a simple nested algorithm with O(n³) complexity\n\"bfs\" is the new algorithm based on breadth-first-search and side culling\n\nThis setting should only be changed if you have performance problems.");
 	gettext("Enable Raytraced Culling");
-	gettext("Use raytraced occlusion culling in the new culler.\nThis flag enables use of raytraced occlusion culling test for\nclient mesh sizes smaller than 4x4x4 map blocks.");
+	gettext("Use raytraced occlusion culling.\n\nThis setting should only be changed if you have performance problems.");
 	gettext("Effects");
 	gettext("Translucent liquids");
 	gettext("Allows liquids to be translucent.");
@@ -264,6 +262,8 @@ fake_function() {
 	gettext("Enable smooth lighting with simple ambient occlusion.");
 	gettext("Tradeoffs for performance");
 	gettext("Enables tradeoffs that reduce CPU load or increase rendering performance\nat the expense of minor visual glitches that do not impact game playability.");
+	gettext("Digging particles");
+	gettext("Show local particles when digging nodes.");
 	gettext("Waving Nodes");
 	gettext("Waving leaves");
 	gettext("Set to true to enable waving leaves.");
@@ -717,12 +717,10 @@ fake_function() {
 	gettext("Main menu script");
 	gettext("Replaces the default main menu with a custom one.");
 	gettext("Mod Security");
-	gettext("Enable mod security");
-	gettext("Prevent mods from doing insecure things like running shell commands.");
 	gettext("Trusted mods");
-	gettext("Comma-separated list of trusted mods that are allowed to access insecure\nfunctions even when mod security is on (via request_insecure_environment()).");
+	gettext("Comma-separated list of trusted mods that are allowed to bypass the Lua\nsandbox. They will have full access to the host machine.");
 	gettext("HTTP mods");
-	gettext("Comma-separated list of mods that are allowed to access HTTP APIs, which\nallow them to upload and download data to/from the internet.");
+	gettext("Comma-separated list of mods that are allowed to use HTTP APIs, which\nallows them to connect to the Internet and devices on your network.");
 	gettext("Debugging");
 	gettext("Debug log level");
 	gettext("Level of logging to be written to debug.txt:\n-    <nothing> (no logging)\n-    none (messages with no level)\n-    error\n-    warning\n-    action\n-    info\n-    verbose\n-    trace");

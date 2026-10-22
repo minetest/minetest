@@ -7,11 +7,13 @@ mm_game_theme = {}
 local COLORS = {
 	dark = { clouds = "#1c2a47", sky = "#090b1a" },
 	light = { clouds = "#f0f0ff", sky = "#8cbafa" },
+	halloween = { clouds = "#d2691e", sky = "#1a0b2e" },
 }
 
 --------------------------------------------------------------------------------
 function mm_game_theme.init()
-	mm_game_theme.texturepack = core.settings:get("texture_path")
+	-- TODO: scan texture packs in order to get game theme images
+	mm_game_theme.texturepack = pkgmgr.get_enabled_texture_packs()[1]
 
 	mm_game_theme.gameid = nil
 
@@ -42,6 +44,9 @@ function mm_game_theme.set_engine(hide_decorations)
 	end
 
 	local c = COLORS[core.settings:get("menu_theme")]
+	if not core.settings:has("menu_theme") and os.date("%m-%d") == "10-31" then
+		c = COLORS.halloween
+	end
 	if not c then
 		core.log("warning", "Invalid menu theme: " .. core.settings:get("menu_theme"))
 	else
@@ -81,6 +86,9 @@ function mm_game_theme.set_game(gamedetails)
 	mm_game_theme.set_game_single("footer", gamedetails)
 
 	local c = COLORS[core.settings:get("menu_theme")]
+	if not core.settings:has("menu_theme") and os.date("%m-%d") == "10-31" then
+		c = COLORS.halloween
+	end
 	if not c then
 		core.log("warning", "Invalid menu theme: " .. core.settings:get("menu_theme"))
 	else

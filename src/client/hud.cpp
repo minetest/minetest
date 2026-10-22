@@ -521,7 +521,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset, bool only_unhidable)
 					dstsize.Y = m_screensize.Y * (e->size.Y * -0.01);
 
 				if (dstsize.X <= 0 || dstsize.Y <= 0)
-					return; // Avoid zero divides
+					continue; // Avoid zero divides
 
 				// Angle according to camera view
 				scene::ICameraSceneNode *cam = client->getSceneManager()->getActiveCamera();
@@ -569,7 +569,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset, bool only_unhidable)
 					dstsize.X = dstsize.Y = m_screensize.Y * (e->size.Y * -0.01);
 
 				if (dstsize.X <= 0 || dstsize.Y <= 0)
-					return;
+					continue;
 
 				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
 				             (e->align.Y - 1.0) * dstsize.Y / 2);

@@ -1,6 +1,6 @@
 // Luanti
 // SPDX-License-Identifier: LGPL-2.1-or-later
-// Copyright (C) 2013-2020 Minetest core developers team
+// Copyright (C) 2013-2020 Luanti core developers team
 
 #include "metricsbackend.h"
 #include "util/thread.h"

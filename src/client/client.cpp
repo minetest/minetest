@@ -15,7 +15,6 @@
 #include "client/particles.h"
 #include "client/renderingengine.h"
 #include "client/sound.h"
-#include "client/texturepaths.h"
 #include "client/texturesource.h"
 #include "camera.h"
 #include "filesys.h"
@@ -616,6 +615,10 @@ void Client::step(float dtime)
 		Replace updated meshes
 	*/
 	{
+		// This can cause pending mesh updates to lose their validity, so do it
+		// before processing them.
+		updateStaticLighting(player->getLighting().static_);
+
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
 		bool force_update_shadows = false;
@@ -673,6 +676,8 @@ void Client::step(float dtime)
 				}
 			}
 
+			// TODO?: it's really weird and complicates things how we only ack
+			// blocks after they've been through the meshgen queue...
 			for (auto p : r.ack_list) {
 				if (blocks_to_ack.size() == 255) {
 					sendGotBlocks(blocks_to_ack);
@@ -682,9 +687,7 @@ void Client::step(float dtime)
 				blocks_to_ack.emplace_back(p);
 			}
 
-			for (auto block : r.map_blocks)
-				if (block)
-					block->refDrop();
+			r.dropBlocks();
 		}
 		if (blocks_to_ack.size() > 0) {
 				// Acknowledge block(s)
@@ -817,6 +820,31 @@ void Client::step(float dtime)
 	}
 }
 
+bool Client::updateStaticLighting(const StaticLighting &future)
+{
+	auto &current = m_committed_static_light;
+
+	if (current == future)
+		return false;
+	current = future;
+	infostream << "Static lighting params changed" << std::endl;
+
+	float gamma = g_settings->getFloat("display_gamma");
+	if (current.light_curve_set) {
+		set_light_table(current.light_curve, gamma);
+	} else {
+		set_light_curve(gamma);
+	}
+
+	// Force a re-mesh of all blocks
+	ClientMap &map = m_env.getClientMap();
+	std::vector<v3s16> to_update;
+	map.getBlocksWithMeshes(to_update);
+	m_mesh_update_manager->forceRegenerate(&map, to_update);
+
+	return true;
+}
+
 bool Client::loadMedia(const std::string &data, const std::string &filename,
 	bool from_media_push)
 {
@@ -892,6 +920,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 			return false;
 		TRACESTREAM(<< "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl);
+
+		g_client_translations->setTargetLanguage(gettext_get_lang_code());
 		g_client_translations->loadTranslation(filename, data);
 		return true;
 	}
@@ -1898,24 +1928,22 @@ void Client::afterContentReceived()
 	// content from previous sessions.
 	guiScalingCacheClear();
 
-	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
 	m_rendering_engine->draw_load_screen(wstrgettext("Loading textures..."),
 			guienv, m_tsrc, 0, 66);
 	m_tsrc->rebuildImagesAndTextures();
 
-	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	m_rendering_engine->draw_load_screen(wstrgettext("Rebuilding shaders..."),
 			guienv, m_tsrc, 0, 68);
 	m_shsrc->rebuildShaders();
 
-	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	m_rendering_engine->draw_load_screen(wstrgettext("Initializing nodes..."),
 			guienv, m_tsrc, 0, 70);
 	m_nodedef->updateAliases(m_itemdef);
-	for (const auto &path : getTextureDirs()) {
+	// Apply texture overrides from texturepack/override.txt
+	for (const std::string &path : getTexturePathsReversed()) {
 		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
 		m_nodedef->applyTextureOverrides(override_source.getNodeTileOverrides());
 		m_itemdef->applyTextureOverrides(override_source.getItemTextureOverrides());
@@ -1923,8 +1951,7 @@ void Client::afterContentReceived()
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 
-	// Update node textures and assign shaders to each tile
-	infostream<<"- Updating node textures"<<std::endl;
+	infostream<<"- Updating node visuals"<<std::endl;
 	TextureUpdateArgs tu_args;
 	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.text_base = wstrgettext("Initializing nodes");
@@ -1934,7 +1961,9 @@ void Client::afterContentReceived()
 	// minimap_color, and palette - the two values we care for in SSCSM, get populated
 	m_sscsm_controller->runEvent(this, std::make_unique<SSCSMEventAfterContentReceived>());
 
-	// Start mesh update thread after setting up content definitions
+	// cf. updateStaticLighting()
+	set_light_curve(g_settings->getFloat("display_gamma"));
+
 	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_manager->start();
 

@@ -208,6 +208,9 @@ public:
 	f32 movement_liquid_sink;
 	f32 movement_gravity;
 
+	/// Animation frame ranges for different local player animation "states".
+	/// @note Frames are into the first animation track of a model.
+	/// @note A range of [0, 0] is used to denote an absent local animation.
 	std::array<v2f, (size_t) LocalPlayerAnimation::COUNT> local_animations;
 	float local_animation_speed;
 

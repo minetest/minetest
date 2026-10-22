@@ -1,7 +1,7 @@
 // Luanti
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-// Copyright (C) 2013-2020 Minetest core developers & community
+// Copyright (C) 2013-2020 Luanti core developers & community
 
 #include "player_sao.h"
 #include "nodedef.h"
@@ -360,7 +360,7 @@ void PlayerSAO::setPos(const v3f &pos)
 		return;
 
 	// Send mapblock of target location
-	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
+	v3s16 blockpos = getNodeBlockPos(floatToInt(pos, BS));
 	m_env->getServer()->SendBlock(getPeerID(), blockpos);
 
 	setBasePosition(pos);
@@ -460,10 +460,11 @@ u32 PlayerSAO::punch(v3f dir,
 	float time_from_last_punch,
 	u16 initial_wear)
 {
+	bool puncher_is_player = puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER;
+
 	// No effect if PvP disabled or if immortal
 	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
-		if (puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			// create message and add to list
+		if (puncher_is_player) {
 			sendPunchCommand();
 			return 0;
 		}
@@ -483,10 +484,8 @@ u32 PlayerSAO::punch(v3f dir,
 		setHP((s32)getHP() - (s32)hitparams.hp,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
-		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			// create message and add to list
+		if (puncher_is_player)
 			sendPunchCommand();
-		}
 	}
 
 	if (puncher) {

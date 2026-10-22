@@ -1,6 +1,6 @@
 dofile(core.get_modpath(core.get_current_modname()) .. "/crafting_prepare.lua")
 
--- Test core.clear_craft function
+--[[ FIXME: this needs to be moved to C++, because we can't clear crafts at runtime
 local function test_clear_craft()
 	-- Clearing by output
 	core.register_craft({
@@ -23,7 +23,7 @@ local function test_clear_craft()
 	core.clear_craft({recipe={{"foo", "bar"}}})
 	assert(core.get_all_craft_recipes("foo") == nil)
 end
-unittests.register("test_clear_craft", test_clear_craft)
+--]]
 
 -- Test core.get_craft_result function
 local function test_get_craft_result()

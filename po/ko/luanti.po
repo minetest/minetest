@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Korean (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
-"PO-Revision-Date: 2026-08-20 06:37+0000\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
+"PO-Revision-Date: 2026-08-24 08:51+0000\n"
 "Last-Translator: \"김현수 (khstony)\" <a34253492@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
 "ko/>\n"
@@ -48,7 +48,7 @@ msgstr "외부 채팅 대기열이 비어있습니다."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "해당 명령어를 서버에서 비활성화했습니다."
+msgstr "이 명령어는 서버에서 차단된 명령어입니다."
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -187,8 +187,8 @@ msgid ""
 "Lower values make the terrain smooth and higher values make the terrain have "
 "fine detail."
 msgstr ""
-"값이 낮으면 지형이 매끄러워지고, 값이 높으면 지형에 세밀한 디테일이 "
-"살아납니다."
+"값이 낮으면 지형이 매끄러워지고, 값이 높으면 지형에 세밀한 디테일이 살아납니"
+"다."
 
 #: builtin/common/settings/dlg_change_mapgen_flags.lua
 msgid ""
@@ -208,8 +208,8 @@ msgid ""
 "Maps noise gradient values onto a quintic S-curve before performing "
 "interpolation."
 msgstr ""
-"보간을 수행하기 전에 노이즈 기울기 값을 5차 S-곡선(quintic S-curve)에 "
-"매핑합니다."
+"보간을 수행하기 전에 노이즈 기울기 값을 5차 S-곡선(quintic S-curve)에 매핑합"
+"니다."
 
 #: builtin/common/settings/dlg_change_mapgen_flags.lua
 msgid "Octaves"
@@ -244,7 +244,8 @@ msgstr "스케일"
 
 #: builtin/common/settings/dlg_change_mapgen_flags.lua
 msgid "Scales every octave by (scale of the previous octave / Lacunarity)."
-msgstr "각 옥타브의 스케일을 (이전 옥타브의 스케일 / 공극률) 값으로 조정합니다."
+msgstr ""
+"각 옥타브의 스케일을 (이전 옥타브의 스케일 / 공극률) 값으로 조정합니다."
 
 #: builtin/common/settings/dlg_change_mapgen_flags.lua
 msgid "Scales the noise in the $1 axis by this value."
@@ -339,6 +340,13 @@ msgstr "<비어있음>"
 #: builtin/common/settings/dlg_settings.lua
 msgid "Accessibility"
 msgstr "접근성"
+
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
 
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
@@ -607,7 +615,7 @@ msgstr "다운 받는 중..."
 msgid "Featured"
 msgstr "특선"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "게임"
 
@@ -616,9 +624,9 @@ msgstr "게임"
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/serverlistmgr.lua
 #: src/client/game.cpp
 msgid "Loading..."
-msgstr "불러오는 중..."
+msgstr "로딩 중..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "모드"
 
@@ -792,10 +800,6 @@ msgstr "저자: $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "$1에 의한 — $2 다운로드 — +$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (활성화됨)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1372,8 +1376,27 @@ msgid "Disable Texture Pack"
 msgstr "텍스처팩 비활성화하기"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "설치된 패키지:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "텍스처팩 비활성화하기"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Page Down"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "왼쪽으로 움직이기"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1388,12 +1411,13 @@ msgid "Rename"
 msgstr "이름 바꾸기"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "업데이트 가능?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "텍스처 팩"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "텍스쳐 팩 사용"
+msgid "Update available?"
+msgstr "업데이트 가능?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1605,8 +1629,9 @@ msgstr ""
 "월드를 선택하지 않고 주소가 제공되지 않아 아무것도 실행되지 않았습니다."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "플레이어 이름이 너무 깁니다."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "플레이어 : "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2489,13 +2514,13 @@ msgid "Minimap hidden"
 msgstr "미니맵 숨김"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "미니맵 레이더 모드, %d배율"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "미니맵 표면 모드, %d배율"
 
 #: src/client/minimap.cpp
@@ -2503,7 +2528,7 @@ msgid "Minimap in texture mode"
 msgstr "미니맵 텍스처 모드"
 
 #: src/client/render/pipeline.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to create the texture \"%s\" for the rendering pipeline."
 msgstr "렌더링 파이프라인에 맞는 텍스처 \"%s\"을(를) 생성하지 못했습니다."
 
@@ -3072,10 +3097,6 @@ msgid "Always fly fast"
 msgstr "항상 고속비행"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "주변 occlusion 감마"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "협곡을 증폭합니다."
 
@@ -3202,11 +3223,11 @@ msgid ""
 "Stated in MapBlocks (16 nodes)."
 msgstr ""
 "이 거리에서 서버는 해당 블록을 '멀리 있는 것'으로 간주합니다.\n"
-"서버는 더 단순하고 비용이 적게 드는 가려짐 검사(occlusion check)를 "
-"수행하고,\n"
+"서버는 더 단순하고 비용이 적게 드는 가려짐 검사(occlusion check)를 수행하"
+"고,\n"
 "우선순위가 낮은 블록의 업데이트를 지연 처리하며,\n"
-"한 번의 왕복 통신(roundtrip)으로 클라이언트에 전송되는 블록 수를 "
-"제한합니다.\n"
+"한 번의 왕복 통신(roundtrip)으로 클라이언트에 전송되는 블록 수를 제한합니"
+"다.\n"
 "이는 특히 매우 넓은 시야 범위(500 이상)를 사용할 때 유용합니다.\n"
 "MapBlocks(16개 노드) 단위로 설정됩니다."
 
@@ -3537,17 +3558,19 @@ msgstr ""
 "전체 목록을 참조하십시오"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "리스트의 모드는 HTTP API에 접근 할 수 있습니다(쉼표 구분),\n"
 "인터넷에서 데이터를 다운로드 하거나 업로드 할 수 있습니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "안전하지 않은 기능에 액세스 할 수 있는 모드의 목록입니다(쉼표 구분)\n"
 "(request_insecure_environment ()를 통해 모드 보안이 켜져있어도 접근 가능)."
@@ -3898,6 +3921,10 @@ msgid "Developer Options"
 msgstr "개발자 옵션"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "Tracy로만 모니터링하려는 경우 비활성화하십시오."
 
@@ -4069,10 +4096,6 @@ msgstr "동적 그림자 활성화"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "모드 채널 지원을 활성화합니다."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "모드 보안 적용"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4486,10 +4509,6 @@ msgstr "GUI 크기 조정 필터"
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
 msgstr "게임패드와 조이스틱"
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr "감마"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -4943,9 +4962,10 @@ msgstr ""
 "노클립 모드의 유용성이 감소됩니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "활성화시, 당신이 서 있는 자리에도 블록을 놓을 수 있습니다.\n"
@@ -5507,16 +5527,6 @@ msgstr "메인 메뉴 스크립트"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr "안개와 하늘 색을 시간과 보는 방향에 따라 생성합니다."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr "물리적 체적을 모방하기 위해 가까운 물체에 대한 체적 효과를 약화시킵니다."
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr "옅은 안개의 색상을 더 선명하게 만듭니다."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6087,8 +6097,8 @@ msgstr ""
 "사용할 Emerge 스레드(맵 생성 및 로딩 담당)의 수입니다.\n"
 "0으로 설정하면 엔진이 하드웨어와 맵 생성기 유형에 따라 적절한 값을 자동으로 "
 "선택합니다.\n"
-"경고: 기본 맵 생성기(v6, v7 등)에서 스레드를 2개 이상 사용할 경우 알려진 "
-"버그가 있습니다.\n"
+"경고: 기본 맵 생성기(v6, v7 등)에서 스레드를 2개 이상 사용할 경우 알려진 버그"
+"가 있습니다.\n"
 "자동 선택 기능을 사용하면 이러한 문제를 피할 수 있습니다."
 
 #: src/settings_translation_file.cpp
@@ -6121,6 +6131,23 @@ msgstr "오쿨루션 쿨러"
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culling"
 msgstr "오쿨루션 쿨링"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"occlusion_culler의 유형\n"
+"\n"
+"\"루프\"는 중첩 루프와 O(n³) 복잡도를 가진 레거시 알고리즘입니다.\n"
+"\"bfs\"는 너비 우선 탐색과 측면 컬링을 기반으로 하는 새로운 알고리즘입니다.\n"
+"\n"
+"이 설정은 성능 문제가 있는 경우에만 변경해야 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
@@ -6245,10 +6272,6 @@ msgstr ""
 "버튼을 누르고 있을 때 부수기 및 배치하기가 반복되는 것을 방지합니다.\n"
 "너무 자주 실수한다면 이 기능을 활성화하세요.\n"
 "터치스크린에서는 블록 부수기에만 영향을 끼침."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr "shell 명령어 실행 같은 안전 하지 않은 것으로부터 모드를 보호합니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6761,14 +6784,6 @@ msgstr "클라이언트가 보내는 채팅 메시지의 최대 길이(문자)�
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-"후처리 감마 값을 설정합니다.\n"
-"값이 높을수록 대비가 낮아지며, 값이 낮으면 대비가 높아집니다."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -6883,6 +6898,10 @@ msgstr ""
 "변경 후에는 재시작이 필요합니다."
 
 #: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
 msgstr "기본적으로 이름 태그 배경 표시"
 
@@ -6910,8 +6929,8 @@ msgid ""
 "It is recommended to use this with setting \"leaves_style\" set to \"fancy\"."
 msgstr ""
 "햇빛 아래 나뭇잎을 볼 때 반투명 효과를 시뮬레이션합니다.\n"
-"이 기능은 \"leaves_style\" 설정을 \"fancy\"로 설정한 후 사용하는 것이 "
-"좋습니다."
+"이 기능은 \"leaves_style\" 설정을 \"fancy\"로 설정한 후 사용하는 것이 좋습니"
+"다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7100,8 +7119,8 @@ msgid ""
 msgstr ""
 "하늘섬에서 설치한 물의 최소 수면 레벨입니다.\n"
 "물은 기본적으로 배치할 수 없으며,\n"
-"'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (상단 경사 구간이 시작되는 "
-"지점)\n"
+"'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (상단 경사 구간이 시작되는 지"
+"점)\n"
 "이상으로 값을 설정해야 설치 가능합니다.\n"
 "***경고, 월드 및 서버 성능에 대한 잠재적 위험 초래***\n"
 "물 배치 기능을 활성화할 때는 'mgv7_floatland_density'를\n"
@@ -7313,11 +7332,11 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
-"각 플레이어 주변에서 활성 블록(active block) 관련 처리가 적용되는 영역의 "
-"반경으로, \n"
+"각 플레이어 주변에서 활성 블록(active block) 관련 처리가 적용되는 영역의 반경"
+"으로, \n"
 "단위는 맵블록(16 노드)입니다.\n"
-"활성 블록 내에서는 객체가 로드되고 ABM(Active Block Modifiers)이 "
-"실행됩니다.\n"
+"활성 블록 내에서는 객체가 로드되고 ABM(Active Block Modifiers)이 실행됩니"
+"다.\n"
 "또한 이는 활성 객체(몹 등)가 유지되는 최소 범위이기도 합니다.\n"
 "이 설정은 `active_object_send_range_blocks`와 함께 구성해야 합니다."
 
@@ -7338,18 +7357,6 @@ msgid ""
 msgstr ""
 "게임 내 뷰 프러스텀을 이동시키는\n"
 "조이스틱 축의 민감도."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"노드 앰비언트 오클루전(ambient-occlusion) 셰이딩의 강도(어두운 정도)입니다.\n"
-"값이 낮을수록 더 어둡게, 높을수록 더 밝게 표현됩니다. 이 설정의 유효 범위는\n"
-"0.25에서 4.0 사이(양 끝값 포함)입니다. 범위를 벗어나는 값이 입력될 경우,\n"
-"가장 가까운 유효 값으로 자동 설정됩니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7424,18 +7431,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "클라이언트가 사용 하지 않는 맵 데이터를 메모리에서 제거하기 위한 시간 제한입"
 "니다. 초 단위."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr "일출 및 일몰 시 햇빛에 색조를 입힙니다."
-
-#: src/settings_translation_file.cpp
-msgid "Tinted fog"
-msgstr "색이 들어간 안개"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr "색이 들어간 햇빛"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7578,22 +7573,6 @@ msgstr "신뢰할 수 있는 모드"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"occlusion_culler의 유형\n"
-"\n"
-"\"루프\"는 중첩 루프와 O(n³) 복잡도를 가진 레거시 알고리즘입니다.\n"
-"\"bfs\"는 너비 우선 탐색과 측면 컬링을 기반으로 하는 새로운 알고리즘입니다.\n"
-"\n"
-"이 설정은 성능 문제가 있는 경우에만 변경해야 합니다."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7675,13 +7654,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"새 색에서 레이트레이싱 오클루전 컬링을 사용합니다.\n"
-"이 플래그는 클라이언트 메시 크기가 4x4x4 맵 블록보다 작을 때\n"
-"레이트레이스 오클루전 컬링 테스트를 사용할 수 있도록 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7821,10 +7797,6 @@ msgid "Volume when unfocused"
 msgstr "게임이 포커스를 잃었을떄의 볼륨"
 
 #: src/settings_translation_file.cpp
-msgid "Volumetric Depth Attenuation"
-msgstr "볼류메트릭 깊이 감쇠"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Volumetric Lighting"
 msgstr "볼류메트릭 라이트"
@@ -7896,12 +7868,8 @@ msgid "Weblink color"
 msgstr "링크 색"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
-"이 기능을 활성화하면 액체 반사 효과가 시뮬레이션됩니다.\n"
-"파도의 높이, 길이, 속도가 이러한 반사 효과에 영향을 미칩니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8131,23 +8099,84 @@ msgstr "cURL 프록시 주소"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "\"%s\"에 스크린샷 저장 실패"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "조이스틱 활성화"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (활성화됨)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
-#~ msgstr "조이스틱 활성화. 재시작해야 적용됩니다"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "주변 occlusion 감마"
 
-#~ msgid "Keybindings"
-#~ msgstr "키설정"
+#~ msgid "Enable mod security"
+#~ msgstr "모드 보안 적용"
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "조이스틱의 데드존"
+#~ msgid "Gamma"
+#~ msgstr "감마"
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "사용할 조이스틱의 식별자"
+#~ msgid "Installed Packages:"
+#~ msgstr "설치된 패키지:"
 
-#~ msgid "The type of joystick"
-#~ msgstr "조이스틱의 타입"
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
+#~ msgstr ""
+#~ "물리적 체적을 모방하기 위해 가까운 물체에 대한 체적 효과를 약화시킵니다."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "활성화 시 액체의 반사가 시뮬레이션됨."
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "옅은 안개의 색상을 더 선명하게 만듭니다."
+
+#~ msgid "Player name too long."
+#~ msgstr "플레이어 이름이 너무 깁니다."
+
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr "shell 명령어 실행 같은 안전 하지 않은 것으로부터 모드를 보호합니다."
+
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "후처리 감마 값을 설정합니다.\n"
+#~ "값이 높을수록 대비가 낮아지며, 값이 낮으면 대비가 높아집니다."
+
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "노드 앰비언트 오클루전(ambient-occlusion) 셰이딩의 강도(어두운 정도)입니"
+#~ "다.\n"
+#~ "값이 낮을수록 더 어둡게, 높을수록 더 밝게 표현됩니다. 이 설정의 유효 범위"
+#~ "는\n"
+#~ "0.25에서 4.0 사이(양 끝값 포함)입니다. 범위를 벗어나는 값이 입력될 경우,\n"
+#~ "가장 가까운 유효 값으로 자동 설정됩니다."
+
+#~ msgid "Tint sunlight during sunrise/sunset."
+#~ msgstr "일출 및 일몰 시 햇빛에 색조를 입힙니다."
+
+#~ msgid "Tinted fog"
+#~ msgstr "색이 들어간 안개"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "색이 들어간 햇빛"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "텍스쳐 팩 사용"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "새 색에서 레이트레이싱 오클루전 컬링을 사용합니다.\n"
+#~ "이 플래그는 클라이언트 메시 크기가 4x4x4 맵 블록보다 작을 때\n"
+#~ "레이트레이스 오클루전 컬링 테스트를 사용할 수 있도록 합니다."
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "볼류메트릭 깊이 감쇠"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "이 기능을 활성화하면 액체 반사 효과가 시뮬레이션됩니다.\n"
+#~ "파도의 높이, 길이, 속도가 이러한 반사 효과에 영향을 미칩니다."

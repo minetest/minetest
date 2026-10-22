@@ -114,7 +114,7 @@ void TestServerModManager::testGetMods()
 	UASSERTEQ(std::size_t, mods.size(), 35 + 1);
 
 	// Ensure we found basenodes mod (part of devtest)
-	// and test_mod (for testing MINETEST_MOD_PATH).
+	// and test_mod (for testing LUANTI_MOD_PATH).
 	bool default_found = false;
 	bool test_mod_found = false;
 	for (const auto &m : mods) {

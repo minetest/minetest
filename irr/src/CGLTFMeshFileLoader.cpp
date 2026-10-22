@@ -1,4 +1,4 @@
-// Minetest
+// Luanti
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 #include "CGLTFMeshFileLoader.h"
@@ -842,7 +842,7 @@ std::optional<std::vector<video::S3DVertex>> SelfType::MeshExtractor::getVertice
 	if (normalAccessorIdx.has_value()) {
 		copyNormals(normalAccessorIdx.value(), vertices);
 	}
-	// TODO verify that the automatic normal recalculation done in Minetest indeed works correctly
+	// TODO verify that the automatic normal recalculation done in Luanti indeed works correctly
 
 	const auto &texcoords = attributes.texcoord;
 	if (texcoords.has_value()) {

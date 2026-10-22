@@ -1132,7 +1132,7 @@ void ServerEnvironment::step(float dtime)
 
 	// Send outdated detached inventories
 	if (!m_players.empty())
-		m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
+		m_server->sendDetachedInventories();
 
 	// Notify mods of modified mapblocks
 	if (m_on_mapblocks_changed_receiver.receiving &&

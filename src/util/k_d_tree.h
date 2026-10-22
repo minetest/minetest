@@ -59,6 +59,7 @@ namespace k_d_tree
 {
 
 using Idx = uint16_t;
+constexpr size_t IDX_MAX = UINT16_MAX;
 
 // We use size_t for sizes (but not for indices)
 // to make sure there are no wraparounds when we approach the limit.
@@ -73,7 +74,10 @@ public:
 	//! Empty
 	Points() : n(0), coords(nullptr) {}
 	//! Allocating constructor; leaves coords uninitialized!
-	Points(size_t n) : n(n), coords(new Component[Dim * n]) {}
+	Points(size_t n) : n(n), coords(new Component[Dim * n])
+	{
+		assert(n <= IDX_MAX);
+	}
 	//! Copying constructor
 	Points(size_t n, const std::array<Component const *, Dim> &coords)
 		: Points(n)
@@ -132,7 +136,7 @@ public:
 		: indices(n)
 	{
 		for (uint8_t d = 0; d < Dim; ++d) {
-			for (Idx i = 0; i < n; ++i) {
+			for (size_t i = 0; i < n; ++i) {
 				indices.begin(d)[i] = i;
 			}
 		}
@@ -329,7 +333,7 @@ public:
 	template<class F>
 	void foreach(F cb) const
 	{
-		for (Idx i = 0; i < cap(); ++i) {
+		for (size_t i = 0; i < cap(); ++i) {
 			if (!deleted[i]) {
 				cb(i, items.points.getPoint(i), ids[i]);
 			}

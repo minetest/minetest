@@ -1,6 +1,6 @@
 // Luanti
 // SPDX-License-Identifier: LGPL-2.1-or-later
-// Copyright (C) 2010-2020 Minetest core development team
+// Copyright (C) 2010-2020 Luanti core development team
 
 #include "serverinventorymgr.h"
 #include "map.h"
@@ -106,7 +106,7 @@ Inventory *ServerInventoryManager::createDetachedInventory(
 		if (!m_env)
 			return inv; // Mods are not loaded yet, ignore
 
-		RemotePlayer *p = m_env->getPlayer(name.c_str());
+		RemotePlayer *p = m_env->getPlayer(player.c_str());
 
 		// if player is connected, send him the inventory
 		if (p) {
@@ -164,25 +164,22 @@ bool ServerInventoryManager::checkDetachedInventoryAccess(
 	return inv_it->second.owner.empty() || inv_it->second.owner == player;
 }
 
-void ServerInventoryManager::sendDetachedInventories(const std::string &peer_name,
-		bool incremental,
-		std::function<void(const std::string &, Inventory *)> apply_cb)
+void ServerInventoryManager::sendDetachedInventories(
+	const std::string &filter_owner, bool incremental,
+	const SendCallbackFn &apply_cb)
 {
-	for (const auto &detached_inventory : m_detached_inventories) {
-		const DetachedInventory &dinv = detached_inventory.second;
-		if (incremental) {
-			if (!dinv.inventory || !dinv.inventory->checkModified())
+	for (const auto &it : m_detached_inventories) {
+		const DetachedInventory &dinv = it.second;
+		if (!dinv.inventory)
+			continue;
+		if (incremental && !dinv.inventory->checkModified())
+			continue;
+
+		if (!filter_owner.empty()) {
+			if (!dinv.owner.empty() && dinv.owner != filter_owner)
 				continue;
 		}
 
-		// if we are pushing inventories to a specific player
-		// we should filter to send only the right inventories
-		if (!peer_name.empty()) {
-			const std::string &attached_player = dinv.owner;
-			if (!attached_player.empty() && peer_name != attached_player)
-				continue;
-		}
-
-		apply_cb(detached_inventory.first, detached_inventory.second.inventory.get());
+		apply_cb(it.first, dinv.inventory.get(), dinv.owner);
 	}
 }

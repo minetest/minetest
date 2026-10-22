@@ -129,6 +129,11 @@ IImage *CImageLoaderTGA::loadImage(io::IReadFile *file) const
 		return 0;
 	}
 
+	if (header.PixelDepth == 0 || header.PixelDepth > 32) {
+		os::Printer::log("Unsupported TGA format", file->getFileName(), ELL_ERROR);
+		return 0;
+	}
+
 	// skip image identification field
 	if (header.IdLength)
 		file->seek(header.IdLength, true);

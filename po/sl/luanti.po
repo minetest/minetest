@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Slovenian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 17:35+0200\n"
+"POT-Creation-Date: 2026-10-17 19:12+0200\n"
 "PO-Revision-Date: 2026-08-13 17:23+0000\n"
 "Last-Translator: Hosted Weblate user 115094 "
 "<veselsem@users.noreply.hosted.weblate.org>\n"
@@ -341,6 +341,13 @@ msgstr "<prazno>"
 msgid "Accessibility"
 msgstr "Dostopnost"
 
+#: builtin/common/settings/dlg_settings.lua
+msgid ""
+"Any mods listed in \"Trusted Mods\" will have unrestricted access to user "
+"data and programs on your device. This is not normally needed. Make sure you "
+"can trust the mod's code and its author beforehand!"
+msgstr ""
+
 #. TRANSLATORS: Automatic
 #: builtin/common/settings/dlg_settings.lua
 msgid "Auto"
@@ -609,7 +616,7 @@ msgstr "Poteka prenos ..."
 msgid "Featured"
 msgstr "Izpostavljeno"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Games"
 msgstr "Igre"
 
@@ -620,7 +627,7 @@ msgstr "Igre"
 msgid "Loading..."
 msgstr "Nalaganje …"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Mods"
 msgstr "Modi"
 
@@ -794,10 +801,6 @@ msgstr "od $1"
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr "od $1—$2 prenosi—+$3 / $4 / -$5"
-
-#: builtin/mainmenu/content/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (omogočeno)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
@@ -1381,8 +1384,27 @@ msgid "Disable Texture Pack"
 msgstr "Onemogoči paket tekstur"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Installed Packages:"
-msgstr "Nameščeni paketi:"
+#, fuzzy
+msgid "Enable Texture Pack"
+msgstr "Onemogoči paket tekstur"
+
+#: builtin/mainmenu/tab_content.lua
+msgid "Enabled texture packs are applied in priority order."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+msgid "If two packs provide the same texture, the one listed first wins."
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Down"
+msgstr "Stran nižje"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Move Up"
+msgstr "Premakni se levo"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -1397,12 +1419,13 @@ msgid "Rename"
 msgstr "Preimenuj"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Update available?"
-msgstr "Na voljo je posodobitev?"
+#, fuzzy
+msgid "Texture packs"
+msgstr "Paketi tekstur"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Use Texture Pack"
-msgstr "Uporabi paket tekstur"
+msgid "Update available?"
+msgstr "Na voljo je posodobitev?"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1614,8 +1637,9 @@ msgstr ""
 "nadaljevanje."
 
 #: src/client/clientlauncher.cpp
-msgid "Player name too long."
-msgstr "Ime igralca je predolgo."
+#, fuzzy
+msgid "Player name is invalid."
+msgstr "Imena igralcev: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -2491,13 +2515,13 @@ msgid "Minimap hidden"
 msgstr "Zemljevid (minimap) je skrit"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in radar mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in radar mode, Zoom x%.*f"
 msgstr "Zemljevid (minimap) je v radar načinu, Zoom x%d"
 
 #: src/client/minimap.cpp
-#, c-format
-msgid "Minimap in surface mode, Zoom x%d"
+#, fuzzy, c-format
+msgid "Minimap in surface mode, Zoom x%.*f"
 msgstr "Zemljevid (minimap) je v načinu prikazovanja površja, Zoom x%d"
 
 #: src/client/minimap.cpp
@@ -3086,10 +3110,6 @@ msgid "Always fly fast"
 msgstr "Vedno letite hitro (fast and fly mode)"
 
 #: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr "Nastavitev gama za ambientalno okluzijo (gama sence)"
-
-#: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
 msgstr "Ojača doline."
 
@@ -3554,17 +3574,19 @@ msgstr ""
 "content_flags/"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of mods that are allowed to use HTTP APIs, which\n"
+"allows them to connect to the Internet and devices on your network."
 msgstr ""
 "S vejico ločen seznam modov, ki imajo dovoljen dostop do HTTP API-jev,\n"
 "kar jim omogoča nalaganje in prenos podatkov na/iz interneta."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of trusted mods that are allowed to bypass the Lua\n"
+"sandbox. They will have full access to the host machine."
 msgstr ""
 "S vejico ločen seznam zaupanja vrednih prilagoditev, ki imajo dovoljen "
 "dostop do nevarnih funkcij,\n"
@@ -3923,6 +3945,10 @@ msgid "Developer Options"
 msgstr "Možnosti za razvijalce"
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Disable if you only want to instrument with Tracy."
 msgstr "Onemogočite, ko želite instrumentirati z Tracyem."
 
@@ -4098,10 +4124,6 @@ msgstr "Omogoči dinamične sence"
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Omogoči podporo za kanale prilagoditev."
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr "Omogoči varnost prilagoditev"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
@@ -4537,10 +4559,6 @@ msgstr "Filter skaliranja uporabniškega vmesnika"
 #: src/settings_translation_file.cpp
 msgid "Gamepads and Joysticks"
 msgstr "Igralne ploščice in igralne palice"
-
-#: src/settings_translation_file.cpp
-msgid "Gamma"
-msgstr "Gama"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -5006,9 +5024,10 @@ msgstr ""
 "zato se uporabnost načina duha (noclip) zmanjša."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place nodes at the position (feet + eye level) where you "
-"stand.\n"
+"If enabled, you can place nodes that would be blocked by your collision "
+"box.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Če je omogočeno, lahko vozlišča postavite na položaj (stopala + višina oči), "
@@ -5587,18 +5606,6 @@ msgid ""
 msgstr ""
 "Barve megle in neba naj bodo odvisne od časa v dnevu (zora/sončni zahod) in "
 "smeri pogleda."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make volumetrics weaker against closer objects to emulate physical "
-"volumetrics."
-msgstr ""
-"Volumetrične meritve oslabite glede na bližnje objekte, da posnemate fizične "
-"volumetrične meritve."
-
-#: src/settings_translation_file.cpp
-msgid "Makes the color of light fog more saturated."
-msgstr "Barva lahke megle je bolj nasičena."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -6224,6 +6231,25 @@ msgid "Occlusion Culling"
 msgstr "Izločanje okluzije"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Occlusion culler to prefer\n"
+"\n"
+"\"loops\" is a simple nested algorithm with O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
+"Vrsta occlusion_culler\n"
+"„loops\" je starejši algoritem z ugnezdenimi zankami in kompleksnostjo "
+"O(n³)\n"
+"\n"
+"„bfs\" je novi algoritem, ki temelji na iskanju v širino in stranskem "
+"izločanju\n"
+"\n"
+"To nastavitev je treba spremeniti le, če imate težave z zmogljivostjo."
+
+#: src/settings_translation_file.cpp
 msgid "Opaqueness (alpha) of the shadow behind the font."
 msgstr "Neprozornost (alfa) sence za pisavo."
 
@@ -6350,12 +6376,6 @@ msgstr ""
 "Preprečite ponavljanje kopanja in postavljanja, ko držite ustrezne gumbe. \n"
 "Omogočite to možnost, če po nesreči prepogosto kopljete ali postavljate.\n"
 "Na zaslonih na dotik to vpliva samo na kopanje."
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-"Preprečite modom, da bi izvajali nevarne stvari, kot je izvajanje ukazov "
-"lupine."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6876,14 +6896,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the post processing gamma value.\n"
-"Higher values give lower contrast and vice versa."
-msgstr ""
-"Nastavite vrednost gama za naknadno obdelavo.\n"
-"Višje vrednosti dajejo nižji kontrast in obratno."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
@@ -7005,6 +7017,10 @@ msgid ""
 msgstr ""
 "Prikaži polja za izbiro entitet\n"
 "Za uveljavitev spremembe je potreben ponovni zagon."
+
+#: src/settings_translation_file.cpp
+msgid "Show local particles when digging nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show name tag backgrounds by default"
@@ -7478,19 +7494,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-"Moč (temnost) senčenja okolice vozlišča.\n"
-"Nižja vrednost je temnejša, višja svetlejša. Veljaven razpon vrednosti za to "
-"nastavitev\n"
-"je od 0,25 do vključno 4,0. Če je vrednost\n"
-"zunaj razpona, bo nastavljena na najbližjo veljavno vrednost."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
@@ -7568,18 +7571,6 @@ msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
 "Časovna omejitev v sekundah, v kateri mora odjemalec odstraniti "
 "neuporabljene podatke zemljevida iz pomnilnika."
-
-#: src/settings_translation_file.cpp
-msgid "Tint sunlight during sunrise/sunset."
-msgstr "Zatemnite sončno svetlobo med sončnim vzhodom/sončnim zahodom."
-
-#: src/settings_translation_file.cpp
-msgid "Tinted fog"
-msgstr "Obarvana megla"
-
-#: src/settings_translation_file.cpp
-msgid "Tinted sunlight"
-msgstr "Obarvana sončna svetloba"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7724,24 +7715,6 @@ msgstr "Zaupanja vredni modi"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Type of occlusion_culler\n"
-"\n"
-"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
-"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
-"\n"
-"This setting should only be changed if you have performance problems."
-msgstr ""
-"Vrsta occlusion_culler\n"
-"„loops\" je starejši algoritem z ugnezdenimi zankami in kompleksnostjo "
-"O(n³)\n"
-"\n"
-"„bfs\" je novi algoritem, ki temelji na iskanju v širino in stranskem "
-"izločanju\n"
-"\n"
-"To nastavitev je treba spremeniti le, če imate težave z zmogljivostjo."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
@@ -7829,13 +7802,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test for\n"
-"client mesh sizes smaller than 4x4x4 map blocks."
+"Use raytraced occlusion culling.\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
-"Uporabi izločanje okluzije s sledenjem žarkov v novem izločevalniku.\n"
-"Ta zastavica omogoča uporabo testa izločanja okluzije s sledenjem žarkov\n"
-"za velikosti mrež odjemalcev, manjše od blokov zemljevida 4x4x4."
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
@@ -7977,10 +7947,6 @@ msgid "Volume when unfocused"
 msgstr "Glasnost, ko okno ni fokusirano"
 
 #: src/settings_translation_file.cpp
-msgid "Volumetric Depth Attenuation"
-msgstr "Volumetrično globinsko slabljenje"
-
-#: src/settings_translation_file.cpp
 msgid "Volumetric Lighting"
 msgstr "Volumetrična razsvetljava"
 
@@ -8052,12 +8018,8 @@ msgid "Weblink color"
 msgstr "Barva spletne povezave"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"When enabled, crude liquid reflections are simulated.\n"
-"Wave height, length and speed will affect these reflections."
+msgid "When enabled, liquid reflections are simulated."
 msgstr ""
-"Ko je omogočeno, se simulirajo odboji surove tekočine.\n"
-"Višina, dolžina in hitrost valov bodo vplivali na te odboje."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8296,25 +8258,86 @@ msgstr "Naslov posredniškega strežnika cURL"
 msgid "Failed to save screenshot to \"%s\""
 msgstr "Shranjevanje posnetka zaslona v \"%s\" je spodletelo"
 
-#~ msgid "Enable joysticks"
-#~ msgstr "Omogoči joystick"
+#~ msgid "$1 (Enabled)"
+#~ msgstr "$1 (omogočeno)"
 
-#~ msgid "Enable joysticks. Requires a restart to take effect"
+#~ msgid "Ambient occlusion gamma"
+#~ msgstr "Nastavitev gama za ambientalno okluzijo (gama sence)"
+
+#~ msgid "Enable mod security"
+#~ msgstr "Omogoči varnost prilagoditev"
+
+#~ msgid "Gamma"
+#~ msgstr "Gama"
+
+#~ msgid "Installed Packages:"
+#~ msgstr "Nameščeni paketi:"
+
+#~ msgid ""
+#~ "Make volumetrics weaker against closer objects to emulate physical "
+#~ "volumetrics."
 #~ msgstr ""
-#~ "Omogoči igralne palice (joystick). Za uveljavitev spremembe je potreben "
-#~ "ponovni zagon"
+#~ "Volumetrične meritve oslabite glede na bližnje objekte, da posnemate "
+#~ "fizične volumetrične meritve."
 
-#~ msgid "Keybindings"
-#~ msgstr "Kombinacije tipk"
+#~ msgid "Makes the color of light fog more saturated."
+#~ msgstr "Barva lahke megle je bolj nasičena."
 
-#~ msgid "The dead zone of the joystick"
-#~ msgstr "Mrtva cona igralne palice"
+#~ msgid "Player name too long."
+#~ msgstr "Ime igralca je predolgo."
 
-#~ msgid "The identifier of the joystick to use"
-#~ msgstr "Identifikator igralne palice, ki jo želite uporabiti"
+#~ msgid "Prevent mods from doing insecure things like running shell commands."
+#~ msgstr ""
+#~ "Preprečite modom, da bi izvajali nevarne stvari, kot je izvajanje ukazov "
+#~ "lupine."
 
-#~ msgid "The type of joystick"
-#~ msgstr "Vrsta igralne palice"
+#~ msgid ""
+#~ "Set the post processing gamma value.\n"
+#~ "Higher values give lower contrast and vice versa."
+#~ msgstr ""
+#~ "Nastavite vrednost gama za naknadno obdelavo.\n"
+#~ "Višje vrednosti dajejo nižji kontrast in obratno."
 
-#~ msgid "When enabled, liquid reflections are simulated."
-#~ msgstr "Ko je omogočeno, se simulirajo odboji tekočin."
+#~ msgid ""
+#~ "The strength (darkness) of node ambient-occlusion shading.\n"
+#~ "Lower is darker, Higher is lighter. The valid range of values for this\n"
+#~ "setting is 0.25 to 4.0 inclusive. If the value is out of range it will "
+#~ "be\n"
+#~ "set to the nearest valid value."
+#~ msgstr ""
+#~ "Moč (temnost) senčenja okolice vozlišča.\n"
+#~ "Nižja vrednost je temnejša, višja svetlejša. Veljaven razpon vrednosti za "
+#~ "to nastavitev\n"
+#~ "je od 0,25 do vključno 4,0. Če je vrednost\n"
+#~ "zunaj razpona, bo nastavljena na najbližjo veljavno vrednost."
+
+#~ msgid "Tint sunlight during sunrise/sunset."
+#~ msgstr "Zatemnite sončno svetlobo med sončnim vzhodom/sončnim zahodom."
+
+#~ msgid "Tinted fog"
+#~ msgstr "Obarvana megla"
+
+#~ msgid "Tinted sunlight"
+#~ msgstr "Obarvana sončna svetloba"
+
+#~ msgid "Use Texture Pack"
+#~ msgstr "Uporabi paket tekstur"
+
+#~ msgid ""
+#~ "Use raytraced occlusion culling in the new culler.\n"
+#~ "This flag enables use of raytraced occlusion culling test for\n"
+#~ "client mesh sizes smaller than 4x4x4 map blocks."
+#~ msgstr ""
+#~ "Uporabi izločanje okluzije s sledenjem žarkov v novem izločevalniku.\n"
+#~ "Ta zastavica omogoča uporabo testa izločanja okluzije s sledenjem žarkov\n"
+#~ "za velikosti mrež odjemalcev, manjše od blokov zemljevida 4x4x4."
+
+#~ msgid "Volumetric Depth Attenuation"
+#~ msgstr "Volumetrično globinsko slabljenje"
+
+#~ msgid ""
+#~ "When enabled, crude liquid reflections are simulated.\n"
+#~ "Wave height, length and speed will affect these reflections."
+#~ msgstr ""
+#~ "Ko je omogočeno, se simulirajo odboji surove tekočine.\n"
+#~ "Višina, dolžina in hitrost valov bodo vplivali na te odboje."

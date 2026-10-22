@@ -460,7 +460,7 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 
 	if (m_uncached_received_count != m_uncached_count) {
 		// Some media files have not been received yet, use the
-		// conventional slow method (minetest protocol) to get them
+		// conventional slow method (luanti protocol) to get them
 		std::vector<std::string> file_requests;
 		for (auto &file : m_files) {
 			if (!file.second->received)

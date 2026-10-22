@@ -228,7 +228,7 @@ bool run_tests()
 	config.allowZeroTests = true;
 	session.useConfigData(config);
 	auto exit_code = session.run();
-	// We count all the Catch tests as one test for Minetest's own logging
+	// We count all the Catch tests as one test for Luanti's own logging
 	// because we don't have a way to tell how many individual tests Catch ran.
 	++num_total_tests_run;
 	if (exit_code != 0) {

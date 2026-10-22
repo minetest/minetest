@@ -34,7 +34,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
 	endif()
 
 	# Enable SSE for floating point math on 32-bit x86 by default
-	# reasoning see minetest issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath
+	# reasoning see luanti issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		check_cxx_source_compiles("#ifndef __i686__\n#error\n#endif\nint main(){}" IS_I686)
 		if(IS_I686)
@@ -59,7 +59,7 @@ elseif(MSVC)
 	add_compile_options(/Zl)
 
 	# Enable SSE for floating point math on 32-bit x86 by default
-	# reasoning see minetest issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath
+	# reasoning see luanti issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		add_compile_options(/arch:SSE)
 	endif()
