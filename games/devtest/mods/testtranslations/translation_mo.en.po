@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Source-Language: pt\n"
+"X-Source-Language: pt\n"
 
 msgctxt "testtranslations"
 msgid "Testing .mo files: monolingual untranslated"
