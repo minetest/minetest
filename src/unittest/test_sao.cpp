@@ -28,6 +28,7 @@ public:
 	void testActivate(ServerEnvironment *env);
 	void testStaticToFalse(ServerEnvironment *env);
 	void testStaticToTrue(ServerEnvironment *env);
+	void testShutdown(ServerEnvironment *env);
 
 private:
 	// enough for both removeRemovedObjects and deactivateFarObjects to be called
@@ -93,6 +94,8 @@ void TestSAO::runTests(IGameDef *gamedef)
 	TEST(testActivate, &env);
 	TEST(testStaticToFalse, &env);
 	TEST(testStaticToTrue, &env);
+	// must be last since it shuts down the environment
+	TEST(testShutdown, &env);
 
 	env.deactivateBlocksAndObjects();
 }
@@ -305,4 +308,56 @@ void TestSAO::testStaticToTrue(ServerEnvironment *env)
 	UASSERT(block);
 	UASSERTEQ(size_t, block->m_static_objects.getStoredSize(), 1);
 	UASSERTEQ(size_t, block->m_static_objects.getActiveSize(), 0);
+}
+
+void TestSAO::testShutdown(ServerEnvironment *env)
+{
+	Map &map = env->getMap();
+
+	const v3f testpos1(0, 0, 200 * BS);
+	const v3s16 testblockpos1 = getNodeBlockPos(floatToInt(testpos1, BS));
+	const v3f testpos2(0, 0, -200 * BS);
+	const v3s16 testblockpos2 = getNodeBlockPos(floatToInt(testpos2, BS));
+
+	auto obj1 = add_entity(env, testpos1, "test:static");
+	UASSERT(obj1);
+	const u16 obj1_id = obj1->getId();
+
+	// Pretend a client knows about the object and step to trigger
+	// deactivateFarObjects.
+	obj1->m_known_by_count = 1;
+	env->step(m_step_interval);
+
+	// It should have been marked for deactivation, but kept active.
+	UASSERT(env->getActiveObject(obj1_id) == obj1);
+	UASSERT(obj1->isGone() && !obj1->isPendingRemoval());
+	UASSERT(obj1->m_static_exists);
+	UASSERTEQ(auto, obj1->m_static_block, testblockpos1);
+	auto *block1 = map.getBlockNoCreateNoEx(testblockpos1);
+	UASSERT(block1);
+	assert_active_in_block(block1, obj1_id);
+
+	// For comparison, an object that is removed right before shutdown
+	auto obj2 = add_entity(env, testpos2, "test:static");
+	UASSERT(obj2);
+	const u16 obj2_id = obj2->getId();
+	auto *block2 = map.getBlockNoCreateNoEx(testblockpos2);
+	UASSERT(block2);
+	assert_active_in_block(block2, obj2_id);
+	obj2->markForRemoval();
+
+	// Shutdown
+	env->deactivateBlocksAndObjects();
+	obj1 = nullptr;
+	obj2 = nullptr;
+
+	UASSERT(!env->getActiveObject(obj1_id));
+	UASSERT(!env->getActiveObject(obj2_id));
+
+	// obj1 should have been saved
+	UASSERTEQ(size_t, block1->m_static_objects.getStoredSize(), 1);
+	UASSERTEQ(size_t, block1->m_static_objects.getActiveSize(), 0);
+
+	// obj2 should have been removed
+	UASSERTEQ(size_t, block2->m_static_objects.size(), 0);
 }
