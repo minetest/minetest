@@ -464,6 +464,7 @@ set(independent_SRCS
 	modchannels.cpp
 	nameidmapping.cpp
 	nodemetadata.cpp
+	node_modifier.cpp
 	nodetimer.cpp
 	noise.cpp
 	objdef.cpp

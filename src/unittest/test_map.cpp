@@ -32,6 +32,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testMaxMapgenLimit();
+	void testGetNodeModifiers(IGameDef *gamedef);
 	void testForEachNodeInArea(IGameDef *gamedef);
 	void testForEachNodeInAreaBlank(IGameDef *gamedef);
 	void testForEachNodeInAreaEmpty(IGameDef *gamedef);
@@ -42,6 +43,7 @@ static TestMap g_test_instance;
 void TestMap::runTests(IGameDef *gamedef)
 {
 	TEST(testMaxMapgenLimit);
+	TEST(testGetNodeModifiers, gamedef);
 	TEST(testForEachNodeInArea, gamedef);
 	TEST(testForEachNodeInAreaBlank, gamedef);
 	TEST(testForEachNodeInAreaEmpty, gamedef);
@@ -167,4 +169,23 @@ void TestMap::testForEachNodeInAreaEmpty(IGameDef *gamedef)
 		UASSERT(false); // Should be unreachable
 		return true;
 	});
+}
+
+void TestMap::testGetNodeModifiers(IGameDef *gamedef)
+{
+	DummyMap map(gamedef, v3s16(-1, 0, 0), v3s16(0, 0, 0));
+	MapBlock *negative = map.getBlockNoCreateNoEx(v3s16(-1, 0, 0));
+	MapBlock *zero = map.getBlockNoCreateNoEx(v3s16(0, 0, 0));
+	const v3s16 local(MAP_BLOCKSIZE - 1, 2, 3);
+	UASSERT(negative->setNodeModifiers(local, {5, 2}));
+	UASSERT(zero->setNodeModifiers(local, {7}));
+	const auto ids = map.getNodeModifiers(v3s16(-1, 2, 3));
+	UASSERT(ids == std::vector<u16>({5, 2}));
+	UASSERT(map.getNodeModifiers(local) == std::vector<u16>({7}));
+	UASSERT(map.getNodeModifiers(v3s16(0, 0, 0)).empty());
+	UASSERT(map.getNodeModifiers(v3s16(MAP_BLOCKSIZE, 2, 3)).empty());
+	UASSERT(negative->setNodeModifiers(local, {9}));
+	UASSERT(ids == std::vector<u16>({5, 2}));
+	UASSERT(map.getNodeModifiers(v3s16(-1, 2, 3)) == std::vector<u16>({9}));
+	UASSERT(map.getBlockNoCreateNoEx(v3s16(1, 0, 0)) == nullptr);
 }
