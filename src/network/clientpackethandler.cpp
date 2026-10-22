@@ -297,6 +297,12 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 	v3s16 p;
 	*pkt >> p;
 
+	if (blockpos_over_max_limit(p)) {
+		warningstream << "Client: Ignoring block data at invalid position "
+				<< p << std::endl;
+		return;
+	}
+
 	std::istringstream istr(std::string(pkt->getRemainingNoCopy()), std::ios_base::binary);
 
 	MapSector *sector;
