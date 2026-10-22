@@ -182,7 +182,6 @@ Unbanned @1.=Malforbaris @1.
 Kick a player=Elĵeti ludanton
 Failed to kick player @1.=Malsukcesis elĵeti ludanton @1.
 Kicked @1.=Elĵetis @1.
-[full | quick]=[full | quick]
 Clear all objects in world=Forigu ĉiujn lasitajn portaĵojn en la mondo
 Invalid usage, see /help clearobjects.=Nevalida uzo, vidu /help clearobjects.
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Forigante ĉiun lasitan portaĵon. Tio ĉi eble postulos longan tempon. Vi eble malkonektiĝos pro tempo-elĉerpo. (de @1)

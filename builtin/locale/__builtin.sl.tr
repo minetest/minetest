@@ -182,7 +182,6 @@ Unbanned @1.=Blokada za @1 je odstranjena.
 Kick a player=Izvrzi igralca (kick)
 Failed to kick player @1.=Igralca @1 ni bilo mogoče izvreči.
 Kicked @1.=Igralec @1 je bil izvržen.
-[full | quick]=[full | quick]
 Clear all objects in world=Počisti vse predmete v svetu
 Invalid usage, see /help clearobjects.=Neveljavna uporaba, glej /help clearobjects.
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Čiščenje vseh predmetov. To lahko traja dlje časa. Lahko pride do prekinitve povezave (timeout). (uporabnik @1)

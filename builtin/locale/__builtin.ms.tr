@@ -182,7 +182,6 @@ Unbanned @1.=Berjaya membuang pengharaman @1.
 Kick a player=Tendang seorang pemain
 Failed to kick player @1.=Gagal untuk menendang pemain @1.
 Kicked @1.=Berjaya menendang @1.
-[full | quick]=[full | quick]
 Clear all objects in world=Padamkan semua objek dalam dunia
 Invalid usage, see /help clearobjects.=Kegunaan tidak sah, sila lihat /help clearobjects
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Memadamkan semua objek. Ini mungkin ambil masa yang lama. (oleh @1)

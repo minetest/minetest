@@ -182,7 +182,6 @@ Unbanned @1.=Премахната забрана на @1.
 Kick a player=Изгонва играч
 Failed to kick player @1.=Грешка при изгонване на играча @1.
 Kicked @1.=Играчът @1 е изгонен.
-[full | quick]=[пълно | бързо]
 Clear all objects in world=Премахва всички обекти в света
 Invalid usage, see /help clearobjects.=Неприемливи параметри. Вижте /help clearobjects.
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Премахване на всички обекти. Може да отнеме време. Може и времето за връзка да изтече. (by @1)

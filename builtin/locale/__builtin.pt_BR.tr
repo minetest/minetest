@@ -182,7 +182,6 @@ Unbanned @1.=Desbanido @1.
 Kick a player=Expulsar um jogador
 Failed to kick player @1.=Falha ao expulsar jogador @1.
 Kicked @1.=Expulso @1.
-[full | quick]=[full | quick]
 Clear all objects in world=Limpar todos os objetos no mundo
 Invalid usage, see /help clearobjects.=Uso inválido, veja /help clearobjects.
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Limpeza de todos os objetos. Isso pode levar muito tempo. Você pode experimentar um tempo limite. (por @1)

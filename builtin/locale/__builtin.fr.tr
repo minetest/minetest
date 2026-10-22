@@ -182,7 +182,6 @@ Unbanned @1.=@1 a été rétabli.
 Kick a player=Expulser un joueur
 Failed to kick player @1.=L'expulsion du joueur @1 a échoué.
 Kicked @1.=@1 a été expulsé.
-[full | quick]=[full | quick]
 Clear all objects in world=Nettoyer tous les objets dans le monde
 Invalid usage, see /help clearobjects.=Usage invalide, voir /help clearobjects.
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Nettoyage de tous les objects. Cela peut prendre du temps. Une inactivité peut surveni (par @1).

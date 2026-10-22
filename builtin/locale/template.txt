@@ -182,7 +182,6 @@ Unbanned @1.=
 Kick a player=
 Failed to kick player @1.=
 Kicked @1.=
-[full | quick]=
 Clear all objects in world=
 Invalid usage, see /help clearobjects.=
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=
