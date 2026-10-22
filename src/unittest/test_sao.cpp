@@ -58,6 +58,7 @@ core.register_entity(":test:hp_max", {
 		hp_max = 20,
 	},
 })
+)";
 
 void TestSAO::runTests(IGameDef *gamedef)
 {
