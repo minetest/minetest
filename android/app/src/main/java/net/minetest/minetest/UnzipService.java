@@ -87,10 +87,11 @@ public class UnzipService extends IntentService {
 			}
 
 			unzip(notificationBuilder, zipFile, userDataDirectory);
+			sendResult(true);
 		} catch (IOException e) {
 			Log.w("UnzipService", null, e);
-			isSuccess = false;
 			failureMessage = e.getLocalizedMessage();
+			sendResult(false);
 		} finally {
 			setIsRunning(false);
 			zipFile.delete();
@@ -165,6 +166,16 @@ public class UnzipService extends IntentService {
 		Log.i("UnzipService", "Done extracting");
 	}
 
+	private boolean resultSent = false;
+
+	private void sendResult(boolean success) {
+		if (resultSent)
+			return;
+		resultSent = true;
+		isSuccess = success;
+		publishProgress(null, R.string.loading, success ? SUCCESS : FAILURE);
+	}
+
 	private void publishProgress(@Nullable Notification.Builder notificationBuilder, @StringRes int message, int progress) {
 		Intent intentUpdate = new Intent(ACTION_UPDATE);
 		intentUpdate.setPackage(getPackageName());
@@ -189,6 +200,8 @@ public class UnzipService extends IntentService {
 	public void onDestroy() {
 		super.onDestroy();
 		mNotifyManager.cancel(MainActivity.NOTIFICATION_ID_UNZIP);
-		publishProgress(null, R.string.loading, isSuccess ? SUCCESS : FAILURE);
+		// Fallback for the case where the service is torn down before
+		// onHandleIntent() can report its result.
+		sendResult(isSuccess);
 	}
 }
