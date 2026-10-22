@@ -9,6 +9,7 @@
 #include "serverenvironment.h"
 #include "servermap.h"
 #include "emerge.h"
+#include "server/player_sao.h"
 
 /*
  * Tests how SAOs behave in the server environment.
@@ -28,6 +29,7 @@ public:
 	void testActivate(ServerEnvironment *env);
 	void testStaticToFalse(ServerEnvironment *env);
 	void testStaticToTrue(ServerEnvironment *env);
+	void testEntityHPMax(ServerEnvironment *env);
 
 private:
 	// enough for both removeRemovedObjects and deactivateFarObjects to be called
@@ -50,6 +52,12 @@ local def = {
 core.register_entity(":test:static", table.copy(def))
 def.initial_properties = { static_save = false }
 core.register_entity(":test:non_static", table.copy(def))
+
+core.register_entity(":test:hp_max", {
+	initial_properties = {
+		hp_max = 20,
+	},
+})
 )";
 
 void TestSAO::runTests(IGameDef *gamedef)
@@ -93,6 +101,7 @@ void TestSAO::runTests(IGameDef *gamedef)
 	TEST(testActivate, &env);
 	TEST(testStaticToFalse, &env);
 	TEST(testStaticToTrue, &env);
+	TEST(testEntityHPMax, &env);
 
 	env.deactivateBlocksAndObjects();
 }
@@ -305,4 +314,23 @@ void TestSAO::testStaticToTrue(ServerEnvironment *env)
 	UASSERT(block);
 	UASSERTEQ(size_t, block->m_static_objects.getStoredSize(), 1);
 	UASSERTEQ(size_t, block->m_static_objects.getActiveSize(), 0);
+}
+
+
+void TestSAO::testEntityHPMax(ServerEnvironment *env)
+{
+        const v3f testpos(0, 10 * BS, 0);
+
+        auto obj = add_entity(env, testpos, "test:hp_max");
+        UASSERT(obj);
+
+        PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
+
+        obj->setHP(10, reason);
+        UASSERTEQ(u16, obj->getHP(), 10);
+
+        obj->setHP(30, reason);
+        UASSERTEQ(u16, obj->getHP(), 20);
+
+        obj->markForRemoval();
 }
