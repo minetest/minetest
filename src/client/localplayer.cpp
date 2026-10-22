@@ -569,6 +569,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 	const f32 speed_walk = movement_speed_walk * physics_override.speed_walk;
 	const f32 speed_fast = movement_speed_fast * physics_override.speed_fast;
+	// Sprint at 150% of normal walking speed.
+	const f32 speed_sprint = speed_walk * 1.5f;
 
 	if (always_fly_fast && free_move && fast_move)
 		superspeed = true;
@@ -688,12 +690,15 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 	// The speed of the player (Y is ignored)
 	if (superspeed || (is_climbing && fast_climb) ||
-			((in_liquid || in_liquid_stable) && fast_climb))
-		speedH = speedH.normalize() * speed_fast;
+                ((in_liquid || in_liquid_stable) && fast_climb))
+        	speedH = speedH.normalize() * speed_fast;
 	else if (control.sneak && !free_move && !in_liquid && !in_liquid_stable)
-		speedH = speedH.normalize() * movement_speed_crouch * physics_override.speed_crouch;
+        	speedH = speedH.normalize() * movement_speed_crouch * physics_override.speed_crouch;
+	else if (control.sprint && !fast_move && !free_move &&
+                !in_liquid && !in_liquid_stable && !is_climbing)
+        	speedH = speedH.normalize() * speed_sprint;
 	else
-		speedH = speedH.normalize() * speed_walk;
+        	speedH = speedH.normalize() * speed_walk;
 
 	speedH *= control.movement_speed; /* Apply analog input */
 

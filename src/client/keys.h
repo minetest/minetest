@@ -16,6 +16,7 @@ public:
 		RIGHT,
 		JUMP,
 		AUX1,
+		SPRINT,
 		SNEAK,
 		AUTOFORWARD,
 		DIG,

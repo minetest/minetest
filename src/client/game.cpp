@@ -2078,6 +2078,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		cam.camera_pitch,
 		cam.camera_yaw
 	);
+	// Read the dedicated sprint key (Left Ctrl by default).
+	control.sprint = isKeyDown(KeyType::SPRINT);
 	control.setMovementFromKeys();
 
 	/* For touch, simulate holding down AUX1 (fast move) if the user has

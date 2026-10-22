@@ -86,6 +86,7 @@ struct PlayerControl
 	float right = 0;
 	bool jump = false;
 	bool aux1 = false;
+	bool sprint = false;
 	bool sneak = false;
 	bool zoom = false;
 	bool dig = false;

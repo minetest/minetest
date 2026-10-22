@@ -672,6 +672,8 @@ bool PlayerSAO::checkMovementCheat()
 	float speed_fast = m_player->movement_speed_fast * m_player->physics_override.speed_fast;
 	float speed_crouch = m_player->movement_speed_crouch * m_player->physics_override.speed_crouch;
 	float speed_climb = m_player->movement_speed_climb * m_player->physics_override.speed_climb;
+	// Allow sprinting at 150% of normal walking speed.
+	float speed_sprint = speed_walk * 1.5f;
 
 	speed_walk *= m_player->physics_override.speed;
 	speed_fast *= m_player->physics_override.speed;
@@ -686,10 +688,8 @@ bool PlayerSAO::checkMovementCheat()
 		player_max_walk = MYMAX(speed_crouch, speed_fast);
 		player_max_walk = MYMAX(player_max_walk, speed_walk);
 	} else {
-		// Get the highest speed of walk or crouch
-		// (it is not forbidden the 'walk' speed is
-		// lower than the crouch speed)
-		player_max_walk = MYMAX(speed_crouch, speed_walk);
+        // Allow normal walking, crouching, and sprinting speeds.
+        player_max_walk = MYMAX(speed_crouch, speed_sprint);
 	}
 
 	player_max_walk = MYMAX(player_max_walk, override_max_H);
