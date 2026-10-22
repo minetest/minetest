@@ -1595,14 +1595,14 @@ void GenericCAO::applyTrackAnimation(scene::TrackId &&track_id, scene::TrackAnim
 		const auto &local_anims = m_env->getLocalPlayer()->local_animations;
 		// Check if the animation frame range is known as a local animation.
 		// If so, we assume it is due to a set_animation() broadcast to all clients.
-		// The client is already playing its own local animation, which should not be interrupted.
+		// If the client is already playing its own local animation, it should not be interrupted.
 		// Local animations are always on track 0; a range of [0, 0] means no local animation.
 		// Thus an animation on any other track, or an animation with frame range [0, 0], is never local.
 		bool is_known = track_nr == 0 && (anim.min_frame != 0.0f || anim.max_frame != 0.0f) &&
 				std::any_of(local_anims.begin(), local_anims.end(), [&](v2f range) {
 					return anim.min_frame == range.X && anim.max_frame == range.Y;
 				});
-		if (!is_known) {
+		if (!m_local_player_animation || !is_known) {
 			updateAnimation(*track_nr);
 		}
 	}
