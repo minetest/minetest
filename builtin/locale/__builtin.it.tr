@@ -183,7 +183,6 @@ Unbanned @1.=@1 perdonatǝ
 Kick a player=Caccia unə giocatore
 Failed to kick player @1.=Errore nel cacciare lə giocatore @1.
 Kicked @1.=@1 cacciatǝ.
-[full | quick]=[full | quick]
 Clear all objects in world=Elimina tutti gli oggetti/entità nel mondo
 Invalid usage, see /help clearobjects.=Uso incorretto, vedi /help clearobjects.
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Eliminando tutti gli oggetti/entità. Questo potrebbe richiedere molto tempo e farti disconnettere. (di @1)

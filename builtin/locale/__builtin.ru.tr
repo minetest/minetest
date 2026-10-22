@@ -182,7 +182,6 @@ Unbanned @1.=@1 разбанен.
 Kick a player=Кикнуть игрока
 Failed to kick player @1.=Не удалось кикнуть @1.
 Kicked @1.=@1 кикнут.
-[full | quick]=[full | quick]
 Clear all objects in world=Удалить ВСЕ объекты/сущности во ВСЁМ мире
 Invalid usage, see /help clearobjects.=Недопустимое использование, см. /help clearobjects.
 Clearing all objects. This may take a long time. You may experience a timeout. (by @1)=Удаление всех объектов. Это может занять много времени. Ваш клиент может отключиться из-за тайм-аута. (запущено: @1)
