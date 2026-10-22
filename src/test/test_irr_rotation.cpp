@@ -104,4 +104,26 @@ SECTION("matrix-euler roundtrip") {
 	});
 }
 
+// These euler angles all produce rotations close to 180 degrees, whose matrix
+// trace is near -1. Converting such a matrix back to a quaternion used to take a
+// numerically unstable branch (dividing by a scale close to zero) that,
+// depending on rounding, could return a badly wrong rotation.
+SECTION("matrix-quaternion roundtrip near 180 degrees") {
+	const v3f near_half_turn[] = {
+		{core::PI, 0.0f, 0.0f}, // exactly 180 degrees about X
+		{2.82365f, 1.59297f, 5.97210f},
+		{2.50468f, 3.80537f, 0.22627f},
+		{6.12445f, 3.48952f, 3.99157f},
+		{3.63448f, 4.57395f, 5.85211f},
+		{3.28258f, 4.72149f, 6.14091f},
+	};
+	for (v3f rad : near_half_turn) {
+		matrix4 mat;
+		mat.setRotationRadians(rad);
+		quaternion q(mat);
+		matrix4 mat2 = q.getMatrix();
+		CHECK(matrix_equals(mat, mat2));
+	}
+}
+
 }

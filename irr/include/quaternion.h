@@ -231,9 +231,11 @@ inline quaternion::quaternion(const matrix4 &mat)
 // matrix assignment operator
 inline quaternion &quaternion::operator=(const matrix4 &m)
 {
-	const f32 diag = m[0] + m[5] + m[10] + 1;
+	// Refer to getMatrixFast(), which this is the inverse of, for what m[i] resolves to.
+	const f32 diag = m[0] + m[5] + m[10] + 1; // = 4(1 - x^2 - y^2 - z^2) = 4w^2
 
-	if (diag > 0.0f) {
+	// Solve for a large (c^2 >= 1/4) component c of x, y, z, w.
+	if (diag > 1.0f) { // w^2 > 1/4
 		const f32 scale = sqrtf(diag) * 2.0f; // get scale from diagonal
 
 		// TODO: speed this up
@@ -241,10 +243,10 @@ inline quaternion &quaternion::operator=(const matrix4 &m)
 		Y = (m[8] - m[2]) / scale;
 		Z = (m[1] - m[4]) / scale;
 		W = 0.25f * scale;
-	} else {
+	} else { // w^2 <= 1/4 => x^2 + y^2 + z^2 >= 3/4 => max{x^2, y^2, z^2} >= 1/4
 		if (m[0] > m[5] && m[0] > m[10]) {
 			// 1st element of diag is greatest value
-			// find scale according to 1st element, and double it
+			// => x is greatest component
 			const f32 scale = sqrtf(1.0f + m[0] - m[5] - m[10]) * 2.0f;
 
 			// TODO: speed this up
@@ -254,7 +256,7 @@ inline quaternion &quaternion::operator=(const matrix4 &m)
 			W = (m[6] - m[9]) / scale;
 		} else if (m[5] > m[10]) {
 			// 2nd element of diag is greatest value
-			// find scale according to 2nd element, and double it
+			// => y is greatest component
 			const f32 scale = sqrtf(1.0f + m[5] - m[0] - m[10]) * 2.0f;
 
 			// TODO: speed this up
@@ -264,7 +266,7 @@ inline quaternion &quaternion::operator=(const matrix4 &m)
 			W = (m[8] - m[2]) / scale;
 		} else {
 			// 3rd element of diag is greatest value
-			// find scale according to 3rd element, and double it
+			// => z is greatest component
 			const f32 scale = sqrtf(1.0f + m[10] - m[0] - m[5]) * 2.0f;
 
 			// TODO: speed this up
