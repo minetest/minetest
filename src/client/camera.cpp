@@ -101,8 +101,7 @@ v3f Camera::getHeadPosition() const
 
 void Camera::notifyFovChange()
 {
-	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
-	assert(player);
+	RealLocalPlayer player = m_client->getEnv().getLocalPlayer();
 
 	PlayerFovSpec spec = player->getFov();
 

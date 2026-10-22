@@ -1627,8 +1627,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 
 void Client::setPlayerControl(PlayerControl &control)
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 	player->control = control;
 }
 
@@ -1651,8 +1650,7 @@ bool Client::updateWieldedItem()
 
 	m_update_wielded_item = false;
 
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 	if (auto *list = player->inventory.getList("main"))
 		list->setModified(false);
 	if (auto *list = player->inventory.getList("hand"))
@@ -1681,8 +1679,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	break;
 	case InventoryLocation::CURRENT_PLAYER:
 	{
-		LocalPlayer *player = m_env.getLocalPlayer();
-		assert(player);
+		RealLocalPlayer player = m_env.getLocalPlayer();
 		return &player->inventory;
 	}
 	break;
@@ -1765,8 +1762,7 @@ void Client::setCrack(int level, v3s16 pos)
 
 u16 Client::getHP()
 {
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
+	RealLocalPlayer player = m_env.getLocalPlayer();
 	return player->hp;
 }
 

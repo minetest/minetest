@@ -1107,7 +1107,6 @@ void MapgenV6::generateCaves(int max_stone_y)
 		CavesV6 cave(ndef, &gennotify, water_level, c_water_source, c_lava_source);
 
 		bool large_cave = (i >= caves_count);
-		cave.makeCave(vm, node_min, node_max, &ps, &ps2,
-			large_cave, max_stone_y, heightmap);
+		cave.makeCave(vm, node_min, node_max, &ps, &ps2, large_cave, max_stone_y, heightmap);
 	}
 }

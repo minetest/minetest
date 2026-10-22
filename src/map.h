@@ -365,3 +365,14 @@ private:
 	// references to this that need to be cleared on destruction
 	std::list<MMVManip **> m_tracked_refs;
 };
+
+struct RealMMVManip
+{
+private:
+	MMVManip *vm;
+
+public:
+	RealMMVManip(MMVManip *vm) : vm(vm) { assert(vm); }
+	constexpr MMVManip *operator->() const { return vm; }
+	operator MMVManip*() const { return vm; }
+};
