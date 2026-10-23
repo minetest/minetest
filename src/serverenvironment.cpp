@@ -1507,19 +1507,8 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Move static data from active to stored if deactivated
 		*/
-		if (!obj->isPendingRemoval() && obj->m_static_exists) {
-			if (MapBlock *block = m_map->emergeBlock(obj->m_static_block, false)) {
-				if (!block->storeActiveObject(id)) {
-					warningstream << "ServerEnvironment::removeRemovedObjects(): "
-							<< "id=" << id << " m_static_exists=true but "
-							<< "static data doesn't actually exist in "
-							<< obj->m_static_block << std::endl;
-				}
-			} else {
-				infostream << "Failed to emerge block from which an object to "
-						<< "be deactivated was loaded from. id=" << id << std::endl;
-			}
-		}
+		if (!obj->isPendingRemoval())
+			finishDeactivation(obj, id);
 
 		processActiveObjectRemove(obj);
 
@@ -1707,7 +1696,22 @@ void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 		/*
 			Update the static data
 		*/
-		if (!obj->isGone() && obj->isStaticAllowed()) {
+		if (obj->isGone()) {
+			// This is only reached during shutdown.
+			sanity_check(force_delete);
+			if (obj->isPendingRemoval()) {
+				// In normal operation, when an object is marked for removal, its
+				// static data is deleted by the next call to removeRemovedObjects().
+				// But if shutdown happens first, the static data still exists here.
+				// Delete it the same way.
+				deleteStaticFromBlock(obj, id, MOD_REASON_REMOVE_OBJECTS_REMOVE, false);
+			} else {
+				// The object was previously marked for deactivation but kept around
+				// because it was known to a client. Now we're force-deleting it, so
+				// move its static data from the active list to the stored list.
+				finishDeactivation(obj, id);
+			}
+		} else if (obj->isStaticAllowed()) {
 			// Create new static object
 			StaticObject s_obj(obj, objectpos);
 
@@ -1750,6 +1754,8 @@ void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 
 			// Add to the block where the object is located in
 			v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+
+			// If pending, save to active list, otherwise save to stored list.
 			u16 store_id = pending_delete ? id : 0;
 			if (!saveStaticToBlock(blockpos, store_id, obj, s_obj, reason))
 				force_delete = true;
@@ -1827,6 +1833,26 @@ bool ServerEnvironment::saveStaticToBlock(
 	obj->m_static_block = blockpos;
 
 	return true;
+}
+
+void ServerEnvironment::finishDeactivation(ServerActiveObject *obj, u16 id)
+{
+	if (!obj->m_static_exists)
+		return;
+
+	MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
+	if (!block) {
+		infostream << "Failed to emerge block from which an object to "
+				<< "be deactivated was loaded from. id=" << id << std::endl;
+		return;
+	}
+
+	if (!block->storeActiveObject(id)) {
+		warningstream << "ServerEnvironment::finishDeactivation(): "
+				<< "id=" << id << " m_static_exists=true but "
+				<< "static data doesn't actually exist in "
+				<< obj->m_static_block << std::endl;
+	}
 }
 
 void ServerEnvironment::processActiveObjectRemove(ServerActiveObject *obj)
